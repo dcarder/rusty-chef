@@ -1,8 +1,8 @@
-// Name of the cache
-const CACHE_NAME = "chef-jeff-shell-v1";
+// Cache name
+const CACHE_NAME = "chef-jeff-v1";
 
-// Files to cache (the app shell)
-const APP_SHELL = [
+// Files to cache (must match your root folder)
+const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./manifest.json",
@@ -10,15 +10,15 @@ const APP_SHELL = [
   "./icons/icon-512.png"
 ];
 
-// Install event — cache the app shell
+// Install: cache the app shell
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
   );
   self.skipWaiting();
 });
 
-// Activate event — clean old caches
+// Activate: remove old caches
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -32,7 +32,7 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-// Fetch event — serve cached shell, network for everything else
+// Fetch: serve cached shell, fall back to network
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(cached => {
