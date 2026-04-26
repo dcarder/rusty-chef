@@ -1,58 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chef Jeff</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fafafa;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
 
-    <title>Chef Jeff</title>
+    header {
+      background: #ff7f32;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
 
-    <!-- Manifest -->
-    <link rel="manifest" href="manifest.json" />
+    .container {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-    <!-- Theme color -->
-    <meta name="theme-color" content="#ff7a00" />
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: center;
+    }
 
-    <!-- Basic styling so the screen isn't blank -->
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            background: #fff7ef;
-            color: #333;
-        }
-        h1 {
-            color: #ff7a00;
-            text-align: center;
-        }
-        .box {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 500px;
-            margin: 20px auto;
-            text-align: center;
-        }
-    </style>
+    .btn {
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: #ff7f32;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #333;
+      color: white;
+    }
+
+    .btn-outline {
+      background: white;
+      border: 2px solid #ff7f32;
+      color: #ff7f32;
+    }
+  </style>
 </head>
 
 <body>
+  <header>Chef Jeff</header>
 
-    <h1>👨‍🍳 Chef Jeff</h1>
+  <div class="container">
 
-    <div class="box">
-        <p>Your cooking assistant is live.</p>
-        <p>This is a working PWA — ready for Android packaging.</p>
+    <div class="card">
+      <h2>What do you want to do?</h2>
+      <p>Select an option below to get started.</p>
     </div>
 
-    <!-- Register service worker -->
-    <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("service-worker.js")
-                .catch(err => console.log("SW registration failed:", err));
-        }
-    </script>
+    <button class="btn btn-primary">Scan Ingredients</button>
+    <button class="btn btn-secondary">Type Ingredients</button>
+    <button class="btn btn-outline">Chef Jeff Recipe Book</button>
 
+  </div>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
 </body>
 </html>
