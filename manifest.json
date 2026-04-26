@@ -1,10 +1,12 @@
 {
-  "name": "Chef Jeff’s AI Recipe",
-  "short_name": "Chef Jeff",
-  "start_url": "/",
+  "name": "Chef Jeff",
+  "short_name": "ChefJeff",
+  "start_url": "/chef-jeff/",
+  "scope": "/chef-jeff/",
   "display": "standalone",
-  "background_color": "#111111",
-  "theme_color": "#FF8A3C",
+  "background_color": "#ffffff",
+  "theme_color": "#ff7a00",
+  "description": "Your personal cooking assistant.",
   "icons": [
     {
       "src": "icons/icon-192.png",
