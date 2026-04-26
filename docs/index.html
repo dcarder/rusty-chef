@@ -5,41 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chef Jeff</title>
   <link rel="manifest" href="manifest.json" />
+
   <style>
     body {
       margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
-      background: #fafafa;
-      color: #222;
-      display: flex;
-      flex-direction: column;
       height: 100vh;
-    }
-
-    header {
-      background: #ff7f32;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 26px;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-
-    .container {
-      flex: 1;
-      padding: 20px;
+      background: url("your-image.jpg") no-repeat center center/cover;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      justify-content: flex-end;
     }
 
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    .title {
+      position: absolute;
+      top: 20px;
+      width: 100%;
       text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 3px 8px rgba(0,0,0,0.6);
+    }
+
+    .button-container {
+      background: rgba(255,255,255,0.85);
+      padding: 20px;
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
     .btn {
@@ -52,12 +48,12 @@
       width: 100%;
     }
 
-    .btn-primary {
+    .btn-orange {
       background: #ff7f32;
       color: white;
     }
 
-    .btn-secondary {
+    .btn-dark {
       background: #333;
       color: white;
     }
@@ -71,19 +67,13 @@
 </head>
 
 <body>
-  <header>Chef Jeff</header>
 
-  <div class="container">
+  <div class="title">Cooking with Chef A.I.</div>
 
-    <div class="card">
-      <h2>What do you want to do?</h2>
-      <p>Select an option below to get started.</p>
-    </div>
-
-    <button class="btn btn-primary">Scan Ingredients</button>
-    <button class="btn btn-secondary">Type Ingredients</button>
-    <button class="btn btn-outline">Chef Jeff Recipe Book</button>
-
+  <div class="button-container">
+    <button class="btn btn-orange">Ingredients</button>
+    <button class="btn btn-dark">Camera</button>
+    <button class="btn btn-outline">Chef A.I. Recipe Book</button>
   </div>
 
   <script>
@@ -91,5 +81,6 @@
       navigator.serviceWorker.register("service-worker.js");
     }
   </script>
+
 </body>
 </html>
