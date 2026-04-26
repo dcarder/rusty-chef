@@ -4,7 +4,12 @@
   <meta charset="UTF-8" />
 
   <!-- Force landscape orientation -->
-  <meta name="viewport" content="width=device-height, height=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="screen-orientation" content="landscape" />
+  <meta name="x5-orientation" content="landscape" />
+  <meta name="full-screen" content="yes" />
+  <meta name="x5-fullscreen" content="true" />
+  <meta name="browsermode" content="application" />
 
   <title>Chef Jeff</title>
   <link rel="manifest" href="manifest.json" />
@@ -13,21 +18,20 @@
     html, body {
       margin: 0;
       padding: 0;
+      width: 100vw;
+      height: 100vh;
       background: black;
       overflow: hidden;
-      width: 100vh;   /* Swap width/height for landscape */
-      height: 100vw;
-      transform: rotate(90deg); /* Rotate screen */
-      transform-origin: left top;
-      position: absolute;
-      top: 0;
-      left: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     img.fullscreen {
-      width: 100%;
-      height: 100%;
-      object-fit: contain; /* Autofit image */
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover; /* Fills the screen */
+      object-position: center; /* Keeps the important part centered */
     }
   </style>
 </head>
