@@ -12,7 +12,6 @@
         background: black;
     }
 
-    /* Fullscreen background image */
     .bg {
         position: fixed;
         top: 0;
@@ -23,7 +22,6 @@
         z-index: 1;
     }
 
-    /* Centered glowing camera button */
     .camera-btn {
         position: fixed;
         top: 50%;
@@ -39,8 +37,6 @@
         cursor: pointer;
         z-index: 9999;
         opacity: 0.95;
-
-        /* Glow effect */
         box-shadow: 0 0 20px #ff9800, 0 0 40px #ff9800;
         animation: pulse 2s infinite ease-in-out;
     }
@@ -55,39 +51,49 @@
 
 <body>
 
-    <!-- Centered glowing camera button -->
-    <button id="cameraButton" class="camera-btn">Camera</button>
+<button id="cameraButton" class="camera-btn">Camera</button>
 
-    <!-- Background image -->
-    <img src="copilot_image_1777179019874.jpeg" class="bg">
+<img src="copilot_image_1777179019874.jpeg" class="bg">
 
 <script>
 document.getElementById("cameraButton").addEventListener("click", async () => {
     try {
+        // Open camera
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         const video = document.createElement("video");
         video.srcObject = stream;
         await video.play();
 
+        // Capture frame
         const canvas = document.createElement("canvas");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext("2d");
-
         ctx.drawImage(video, 0, 0);
         const imageData = canvas.toDataURL("image/jpeg");
 
+        // Stop camera
         stream.getTracks().forEach(track => track.stop());
 
-        const response = await fetch("https://your-backend-url/identify", {
+        // Send to your backend for ingredient detection
+        const detect = await fetch("https://your-backend-url/identify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ image: imageData })
         });
 
-        const result = await response.json();
+        const detected = await detect.json();
+        const ingredients = detected.ingredients.join(",");
 
-        alert("Ingredients detected: " + result.ingredients.join(", "));
+        // Search internet for recipes using ingredients
+        const recipeSearch = await fetch(
+            `https://api.edamam.com/search?q=${ingredients}&app_id=YOUR_ID&app_key=YOUR_KEY`
+        );
+
+        const recipes = await recipeSearch.json();
+
+        alert("Recipes found: " + recipes.hits.length);
+
     } catch (err) {
         alert("Camera error: " + err);
     }
