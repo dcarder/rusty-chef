@@ -12,6 +12,28 @@
         background: black;
     }
 
+    /* LOADING SCREEN */
+    #loadingScreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        opacity: 1;
+        transition: opacity 1s ease;
+    }
+
+    #loadingScreen img {
+        width: 70vw;
+        max-width: 400px;
+    }
+
+    /* BACKGROUND IMAGE */
     .bg {
         position: fixed;
         top: 0;
@@ -22,6 +44,7 @@
         z-index: 1;
     }
 
+    /* CAMERA BUTTON */
     .camera-btn {
         position: fixed;
         top: 50%;
@@ -51,32 +74,44 @@
 
 <body>
 
+<!-- LOADING SCREEN WITH YOUR LOGO -->
+<div id="loadingScreen">
+    <img src="your_logo.jpeg">
+</div>
+
+<!-- CAMERA BUTTON -->
 <button id="cameraButton" class="camera-btn">Camera</button>
 
+<!-- BACKGROUND IMAGE -->
 <img src="copilot_image_1777179019874.jpeg" class="bg">
 
 <script>
+/* FADE OUT LOADING SCREEN */
+window.onload = () => {
+    setTimeout(() => {
+        const loader = document.getElementById("loadingScreen");
+        loader.style.opacity = 0;
+        setTimeout(() => loader.style.display = "none", 1000);
+    }, 2000); // 2 seconds
+};
+
+/* CAMERA BUTTON LOGIC */
 document.getElementById("cameraButton").addEventListener("click", async () => {
     try {
-        // Open camera
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         const video = document.createElement("video");
         video.srcObject = stream;
         await video.play();
 
-        // Capture a single frame
         const canvas = document.createElement("canvas");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(video, 0, 0);
 
-        // Stop camera
         stream.getTracks().forEach(track => track.stop());
 
-        // Do nothing else — just return to screen
         alert("Picture taken!");
-
     } catch (err) {
         alert("Camera error: " + err);
     }
