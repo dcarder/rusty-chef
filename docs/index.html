@@ -62,7 +62,51 @@
         transition: opacity 1s ease-in-out;
     }
 
-    /* Camera button (hidden at first) */
+    /* Glowing instruction text */
+    #cameraText {
+        position: absolute;
+        bottom: 22vh;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        text-align: center;
+        color: white;
+        font-size: 22px;
+        font-weight: 600;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        z-index: 4;
+
+        text-shadow:
+            0 0 8px rgba(255, 255, 255, 0.8),
+            0 0 16px rgba(255, 255, 255, 0.6),
+            0 0 24px rgba(255, 255, 255, 0.4);
+
+        animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+        0% {
+            text-shadow:
+                0 0 6px rgba(255, 255, 255, 0.7),
+                0 0 12px rgba(255, 255, 255, 0.5),
+                0 0 18px rgba(255, 255, 255, 0.3);
+        }
+        50% {
+            text-shadow:
+                0 0 12px rgba(255, 255, 255, 1),
+                0 0 24px rgba(255, 255, 255, 0.8),
+                0 0 36px rgba(255, 255, 255, 0.6);
+        }
+        100% {
+            text-shadow:
+                0 0 6px rgba(255, 255, 255, 0.7),
+                0 0 12px rgba(255, 255, 255, 0.5),
+                0 0 18px rgba(255, 255, 255, 0.3);
+        }
+    }
+
+    /* Camera button */
     .camera-hotspot {
         position: absolute;
         bottom: 8vh;
@@ -81,7 +125,7 @@
         font-size: 18px;
         text-align: center;
         z-index: 4;
-        opacity: 0; /* HIDDEN UNTIL SECOND SCREEN */
+        opacity: 0;
         transition: opacity 1s ease-in-out;
     }
 
@@ -101,10 +145,15 @@
 <!-- Camera screen -->
 <img id="cameraScreen" src="copilot_image_1777179019874.jpeg" alt="Chef Jeff Camera Screen">
 
+<!-- Glowing text -->
+<div id="cameraText">
+    Take a picture of your food and we will make something of it
+</div>
+
 <!-- Robot voice -->
 <audio id="robotVoice" src="robot_voice.mp3"></audio>
 
-<!-- Camera hotspot -->
+<!-- Camera button -->
 <div class="camera-hotspot" id="cameraButton">
     📷 Camera
 </div>
@@ -126,36 +175,3 @@ setTimeout(() => {
 
     setTimeout(() => {
         document.getElementById("cameraScreen").style.opacity = "1";
-
-        // SHOW CAMERA BUTTON NOW
-        document.getElementById("cameraButton").style.opacity = "1";
-
-    }, 1500);
-
-}, 15000);
-
-/* Camera hotspot triggers camera */
-document.getElementById("cameraButton").addEventListener("click", () => {
-    document.getElementById("cameraInput").click();
-});
-
-/* Handle photo selection */
-document.getElementById("cameraInput").addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("image", file);
-
-    const response = await fetch("/api/detect", {
-        method: "POST",
-        body: formData
-    });
-
-    const result = await response.json();
-    window.location.href = `/recipes?items=${encodeURIComponent(JSON.stringify(result.ingredients))}`;
-});
-</script>
-
-</body>
-</html>
