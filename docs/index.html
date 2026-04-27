@@ -64,35 +64,18 @@ document.getElementById("cameraButton").addEventListener("click", async () => {
         video.srcObject = stream;
         await video.play();
 
-        // Capture frame
+        // Capture a single frame
         const canvas = document.createElement("canvas");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(video, 0, 0);
-        const imageData = canvas.toDataURL("image/jpeg");
 
         // Stop camera
         stream.getTracks().forEach(track => track.stop());
 
-        // Send to your backend for ingredient detection
-        const detect = await fetch("https://your-backend-url/identify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ image: imageData })
-        });
-
-        const detected = await detect.json();
-        const ingredients = detected.ingredients.join(",");
-
-        // Search internet for recipes using ingredients
-        const recipeSearch = await fetch(
-            `https://api.edamam.com/search?q=${ingredients}&app_id=YOUR_ID&app_key=YOUR_KEY`
-        );
-
-        const recipes = await recipeSearch.json();
-
-        alert("Recipes found: " + recipes.hits.length);
+        // Do nothing else — just return to screen
+        alert("Picture taken!");
 
     } catch (err) {
         alert("Camera error: " + err);
