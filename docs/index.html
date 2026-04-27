@@ -17,8 +17,8 @@
         touch-action: manipulation;
     }
 
-    /* Intro container */
-    #introContainer {
+    /* Generic full-screen container */
+    .fullScreen {
         position: fixed;
         top: 0;
         left: 0;
@@ -28,22 +28,14 @@
         justify-content: center;
         align-items: center;
         background: black;
-        z-index: 3;
         opacity: 0;
-        animation: fadeIn 2s ease-in-out forwards;
+        z-index: 5;
+        transition: opacity 1s ease-in-out;
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @keyframes fadeOut {
-        from { opacity: 1; }
-        to { opacity: 0; }
-    }
-
-    #introLogo {
+    /* First screen: your logo */
+    #yourLogoContainer img,
+    #introContainer img {
         width: 100%;
         height: 100%;
         object-fit: contain;
@@ -76,7 +68,7 @@
         transition: opacity 1s ease-in-out;
         z-index: 4;
 
-        /* Move text above camera button + 1.5 inches higher */
+        /* Move text above camera button + 1.5 inches */
         bottom: calc(8vh + 160px + 144px);
 
         text-shadow:
@@ -139,12 +131,17 @@
 
 <body>
 
-<!-- Intro screen -->
-<div id="introContainer">
-    <img id="introLogo" src="rusty_intro.jpeg" alt="Rusty Intro Logo">
+<!-- Screen 1: Your logo -->
+<div id="yourLogoContainer" class="fullScreen">
+    <img src="your_logo.jpeg" alt="Your Logo">
 </div>
 
-<!-- Camera screen -->
+<!-- Screen 2: Rusty intro -->
+<div id="introContainer" class="fullScreen">
+    <img src="rusty_intro.jpeg" alt="Rusty Intro Logo">
+</div>
+
+<!-- Screen 3: Camera screen -->
 <img id="cameraScreen" src="copilot_image_1777179019874.jpeg" alt="Chef Jeff Camera Screen">
 
 <!-- Glowing text -->
@@ -170,22 +167,39 @@ document.addEventListener("click", () => {
     audio.play();
 }, { once: true });
 
-// Fade-out intro after 7.5 seconds
+/* -----------------------------
+   SCREEN TRANSITION SEQUENCE
+   ----------------------------- */
+
+// 1️⃣ Show your logo immediately
+const yourLogo = document.getElementById("yourLogoContainer");
+yourLogo.style.opacity = "1";
+
+// After 4.5 seconds → fade out your logo, fade in Rusty
 setTimeout(() => {
-    const intro = document.getElementById("introContainer");
+    yourLogo.style.opacity = "0";
 
-    intro.style.animation = "fadeOut 1.5s ease-in-out forwards";
+    const rusty = document.getElementById("introContainer");
+    rusty.style.opacity = "1";
 
+    // After Rusty shows for 7.5 seconds → fade out Rusty
     setTimeout(() => {
-        document.getElementById("cameraScreen").style.opacity = "1";
-        document.getElementById("cameraButton").style.opacity = "1";
-        document.getElementById("cameraText").style.opacity = "1";
+        rusty.style.opacity = "0";
 
-        intro.style.zIndex = "-1";
+        // After fade-out completes → show camera screen + UI
+        setTimeout(() => {
+            document.getElementById("cameraScreen").style.opacity = "1";
+            document.getElementById("cameraButton").style.opacity = "1";
+            document.getElementById("cameraText").style.opacity = "1";
 
-    }, 1500);
+            rusty.style.zIndex = "-1";
+            yourLogo.style.zIndex = "-1";
 
-}, 7500);
+        }, 1500);
+
+    }, 7500);
+
+}, 4500);
 
 // Camera hotspot triggers camera
 document.getElementById("cameraButton").addEventListener("click", () => {
@@ -206,7 +220,8 @@ document.getElementById("cameraInput").addEventListener("change", async (event) 
     });
 
     const result = await response.json();
-    window.location.href = `/recipes?items=${encodeURIComponent(JSON.stringify(result.ingredients))}`;
+    window.location.href =
+        `/recipes?items=${encodeURIComponent(JSON.stringify(result.ingredients))}`;
 });
 </script>
 
