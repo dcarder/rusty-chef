@@ -65,7 +65,6 @@
     /* Glowing instruction text */
     #cameraText {
         position: absolute;
-        bottom: 22vh;
         left: 50%;
         transform: translateX(-50%);
         width: 90%;
@@ -76,6 +75,9 @@
         opacity: 0;
         transition: opacity 1s ease-in-out;
         z-index: 4;
+
+        /* Move text above camera button + 1.5 inches higher */
+        bottom: calc(8vh + 160px + 144px);
 
         text-shadow:
             0 0 8px rgba(255, 255, 255, 0.8),
@@ -168,25 +170,22 @@ document.addEventListener("click", () => {
     audio.play();
 }, { once: true });
 
-// Fade-out intro after 7.5 seconds (HALF of 15)
+// Fade-out intro after 7.5 seconds
 setTimeout(() => {
     const intro = document.getElementById("introContainer");
 
-    // Fade out intro
     intro.style.animation = "fadeOut 1.5s ease-in-out forwards";
 
-    // After fade-out completes, show camera screen + UI
     setTimeout(() => {
         document.getElementById("cameraScreen").style.opacity = "1";
         document.getElementById("cameraButton").style.opacity = "1";
         document.getElementById("cameraText").style.opacity = "1";
 
-        // Move intro behind everything so it can't block clicks
         intro.style.zIndex = "-1";
 
     }, 1500);
 
-}, 7500); // <-- updated delay
+}, 7500);
 
 // Camera hotspot triggers camera
 document.getElementById("cameraButton").addEventListener("click", () => {
