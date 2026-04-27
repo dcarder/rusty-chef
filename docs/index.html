@@ -157,16 +157,26 @@
 <input type="file" id="cameraInput" accept="image/*" capture="environment"/>
 
 <script>
-// Play robot voice on first tap
+/* -------------------------------------------------
+   UNLOCK AUDIO ON FIRST TAP (fixes autoplay issues)
+---------------------------------------------------*/
 document.addEventListener("click", () => {
-    const audio = document.getElementById("robotVoice");
-    audio.currentTime = 0;
-    audio.play();
+    const robot = document.getElementById("robotVoice");
+    const rustyAudio = document.getElementById("rustyIntroVoice");
+
+    // Unlock both audio files
+    robot.play().catch(() => {});
+    rustyAudio.play().catch(() => {});
+
+    // Pause robot voice immediately — we only want Rusty intro now
+    robot.pause();
+    robot.currentTime = 0;
+
 }, { once: true });
 
 /* -----------------------------
    SCREEN TRANSITION SEQUENCE
-   ----------------------------- */
+------------------------------*/
 
 // 1️⃣ Show your logo immediately
 const yourLogo = document.getElementById("yourLogoContainer");
@@ -179,7 +189,7 @@ setTimeout(() => {
     const rusty = document.getElementById("introContainer");
     rusty.style.opacity = "1";
 
-    // 🔊 Play Rusty intro MP3
+    // 🔊 Play Rusty intro MP3 (now allowed after first tap)
     const rustyAudio = document.getElementById("rustyIntroVoice");
     rustyAudio.currentTime = 0;
     rustyAudio.play().catch(() => {});
