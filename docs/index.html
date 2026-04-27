@@ -13,8 +13,8 @@
         font-family: Arial, sans-serif;
     }
 
-    /* ---------------------- LOADING SCREEN ---------------------- */
-    #loadingScreen {
+    /* ---------------------- JEFF STUDIOS SCREEN ---------------------- */
+    #jeffScreen {
         position: fixed;
         top: 0;
         left: 0;
@@ -22,49 +22,55 @@
         height: 100vh;
         background: black;
         display: flex;
-        flex-direction: column;
         justify-content: center;
         align-items: center;
         z-index: 99999;
         opacity: 1;
-        transition: opacity 1.2s ease;
+        transition: opacity 1s ease;
     }
 
-    #loadingLogo {
+    #jeffScreen img {
         width: 70vw;
-        max-width: 420px;
+        max-width: 400px;
         animation: fadeIn 1.5s ease forwards;
     }
 
-    #loadingText {
-        color: white;
-        margin-top: 20px;
-        font-size: 18px;
-        opacity: 0.8;
-        letter-spacing: 2px;
+    /* ---------------------- RUSTY INTRO SCREEN ---------------------- */
+    #rustyScreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99998;
+        opacity: 0;
+        transition: opacity 1s ease;
     }
 
-    /* Spinner */
-    .spinner {
-        margin-top: 25px;
-        width: 50px;
-        height: 50px;
-        border: 5px solid rgba(255,255,255,0.2);
-        border-top-color: #00aaff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
+    #rustyScreen img {
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
     }
 
-    @keyframes spin {
-        to { transform: rotate(360deg); }
+    /* ---------------------- CAMERA SCREEN ---------------------- */
+    #cameraScreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: black;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1); }
-    }
-
-    /* ---------------------- BACKGROUND IMAGE ---------------------- */
     .bg {
         position: fixed;
         top: 0;
@@ -75,7 +81,6 @@
         z-index: 1;
     }
 
-    /* ---------------------- CAMERA BUTTON ---------------------- */
     .camera-btn {
         position: fixed;
         top: 50%;
@@ -100,32 +105,65 @@
         50% { box-shadow: 0 0 35px #ff9800; }
         100% { box-shadow: 0 0 10px #ff9800; }
     }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
 </style>
 </head>
 
 <body>
 
-<!-- ---------------------- LOADING SCREEN ---------------------- -->
-<div id="loadingScreen">
-    <img id="loadingLogo" src="your_logo.jpeg">
-    <div class="spinner"></div>
-    <div id="loadingText">POWERED BY JEFF STUDIOS</div>
+<!-- JEFF STUDIOS SCREEN -->
+<div id="jeffScreen">
+    <img src="your_logo.jpeg" alt="JEFF STUDIOS">
 </div>
 
-<!-- ---------------------- CAMERA BUTTON ---------------------- -->
-<button id="cameraButton" class="camera-btn">Camera</button>
+<!-- RUSTY INTRO SCREEN -->
+<div id="rustyScreen">
+    <img src="rusty_intro.jpeg" alt="Rusty the Robot Chef">
+</div>
 
-<!-- ---------------------- BACKGROUND IMAGE ---------------------- -->
-<img src="copilot_image_1777179019874.jpeg" class="bg">
+<!-- CAMERA SCREEN -->
+<div id="cameraScreen">
+    <img src="copilot_image_1777179019874.jpeg" class="bg">
+    <button id="cameraButton" class="camera-btn">Camera</button>
+</div>
 
 <script>
-/* ---------------------- LOADING SCREEN FADE OUT ---------------------- */
+/* ---------------------- SCREEN SEQUENCE ---------------------- */
 window.onload = () => {
+    const jeff = document.getElementById("jeffScreen");
+    const rusty = document.getElementById("rustyScreen");
+    const camera = document.getElementById("cameraScreen");
+
+    // Step 1: Show JEFF STUDIOS for 3 seconds
     setTimeout(() => {
-        const loader = document.getElementById("loadingScreen");
-        loader.style.opacity = 0;
-        setTimeout(() => loader.style.display = "none", 1200);
-    }, 2500); // 2.5 seconds cinematic intro
+        jeff.style.opacity = 0;
+        setTimeout(() => jeff.style.display = "none", 1000);
+
+        // Step 2: Show Rusty intro
+        rusty.style.opacity = 1;
+
+        // Step 3: Robot voice reads text
+        const text = "Rusty the Robot Chef. Here to simplify meal prep. Take a picture of the food you have, and we'll turn it into something delicious.";
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.pitch = 0.8;
+        utterance.rate = 0.9;
+        utterance.volume = 1;
+        utterance.voice = speechSynthesis.getVoices().find(v => v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('microsoft')) || null;
+        speechSynthesis.speak(utterance);
+
+        // Step 4: After 15 seconds, fade to camera screen
+        setTimeout(() => {
+            rusty.style.opacity = 0;
+            setTimeout(() => {
+                rusty.style.display = "none";
+                camera.style.display = "flex";
+            }, 1000);
+        }, 15000);
+    }, 3000);
 };
 
 /* ---------------------- CAMERA BUTTON LOGIC ---------------------- */
@@ -143,7 +181,6 @@ document.getElementById("cameraButton").addEventListener("click", async () => {
         ctx.drawImage(video, 0, 0);
 
         stream.getTracks().forEach(track => track.stop());
-
         alert("Picture taken!");
     } catch (err) {
         alert("Camera error: " + err);
