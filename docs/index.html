@@ -10,9 +10,10 @@
         padding: 0;
         overflow: hidden;
         background: black;
+        font-family: Arial, sans-serif;
     }
 
-    /* LOADING SCREEN */
+    /* ---------------------- LOADING SCREEN ---------------------- */
     #loadingScreen {
         position: fixed;
         top: 0;
@@ -21,19 +22,49 @@
         height: 100vh;
         background: black;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         z-index: 99999;
         opacity: 1;
-        transition: opacity 1s ease;
+        transition: opacity 1.2s ease;
     }
 
-    #loadingScreen img {
+    #loadingLogo {
         width: 70vw;
-        max-width: 400px;
+        max-width: 420px;
+        animation: fadeIn 1.5s ease forwards;
     }
 
-    /* BACKGROUND IMAGE */
+    #loadingText {
+        color: white;
+        margin-top: 20px;
+        font-size: 18px;
+        opacity: 0.8;
+        letter-spacing: 2px;
+    }
+
+    /* Spinner */
+    .spinner {
+        margin-top: 25px;
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(255,255,255,0.2);
+        border-top-color: #00aaff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    /* ---------------------- BACKGROUND IMAGE ---------------------- */
     .bg {
         position: fixed;
         top: 0;
@@ -44,7 +75,7 @@
         z-index: 1;
     }
 
-    /* CAMERA BUTTON */
+    /* ---------------------- CAMERA BUTTON ---------------------- */
     .camera-btn {
         position: fixed;
         top: 50%;
@@ -74,28 +105,30 @@
 
 <body>
 
-<!-- LOADING SCREEN WITH YOUR LOGO -->
+<!-- ---------------------- LOADING SCREEN ---------------------- -->
 <div id="loadingScreen">
-    <img src="your_logo.jpeg">
+    <img id="loadingLogo" src="your_logo.jpeg">
+    <div class="spinner"></div>
+    <div id="loadingText">POWERED BY JEFF STUDIOS</div>
 </div>
 
-<!-- CAMERA BUTTON -->
+<!-- ---------------------- CAMERA BUTTON ---------------------- -->
 <button id="cameraButton" class="camera-btn">Camera</button>
 
-<!-- BACKGROUND IMAGE -->
+<!-- ---------------------- BACKGROUND IMAGE ---------------------- -->
 <img src="copilot_image_1777179019874.jpeg" class="bg">
 
 <script>
-/* FADE OUT LOADING SCREEN */
+/* ---------------------- LOADING SCREEN FADE OUT ---------------------- */
 window.onload = () => {
     setTimeout(() => {
         const loader = document.getElementById("loadingScreen");
         loader.style.opacity = 0;
-        setTimeout(() => loader.style.display = "none", 1000);
-    }, 2000); // 2 seconds
+        setTimeout(() => loader.style.display = "none", 1200);
+    }, 2500); // 2.5 seconds cinematic intro
 };
 
-/* CAMERA BUTTON LOGIC */
+/* ---------------------- CAMERA BUTTON LOGIC ---------------------- */
 document.getElementById("cameraButton").addEventListener("click", async () => {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
