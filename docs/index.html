@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Chef Jeff</title>
+
 <style>
     body {
         margin: 0;
@@ -10,33 +12,87 @@
         background: black;
     }
 
+    /* Fullscreen background image */
     .bg {
         position: fixed;
         top: 0;
         left: 0;
         width: 100vw;
         height: 100vh;
-        object-fit: contain; /* fits entire image */
-        background-color: black;
+        object-fit: cover; /* fills screen without distortion */
+        z-index: 1;
     }
 
-    @media screen and (orientation: portrait) {
-        body::before {
-            content: "Rotate to landscape";
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 24px;
-        }
-        .bg {
-            display: none;
-        }
+    /* Centered glowing camera button */
+    .camera-btn {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 18px 40px;
+        font-size: 26px;
+        border: none;
+        border-radius: 14px;
+        background: #ff9800;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 9999;
+        opacity: 0.95;
+
+        /* Glow effect */
+        box-shadow: 0 0 20px #ff9800, 0 0 40px #ff9800;
+        animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 10px #ff9800; }
+        50% { box-shadow: 0 0 35px #ff9800; }
+        100% { box-shadow: 0 0 10px #ff9800; }
     }
 </style>
 </head>
+
 <body>
+
+    <!-- Centered glowing camera button -->
+    <button id="cameraButton" class="camera-btn">Camera</button>
+
+    <!-- Background image -->
     <img src="copilot_image_1777179019874.jpeg" class="bg">
+
+<script>
+document.getElementById("cameraButton").addEventListener("click", async () => {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const video = document.createElement("video");
+        video.srcObject = stream;
+        await video.play();
+
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(video, 0, 0);
+        const imageData = canvas.toDataURL("image/jpeg");
+
+        stream.getTracks().forEach(track => track.stop());
+
+        const response = await fetch("https://your-backend-url/identify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ image: imageData })
+        });
+
+        const result = await response.json();
+
+        alert("Ingredients detected: " + result.ingredients.join(", "));
+    } catch (err) {
+        alert("Camera error: " + err);
+    }
+});
+</script>
+
 </body>
 </html>
