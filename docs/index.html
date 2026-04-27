@@ -33,28 +33,23 @@
         animation: fadeIn 2s ease-in-out forwards;
     }
 
-    /* Fade-in animation */
     @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
     }
 
-    /* Fade-out animation */
     @keyframes fadeOut {
         from { opacity: 1; }
         to { opacity: 0; }
     }
 
-    /* Responsive Rusty intro image */
     #introLogo {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        max-width: 100vw;
-        max-height: 100vh;
     }
 
-    /* Camera screen background */
+    /* Camera screen */
     #cameraScreen {
         position: fixed;
         top: 0;
@@ -67,7 +62,7 @@
         transition: opacity 1s ease-in-out;
     }
 
-    /* Camera hotspot */
+    /* Camera button (hidden at first) */
     .camera-hotspot {
         position: absolute;
         bottom: 8vh;
@@ -86,6 +81,8 @@
         font-size: 18px;
         text-align: center;
         z-index: 4;
+        opacity: 0; /* HIDDEN UNTIL SECOND SCREEN */
+        transition: opacity 1s ease-in-out;
     }
 
     #cameraInput {
@@ -112,7 +109,6 @@
     📷 Camera
 </div>
 
-<!-- Hidden camera input -->
 <input type="file" id="cameraInput" accept="image/*" capture="environment"/>
 
 <script>
@@ -130,6 +126,10 @@ setTimeout(() => {
 
     setTimeout(() => {
         document.getElementById("cameraScreen").style.opacity = "1";
+
+        // SHOW CAMERA BUTTON NOW
+        document.getElementById("cameraButton").style.opacity = "1";
+
     }, 1500);
 
 }, 15000);
