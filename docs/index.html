@@ -8,183 +8,125 @@
     body {
         margin: 0;
         padding: 0;
+        height: 100vh;
+        width: 100vw;
         overflow: hidden;
         background: black;
-        font-family: Arial, sans-serif;
-    }
-
-    /* ---------------------- JEFF STUDIOS SCREEN ---------------------- */
-    #jeffScreen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: black;
         display: flex;
         justify-content: center;
         align-items: center;
-        z-index: 99999;
-        opacity: 1;
-        transition: opacity 1s ease;
+        user-select: none;
+        touch-action: manipulation;
+        position: relative;
     }
 
-    #jeffScreen img {
-        width: 70vw;
-        max-width: 400px;
-        animation: fadeIn 1.5s ease forwards;
-    }
-
-    /* ---------------------- RUSTY INTRO SCREEN ---------------------- */
-    #rustyScreen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: black;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 99998;
-        opacity: 0;
-        transition: opacity 1s ease;
-    }
-
-    #rustyScreen img {
-        width: 100vw;
-        height: 100vh;
-        object-fit: cover;
-    }
-
-    /* ---------------------- CAMERA SCREEN ---------------------- */
-    #cameraScreen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: black;
-        display: none;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-    }
-
+    /* Background image */
     .bg {
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         width: 100vw;
         height: 100vh;
         object-fit: cover;
-        z-index: 1;
+        z-index: -1;
     }
 
-    .camera-btn {
-        position: fixed;
-        top: 50%;
+    /* Camera hotspot */
+    .camera-hotspot {
+        position: absolute;
+        bottom: 8vh;
         left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 18px 40px;
-        font-size: 26px;
-        border: none;
-        border-radius: 14px;
-        background: #ff9800;
+        transform: translateX(-50%);
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(6px);
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        display: flex;
+        justify-content: center;
+        align-items: center;
         color: white;
-        font-weight: bold;
-        cursor: pointer;
-        z-index: 9999;
-        opacity: 0.95;
-        box-shadow: 0 0 20px #ff9800, 0 0 40px #ff9800;
-        animation: pulse 2s infinite ease-in-out;
+        font-size: 18px;
+        text-align: center;
     }
 
-    @keyframes pulse {
-        0% { box-shadow: 0 0 10px #ff9800; }
-        50% { box-shadow: 0 0 35px #ff9800; }
-        100% { box-shadow: 0 0 10px #ff9800; }
+    /* Hidden camera input */
+    #cameraInput {
+        display: none;
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1); }
+    /* Intro text */
+    .intro-text {
+        position: absolute;
+        top: 8vh;
+        width: 100%;
+        text-align: center;
+        color: white;
+        font-size: 26px;
+        padding: 0 20px;
+        text-shadow: 0 0 8px black;
     }
 </style>
 </head>
 
 <body>
 
-<!-- JEFF STUDIOS SCREEN -->
-<div id="jeffScreen">
-    <img src="your_logo.jpeg" alt="JEFF STUDIOS">
+<!-- Background image -->
+<img src="copilot_image_1777179019874.jpeg" class="bg" alt="Chef Jeff Background">
+
+<!-- Robot voice -->
+<audio id="robotVoice" src="robot_voice.mp3"></audio>
+
+<!-- Intro text -->
+<div class="intro-text">
+    Snap a photo of your food and I’ll help you make something with it
 </div>
 
-<!-- RUSTY INTRO SCREEN -->
-<div id="rustyScreen">
-    <img src="rusty_intro.jpeg" alt="Rusty the Robot Chef">
+<!-- Camera hotspot -->
+<div class="camera-hotspot" id="cameraButton">
+    📷 Camera
 </div>
 
-<!-- CAMERA SCREEN -->
-<div id="cameraScreen">
-    <img src="copilot_image_1777179019874.jpeg" class="bg">
-    <button id="cameraButton" class="camera-btn">Camera</button>
-</div>
+<!-- Hidden camera input -->
+<input 
+    type="file" 
+    id="cameraInput" 
+    accept="image/*" 
+    capture="environment"
+/>
 
 <script>
-/* ---------------------- SCREEN SEQUENCE ---------------------- */
-window.onload = () => {
-    const jeff = document.getElementById("jeffScreen");
-    const rusty = document.getElementById("rustyScreen");
-    const camera = document.getElementById("cameraScreen");
+/* One tap anywhere plays robot voice */
+document.addEventListener("click", () => {
+    const audio = document.getElementById("robotVoice");
+    audio.currentTime = 0;
+    audio.play();
+}, { once: true });
 
-    // Step 1: Show JEFF STUDIOS for 3 seconds
-    setTimeout(() => {
-        jeff.style.opacity = 0;
-        setTimeout(() => jeff.style.display = "none", 1000);
+/* Camera hotspot triggers camera */
+document.getElementById("cameraButton").addEventListener("click", () => {
+    document.getElementById("cameraInput").click();
+});
 
-        // Step 2: Show Rusty intro
-        rusty.style.opacity = 1;
+/* Handle photo selection */
+document.getElementById("cameraInput").addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-        // Step 3: Robot voice reads text
-        const text = "Rusty the Robot Chef. Here to simplify meal prep. Take a picture of the food you have, and we'll turn it into something delicious.";
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.pitch = 0.8;
-        utterance.rate = 0.9;
-        utterance.volume = 1;
-        utterance.voice = speechSynthesis.getVoices().find(v => v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('microsoft')) || null;
-        speechSynthesis.speak(utterance);
+    // Send to backend
+    const formData = new FormData();
+    formData.append("image", file);
 
-        // Step 4: After 15 seconds, fade to camera screen
-        setTimeout(() => {
-            rusty.style.opacity = 0;
-            setTimeout(() => {
-                rusty.style.display = "none";
-                camera.style.display = "flex";
-            }, 1000);
-        }, 15000);
-    }, 3000);
-};
+    const response = await fetch("/api/detect", {
+        method: "POST",
+        body: formData
+    });
 
-/* ---------------------- CAMERA BUTTON LOGIC ---------------------- */
-document.getElementById("cameraButton").addEventListener("click", async () => {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const video = document.createElement("video");
-        video.srcObject = stream;
-        await video.play();
+    const result = await response.json();
 
-        const canvas = document.createElement("canvas");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(video, 0, 0);
-
-        stream.getTracks().forEach(track => track.stop());
-        alert("Picture taken!");
-    } catch (err) {
-        alert("Camera error: " + err);
-    }
+    // Redirect to recipes page
+    window.location.href = `/recipes?items=${encodeURIComponent(JSON.stringify(result.ingredients))}`;
 });
 </script>
 
