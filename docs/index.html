@@ -17,7 +17,6 @@
         touch-action: manipulation;
     }
 
-    /* Generic full-screen container */
     .fullScreen {
         position: fixed;
         top: 0;
@@ -33,7 +32,6 @@
         transition: opacity 1s ease-in-out;
     }
 
-    /* First screen: your logo */
     #yourLogoContainer img,
     #introContainer img {
         width: 100%;
@@ -41,7 +39,6 @@
         object-fit: contain;
     }
 
-    /* Camera screen */
     #cameraScreen {
         position: fixed;
         top: 0;
@@ -54,7 +51,6 @@
         transition: opacity 1s ease-in-out;
     }
 
-    /* Glowing instruction text */
     #cameraText {
         position: absolute;
         left: 50%;
@@ -68,7 +64,6 @@
         transition: opacity 1s ease-in-out;
         z-index: 4;
 
-        /* Move text above camera button + 1.5 inches */
         bottom: calc(8vh + 160px + 144px);
 
         text-shadow:
@@ -100,7 +95,6 @@
         }
     }
 
-    /* Camera button */
     .camera-hotspot {
         position: absolute;
         bottom: 8vh;
@@ -152,6 +146,9 @@
 <!-- Robot voice -->
 <audio id="robotVoice" src="robot_voice.mp3"></audio>
 
+<!-- Rusty intro voice -->
+<audio id="rustyIntroVoice" src="rusty_intro.mp3"></audio>
+
 <!-- Camera button -->
 <div class="camera-hotspot" id="cameraButton">
     📷 Camera
@@ -181,6 +178,11 @@ setTimeout(() => {
 
     const rusty = document.getElementById("introContainer");
     rusty.style.opacity = "1";
+
+    // 🔊 Play Rusty intro MP3
+    const rustyAudio = document.getElementById("rustyIntroVoice");
+    rustyAudio.currentTime = 0;
+    rustyAudio.play().catch(() => {});
 
     // After Rusty shows for 7.5 seconds → fade out Rusty
     setTimeout(() => {
