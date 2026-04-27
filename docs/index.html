@@ -5,30 +5,66 @@
 <title>Chef Jeff</title>
 
 <style>
-    body {
+    html, body {
         margin: 0;
         padding: 0;
-        height: 100vh;
-        width: 100vw;
+        height: 100%;
+        width: 100%;
         overflow: hidden;
         background: black;
+        font-family: Arial, sans-serif;
+        user-select: none;
+        touch-action: manipulation;
+    }
+
+    /* Intro container */
+    #introContainer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        user-select: none;
-        touch-action: manipulation;
-        position: relative;
+        background: black;
+        z-index: 3;
+        opacity: 0;
+        animation: fadeIn 2s ease-in-out forwards;
     }
 
-    /* Background image */
-    .bg {
-        position: absolute;
+    /* Fade-in animation */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Fade-out animation */
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+
+    /* Responsive Rusty intro image */
+    #introLogo {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        max-width: 100vw;
+        max-height: 100vh;
+    }
+
+    /* Camera screen background */
+    #cameraScreen {
+        position: fixed;
         top: 0;
         left: 0;
         width: 100vw;
         height: 100vh;
         object-fit: cover;
-        z-index: -1;
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
     }
 
     /* Camera hotspot */
@@ -49,39 +85,27 @@
         color: white;
         font-size: 18px;
         text-align: center;
+        z-index: 4;
     }
 
-    /* Hidden camera input */
     #cameraInput {
         display: none;
-    }
-
-    /* Intro text */
-    .intro-text {
-        position: absolute;
-        top: 8vh;
-        width: 100%;
-        text-align: center;
-        color: white;
-        font-size: 26px;
-        padding: 0 20px;
-        text-shadow: 0 0 8px black;
     }
 </style>
 </head>
 
 <body>
 
-<!-- Background image -->
-<img src="copilot_image_1777179019874.jpeg" class="bg" alt="Chef Jeff Background">
+<!-- Intro screen -->
+<div id="introContainer">
+    <img id="introLogo" src="rusty_intro.jpeg" alt="Rusty Intro Logo">
+</div>
+
+<!-- Camera screen -->
+<img id="cameraScreen" src="copilot_image_1777179019874.jpeg" alt="Chef Jeff Camera Screen">
 
 <!-- Robot voice -->
 <audio id="robotVoice" src="robot_voice.mp3"></audio>
-
-<!-- Intro text -->
-<div class="intro-text">
-    Snap a photo of your food and I’ll help you make something with it
-</div>
 
 <!-- Camera hotspot -->
 <div class="camera-hotspot" id="cameraButton">
@@ -89,20 +113,26 @@
 </div>
 
 <!-- Hidden camera input -->
-<input 
-    type="file" 
-    id="cameraInput" 
-    accept="image/*" 
-    capture="environment"
-/>
+<input type="file" id="cameraInput" accept="image/*" capture="environment"/>
 
 <script>
-/* One tap anywhere plays robot voice */
+/* Play robot voice on first tap */
 document.addEventListener("click", () => {
     const audio = document.getElementById("robotVoice");
     audio.currentTime = 0;
     audio.play();
 }, { once: true });
+
+/* Fade-out intro after 15 seconds */
+setTimeout(() => {
+    const intro = document.getElementById("introContainer");
+    intro.style.animation = "fadeOut 1.5s ease-in-out forwards";
+
+    setTimeout(() => {
+        document.getElementById("cameraScreen").style.opacity = "1";
+    }, 1500);
+
+}, 15000);
 
 /* Camera hotspot triggers camera */
 document.getElementById("cameraButton").addEventListener("click", () => {
@@ -114,7 +144,6 @@ document.getElementById("cameraInput").addEventListener("change", async (event) 
     const file = event.target.files[0];
     if (!file) return;
 
-    // Send to backend
     const formData = new FormData();
     formData.append("image", file);
 
@@ -124,8 +153,6 @@ document.getElementById("cameraInput").addEventListener("change", async (event) 
     });
 
     const result = await response.json();
-
-    // Redirect to recipes page
     window.location.href = `/recipes?items=${encodeURIComponent(JSON.stringify(result.ingredients))}`;
 });
 </script>
