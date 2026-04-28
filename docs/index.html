@@ -63,36 +63,18 @@
         opacity: 0;
         transition: opacity 1s ease-in-out;
         z-index: 4;
-
         bottom: calc(8vh + 160px + 144px);
-
         text-shadow:
             0 0 8px rgba(255, 255, 255, 0.8),
             0 0 16px rgba(255, 255, 255, 0.6),
             0 0 24px rgba(255, 255, 255, 0.4);
-
         animation: glowPulse 3s ease-in-out infinite;
     }
 
     @keyframes glowPulse {
-        0% {
-            text-shadow:
-                0 0 6px rgba(255, 255, 255, 0.7),
-                0 0 12px rgba(255, 255, 255, 0.5),
-                0 0 18px rgba(255, 255, 255, 0.3);
-        }
-        50% {
-            text-shadow:
-                0 0 12px rgba(255, 255, 255, 1),
-                0 0 24px rgba(255, 255, 255, 0.8),
-                0 0 36px rgba(255, 255, 255, 0.6);
-        }
-        100% {
-            text-shadow:
-                0 0 6px rgba(255, 255, 255, 0.7),
-                0 0 12px rgba(255, 255, 255, 0.5),
-                0 0 18px rgba(255, 255, 255, 0.3);
-        }
+        0% { text-shadow: 0 0 6px rgba(255,255,255,0.7); }
+        50% { text-shadow: 0 0 24px rgba(255,255,255,1); }
+        100% { text-shadow: 0 0 6px rgba(255,255,255,0.7); }
     }
 
     .camera-hotspot {
@@ -156,19 +138,61 @@
 
 <input type="file" id="cameraInput" accept="image/*" capture="environment"/>
 
-<script>
+<script type="module">
 /* -------------------------------------------------
-   UNLOCK AUDIO ON FIRST TAP (fixes autoplay issues)
+   GEMINI CLIENT (NO SERVER)
+---------------------------------------------------*/
+import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI("YOUR_GEMINI_API_KEY");
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+async function analyzeFoodImage(file) {
+    const base64 = await toBase64(file);
+
+    // STEP 1 — Detect ingredients
+    const visionResponse = await model.generateContent([
+        {
+            inlineData: {
+                data: base64,
+                mimeType: file.type
+            }
+        },
+        "Identify all food ingredients in this image. Respond ONLY with a JSON array of ingredient names."
+    ]);
+
+    const ingredients = JSON.parse(visionResponse.response.text().trim());
+
+    // STEP 2 — Generate recipes
+    const recipeResponse = await model.generateContent(
+        `Using these ingredients: ${ingredients.join(", ")},
+         give me 5 recipes I can make.
+         Respond ONLY in JSON as an array of objects with: title, ingredients, steps.`
+    );
+
+    const recipes = JSON.parse(recipeResponse.response.text().trim());
+
+    return { ingredients, recipes };
+}
+
+function toBase64(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(",")[1]);
+        reader.readAsDataURL(file);
+    });
+}
+
+/* -------------------------------------------------
+   UNLOCK AUDIO ON FIRST TAP
 ---------------------------------------------------*/
 document.addEventListener("click", () => {
     const robot = document.getElementById("robotVoice");
     const rustyAudio = document.getElementById("rustyIntroVoice");
 
-    // Unlock both audio files
     robot.play().catch(() => {});
     rustyAudio.play().catch(() => {});
 
-    // Pause robot voice immediately — we only want Rusty intro now
     robot.pause();
     robot.currentTime = 0;
 
@@ -177,27 +201,22 @@ document.addEventListener("click", () => {
 /* -----------------------------
    SCREEN TRANSITION SEQUENCE
 ------------------------------*/
-
-// 1️⃣ Show your logo immediately
 const yourLogo = document.getElementById("yourLogoContainer");
 yourLogo.style.opacity = "1";
 
-// After 4.5 seconds → fade out your logo, fade in Rusty
 setTimeout(() => {
     yourLogo.style.opacity = "0";
 
     const rusty = document.getElementById("introContainer");
     rusty.style.opacity = "1";
 
-    // 🔊 Play Rusty intro MP3 (now allowed after first tap)
     const rustyAudio = document.getElementById("rustyIntroVoice");
     rustyAudio.volume = 1;
     rustyAudio.currentTime = 0;
     rustyAudio.play().catch(() => {});
 
-    // ⏳ Fade out after 10 seconds
     setTimeout(() => {
-        let fadeDuration = 1000; // 1 second fade
+        let fadeDuration = 1000;
         let fadeSteps = 20;
         let stepTime = fadeDuration / fadeSteps;
         let volumeStep = rustyAudio.volume / fadeSteps;
@@ -215,11 +234,9 @@ setTimeout(() => {
 
     }, 10000);
 
-    // After Rusty shows for 7.5 seconds → fade out Rusty
     setTimeout(() => {
         rusty.style.opacity = "0";
 
-        // After fade-out completes → show camera screen + UI
         setTimeout(() => {
             document.getElementById("cameraScreen").style.opacity = "1";
             document.getElementById("cameraButton").style.opacity = "1";
@@ -234,25 +251,22 @@ setTimeout(() => {
 
 }, 4500);
 
-// Camera hotspot triggers camera
+/* -------------------------------------------------
+   CAMERA BUTTON
+---------------------------------------------------*/
 document.getElementById("cameraButton").addEventListener("click", () => {
     document.getElementById("cameraInput").click();
 });
 
-// Handle photo selection
+/* -------------------------------------------------
+   HANDLE PHOTO → GEMINI → REDIRECT
+---------------------------------------------------*/
 document.getElementById("cameraInput").addEventListener("change", async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("image", file);
+    const result = await analyzeFoodImage(file);
 
-    const response = await fetch("/api/detect", {
-        method: "POST",
-        body: formData
-    });
-
-    const result = await response.json();
     window.location.href =
         `/recipes?items=${encodeURIComponent(JSON.stringify(result.ingredients))}`;
 });
