@@ -15,64 +15,14 @@ background:black;
 font-family:Arial;
 }
 
-/* ================= SPLASH ================= */
-#splash{
-position:fixed;
-inset:0;
-background:black;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-z-index:9999;
-opacity:1;
-}
-
-#splashLogo{
-transform:scale(1.2);
-opacity:1;
-transition:transform 3s ease;
-margin-bottom:40px;
-}
-
-#splashLogo img{
-width:60%;
-max-width:320px;
-}
-
-/* PROGRESS BAR */
-#loadingWrap{
-width:70%;
-max-width:280px;
-text-align:center;
-color:white;
-font-size:14px;
-}
-
-#loadingBar{
-width:100%;
-height:6px;
-background:rgba(255,255,255,0.15);
-border-radius:10px;
-overflow:hidden;
-margin-bottom:10px;
-}
-
-#loadingFill{
-height:100%;
-width:0%;
-background:white;
-transition:width 0.2s linear;
-}
-
-/* ================= INTRO ================= */
+/* ===== SCREENS ===== */
 .screen{
 position:fixed;
 inset:0;
 opacity:0;
 pointer-events:none;
 transition: opacity 800ms ease, transform 800ms ease;
-transform: scale(1.05);
+transform: scale(1.08);
 z-index:10;
 }
 
@@ -88,7 +38,7 @@ height:100%;
 object-fit:cover;
 }
 
-/* ================= CAMERA ================= */
+/* CAMERA */
 #cameraView{
 position:fixed;
 inset:0;
@@ -101,7 +51,7 @@ height:100%;
 object-fit:cover;
 }
 
-/* ================= UI ================= */
+/* UI */
 #ui{
 position:fixed;
 inset:0;
@@ -139,7 +89,7 @@ color:white;
 font-size:14px;
 }
 
-/* ================= PANEL ================= */
+/* PANEL */
 #panel{
 position:fixed;
 inset:0;
@@ -173,7 +123,7 @@ cursor:pointer;
 margin-top:20px;
 }
 
-/* ================= LOADING ================= */
+/* LOADING */
 #loading{
 position:fixed;
 inset:0;
@@ -205,21 +155,12 @@ to{transform:rotate(360deg)}
 
 <body>
 
-<!-- SPLASH -->
-<div id="splash">
-  <div id="splashLogo">
-    <img src="rusty_logo.jpeg">
-  </div>
-
-  <div id="loadingWrap">
-    <div id="loadingBar">
-      <div id="loadingFill"></div>
-    </div>
-    <div id="loadingText">Loading Chef AI... 0%</div>
-  </div>
+<!-- LOGO (3.5s) -->
+<div id="logo" class="screen active">
+<img src="rusty_logo.jpeg">
 </div>
 
-<!-- INTRO -->
+<!-- INTRO (4.5s) -->
 <div id="intro" class="screen">
 <img src="rusty_intro.jpeg">
 </div>
@@ -247,47 +188,28 @@ to{transform:rotate(360deg)}
 </div>
 
 <script>
-
-const splash = document.getElementById("splash");
-const splashLogo = document.getElementById("splashLogo");
-const loadingFill = document.getElementById("loadingFill");
-const loadingText = document.getElementById("loadingText");
-
-const intro = document.getElementById("intro");
 const video = document.getElementById("video");
 const panel = document.getElementById("panel");
+const loading = document.getElementById("loading");
 const statusText = document.getElementById("statusText");
 
-/* ================= UTIL ================= */
-function preload(src){
-return new Promise(res=>{
-const img = new Image();
-img.src = src;
-img.onload = res;
-});
+function vibrate(){if(navigator.vibrate) navigator.vibrate(80);}
+function speak(t){try{speechSynthesis.speak(new SpeechSynthesisUtterance(t));}catch(e){}}
+
+function showLoading(){loading.style.display="flex";}
+function hideLoading(){loading.style.display="none";}
+
+function openPanel(html){
+panel.innerHTML = html;
+panel.classList.add("active");
+vibrate();
 }
 
-function simulateProgress(){
-return new Promise(res=>{
-let p = 0;
-
-const interval = setInterval(()=>{
-p += Math.random()*10;
-
-if(p >= 100){
-p = 100;
-clearInterval(interval);
-res();
+function closePanel(){
+panel.classList.remove("active");
 }
 
-loadingFill.style.width = p + "%";
-loadingText.innerText = "Loading Chef AI... " + Math.floor(p) + "%";
-
-},140);
-});
-}
-
-/* ================= CAMERA ================= */
+/* CAMERA */
 async function startCamera(){
 try{
 const stream = await navigator.mediaDevices.getUserMedia({
@@ -295,24 +217,14 @@ video:{facingMode:"environment"}
 });
 video.srcObject = stream;
 statusText.innerText = "Ready to scan food";
-}catch(e){
+}catch(err){
 statusText.innerText = "Camera blocked or unavailable";
 }
 }
 
-/* ================= PANEL ================= */
-function openPanel(html){
-panel.innerHTML = html;
-panel.classList.add("active");
-}
-
-function closePanel(){
-panel.classList.remove("active");
-}
-
-/* ================= AI ================= */
+/* AI CALL (client demo) */
 async function callAI(prompt){
-document.getElementById("loading").style.display="flex";
+showLoading();
 
 try{
 const res = await fetch("https://api.openai.com/v1/responses",{
@@ -323,20 +235,21 @@ headers:{
 },
 body:JSON.stringify({
 model:"gpt-4.1-mini",
-input:[{
+input:[
+{
 role:"user",
 content:[{type:"input_text",text:prompt}]
-}]
+}
+]
 })
 });
 
 const data = await res.json();
-
 const text =
 data.output?.[0]?.content?.find(c => c.type === "output_text")?.text
 || "No response";
 
-document.getElementById("loading").style.display="none";
+hideLoading();
 
 openPanel(`
 <h2>🍳 Chef AI</h2>
@@ -344,89 +257,76 @@ openPanel(`
 <div class="smallBtn" onclick="closePanel()">Close</div>
 `);
 
-}catch(e){
-document.getElementById("loading").style.display="none";
+speak(text);
 
+}catch(e){
+hideLoading();
 openPanel(`
-<div class="card">AI Error</div>
+<div class="card">AI Error: check API key or network</div>
 <div class="smallBtn" onclick="closePanel()">Close</div>
 `);
 }
 }
 
-/* ================= BUTTONS ================= */
-document.getElementById("cameraBtn").onclick=()=>{
-callAI("Identify food and describe it like a chef.");
+/* BUTTONS */
+document.getElementById("cameraBtn").onclick = ()=>{
+callAI("Identify food in camera view and describe it like a chef.");
 };
 
-document.getElementById("factsBtn").onclick=()=>{
+/* FACTS */
+document.getElementById("factsBtn").onclick = ()=>{
 openPanel(`
-<h2>🥩 Meats & Seasonings</h2>
+<h2>🥩 Meats & Seasonings Guide</h2>
 
 <div class="card">
 <h3>🐔 Chicken</h3>
-<p>Garlic → savory depth</p>
-<p>Lemon → brightness</p>
-<p>Paprika → warmth</p>
+<p>Garlic → builds savory base flavor</p>
+<p>Lemon → balances fat & adds brightness</p>
+<p>Paprika → adds smoky warmth & color</p>
 </div>
 
 <div class="card">
 <h3>🐖 Pork</h3>
-<p>Brown sugar → caramelization</p>
-<p>Mustard → balance fat</p>
-<p>Smoked paprika → BBQ flavor</p>
+<p>Brown sugar → caramelization & crust</p>
+<p>Mustard → cuts richness</p>
+<p>Smoked paprika → BBQ depth</p>
 </div>
 
 <div class="card">
 <h3>🐄 Beef</h3>
-<p>Salt → crust enhancement</p>
-<p>Black pepper → sharpness</p>
-<p>Onion powder → depth</p>
+<p>Salt → enhances natural umami crust</p>
+<p>Black pepper → sharpens flavor profile</p>
+<p>Onion powder → deep savory base</p>
 </div>
 
 <div class="smallBtn" onclick="closePanel()">Back</div>
 `);
 };
 
-document.getElementById("recipeBtn").onclick=()=>{
-callAI("Create a full restaurant-quality recipe with steps, ingredients, and tips.");
+/* RECIPE */
+document.getElementById("recipeBtn").onclick = ()=>{
+callAI(`
+Create a full restaurant-quality recipe.
+
+Include:
+- Dish name
+- Ingredients with measurements
+- Step-by-step instructions
+- Cook time + difficulty
+- Chef plating tips
+`);
 };
 
-/* ================= BOOT ================= */
-async function boot(){
-
-/* preload assets */
-await Promise.all([
-preload("rusty_logo.jpeg"),
-preload("rusty_intro.jpeg")
-]);
-
-/* logo animation */
+/* INTRO FLOW */
 setTimeout(()=>{
-splashLogo.style.transform = "scale(1)";
-},200);
+document.getElementById("logo").classList.remove("active");
+document.getElementById("intro").classList.add("active");
+},3500);
 
-/* progress */
-await simulateProgress();
-
-/* fade splash */
-splash.style.opacity = "0";
-
-/* intro */
 setTimeout(()=>{
-intro.classList.add("active");
-splash.style.display = "none";
-},700);
-
-/* camera */
-setTimeout(()=>{
-intro.style.display = "none";
+document.getElementById("intro").style.display="none";
 startCamera();
-},3000);
-
-}
-
-boot();
+},8000);
 
 </script>
 
