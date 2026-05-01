@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chef Jeff V10</title>
+<title>Chef Jeff V11</title>
 
 <style>
 html,body{
@@ -61,7 +61,7 @@ font-weight:700;
 margin-bottom:12px;
 }
 
-/* GLASS BUTTONS */
+/* ===== VIBRANT MODERN BUTTONS ===== */
 .btn{
 display:flex;
 align-items:center;
@@ -70,40 +70,79 @@ gap:14px;
 padding:18px;
 margin-top:14px;
 
-border-radius:20px;
+border-radius:22px;
 
-background:linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.05));
-border:1px solid rgba(255,255,255,0.18);
-backdrop-filter: blur(20px);
+background:linear-gradient(135deg,rgba(255,255,255,0.18),rgba(255,255,255,0.06));
+border:1px solid rgba(255,255,255,0.22);
+backdrop-filter: blur(22px);
 
-box-shadow:0 12px 35px rgba(0,0,0,0.45);
+box-shadow:
+0 15px 40px rgba(0,0,0,0.5),
+0 0 25px rgba(255,255,255,0.06),
+inset 0 1px 0 rgba(255,255,255,0.18);
 
 cursor:pointer;
-transition:0.2s ease;
+transition:0.25s ease;
 
 position:relative;
 overflow:hidden;
 }
 
-.btn:active{transform:scale(0.96);}
-
-.btnIcon{
-font-size:20px;
+.btn::before{
+content:"";
+position:absolute;
+inset:-2px;
+border-radius:24px;
+background:linear-gradient(120deg,#ff7a18,#af002d,#4facfe,#00f2fe);
+opacity:0.25;
+filter:blur(10px);
+z-index:0;
 }
 
+.btn:hover{
+transform:translateY(-3px) scale(1.01);
+box-shadow:
+0 20px 60px rgba(0,0,0,0.6),
+0 0 35px rgba(255,255,255,0.1);
+}
+
+.btn:active{
+transform:scale(0.97);
+}
+
+/* ICON */
+.btnIcon{
+font-size:22px;
+width:42px;
+height:42px;
+border-radius:14px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:rgba(255,255,255,0.12);
+border:1px solid rgba(255,255,255,0.18);
+
+box-shadow:inset 0 1px 0 rgba(255,255,255,0.15);
+z-index:1;
+}
+
+/* TEXT */
 .btnText{
 display:flex;
 flex-direction:column;
+z-index:1;
 }
 
 .btnTitle{
-font-size:15px;
-font-weight:600;
+font-size:16px;
+font-weight:700;
 }
 
 .btnSub{
 font-size:11px;
-opacity:0.6;
+opacity:0.65;
 }
 
 /* CARDS */
@@ -156,6 +195,12 @@ cursor:pointer;
 box-shadow:0 10px 25px rgba(0,0,0,0.5);
 }
 
+/* PANTRY CHECKBOX FIX */
+input[type="checkbox"]{
+transform:scale(1.2);
+margin-right:8px;
+}
+
 </style>
 </head>
 
@@ -184,7 +229,7 @@ box-shadow:0 10px 25px rgba(0,0,0,0.5);
 <div class="btnIcon">🍳</div>
 <div class="btnText">
 <div class="btnTitle">Recipes</div>
-<div class="btnSub">Browse meals</div>
+<div class="btnSub">Discover meals instantly</div>
 </div>
 </div>
 
@@ -192,7 +237,7 @@ box-shadow:0 10px 25px rgba(0,0,0,0.5);
 <div class="btnIcon">🧠</div>
 <div class="btnText">
 <div class="btnTitle">Smart Cook</div>
-<div class="btnSub">Best matches from pantry</div>
+<div class="btnSub">Best match from pantry</div>
 </div>
 </div>
 
@@ -200,7 +245,7 @@ box-shadow:0 10px 25px rgba(0,0,0,0.5);
 <div class="btnIcon">🧺</div>
 <div class="btnText">
 <div class="btnTitle">Pantry</div>
-<div class="btnSub">Manage ingredients</div>
+<div class="btnSub">Your ingredients database</div>
 </div>
 </div>
 
