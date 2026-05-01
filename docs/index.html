@@ -25,11 +25,13 @@
         height: 100vh;
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
         background: black;
         opacity: 0;
         z-index: 5;
         transition: opacity 1s ease-in-out;
+        padding: 30px;
+        overflow-y: auto;
     }
 
     #yourLogoContainer img,
@@ -80,10 +82,6 @@
     .camera-hotspot {
         position: absolute;
         bottom: 8vh;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 160px;
-        height: 160px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.12);
         backdrop-filter: blur(6px);
@@ -92,11 +90,26 @@
         justify-content: center;
         align-items: center;
         color: white;
-        font-size: 18px;
         text-align: center;
         z-index: 4;
         opacity: 0;
         transition: opacity 1s ease-in-out;
+    }
+
+    #cameraButton {
+        width: 160px;
+        height: 160px;
+        font-size: 18px;
+        left: 75%;
+        transform: translateX(-50%);
+    }
+
+    #factsButton {
+        width: 120px;
+        height: 120px;
+        font-size: 16px;
+        left: 25%;
+        transform: translateX(-50%);
     }
 
     #cameraInput {
@@ -131,12 +144,65 @@
 <!-- Rusty intro voice -->
 <audio id="rustyIntroVoice" src="rusty_intro.mp3"></audio>
 
-<!-- Camera button -->
-<div class="camera-hotspot" id="cameraButton">
-    📷 Camera
-</div>
+<!-- Facts Button -->
+<div class="camera-hotspot" id="factsButton">📘 Facts</div>
+
+<!-- Camera Button -->
+<div class="camera-hotspot" id="cameraButton">📷 Camera</div>
 
 <input type="file" id="cameraInput" accept="image/*" capture="environment"/>
+
+<!-- Facts Page -->
+<div id="factsPage" class="fullScreen" style="opacity:0; z-index:-1;">
+
+    <h1 style="color:white; text-align:center; margin-bottom:20px;">Seasoning Facts</h1>
+
+    <!-- Pork -->
+    <h2 style="color:#ffcc66;">🐖 Pork</h2>
+    <p style="color:white; line-height:1.5;">
+        <b>1. Sweet + Savory Works Best:</b> Pork has a natural sweetness, so brown sugar, honey, and paprika caramelize beautifully.<br><br>
+        <b>2. Mustard Cuts Through Fat:</b> Mustard powder or Dijon adds tang that balances pork’s richness.<br><br>
+        <b>3. Rosemary & Thyme Boost Aroma:</b> These herbs complement pork’s mild flavor without overpowering it.<br><br>
+        <b>4. Garlic Deepens Umami:</b> Pork absorbs garlic extremely well, enhancing savory depth.<br><br>
+        <b>5. Smoked Spices Add BBQ Character:</b> Smoked paprika or chipotle gives pork a slow‑cooked, smoky flavor even without a grill.
+    </p>
+
+    <!-- Beef -->
+    <h2 style="color:#ff6666;">🐄 Beef</h2>
+    <p style="color:white; line-height:1.5;">
+        <b>1. Black Pepper Is Essential:</b> Pepper enhances beef’s natural umami more than any other seasoning.<br><br>
+        <b>2. Garlic + Onion Powder Build Depth:</b> These create a strong savory base that stands up to beef’s richness.<br><br>
+        <b>3. Smoked Paprika Adds Warmth:</b> It gives beef a smoky, grilled flavor even when pan‑seared.<br><br>
+        <b>4. Chili Powder & Cumin Add Earthiness:</b> These spices pair perfectly with beef’s bold flavor profile.<br><br>
+        <b>5. Salt Unlocks Juiciness:</b> Proper salting draws moisture to the surface, helping form a flavorful crust.
+    </p>
+
+    <!-- Chicken -->
+    <h2 style="color:#66ccff;">🐔 Chicken</h2>
+    <p style="color:white; line-height:1.5;">
+        <b>1. Lemon Pepper Brightens Flavor:</b> Chicken is mild, so citrus adds freshness and lift.<br><br>
+        <b>2. Garlic Works on Every Cut:</b> Chicken absorbs garlic quickly, making it ideal for marinades.<br><br>
+        <b>3. Oregano & Parsley Add Herbal Notes:</b> These herbs give chicken a Mediterranean flavor profile.<br><br>
+        <b>4. Paprika Adds Color & Sweetness:</b> It makes chicken look golden while adding mild flavor.<br><br>
+        <b>5. Cayenne Adds Adjustable Heat:</b> A pinch wakes up chicken dishes without overwhelming them.
+    </p>
+
+    <div id="closeFacts" style="
+        margin-top:40px;
+        width:200px;
+        padding:15px;
+        text-align:center;
+        background:#222;
+        color:white;
+        border:2px solid white;
+        border-radius:12px;
+        margin-left:auto;
+        margin-right:auto;
+        font-size:20px;
+    ">
+        Close
+    </div>
+</div>
 
 <script type="module">
 /* -------------------------------------------------
@@ -150,7 +216,6 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 async function analyzeFoodImage(file) {
     const base64 = await toBase64(file);
 
-    // STEP 1 — Detect ingredients
     const visionResponse = await model.generateContent([
         {
             inlineData: {
@@ -163,7 +228,6 @@ async function analyzeFoodImage(file) {
 
     const ingredients = JSON.parse(visionResponse.response.text().trim());
 
-    // STEP 2 — Generate recipes
     const recipeResponse = await model.generateContent(
         `Using these ingredients: ${ingredients.join(", ")},
          give me 5 recipes I can make.
@@ -240,6 +304,7 @@ setTimeout(() => {
         setTimeout(() => {
             document.getElementById("cameraScreen").style.opacity = "1";
             document.getElementById("cameraButton").style.opacity = "1";
+            document.getElementById("factsButton").style.opacity = "1";
             document.getElementById("cameraText").style.opacity = "1";
 
             rusty.style.zIndex = "-1";
@@ -269,6 +334,27 @@ document.getElementById("cameraInput").addEventListener("change", async (event) 
 
     window.location.href =
         `/recipes?items=${encodeURIComponent(JSON.stringify(result.ingredients))}`;
+});
+
+/* -------------------------------------------------
+   FACTS PAGE OPEN/CLOSE
+---------------------------------------------------*/
+const factsPage = document.getElementById("factsPage");
+const factsButton = document.getElementById("factsButton");
+const closeFacts = document.getElementById("closeFacts");
+
+factsButton.addEventListener("click", () => {
+    factsPage.style.zIndex = "10";
+    setTimeout(() => {
+        factsPage.style.opacity = "1";
+    }, 10);
+});
+
+closeFacts.addEventListener("click", () => {
+    factsPage.style.opacity = "0";
+    setTimeout(() => {
+        factsPage.style.zIndex = "-1";
+    }, 1000);
 });
 </script>
 
