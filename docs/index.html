@@ -177,7 +177,7 @@ color:white;
   </div>
 
   <div class="header">🤖 Rusty the Robot Chef</div>
-  <div class="card">AI Cooking System v4 (Real Recipes)</div>
+  <div class="card">AI Cooking System v5 (No Repeats)</div>
 
   <div class="dock">
     <div class="dockBtn" onclick="openRecipes()">🍳<span>Recipes</span></div>
@@ -209,7 +209,7 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 document.getElementById("home").classList.add("active");
 }
 
-/* FIXED BUTTONS */
+/* BUTTON FIX */
 function openPantry(){ loadPantry(); }
 function openRecipes(){ findRecipes(); }
 function openSmart(){ loadSmart(); }
@@ -217,98 +217,50 @@ function openSmart(){ loadSmart(); }
 /* PANTRY */
 const pantryItems = ["Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic","Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Lettuce","Cucumber","Bell peppers","Mushrooms","Shrimp","Salmon","Tuna","Turkey","Steak","Pork chops","Sausage","Beans","Corn","Peas","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Honey","Lemon","Lime","Ginger","Chili flakes","Paprika","Oregano","Basil","Thyme","Cinnamon","Nutmeg","Curry powder","Rice noodles","Tortilla","Bread","Cream","Yogurt","Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Pineapple","Coconut milk","Chicken broth","Beef broth","Fish sauce","Mustard","Ketchup","Mayonnaise","Vinegar","Green beans","Zucchini","Eggplant","Cauliflower","Cabbage","Chives","Parsley","Dill","Walnuts","Almonds","Oats","Chocolate","Coffee","Tea","Maple syrup","Brown sugar","Tofu","Quinoa","Lentils","Chickpeas","Hot sauce","BBQ sauce","Teriyaki sauce","Worcestershire sauce","Sesame oil","Peanut butter","Jam","Crackers","Granola","Marshmallows"];
 
-/* REAL RECIPE DB (short sample set, expandable to 200+) */
+/* REAL RECIPES */
 const recipesDB = [
-{
-name:"Grilled Chicken Breast",
-ingredients:["Chicken breast","Olive oil","Salt","Pepper","Garlic"],
-steps:["Season chicken","Preheat pan","Cook 6–7 min per side","Rest meat","Serve"],
-time:20
-},
-{
-name:"Chicken Alfredo Pasta",
-ingredients:["Pasta","Chicken breast","Butter","Cream","Parmesan","Garlic"],
-steps:["Boil pasta","Cook chicken","Make sauce","Combine","Serve"],
-time:30
-},
-{
-name:"Beef Tacos",
-ingredients:["Ground beef","Tortilla","Onion","Taco seasoning","Cheese"],
-steps:["Brown beef","Add seasoning","Warm tortillas","Assemble","Serve"],
-time:25
-},
-{
-name:"Spaghetti Bolognese",
-ingredients:["Pasta","Ground beef","Tomato sauce","Onion","Garlic"],
-steps:["Cook pasta","Brown beef","Simmer sauce","Mix","Serve"],
-time:40
-},
-{
-name:"Bacon and Eggs",
-ingredients:["Bacon","Eggs","Salt","Pepper"],
-steps:["Cook bacon","Fry eggs","Season","Serve"],
-time:10
-}
+{name:"Grilled Chicken Breast",ingredients:["Chicken breast","Olive oil","Salt","Pepper","Garlic"],steps:["Season chicken","Cook in pan","Flip until done","Rest","Serve"],time:20},
+{name:"Chicken Alfredo Pasta",ingredients:["Pasta","Chicken breast","Butter","Cream","Parmesan","Garlic"],steps:["Boil pasta","Cook chicken","Make sauce","Combine","Serve"],time:30},
+{name:"Beef Tacos",ingredients:["Ground beef","Tortilla","Onion","Taco seasoning","Cheese"],steps:["Cook beef","Add seasoning","Warm tortillas","Assemble","Serve"],time:25},
+{name:"Spaghetti Bolognese",ingredients:["Pasta","Ground beef","Tomato sauce","Onion","Garlic"],steps:["Boil pasta","Cook beef","Simmer sauce","Mix","Serve"],time:40},
+{name:"Bacon and Eggs",ingredients:["Bacon","Eggs","Salt","Pepper"],steps:["Cook bacon","Fry eggs","Season","Serve"],time:10}
 ];
 
-/* ENGINE */
-function makeRecipe(i){
-
-let base = recipesDB[i % recipesDB.length];
-
-let match = base.ingredients.filter(x=>selected.includes(x)).length;
-
-return {
-name:base.name,
-ingredients:base.ingredients,
-steps:base.steps,
-time:base.time,
-score:match/base.ingredients.length
-};
-}
-
-/* PANTRY */
-function loadPantry(){
-
-let html = `<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div><div class="header">🧺 Pantry</div>`;
-
-pantryItems.forEach(item=>{
-let on = selected.includes(item);
-html += `<div class="item ${on?'selected':''}" onclick="toggleItem('${item}')">
-<span>${item}</span><span>${on?'✔':''}</span>
-</div>`;
-});
-
-html += `<div class="btn" onclick="findRecipes()">🍳 Generate Recipes</div><div class="back" onclick="goHome()">⬅ Home</div>`;
-document.getElementById("pantry").innerHTML = html;
-show("pantry");
-}
-
-function toggleItem(item){
-selected = selected.includes(item)
-? selected.filter(i=>i!==item)
-: [...selected,item];
-
-localStorage.setItem("pantry",JSON.stringify(selected));
-loadPantry();
-}
-
-/* RECIPES */
+/* 🔥 NO REPEAT ENGINE */
 function findRecipes(){
 
-let recipes = [];
+let pool = [...recipesDB];
 
-for(let i=0;i<50;i++){
-recipes.push(makeRecipe(i));
+// shuffle
+for(let i=pool.length-1;i>0;i--){
+let j = Math.floor(Math.random()*(i+1));
+[pool[i],pool[j]]=[pool[j],pool[i]];
 }
 
+// map results
+let recipes = pool.map(r=>{
+
+let match = r.ingredients.filter(x=>selected.includes(x)).length;
+
+return {
+name:r.name,
+ingredients:r.ingredients,
+steps:r.steps,
+time:r.time,
+score:match/r.ingredients.length
+};
+});
+
 recipes.sort((a,b)=>b.score-a.score);
+
 window.generatedRecipes = recipes;
 
-let html = `<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div><div class="header">🍳 Recipes</div>`;
+let html = `<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
+<div class="header">🍳 What Can I Cook?</div>`;
 
 recipes.forEach(r=>{
-html += `<div class="card" onclick="openRecipe('${r.name}')">
+html += `
+<div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>
 ${(r.score*100).toFixed(0)}% match<br>
 ${r.time} min
@@ -344,14 +296,41 @@ document.getElementById("detail").innerHTML = html;
 show("detail");
 }
 
+/* PANTRY */
+function loadPantry(){
+let html = `<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
+<div class="header">🧺 Pantry</div>`;
+
+pantryItems.forEach(item=>{
+let on = selected.includes(item);
+html += `<div class="item ${on?'selected':''}" onclick="toggleItem('${item}')">
+<span>${item}</span><span>${on?'✔':''}</span>
+</div>`;
+});
+
+html += `<div class="btn" onclick="findRecipes()">🍳 Generate Recipes</div>
+<div class="back" onclick="goHome()">⬅ Home</div>`;
+
+document.getElementById("pantry").innerHTML = html;
+show("pantry");
+}
+
+function toggleItem(item){
+selected = selected.includes(item)
+? selected.filter(i=>i!==item)
+: [...selected,item];
+
+localStorage.setItem("pantry",JSON.stringify(selected));
+loadPantry();
+}
+
 /* SMART */
 function loadSmart(){
 document.getElementById("smart").innerHTML = `
 <div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
 <div class="header">🧠 AI Chef Mode</div>
-<div class="card">Real recipe engine active.</div>
-<div class="back" onclick="goHome()">⬅ Home</div>
-`;
+<div class="card">No-repeat recipe engine active.</div>
+<div class="back" onclick="goHome()">⬅ Home</div>`;
 show("smart");
 }
 
