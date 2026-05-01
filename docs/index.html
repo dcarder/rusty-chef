@@ -42,6 +42,15 @@ font-weight:700;
 margin-bottom:10px;
 }
 
+/* CARD */
+.card{
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.12);
+border-radius:14px;
+padding:12px;
+margin:10px 0;
+}
+
 /* ITEM */
 .item{
 display:flex;
@@ -72,15 +81,6 @@ font-weight:700;
 cursor:pointer;
 }
 
-/* CARD */
-.card{
-background:rgba(255,255,255,0.06);
-border:1px solid rgba(255,255,255,0.12);
-border-radius:14px;
-padding:12px;
-margin:10px 0;
-}
-
 /* BACK */
 .back{
 margin-top:10px;
@@ -91,9 +91,40 @@ text-align:center;
 cursor:pointer;
 }
 
-/* SCROLL FIX */
-.page{
--webkit-overflow-scrolling:touch;
+/* DOCK HOME UI */
+.dock{
+position:fixed;
+bottom:90px;
+left:0;
+right:0;
+display:flex;
+justify-content:center;
+gap:22px;
+}
+
+.dockBtn{
+width:85px;
+height:85px;
+border-radius:50%;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+background:rgba(255,255,255,0.1);
+border:1px solid rgba(255,255,255,0.2);
+backdrop-filter:blur(15px);
+cursor:pointer;
+}
+
+.dockBtn.large{
+width:110px;
+height:110px;
+}
+
+.dockBtn span{
+font-size:10px;
+margin-top:6px;
+opacity:0.7;
 }
 
 </style>
@@ -103,62 +134,67 @@ cursor:pointer;
 
 <div id="app">
 
+<!-- HOME (3 BUTTON SCREEN) -->
+<div id="home" class="page active">
+<div class="header">🤖 Rusty the Robot Chef</div>
+
+<div class="card">🧂 The Salty Chef’s help is ready</div>
+
+<div class="dock">
+  <div class="dockBtn" onclick="openRecipes()">🍳<span>Recipes</span></div>
+  <div class="dockBtn large" onclick="openSmart()">🧠<span>Smart Cook</span></div>
+  <div class="dockBtn" onclick="openPantry()">🧺<span>Pantry</span></div>
+</div>
+
+</div>
+
 <!-- PANTRY -->
-<div id="pantry" class="page active"></div>
+<div id="pantry" class="page"></div>
 
 <!-- RESULTS -->
 <div id="results" class="page"></div>
 
-<!-- RECIPE DETAIL -->
+<!-- DETAIL -->
 <div id="detail" class="page"></div>
 
 </div>
 
 <script>
 
+/* ======================
+   NAV RESET FIX (IMPORTANT)
+====================== */
+
+function goHome(){
+
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active");
+});
+
+document.getElementById("home").classList.add("active");
+}
+
+/* ======================
+   PANTRY DATA
+====================== */
+
 let selected = JSON.parse(localStorage.getItem("pantry") || "[]");
 
-/* =========================
-   PANTRY V4 (70+ ITEMS)
-========================= */
+const pantryItems = [
+"Chicken breast","Ground beef","Bacon","Eggs","Sausage","Pork chops",
+"Potatoes","Onions","Garlic","Carrots","Broccoli","Spinach",
+"Rice","Pasta","Cheese","Milk","Butter","Tomatoes","Beans"
+];
+
+/* ======================
+   LOAD PANTRY
+====================== */
 
 function loadPantry(){
 
-let items = [
-/* MEATS */
-"Chicken breast","Ground beef","Bacon","Eggs","Sausage","Pork chops","Turkey","Steak","Ham","Shrimp","Salmon",
+let html = `<div class="header">🧺 Pantry</div>`;
 
-/* VEGGIES */
-"Potatoes","Onions","Garlic","Carrots","Broccoli","Spinach","Tomatoes","Lettuce","Celery","Bell peppers","Cucumbers","Mushrooms","Zucchini","Corn","Green beans","Cabbage","Sweet potatoes","Jalapeños","Avocado",
-
-/* FRUITS */
-"Apples","Bananas","Oranges","Lemons","Limes","Strawberries","Blueberries","Grapes","Pineapple","Peaches",
-
-/* DAIRY */
-"Milk","Butter","Cheese","Yogurt","Sour cream","Cream cheese","Heavy cream","Parmesan","Half & half",
-
-/* STARCHES */
-"Rice","Pasta","Bread","Tortillas","Oats","Flour","Cereal","Crackers","Potato chips",
-
-/* CANNED */
-"Canned beans","Canned tomatoes","Canned tuna","Canned soup","Broth","Peanut butter","Jam","Honey",
-
-/* SPICES */
-"Salt","Black pepper","Garlic powder","Onion powder","Paprika","Cumin","Oregano","Thyme","Cayenne","Chili powder","Italian seasoning","Cinnamon","Red pepper flakes","Seasoned salt",
-
-/* SAUCES */
-"Ketchup","Mustard","Mayonnaise","Soy sauce","BBQ sauce","Hot sauce","Ranch","Worcestershire","Salad dressing","Teriyaki sauce",
-
-/* OILS / BAKING */
-"Olive oil","Vegetable oil","Vinegar","Brown sugar","White sugar","Baking powder","Baking soda"
-];
-
-let html = `
-<div class="header">🧺 Pantry</div>
-<p>Select ingredients you have:</p>
-`;
-
-items.forEach(item=>{
+pantryItems.forEach(item=>{
 let on = selected.includes(item);
 
 html += `
@@ -169,19 +205,19 @@ html += `
 `;
 });
 
-/* BUTTONS */
 html += `
-<div class="btn" onclick="show('home')">⬅ Back to Home</div>
 <div class="btn" onclick="findRecipes()">🍳 What can I cook?</div>
+<div class="back" onclick="goHome()">⬅ Back to Home</div>
 `;
 
 document.getElementById("pantry").innerHTML = html;
+
 show("pantry");
 }
 
-/* =========================
-   TOGGLE ITEMS
-========================= */
+/* ======================
+   TOGGLE INGREDIENTS
+====================== */
 
 function toggleItem(item){
 
@@ -195,9 +231,9 @@ localStorage.setItem("pantry", JSON.stringify(selected));
 loadPantry();
 }
 
-/* =========================
-   RECIPES DATABASE
-========================= */
+/* ======================
+   RECIPES
+====================== */
 
 const recipes = [
 {
@@ -236,14 +272,14 @@ steps:[
 "Add garlic",
 "Add vegetables",
 "Stir fry",
-"Serve over rice"
+"Serve"
 ]
 }
 ];
 
-/* =========================
+/* ======================
    MATCH ENGINE
-========================= */
+====================== */
 
 function findRecipes(){
 
@@ -267,13 +303,12 @@ Time: ${r.time} min
 html += `<div class="back" onclick="loadPantry()">⬅ Back</div>`;
 
 document.getElementById("results").innerHTML = html;
-
 show("results");
 }
 
-/* =========================
+/* ======================
    RECIPE DETAIL
-========================= */
+====================== */
 
 function openRecipe(name){
 
@@ -294,17 +329,16 @@ ${r.ingredients.join("<br>")}
 ${r.steps.map(s=>"• "+s).join("<br>")}
 </div>
 
-<div class="back" onclick="findRecipes()">⬅ Back to results</div>
+<div class="back" onclick="findRecipes()">⬅ Back</div>
 `;
 
 document.getElementById("detail").innerHTML = html;
-
 show("detail");
 }
 
-/* =========================
+/* ======================
    NAV
-========================= */
+====================== */
 
 function show(page){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
