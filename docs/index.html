@@ -11,24 +11,19 @@ background:black;
 font-family:Arial;
 }
 
-/* GLOBAL SCREEN SYSTEM (PRO TRANSITIONS) */
+/* =========================
+   APP ARCHITECTURE (STATE BASED)
+========================= */
 .screen{
 position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
+inset:0;
 opacity:0;
-transform:scale(1.05);
-filter:blur(10px);
 pointer-events:none;
-transition:opacity 900ms ease, transform 900ms ease, filter 900ms ease;
+transition:opacity 600ms ease;
 }
 
 .screen.active{
 opacity:1;
-transform:scale(1);
-filter:blur(0);
 pointer-events:auto;
 z-index:10;
 }
@@ -39,22 +34,49 @@ height:100%;
 object-fit:contain;
 }
 
-/* CAMERA LAYER */
+/* CAMERA BACKGROUND */
 #cameraScreen{
 position:fixed;
-width:100%;
-height:100%;
+inset:0;
 object-fit:cover;
-opacity:0;
-transition:opacity 900ms ease;
 z-index:1;
+opacity:0;
+transition:opacity 600ms ease;
 }
 
 #cameraScreen.active{
 opacity:1;
 }
 
-/* UI TEXT */
+/* UI LAYER (ALWAYS ON TOP) */
+#uiLayer{
+position:fixed;
+inset:0;
+z-index:1000;
+pointer-events:none;
+}
+
+/* BUTTONS */
+.button{
+pointer-events:auto;
+position:absolute;
+bottom:40px;
+width:140px;
+height:140px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.3);
+color:white;
+font-size:18px;
+}
+
+#cameraButton{right:30px;}
+#factsButton{left:30px;}
+
 #cameraText{
 position:absolute;
 bottom:220px;
@@ -62,41 +84,26 @@ width:100%;
 text-align:center;
 color:white;
 font-size:20px;
-opacity:0;
-transform:translateY(10px);
-transition:all 800ms ease;
-z-index:5;
 }
 
-#cameraText.active{
-opacity:1;
-transform:translateY(0);
-}
-
-/* BUTTONS (PRO FLOAT) */
-.camera-hotspot{
-position:absolute;
-bottom:60px;
-padding:28px;
-border-radius:50%;
-background:rgba(255,255,255,0.12);
-backdrop-filter:blur(10px);
-border:1px solid rgba(255,255,255,0.25);
+/* FACTS PANEL */
+#factsPage{
+position:fixed;
+inset:0;
+background:black;
 color:white;
-font-size:18px;
+padding:30px;
 opacity:0;
-transform:translateY(20px) scale(0.9);
-transition:all 700ms cubic-bezier(.2,.8,.2,1);
-z-index:20;
+pointer-events:none;
+transition:opacity 500ms ease;
+z-index:2000;
+overflow:auto;
 }
 
-.camera-hotspot.active{
+#factsPage.active{
 opacity:1;
-transform:translateY(0) scale(1);
+pointer-events:auto;
 }
-
-#cameraButton{right:40px;}
-#factsButton{left:40px;}
 
 .navButton{
 margin:20px auto;
@@ -104,85 +111,101 @@ padding:14px;
 width:200px;
 text-align:center;
 border:2px solid white;
-color:white;
 cursor:pointer;
 }
-
-/* FACTS PAGES */
-.fullScreenPage{
-position:fixed;
-inset:0;
-background:black;
-color:white;
-padding:30px;
-opacity:0;
-transform:translateY(20px);
-pointer-events:none;
-transition:all 700ms ease;
-z-index:5;
-overflow:auto;
-}
-
-.fullScreenPage.active{
-opacity:1;
-transform:translateY(0);
-pointer-events:auto;
-z-index:50;
-}
 </style></head>
-<body><!-- SCREENS --><div id="logo" class="screen active">
+<body><!-- SCREENS (STATE ROUTED) --><div id="logo" class="screen active">
 <img src="your_logo.jpeg">
 </div><div id="intro" class="screen">
 <img src="rusty_intro.jpeg">
-</div><img id="cameraScreen" src="copilot_image_1777179019874.jpeg"><div id="cameraText">Take a picture of your food 🍽️</div><!-- BUTTONS --><div id="cameraButton" class="camera-hotspot">📷 Camera</div>
-<div id="factsButton" class="camera-hotspot">📘 Facts</div><input type="file" id="cameraInput" accept="image/*" capture="environment"><!-- FACTS --><div id="factsPage" class="fullScreenPage">
+</div><img id="cameraScreen" src="copilot_image_1777179019874.jpeg"><!-- UI LAYER (ALWAYS VISIBLE WHEN CAMERA STATE) --><div id="uiLayer">
+<div id="cameraButton" class="button">📷 Camera</div>
+<div id="factsButton" class="button">📘 Facts</div>
+<div id="cameraText">Take a picture of your food</div>
+</div><input type="file" id="cameraInput" accept="image/*" capture="environment"><!-- FACTS --><div id="factsPage">
 <h1>Food Facts</h1>
-<p>Pork, Beef, Chicken seasoning science made simple.</p>
+<p>Pork, Beef, Chicken seasoning basics.</p>
 <div class="navButton" id="backBtn">Back</div>
 </div><script>
-console.log("PRO TRANSITIONS LOADED");
+console.log("APP ARCHITECTURE LOADED");
 
-const logo=document.getElementById("logo");
-const intro=document.getElementById("intro");
-const cam=document.getElementById("cameraScreen");
-const camBtn=document.getElementById("cameraButton");
-const factsBtn=document.getElementById("factsButton");
-const text=document.getElementById("cameraText");
-const facts=document.getElementById("factsPage");
-
-/* SEQUENCE ENGINE (CLEAN + EVENT BASED) */
-setTimeout(()=>{
-logo.classList.remove("active");
-intro.classList.add("active");
-},2500);
-
-setTimeout(()=>{
-intro.classList.remove("active");
-cam.classList.add("active");
-camBtn.classList.add("active");
-factsBtn.classList.add("active");
-text.classList.add("active");
-},6000);
-
-/* CAMERA BUTTON */
-camBtn.onclick=()=>document.getElementById("cameraInput").click();
-
-/* FACTS OPEN */
-factsBtn.onclick=()=>{
-facts.classList.add("active");
-cam.classList.remove("active");
-camBtn.classList.remove("active");
-factsBtn.classList.remove("active");
-text.classList.remove("active");
+/* =========================
+   STATE ENGINE
+========================= */
+const State = {
+    LOGO:"logo",
+    INTRO:"intro",
+    CAMERA:"camera",
+    FACTS:"facts"
 };
 
-/* FACTS CLOSE */
+let currentState = State.LOGO;
+
+const logo = document.getElementById("logo");
+const intro = document.getElementById("intro");
+const cam = document.getElementById("cameraScreen");
+const facts = document.getElementById("factsPage");
+
+function setState(state){
+    currentState = state;
+
+    // reset
+    logo.classList.remove("active");
+    intro.classList.remove("active");
+    cam.classList.remove("active");
+    facts.classList.remove("active");
+
+    switch(state){
+        case State.LOGO:
+            logo.classList.add("active");
+            break;
+
+        case State.INTRO:
+            intro.classList.add("active");
+            break;
+
+        case State.CAMERA:
+            cam.classList.add("active");
+            break;
+
+        case State.FACTS:
+            facts.classList.add("active");
+            break;
+    }
+}
+
+/* =========================
+   FLOW
+========================= */
+setState(State.LOGO);
+
+setTimeout(()=>setState(State.INTRO),2500);
+setTimeout(()=>setState(State.CAMERA),6000);
+
+/* =========================
+   BUTTONS
+========================= */
+document.getElementById("cameraButton").onclick=()=>{
+    document.getElementById("cameraInput").click();
+};
+
+document.getElementById("factsButton").onclick=()=>{
+    setState(State.FACTS);
+};
+
 document.getElementById("backBtn").onclick=()=>{
-facts.classList.remove("active");
-cam.classList.add("active");
-camBtn.classList.add("active");
-factsBtn.classList.add("active");
-text.classList.add("active");
+    setState(State.CAMERA);
 };
+
+/* =========================
+   SAFETY: NEVER LOSE UI
+========================= */
+setInterval(()=>{
+    // emergency UI restore
+    if(currentState===State.CAMERA){
+        document.getElementById("cameraButton").style.opacity=1;
+        document.getElementById("factsButton").style.opacity=1;
+    }
+},2000);
 </script></body>
 </html>
