@@ -1,7 +1,10 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chef Jeff AI</title><style>
+<title>Chef Jeff AI</title>
+
+<style>
 html,body{
 margin:0;
 padding:0;
@@ -12,18 +15,17 @@ font-family:Arial;
 }
 
 .screen{
-background:black;
 position:fixed;
 inset:0;
 opacity:0;
 pointer-events:none;
 transition:opacity 500ms ease;
+z-index:10;
 }
 
 .screen.active{
 opacity:1;
 pointer-events:auto;
-z-index:10;
 }
 
 img{
@@ -32,18 +34,11 @@ height:100%;
 object-fit:cover;
 }
 
-#cameraView{
-position:fixed;
-inset:0;
-z-index:1;
-}
-
 #cameraScreen{
 position:fixed;
 inset:0;
-width:100%;
-height:100%;
-object-fit:cover;
+display:none;
+z-index:1;
 }
 
 #ui{
@@ -114,30 +109,56 @@ border:1px solid white;
 text-align:center;
 cursor:pointer;
 }
-</style></head><body><div id="logo" class="screen active">
+</style>
+</head>
+
+<body>
+
+<div id="logo" class="screen active">
 <img src="your_logo.jpeg">
-</div><div id="intro" class="screen">
+</div>
+
+<div id="intro" class="screen">
 <img src="rusty_intro.jpeg">
-</div><img id="cameraScreen" src="copilot_image_1777179019874.jpeg"><div id="ui">
+</div>
+
+<img id="cameraScreen" src="copilot_image_1777179019874.jpeg">
+
+<div id="ui">
 <div id="cameraBtn" class="button">📷 Camera</div>
 <div id="factsBtn" class="button">📘 Facts</div>
 <div id="text">Tap camera to scan food</div>
-</div><div id="panel"></div><script>
-const State={LOGO:"logo",INTRO:"intro",CAMERA:"camera",FACTS:"facts"};
+</div>
 
+<div id="panel"></div>
+
+<script>
 const logo=document.getElementById("logo");
 const intro=document.getElementById("intro");
 const panel=document.getElementById("panel");
 const cam=document.getElementById("cameraScreen");
 
-function set(state){
+function hideAll(){
 logo.classList.remove("active");
 intro.classList.remove("active");
 panel.classList.remove("active");
+cam.style.display="none";
+}
 
-if(state==="logo")logo.classList.add("active");
-if(state==="intro")intro.classList.add("active");
-if(state==="camera")cam.style.display="block";
+function set(state){
+hideAll();
+
+if(state==="logo"){
+logo.classList.add("active");
+}
+
+if(state==="intro"){
+intro.classList.add("active");
+}
+
+if(state==="camera"){
+cam.style.display="block";
+}
 
 if(state==="facts"){
 panel.innerHTML=`
@@ -145,42 +166,49 @@ panel.innerHTML=`
 
 <div class="card">
 <h3>🐔 Chicken</h3>
-<p><b>Garlic</b> – works because chicken is mild and absorbs seasoning deeply, boosting savory flavor.</p>
-<p><b>Lemon</b> – acidity cuts through natural fat and brightens taste.</p>
-<p><b>Paprika</b> – adds sweetness + color, enhancing perception of flavor.</p>
-<p><b>Oregano</b> – herbal balance that prevents blandness.</p>
-<p><b>Black pepper</b> – enhances umami without overpowering light meat.</p>
+<p><b>Garlic</b> – enhances mild meat by boosting savory depth.</p>
+<p><b>Lemon</b> – acidity balances fat and brightens flavor.</p>
+<p><b>Paprika</b> – adds sweetness and color perception.</p>
+<p><b>Oregano</b> – herbal balance prevents bland taste.</p>
+<p><b>Black pepper</b> – increases perceived umami.</p>
 </div>
 
 <div class="card">
 <h3>🐖 Pork</h3>
-<p><b>Brown sugar</b> – caramelizes during heat, amplifying natural pork sweetness.</p>
-<p><b>Mustard</b> – cuts fatty richness with sharp acidity.</p>
-<p><b>Rosemary</b> – strong aroma matches pork’s heavy flavor profile.</p>
-<p><b>Garlic</b> – binds with fat to deepen savory notes.</p>
-<p><b>Smoked paprika</b> – mimics slow BBQ cooking flavor.</p>
+<p><b>Brown sugar</b> – caramelization creates BBQ sweetness.</p>
+<p><b>Mustard</b> – cuts fat with acidity.</p>
+<p><b>Rosemary</b> – strong aroma matches richness.</p>
+<p><b>Garlic</b> – deepens savory fat-based flavor.</p>
+<p><b>Smoked paprika</b> – adds grill-smoke effect.</p>
 </div>
 
 <div class="card">
 <h3>🐄 Beef</h3>
-<p><b>Salt</b> – draws out moisture and forms a flavorful crust when cooked.</p>
-<p><b>Black pepper</b> – intensifies beef’s natural umami compounds.</p>
-<p><b>Onion powder</b> – builds background savory depth.</p>
-<p><b>Cumin</b> – adds earthy warmth that pairs with fat content.</p>
-<p><b>Smoked paprika</b> – adds grilled smokiness without charcoal.</p>
+<p><b>Salt</b> – improves crust and moisture control.</p>
+<p><b>Black pepper</b> – amplifies natural beef umami.</p>
+<p><b>Onion powder</b> – adds base savory depth.</p>
+<p><b>Cumin</b> – earthy balance for fatty cuts.</p>
+<p><b>Smoked paprika</b> – gives BBQ smokiness.</p>
 </div>
 
 <div class="smallBtn" onclick="set('camera')">Back</div>
 `;
+
 panel.classList.add("active");
 }
 }
 
+// buttons
 document.getElementById("factsBtn").onclick=()=>set("facts");
 document.getElementById("cameraBtn").onclick=()=>set("camera");
 
+// 🔥 FIXED INTRO SEQUENCE (no conflicts)
 set("logo");
+
 setTimeout(()=>set("intro"),3500);
 setTimeout(()=>set("camera"),8000);
-</script></body>
-</html>s 
+
+</script>
+
+</body>
+</html>
