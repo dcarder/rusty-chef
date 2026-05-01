@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Chef Jeff AI</title>
 
 <style>
@@ -14,7 +15,7 @@ background:black;
 font-family:Arial;
 }
 
-/* ===== SCREENS (FADE + ZOOM) ===== */
+/* SCREENS */
 .screen{
 position:fixed;
 inset:0;
@@ -35,21 +36,28 @@ transform: scale(1);
 width:100%;
 height:100%;
 object-fit:cover;
-transition: transform 900ms ease;
 transform: scale(1.05);
+transition: transform 900ms ease;
 }
 
 .screen.active img{
 transform: scale(1);
 }
 
-/* CAMERA SCREEN */
-#copilot{
+/* CAMERA */
+#cameraView{
 position:fixed;
 inset:0;
-display:block;
 z-index:1;
 }
+
+video{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+canvas{display:none;}
 
 /* UI */
 #ui{
@@ -62,9 +70,9 @@ pointer-events:none;
 .button{
 pointer-events:auto;
 position:absolute;
-bottom:40px;
-width:140px;
-height:140px;
+bottom:35px;
+width:110px;
+height:110px;
 border-radius:50%;
 display:flex;
 align-items:center;
@@ -73,19 +81,20 @@ background:rgba(255,255,255,0.15);
 backdrop-filter:blur(10px);
 border:1px solid rgba(255,255,255,0.3);
 color:white;
-font-size:18px;
+font-size:14px;
 }
 
-#cameraBtn{right:30px;}
-#factsBtn{left:30px;}
+#cameraBtn{right:20px;}
+#factsBtn{left:20px;}
+#recipeBtn{left:50%;transform:translateX(-50%);bottom:20px;}
 
-#text{
+#statusText{
 position:absolute;
-bottom:220px;
+bottom:170px;
 width:100%;
 text-align:center;
 color:white;
-font-size:18px;
+font-size:14px;
 }
 
 /* PANEL */
@@ -94,12 +103,12 @@ position:fixed;
 inset:0;
 background:black;
 color:white;
-padding:20px;
+z-index:2000;
 opacity:0;
 pointer-events:none;
+transition:opacity 300ms ease;
 overflow:auto;
-z-index:2000;
-transition:opacity 400ms ease;
+padding:20px;
 }
 
 #panel.active{
@@ -108,25 +117,53 @@ pointer-events:auto;
 }
 
 .card{
-margin:15px 0;
 padding:15px;
+margin:12px 0;
 border:1px solid rgba(255,255,255,0.2);
 border-radius:10px;
 }
 
 .smallBtn{
-margin-top:20px;
 padding:12px;
 border:1px solid white;
 text-align:center;
 cursor:pointer;
+margin-top:20px;
+}
+
+/* LOADING */
+#loading{
+position:fixed;
+inset:0;
+background:black;
+color:white;
+display:none;
+align-items:center;
+justify-content:center;
+z-index:3000;
+flex-direction:column;
+}
+
+.spinner{
+width:45px;
+height:45px;
+border:4px solid rgba(255,255,255,0.2);
+border-top:4px solid white;
+border-radius:50%;
+animation:spin 1s linear infinite;
+margin-bottom:10px;
+}
+
+@keyframes spin{
+from{transform:rotate(0deg)}
+to{transform:rotate(360deg)}
 }
 </style>
 </head>
 
 <body>
 
-<!-- SCREENS -->
+<!-- INTRO -->
 <div id="logo" class="screen active">
 <img src="your_logo.jpeg">
 </div>
@@ -135,93 +172,158 @@ cursor:pointer;
 <img src="rusty_intro.jpeg">
 </div>
 
-<div id="copilot" class="screen">
-<img src="copilot_image_1777179019874.jpeg">
+<!-- CAMERA -->
+<div id="cameraView">
+<video id="video" autoplay playsinline></video>
+<canvas id="canvas"></canvas>
 </div>
 
 <!-- UI -->
 <div id="ui">
-<div id="cameraBtn" class="button">📷 Camera</div>
+<div id="cameraBtn" class="button">📷 Scan</div>
 <div id="factsBtn" class="button">📘 Facts</div>
-<div id="text">Tap camera to scan food</div>
+<div id="recipeBtn" class="button">🍳 Recipe</div>
+<div id="statusText">Loading AI...</div>
 </div>
 
-<!-- FACTS PANEL -->
+<!-- PANEL -->
 <div id="panel"></div>
 
+<!-- LOADING -->
+<div id="loading">
+<div class="spinner"></div>
+<div>Chef AI Thinking...</div>
+</div>
+
 <script>
-const logo = document.getElementById("logo");
-const intro = document.getElementById("intro");
-const copilot = document.getElementById("copilot");
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
 const panel = document.getElementById("panel");
+const loading = document.getElementById("loading");
+const statusText = document.getElementById("statusText");
 
-/* ===== SCREEN SWITCH ===== */
-function show(screen){
-logo.classList.remove("active");
-intro.classList.remove("active");
-copilot.classList.remove("active");
-panel.classList.remove("active");
+function vibrate(){if(navigator.vibrate) navigator.vibrate(80);}
+function speak(t){try{speechSynthesis.speak(new SpeechSynthesisUtterance(t));}catch(e){}}
 
-setTimeout(()=>{
-screen.classList.add("active");
-},50);
+function showLoading(){loading.style.display="flex";}
+function hideLoading(){loading.style.display="none";}
+
+function openPanel(html){
+panel.innerHTML = html;
+panel.classList.add("active");
+vibrate();
+speak("Chef AI response ready");
 }
 
-/* ===== FACTS BUTTON ===== */
-document.getElementById("factsBtn").onclick = () => {
-panel.innerHTML = `
-<h1>🍳 Food Facts (Seasonings + WHY they work)</h1>
+function closePanel(){
+panel.classList.remove("active");
+}
 
-<div class="card">
-<h3>🐔 Chicken</h3>
-<p><b>Garlic</b> – enhances mild meat by boosting savory depth.</p>
-<p><b>Lemon</b> – cuts fat and brightens flavor.</p>
-<p><b>Paprika</b> – adds sweetness + color perception.</p>
-<p><b>Oregano</b> – prevents bland taste.</p>
-<p><b>Black pepper</b> – increases umami perception.</p>
-</div>
+async function startCamera(){
+const stream = await navigator.mediaDevices.getUserMedia({
+video:{facingMode:"environment"}
+});
+video.srcObject = stream;
+}
 
-<div class="card">
-<h3>🐖 Pork</h3>
-<p><b>Brown sugar</b> – caramelizes for BBQ sweetness.</p>
-<p><b>Mustard</b> – cuts richness with acidity.</p>
-<p><b>Rosemary</b> – matches strong pork flavor.</p>
-<p><b>Garlic</b> – deep savory fat flavor.</p>
-<p><b>Smoked paprika</b> – adds smoky BBQ effect.</p>
-</div>
+function captureImage(){
+canvas.width = video.videoWidth;
+canvas.height = video.videoHeight;
+const ctx = canvas.getContext("2d");
+ctx.drawImage(video,0,0);
+return canvas.toDataURL("image/jpeg");
+}
 
-<div class="card">
-<h3>🐄 Beef</h3>
-<p><b>Salt</b> – improves crust + flavor extraction.</p>
-<p><b>Black pepper</b> – boosts natural beef umami.</p>
-<p><b>Onion powder</b> – adds base depth.</p>
-<p><b>Cumin</b> – earthy fat balance.</p>
-<p><b>Smoked paprika</b> – grill flavor effect.</p>
-</div>
+/* ===== REAL AI CALL ===== */
+async function callAI(prompt,image=null){
+showLoading();
 
-<div class="smallBtn" onclick="show(copilot)">Back</div>
-`;
+const content=[];
+content.push({type:"input_text",text:prompt});
+if(image) content.push({type:"input_image",image_url:image});
 
-panel.classList.add("active");
+try{
+const res = await fetch("https://api.openai.com/v1/responses",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer YOUR_API_KEY_HERE"
+},
+body:JSON.stringify({
+model:"gpt-4.1-mini",
+input:[{role:"user",content}]
+})
+});
+
+const data = await res.json();
+const text = data.output?.[0]?.content?.[0]?.text || "No response";
+
+hideLoading();
+openPanel(`
+<h2>🍳 Chef AI</h2>
+<div class="card">${text}</div>
+<div class="smallBtn" onclick="closePanel()">Close</div>
+`);
+
+speak(text);
+
+}catch(err){
+hideLoading();
+openPanel(`
+<div class="card">AI Error - check API key or connection</div>
+<div class="smallBtn" onclick="closePanel()">Close</div>
+`);
+}
+}
+
+/* BUTTONS */
+document.getElementById("cameraBtn").onclick = ()=>{
+const img = captureImage();
+callAI("Identify this food and explain it",img);
 };
 
-/* ===== CAMERA BUTTON ===== */
-document.getElementById("cameraBtn").onclick = () => {
-show(copilot);
+document.getElementById("factsBtn").onclick = ()=>{
+callAI("Give seasoning science for chicken, beef, and pork and why it works");
 };
 
-/* ===== INTRO SEQUENCE (UPDATED TIMING) ===== */
+/* 🍳 REAL RECIPE GENERATOR */
+document.getElementById("recipeBtn").onclick = ()=>{
+const img = captureImage();
+
+callAI(
+`You are a professional chef AI.
+
+1. Identify the food
+2. Create a FULL recipe
+3. Include ingredients with exact measurements
+4. Step-by-step cooking instructions
+5. Cooking time + difficulty
+6. Chef tips to improve flavor, texture, and plating
+
+Make it simple, practical, and restaurant quality.`,
+img
+);
+};
+
+/* FLOW */
+const logo = document.getElementById("logo");
+const intro = document.getElementById("intro");
+
+function show(s){
+document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+s.classList.add("active");
+}
+
 show(logo);
 
-// 5 seconds logo
-setTimeout(() => {
-show(intro);
-}, 5000);
+setTimeout(()=>show(intro),4000);
 
-// 7 seconds intro (total 12s)
-setTimeout(() => {
-show(copilot);
-}, 12000);
+setTimeout(()=>{
+logo.style.display="none";
+intro.style.display="none";
+startCamera();
+statusText.innerText="Ready to cook with AI";
+},8000);
 
 </script>
 
