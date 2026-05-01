@@ -182,10 +182,35 @@ text.classList.remove("show");
 
 if(state===State.FACTS){
 panel.innerHTML=`
-<h1>🍳 Food Facts</h1>
-<div class="card"><h3>Chicken</h3>Garlic, lemon, paprika, oregano, pepper</div>
-<div class="card"><h3>Pork</h3>Brown sugar, mustard, rosemary, garlic, smoked paprika</div>
-<div class="card"><h3>Beef</h3>Salt, pepper, onion, cumin, smoked paprika</div>
+<h1>🍳 Food Facts (Seasonings & Why They Work)</h1>
+
+<div class="card">
+<h3>🐔 Chicken</h3>
+<p><b>Garlic</b> – boosts savory depth because chicken is mild and absorbs flavors well.</p>
+<p><b>Lemon</b> – adds acidity that brightens and cuts through natural fat.</p>
+<p><b>Paprika</b> – adds color and mild sweetness that enhances visual + flavor appeal.</p>
+<p><b>Oregano</b> – brings herbal freshness that balances richness.</p>
+<p><b>Black pepper</b> – enhances natural umami without overpowering delicate meat.</p>
+</div>
+
+<div class="card">
+<h3>🐖 Pork</h3>
+<p><b>Brown sugar</b> – caramelizes during cooking, enhancing pork’s natural sweetness.</p>
+<p><b>Mustard</b> – adds tang that cuts through pork fat for balance.</p>
+<p><b>Rosemary</b> – earthy aroma pairs with pork’s richness for depth.</p>
+<p><b>Garlic</b> – intensifies savory notes because pork holds seasoning well.</p>
+<p><b>Smoked paprika</b> – gives BBQ-style flavor even without grilling.</p>
+</div>
+
+<div class="card">
+<h3>🐄 Beef</h3>
+<p><b>Salt</b> – draws out moisture and enhances natural beef flavor for better crust.</p>
+<p><b>Black pepper</b> – amplifies beef’s strong umami profile.</p>
+<p><b>Onion powder</b> – builds deep savory base flavor in fatty meats.</p>
+<p><b>Cumin</b> – adds earthy warmth that complements beef richness.</p>
+<p><b>Smoked paprika</b> – adds grilled flavor even in stovetop cooking.</p>
+</div>
+
 <div class="smallBtn" onclick="set(State.CAMERA)">Back</div>
 `;
 panel.classList.add("active");
