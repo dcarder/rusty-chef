@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chef Jeff V6</title>
+<title>Chef Jeff</title>
 
 <style>
 html,body{
@@ -15,40 +15,33 @@ background:black;
 font-family:Arial;
 }
 
-/* ===== SPLASH SCREENS ===== */
-.screen{
+/* FULL SCREEN STAGE SYSTEM */
+.stage{
 position:fixed;
 inset:0;
-display:flex;
+display:none;
 align-items:center;
 justify-content:center;
-opacity:0;
-transition:opacity 1s ease, transform 1s ease;
-transform:scale(1.05);
+background:black;
 z-index:9999;
 }
 
-.screen.active{
-opacity:1;
-transform:scale(1);
-}
-
-.screen img{
+.stage img{
 width:100%;
 height:100%;
 object-fit:cover;
 }
 
-/* ===== COPILOT HUB ===== */
+/* COPILOT HUB */
 #hub{
 position:fixed;
 inset:0;
+display:none;
 background:black;
 color:white;
-z-index:2000;
-display:none;
 padding:20px;
 overflow:auto;
+z-index:2000;
 }
 
 .card{
@@ -76,45 +69,52 @@ small{opacity:0.7;}
 <body>
 
 <!-- 1. LOGO -->
-<div id="logo" class="screen active">
+<div id="logo" class="stage" style="display:flex;">
 <img src="rusty_logo.jpeg">
 </div>
 
-<!-- 2. RUSTY TRANSITION -->
-<div id="rusty" class="screen">
+<!-- 2. RUSTY -->
+<div id="rusty" class="stage">
 <img src="rusty_intro.jpeg">
 </div>
 
-<!-- 3. COPILOT HUB -->
+<!-- 3. COPILOT -->
 <div id="hub"></div>
 
 <script>
 
-let currentRecipe = null;
-let stepIndex = 0;
+/* ================= SAFE FLOW CONTROL ================= */
 
-/* ================= FLOW ================= */
-setTimeout(()=>{
-document.getElementById("logo").classList.remove("active");
-document.getElementById("rusty").classList.add("active");
-},3500);
-
-setTimeout(()=>{
+function show(id){
+document.getElementById("logo").style.display="none";
 document.getElementById("rusty").style.display="none";
-showHub();
-},7000);
+document.getElementById("hub").style.display="none";
+
+document.getElementById(id).style.display =
+id === "hub" ? "block" : "flex";
+}
+
+/* STEP 1: LOGO */
+show("logo");
+
+/* STEP 2: RUSTY */
+setTimeout(()=>{
+show("rusty");
+},3000);
+
+/* STEP 3: COPILOT HUB */
+setTimeout(()=>{
+show("hub");
+loadHub();
+},6000);
 
 /* ================= COPILOT HUB ================= */
-function showHub(){
 
-document.getElementById("hub").style.display="block";
-
+function loadHub(){
 document.getElementById("hub").innerHTML = `
 <h1>🤖 Copilot Hub</h1>
 
-<div class="card">
-Welcome to Chef Jeff AI
-</div>
+<div class="card">Welcome to Chef Jeff</div>
 
 <div class="btn" onclick="showRecipes()">🍳 Recipes</div>
 <div class="btn" onclick="showPantry()">🧺 Pantry</div>
@@ -122,7 +122,8 @@ Welcome to Chef Jeff AI
 `;
 }
 
-/* ================= DATA ================= */
+/* ================= RECIPES ================= */
+
 const recipes = [
 {
 name:"Garlic Chicken Rice",
@@ -130,9 +131,9 @@ ingredients:["chicken","rice","garlic","salt"],
 time:25,
 steps:[
 { text:"Season chicken", time:"2 min", temp:"Room temp" },
-{ text:"Cook chicken", time:"10 min", temp:"165°F / medium heat" },
+{ text:"Cook chicken", time:"10 min", temp:"165°F medium heat" },
 { text:"Add garlic", time:"2 min", temp:"Medium heat" },
-{ text:"Mix with rice", time:"5 min", temp:"Low heat" }
+{ text:"Mix rice", time:"5 min", temp:"Low heat" }
 ]
 },
 {
@@ -147,7 +148,8 @@ steps:[
 }
 ];
 
-/* ================= RECIPES ================= */
+/* ================= RECIPES LIST ================= */
+
 function showRecipes(){
 
 let html = `<h2>🍳 Recipes</h2>`;
@@ -160,18 +162,18 @@ html += `
 </div>`;
 });
 
-html += `<div class="btn" onclick="showHub()">⬅ Back</div>`;
+html += `<div class="btn" onclick="loadHub()">⬅ Back</div>`;
 
 document.getElementById("hub").innerHTML = html;
 }
 
 /* ================= RECIPE DETAIL ================= */
+
 function openRecipe(recipe){
 
-currentRecipe = recipe;
-
 let steps = recipe.steps.map(s=>`
-<li>${s.text}<br>
+<li>
+${s.text}<br>
 <small>⏱ ${s.time} | 🔥 ${s.temp}</small>
 </li>
 `).join("");
@@ -189,70 +191,23 @@ document.getElementById("hub").innerHTML = `
 <ol>${steps}</ol>
 </div>
 
-<div class="btn" onclick="startCooking()">🍳 Start Cooking Mode</div>
-<div class="btn" onclick="showRecipes()">⬅ Back</div>
+<div class="btn" onclick="loadHub()">⬅ Back</div>
 `;
 }
 
-/* ================= COOK MODE ================= */
-function startCooking(){
-stepIndex = 0;
-renderStep();
-}
+/* ================= PLACEHOLDERS ================= */
 
-function renderStep(){
-
-let step = currentRecipe.steps[stepIndex];
-
-document.getElementById("hub").innerHTML = `
-<h2>🍳 Cooking Mode</h2>
-
-<div class="card">
-<h3>Step ${stepIndex+1} / ${currentRecipe.steps.length}</h3>
-<p>${step.text}</p>
-<p><small>⏱ ${step.time} | 🔥 ${step.temp}</small></p>
-</div>
-
-<div class="btn" onclick="nextStep()">Next Step ➜</div>
-<div class="btn" onclick="openRecipe(currentRecipe)">Exit</div>
-`;
-}
-
-function nextStep(){
-if(stepIndex < currentRecipe.steps.length-1){
-stepIndex++;
-renderStep();
-}else{
-document.getElementById("hub").innerHTML = `
-<div class="card">
-<h2>🎉 Finished!</h2>
-<p>You completed ${currentRecipe.name}</p>
-</div>
-
-<div class="btn" onclick="showHub()">Home</div>
-`;
-}
-}
-
-/* ================= PANTRY ================= */
 function showPantry(){
 document.getElementById("hub").innerHTML = `
-<h2>🧺 Pantry</h2>
-<div class="card">
-Feature coming next upgrade
-</div>
-<div class="btn" onclick="showHub()">Back</div>
+<div class="card">🧺 Pantry coming next version</div>
+<div class="btn" onclick="loadHub()">Back</div>
 `;
 }
 
-/* ================= FAVORITES ================= */
 function showFavorites(){
 document.getElementById("hub").innerHTML = `
-<h2>❤️ Favorites</h2>
-<div class="card">
-Feature coming next upgrade
-</div>
-<div class="btn" onclick="showHub()">Back</div>
+<div class="card">❤️ Favorites coming next version</div>
+<div class="btn" onclick="loadHub()">Back</div>
 `;
 }
 
