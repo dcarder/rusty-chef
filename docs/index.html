@@ -145,15 +145,13 @@ opacity:0.7;
 
 <div id="app">
 
-<!-- HOME HUB -->
+<!-- HOME -->
 <div id="home" class="page active">
-
   <div id="homeBg">
     <img src="copilot_image_1777179019874.jpeg">
   </div>
 
   <div class="header">🤖 Rusty the Robot Chef</div>
-
   <div class="card">Smart AI Cooking Assistant</div>
 
   <div class="dock">
@@ -161,49 +159,31 @@ opacity:0.7;
     <div class="dockBtn large" onclick="openSmart()">🧠<span>Smart Cook</span></div>
     <div class="dockBtn" onclick="openPantry()">🧺<span>Pantry</span></div>
   </div>
-
 </div>
 
-<!-- PANTRY -->
 <div id="pantry" class="page"></div>
-
-<!-- RESULTS -->
 <div id="results" class="page"></div>
-
-<!-- DETAIL -->
 <div id="detail" class="page"></div>
-
-<!-- SMART -->
 <div id="smart" class="page"></div>
 
 </div>
 
 <script>
 
-/* STATE */
 let selected = JSON.parse(localStorage.getItem("pantry") || "[]");
 
-/* =========================
-   🔥 FIXED HOME FUNCTION
-   ALWAYS RETURNS TO HUB
-========================= */
-function goHome(){
-
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active");
-});
-
-document.getElementById("home").classList.add("active");
-
+/* CLEAN NAV SYSTEM */
+function show(page){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(page).classList.add("active");
 window.scrollTo(0,0);
 }
 
-/* SAFE PAGE SWITCH */
-function show(page){
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active");
-});
-document.getElementById(page).classList.add("active");
+/* 🔥 FIXED HOME (ALWAYS RETURNS TO HUB) */
+function goHome(){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById("home").classList.add("active");
+window.scrollTo(0,0);
 }
 
 /* NAV */
@@ -211,7 +191,7 @@ function openPantry(){loadPantry();}
 function openRecipes(){findRecipes();}
 function openSmart(){loadSmart();}
 
-/* PANTRY ITEMS (expanded) */
+/* PANTRY */
 const pantryItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Sausage","Pork chops",
 "Potatoes","Onions","Garlic","Carrots","Broccoli","Spinach",
@@ -224,9 +204,7 @@ const pantryItems = [
 "Shrimp","Salmon","Tuna","Ground turkey","Ham","Steak"
 ];
 
-/* PANTRY */
 function loadPantry(){
-
 let html = `
 <div class="topBar">
 <div class="homeBtn" onclick="goHome()">🏠 Home</div>
@@ -290,7 +268,6 @@ steps:["Heat pan","Add garlic","Add veggies","Stir fry","Serve"]
 
 /* MATCH */
 function findRecipes(){
-
 let ranked = recipes.map(r=>{
 let match = r.ingredients.filter(i=>selected.includes(i)).length;
 return {...r,score:match/r.ingredients.length};
@@ -319,9 +296,8 @@ document.getElementById("results").innerHTML = html;
 show("results");
 }
 
-/* RECIPE */
+/* DETAIL */
 function openRecipe(name){
-
 let r = recipes.find(x=>x.name===name);
 
 let html = `
@@ -348,9 +324,8 @@ document.getElementById("detail").innerHTML = html;
 show("detail");
 }
 
-/* SMART COOK */
+/* SMART */
 function loadSmart(){
-
 let html = `
 <div class="topBar">
 <div class="homeBtn" onclick="goHome()">🏠 Home</div>
@@ -359,8 +334,7 @@ let html = `
 <div class="header">🧠 Smart Cook AI</div>
 
 <div class="card">
-AI recipe generator coming soon.<br>
-This will create meals from your pantry automatically.
+AI recipe generator coming soon.
 </div>
 
 <div class="back" onclick="goHome()">⬅ Home</div>
