@@ -15,14 +15,14 @@ background:black;
 font-family:Arial;
 }
 
-/* SCREENS */
+/* ===== SCREENS ===== */
 .screen{
 position:fixed;
 inset:0;
 opacity:0;
 pointer-events:none;
-transition: opacity 900ms ease, transform 900ms ease;
-transform: scale(1.08);
+transition: opacity 800ms ease, transform 800ms ease;
+transform: scale(1.05);
 z-index:10;
 }
 
@@ -36,12 +36,6 @@ transform: scale(1);
 width:100%;
 height:100%;
 object-fit:cover;
-transform: scale(1.05);
-transition: transform 900ms ease;
-}
-
-.screen.active img{
-transform: scale(1);
 }
 
 /* CAMERA */
@@ -56,8 +50,6 @@ width:100%;
 height:100%;
 object-fit:cover;
 }
-
-canvas{display:none;}
 
 /* UI */
 #ui{
@@ -164,26 +156,21 @@ to{transform:rotate(360deg)}
 <body>
 
 <!-- INTRO -->
-<div id="logo" class="screen active">
-<img src="your_logo.jpeg">
-</div>
-
-<div id="intro" class="screen">
+<div id="intro" class="screen active">
 <img src="rusty_intro.jpeg">
 </div>
 
-<!-- CAMERA -->
+<!-- CAMERA (COPILOT) -->
 <div id="cameraView">
 <video id="video" autoplay playsinline></video>
-<canvas id="canvas"></canvas>
 </div>
 
 <!-- UI -->
 <div id="ui">
 <div id="cameraBtn" class="button">📷 Scan</div>
-<div id="factsBtn" class="button">📘 Facts</div>
+<div id="factsBtn" class="button">🥩 Facts</div>
 <div id="recipeBtn" class="button">🍳 Recipe</div>
-<div id="statusText">Loading AI...</div>
+<div id="statusText">Starting Chef AI...</div>
 </div>
 
 <!-- PANEL -->
@@ -197,7 +184,6 @@ to{transform:rotate(360deg)}
 
 <script>
 const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
 const panel = document.getElementById("panel");
 const loading = document.getElementById("loading");
 const statusText = document.getElementById("statusText");
@@ -212,13 +198,14 @@ function openPanel(html){
 panel.innerHTML = html;
 panel.classList.add("active");
 vibrate();
-speak("Chef AI response ready");
+speak("Chef AI ready");
 }
 
 function closePanel(){
 panel.classList.remove("active");
 }
 
+/* CAMERA */
 async function startCamera(){
 const stream = await navigator.mediaDevices.getUserMedia({
 video:{facingMode:"environment"}
@@ -226,21 +213,9 @@ video:{facingMode:"environment"}
 video.srcObject = stream;
 }
 
-function captureImage(){
-canvas.width = video.videoWidth;
-canvas.height = video.videoHeight;
-const ctx = canvas.getContext("2d");
-ctx.drawImage(video,0,0);
-return canvas.toDataURL("image/jpeg");
-}
-
-/* ===== REAL AI CALL ===== */
-async function callAI(prompt,image=null){
+/* REAL AI */
+async function callAI(prompt){
 showLoading();
-
-const content=[];
-content.push({type:"input_text",text:prompt});
-if(image) content.push({type:"input_image",image_url:image});
 
 try{
 const res = await fetch("https://api.openai.com/v1/responses",{
@@ -251,7 +226,10 @@ headers:{
 },
 body:JSON.stringify({
 model:"gpt-4.1-mini",
-input:[{role:"user",content}]
+input:[{
+role:"user",
+content:[{type:"input_text",text:prompt}]
+}]
 })
 });
 
@@ -267,10 +245,10 @@ openPanel(`
 
 speak(text);
 
-}catch(err){
+}catch(e){
 hideLoading();
 openPanel(`
-<div class="card">AI Error - check API key or connection</div>
+<div class="card">AI Error</div>
 <div class="smallBtn" onclick="closePanel()">Close</div>
 `);
 }
@@ -278,52 +256,61 @@ openPanel(`
 
 /* BUTTONS */
 document.getElementById("cameraBtn").onclick = ()=>{
-const img = captureImage();
-callAI("Identify this food and explain it",img);
+callAI("Identify food from camera context and describe it");
 };
 
+/* 🥩 FACTS = MEATS + SEASONINGS (FIXED) */
 document.getElementById("factsBtn").onclick = ()=>{
-callAI("Give seasoning science for chicken, beef, and pork and why it works");
+openPanel(`
+<h2>🥩 Meats & Seasonings Guide</h2>
+
+<div class="card">
+<h3>🐔 Chicken</h3>
+<p>Garlic → boosts savory base</p>
+<p>Lemon → cuts fat & brightens flavor</p>
+<p>Paprika → adds warmth & color</p>
+</div>
+
+<div class="card">
+<h3>🐖 Pork</h3>
+<p>Brown sugar → caramelization</p>
+<p>Mustard → balances fat</p>
+<p>Smoked paprika → BBQ depth</p>
+</div>
+
+<div class="card">
+<h3>🐄 Beef</h3>
+<p>Salt → enhances crust</p>
+<p>Black pepper → boosts umami</p>
+<p>Onion powder → adds depth</p>
+</div>
+
+<div class="smallBtn" onclick="closePanel()">Back</div>
+`);
 };
 
 /* 🍳 REAL RECIPE GENERATOR */
 document.getElementById("recipeBtn").onclick = ()=>{
-const img = captureImage();
+callAI(`
+Create a full restaurant-quality recipe.
 
-callAI(
-`You are a professional chef AI.
+Include:
+- Dish identification
+- Ingredients with measurements
+- Step-by-step cooking instructions
+- Cooking time + difficulty
+- Chef tips for flavor and plating
 
-1. Identify the food
-2. Create a FULL recipe
-3. Include ingredients with exact measurements
-4. Step-by-step cooking instructions
-5. Cooking time + difficulty
-6. Chef tips to improve flavor, texture, and plating
-
-Make it simple, practical, and restaurant quality.`,
-img
-);
+Make it simple and practical.
+`);
 };
 
-/* FLOW */
-const logo = document.getElementById("logo");
-const intro = document.getElementById("intro");
-
-function show(s){
-document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
-s.classList.add("active");
-}
-
-show(logo);
-
-setTimeout(()=>show(intro),4000);
-
+/* FLOW: INTRO → COPILOT ONLY */
 setTimeout(()=>{
-logo.style.display="none";
-intro.style.display="none";
+document.getElementById("intro").style.display="none";
 startCamera();
-statusText.innerText="Ready to cook with AI";
-},8000);
+statusText.innerText="Ready to scan food";
+},4000);
 
 </script>
 
