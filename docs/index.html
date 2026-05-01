@@ -25,21 +25,19 @@ flex-direction:column;
 align-items:center;
 justify-content:center;
 z-index:9999;
-opacity:0;
-transition:opacity 0.6s ease;
+opacity:1;
 }
 
 #splashLogo{
-transform:scale(1.3);
-opacity:0;
-transition:transform 3s ease, opacity 1s ease;
+transform:scale(1.2);
+opacity:1;
+transition:transform 3s ease;
 margin-bottom:40px;
 }
 
 #splashLogo img{
 width:60%;
 max-width:320px;
-filter:drop-shadow(0 0 25px rgba(255,255,255,0.15));
 }
 
 /* PROGRESS BAR */
@@ -64,7 +62,6 @@ margin-bottom:10px;
 height:100%;
 width:0%;
 background:white;
-border-radius:10px;
 transition:width 0.2s linear;
 }
 
@@ -208,7 +205,7 @@ to{transform:rotate(360deg)}
 
 <body>
 
-<!-- ================= SPLASH ================= -->
+<!-- SPLASH -->
 <div id="splash">
   <div id="splashLogo">
     <img src="rusty_logo.jpeg">
@@ -222,17 +219,17 @@ to{transform:rotate(360deg)}
   </div>
 </div>
 
-<!-- ================= INTRO ================= -->
+<!-- INTRO -->
 <div id="intro" class="screen">
 <img src="rusty_intro.jpeg">
 </div>
 
-<!-- ================= CAMERA ================= -->
+<!-- CAMERA -->
 <div id="cameraView">
 <video id="video" autoplay playsinline></video>
 </div>
 
-<!-- ================= UI ================= -->
+<!-- UI -->
 <div id="ui">
 <div id="cameraBtn" class="button">📷 Scan</div>
 <div id="factsBtn" class="button">🥩 Facts</div>
@@ -240,10 +237,10 @@ to{transform:rotate(360deg)}
 <div id="statusText">Booting Chef AI...</div>
 </div>
 
-<!-- ================= PANEL ================= -->
+<!-- PANEL -->
 <div id="panel"></div>
 
-<!-- ================= LOADING ================= -->
+<!-- LOADING -->
 <div id="loading">
 <div class="spinner"></div>
 <div>Chef AI Thinking...</div>
@@ -261,10 +258,36 @@ const video = document.getElementById("video");
 const panel = document.getElementById("panel");
 const statusText = document.getElementById("statusText");
 
-function vibrate(){if(navigator.vibrate) navigator.vibrate(80);}
-function speak(t){try{speechSynthesis.speak(new SpeechSynthesisUtterance(t));}catch(e){}}
+/* ================= UTIL ================= */
+function preload(src){
+return new Promise(res=>{
+const img = new Image();
+img.src = src;
+img.onload = res;
+});
+}
 
-/* CAMERA */
+function simulateProgress(){
+return new Promise(res=>{
+let p = 0;
+
+const interval = setInterval(()=>{
+p += Math.random()*10;
+
+if(p >= 100){
+p = 100;
+clearInterval(interval);
+res();
+}
+
+loadingFill.style.width = p + "%";
+loadingText.innerText = "Loading Chef AI... " + Math.floor(p) + "%";
+
+},140);
+});
+}
+
+/* ================= CAMERA ================= */
 async function startCamera(){
 try{
 const stream = await navigator.mediaDevices.getUserMedia({
@@ -277,18 +300,17 @@ statusText.innerText = "Camera blocked or unavailable";
 }
 }
 
-/* PANEL */
+/* ================= PANEL ================= */
 function openPanel(html){
 panel.innerHTML = html;
 panel.classList.add("active");
-vibrate();
 }
 
 function closePanel(){
 panel.classList.remove("active");
 }
 
-/* AI */
+/* ================= AI ================= */
 async function callAI(prompt){
 document.getElementById("loading").style.display="flex";
 
@@ -322,8 +344,6 @@ openPanel(`
 <div class="smallBtn" onclick="closePanel()">Close</div>
 `);
 
-speak(text);
-
 }catch(e){
 document.getElementById("loading").style.display="none";
 
@@ -334,9 +354,9 @@ openPanel(`
 }
 }
 
-/* BUTTONS */
+/* ================= BUTTONS ================= */
 document.getElementById("cameraBtn").onclick=()=>{
-callAI("Identify food in view and describe it like a chef.");
+callAI("Identify food and describe it like a chef.");
 };
 
 document.getElementById("factsBtn").onclick=()=>{
@@ -372,65 +392,35 @@ document.getElementById("recipeBtn").onclick=()=>{
 callAI("Create a full restaurant-quality recipe with steps, ingredients, and tips.");
 };
 
-/* ================= CINEMATIC BOOT ================= */
-
-async function preload(src){
-return new Promise(res=>{
-const img = new Image();
-img.src = src;
-img.onload = res;
-});
-}
-
-function simulateProgress(){
-return new Promise(res=>{
-let p = 0;
-
-const interval = setInterval(()=>{
-p += Math.random()*10;
-
-if(p>=100){
-p=100;
-clearInterval(interval);
-res();
-}
-
-loadingFill.style.width = p + "%";
-loadingText.innerText = "Loading Chef AI... " + Math.floor(p) + "%";
-
-},150);
-});
-}
-
+/* ================= BOOT ================= */
 async function boot(){
 
+/* preload assets */
 await Promise.all([
 preload("rusty_logo.jpeg"),
 preload("rusty_intro.jpeg")
 ]);
 
-splash.style.opacity="1";
-
 /* logo animation */
 setTimeout(()=>{
-splashLogo.style.opacity="1";
-splashLogo.style.transform="scale(1)";
+splashLogo.style.transform = "scale(1)";
 },200);
 
 /* progress */
 await simulateProgress();
 
-/* exit splash */
-splash.style.opacity="0";
+/* fade splash */
+splash.style.opacity = "0";
 
+/* intro */
 setTimeout(()=>{
 intro.classList.add("active");
-splash.style.display="none";
+splash.style.display = "none";
 },700);
 
-/* start app */
+/* camera */
 setTimeout(()=>{
-intro.style.display="none";
+intro.style.display = "none";
 startCamera();
 },3000);
 
