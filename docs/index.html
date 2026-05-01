@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chef Jeff V9</title>
+<title>Chef Jeff V10</title>
 
 <style>
 html,body{
@@ -16,7 +16,7 @@ font-family:Arial;
 color:white;
 }
 
-/* SPLASH SCREENS */
+/* SPLASH */
 .stage{
 position:fixed;
 inset:0;
@@ -33,7 +33,7 @@ height:100%;
 object-fit:cover;
 }
 
-/* APP WRAPPER */
+/* APP */
 #app{
 position:fixed;
 inset:0;
@@ -47,7 +47,7 @@ display:none;
 height:100%;
 overflow:auto;
 padding:20px;
-padding-bottom:90px;
+padding-bottom:100px;
 }
 
 .page.active{
@@ -58,7 +58,52 @@ display:block;
 .header{
 font-size:22px;
 font-weight:700;
-margin-bottom:10px;
+margin-bottom:12px;
+}
+
+/* GLASS BUTTONS */
+.btn{
+display:flex;
+align-items:center;
+gap:14px;
+
+padding:18px;
+margin-top:14px;
+
+border-radius:20px;
+
+background:linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.05));
+border:1px solid rgba(255,255,255,0.18);
+backdrop-filter: blur(20px);
+
+box-shadow:0 12px 35px rgba(0,0,0,0.45);
+
+cursor:pointer;
+transition:0.2s ease;
+
+position:relative;
+overflow:hidden;
+}
+
+.btn:active{transform:scale(0.96);}
+
+.btnIcon{
+font-size:20px;
+}
+
+.btnText{
+display:flex;
+flex-direction:column;
+}
+
+.btnTitle{
+font-size:15px;
+font-weight:600;
+}
+
+.btnSub{
+font-size:11px;
+opacity:0.6;
 }
 
 /* CARDS */
@@ -71,21 +116,7 @@ margin:10px 0;
 backdrop-filter: blur(10px);
 }
 
-/* BUTTONS */
-.btn{
-padding:14px;
-border-radius:14px;
-background:linear-gradient(135deg,rgba(255,255,255,0.18),rgba(255,255,255,0.06));
-border:1px solid rgba(255,255,255,0.2);
-margin-top:10px;
-text-align:center;
-font-weight:600;
-cursor:pointer;
-transition:0.15s;
-}
-.btn:active{transform:scale(0.96);}
-
-/* BOTTOM NAV */
+/* NAV */
 #nav{
 position:fixed;
 bottom:0;
@@ -149,9 +180,30 @@ box-shadow:0 10px 25px rgba(0,0,0,0.5);
 
 <div class="card">Smart Cooking Assistant Ready</div>
 
-<div class="btn" onclick="openRecipes()">🍳 Recipes</div>
-<div class="btn" onclick="openSmart()">🧠 Smart Cook</div>
-<div class="btn" onclick="openPantry()">🧺 Pantry</div>
+<div class="btn" onclick="openRecipes()">
+<div class="btnIcon">🍳</div>
+<div class="btnText">
+<div class="btnTitle">Recipes</div>
+<div class="btnSub">Browse meals</div>
+</div>
+</div>
+
+<div class="btn" onclick="openSmart()">
+<div class="btnIcon">🧠</div>
+<div class="btnText">
+<div class="btnTitle">Smart Cook</div>
+<div class="btnSub">Best matches from pantry</div>
+</div>
+</div>
+
+<div class="btn" onclick="openPantry()">
+<div class="btnIcon">🧺</div>
+<div class="btnText">
+<div class="btnTitle">Pantry</div>
+<div class="btnSub">Manage ingredients</div>
+</div>
+</div>
+
 </div>
 
 <!-- RECIPES -->
@@ -165,7 +217,7 @@ box-shadow:0 10px 25px rgba(0,0,0,0.5);
 
 </div>
 
-<!-- FLOAT BUTTON -->
+<!-- FLOAT -->
 <div class="fab" onclick="openSmart()">🍳</div>
 
 <!-- NAV -->
@@ -178,7 +230,7 @@ box-shadow:0 10px 25px rgba(0,0,0,0.5);
 
 <script>
 
-/* ===== FLOW ===== */
+/* FLOW */
 setTimeout(()=>{
 document.getElementById("logo").style.display="none";
 document.getElementById("rusty").style.display="flex";
@@ -189,21 +241,21 @@ document.getElementById("rusty").style.display="none";
 document.getElementById("app").style.display="block";
 },6000);
 
-/* ===== NAV CONTROL ===== */
+/* NAV */
 function show(page){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 document.getElementById(page).classList.add("active");
 }
 
-/* ===== PANTRY ===== */
+/* PANTRY */
 const pantryItems = [
 "chicken","beef","pork","rice","pasta","egg","milk","cheese",
-"garlic","onion","tomato","carrot","broccoli","pepper",
+"garlic","onion","tomato","carrot","broccoli",
 "salt","pepper","olive oil","butter","soy sauce",
-"potato","lettuce","spinach","cucumber","corn","beans"
+"potato","spinach","lettuce","corn","beans"
 ];
 
-/* ===== RECIPES ===== */
+/* RECIPES */
 const recipes = [
 {
 name:"Garlic Chicken Rice",
@@ -222,11 +274,9 @@ ingredients:["egg","cheese","butter"]
 }
 ];
 
-/* ===== RECIPES ===== */
+/* RECIPES */
 function openRecipes(){
-
 let html = `<div class="header">🍳 Recipes</div>`;
-
 recipes.forEach(r=>{
 html += `
 <div class="card">
@@ -234,14 +284,12 @@ html += `
 <p>⏱ ${r.time} min</p>
 </div>`;
 });
-
 document.getElementById("recipes").innerHTML = html;
 show("recipes");
 }
 
-/* ===== SMART MATCH ===== */
+/* SMART */
 function openSmart(){
-
 let pantry = JSON.parse(localStorage.getItem("pantry") || "[]");
 
 let ranked = recipes.map(r=>{
@@ -263,9 +311,8 @@ document.getElementById("smart").innerHTML = html;
 show("smart");
 }
 
-/* ===== PANTRY ===== */
+/* PANTRY */
 function openPantry(){
-
 let saved = JSON.parse(localStorage.getItem("pantry") || "[]");
 
 let html = `<div class="header">🧺 Pantry</div>`;
@@ -280,7 +327,7 @@ html += `
 </div>`;
 });
 
-html += `<div class="btn" onclick="savePantry()">💾 Save Pantry</div>`;
+html += `<div class="card" onclick="savePantry()">💾 Save Pantry</div>`;
 
 document.getElementById("pantry").innerHTML = html;
 show("pantry");
@@ -290,7 +337,7 @@ function savePantry(){
 let checked = document.querySelectorAll("input:checked");
 let pantry = Array.from(checked).map(i=>i.value);
 localStorage.setItem("pantry", JSON.stringify(pantry));
-alert("Pantry Saved!");
+alert("Saved!");
 }
 
 </script>
