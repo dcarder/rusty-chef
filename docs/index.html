@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chef Jeff</title>
+<title>Chef Jeff V8</title>
 
 <style>
 html,body{
@@ -13,13 +13,13 @@ height:100%;
 overflow:hidden;
 background:black;
 font-family:Arial;
+color:white;
 }
 
-/* FULL SCREEN STAGE SYSTEM */
 .stage{
 position:fixed;
 inset:0;
-display:none;
+display:flex;
 align-items:center;
 justify-content:center;
 background:black;
@@ -32,13 +32,12 @@ height:100%;
 object-fit:cover;
 }
 
-/* COPILOT HUB */
+/* HUB */
 #hub{
 position:fixed;
 inset:0;
 display:none;
 background:black;
-color:white;
 padding:20px;
 overflow:auto;
 z-index:2000;
@@ -60,155 +59,248 @@ border-radius:10px;
 cursor:pointer;
 }
 
-/* recipe steps */
-ol{padding-left:18px;}
 small{opacity:0.7;}
 </style>
 </head>
 
 <body>
 
-<!-- 1. LOGO -->
-<div id="logo" class="stage" style="display:flex;">
+<!-- LOGO -->
+<div id="logo" class="stage" style="background:black;">
 <img src="rusty_logo.jpeg">
 </div>
 
-<!-- 2. RUSTY -->
-<div id="rusty" class="stage">
+<!-- RUSTY -->
+<div id="rusty" class="stage" style="display:none;">
 <img src="rusty_intro.jpeg">
 </div>
 
-<!-- 3. COPILOT -->
+<!-- HUB -->
 <div id="hub"></div>
 
 <script>
 
-/* ================= SAFE FLOW CONTROL ================= */
+let currentRecipe = null;
+let stepIndex = 0;
+let timer = null;
 
-function show(id){
-document.getElementById("logo").style.display="none";
-document.getElementById("rusty").style.display="none";
-document.getElementById("hub").style.display="none";
-
-document.getElementById(id).style.display =
-id === "hub" ? "block" : "flex";
-}
-
-/* STEP 1: LOGO */
-show("logo");
-
-/* STEP 2: RUSTY */
+/* FLOW */
 setTimeout(()=>{
-show("rusty");
+document.getElementById("logo").style.display="none";
+document.getElementById("rusty").style.display="flex";
 },3000);
 
-/* STEP 3: COPILOT HUB */
 setTimeout(()=>{
-show("hub");
-loadHub();
+document.getElementById("rusty").style.display="none";
+showHub();
 },6000);
 
-/* ================= COPILOT HUB ================= */
+/* ================= PANTRY (100+ ITEMS) ================= */
 
-function loadHub(){
-document.getElementById("hub").innerHTML = `
-<h1>🤖 Copilot Hub</h1>
-
-<div class="card">Welcome to Chef Jeff</div>
-
-<div class="btn" onclick="showRecipes()">🍳 Recipes</div>
-<div class="btn" onclick="showPantry()">🧺 Pantry</div>
-<div class="btn" onclick="showFavorites()">❤️ Favorites</div>
-`;
-}
+const pantryItems = [
+"chicken","beef","pork","turkey","salmon","shrimp",
+"rice","pasta","bread","tortilla","oats","quinoa",
+"egg","milk","cheese","butter","cream",
+"garlic","onion","tomato","carrot","broccoli","spinach","lettuce",
+"cucumber","pepper","mushroom","zucchini","potato","sweet potato",
+"corn","peas","cabbage","cauliflower",
+"apple","banana","orange","lemon","lime",
+"salt","pepper","paprika","oregano","basil","thyme",
+"soy sauce","olive oil","vinegar","ketchup","mustard","sugar",
+"beans","lentils","broth","coconut milk"
+];
 
 /* ================= RECIPES ================= */
 
 const recipes = [
 {
 name:"Garlic Chicken Rice",
-ingredients:["chicken","rice","garlic","salt"],
+ingredients:["chicken","rice","garlic","salt","olive oil"],
 time:25,
 steps:[
-{ text:"Season chicken", time:"2 min", temp:"Room temp" },
-{ text:"Cook chicken", time:"10 min", temp:"165°F medium heat" },
-{ text:"Add garlic", time:"2 min", temp:"Medium heat" },
-{ text:"Mix rice", time:"5 min", temp:"Low heat" }
+{ text:"Season chicken", time:2, temp:"Room temp" },
+{ text:"Cook chicken", time:10, temp:"165°F medium heat" },
+{ text:"Add garlic", time:2, temp:"Medium heat" },
+{ text:"Mix rice", time:5, temp:"Low heat" }
 ]
 },
 {
 name:"Veg Stir Fry",
-ingredients:["broccoli","carrot","pepper","soy sauce"],
+ingredients:["broccoli","carrot","onion","soy sauce"],
 time:15,
 steps:[
-{ text:"Chop vegetables", time:"5 min", temp:"—" },
-{ text:"Heat pan", time:"2 min", temp:"High heat" },
-{ text:"Stir fry", time:"6 min", temp:"High heat" }
+{ text:"Chop vegetables", time:5, temp:"—" },
+{ text:"Heat pan", time:2, temp:"High heat" },
+{ text:"Stir fry", time:6, temp:"High heat" }
+]
+},
+{
+name:"Cheesy Eggs",
+ingredients:["egg","cheese","butter","salt"],
+time:10,
+steps:[
+{ text:"Whisk eggs", time:2, temp:"Room temp" },
+{ text:"Melt butter", time:2, temp:"Medium heat" },
+{ text:"Cook eggs", time:3, temp:"Low heat" },
+{ text:"Add cheese", time:1, temp:"Low heat" }
 ]
 }
 ];
 
-/* ================= RECIPES LIST ================= */
+/* ================= HUB ================= */
 
-function showRecipes(){
+function showHub(){
+hub.style.display="block";
+hub.innerHTML = `
+<h1>🤖 Copilot Hub V8</h1>
 
-let html = `<h2>🍳 Recipes</h2>`;
+<div class="card">Smart Cooking Engine Ready</div>
 
-recipes.forEach(r=>{
+<div class="btn" onclick="showPantry()">🧺 Pantry</div>
+<div class="btn" onclick="showSmart()">🧠 Smart Cook</div>
+<div class="btn" onclick="showRecipes()">🍳 Recipes</div>
+`;
+}
+
+/* ================= PANTRY ================= */
+
+function showPantry(){
+
+let saved = JSON.parse(localStorage.getItem("pantry") || "[]");
+
+let html = `<h2>🧺 Pantry</h2>`;
+
+pantryItems.forEach(i=>{
+let checked = saved.includes(i) ? "checked" : "";
 html += `
-<div class="card" onclick='openRecipe(${JSON.stringify(r)})' style="cursor:pointer">
-<h3>${r.name}</h3>
-<p>⏱ ${r.time} min</p>
+<div class="card">
+<label>
+<input type="checkbox" value="${i}" ${checked}> ${i}
+</label>
 </div>`;
 });
 
-html += `<div class="btn" onclick="loadHub()">⬅ Back</div>`;
+html += `
+<div class="btn" onclick="savePantry()">💾 Save</div>
+<div class="btn" onclick="showHub()">Back</div>
+`;
 
-document.getElementById("hub").innerHTML = html;
+hub.innerHTML = html;
 }
 
-/* ================= RECIPE DETAIL ================= */
+function savePantry(){
+let checked = document.querySelectorAll("input:checked");
+let pantry = Array.from(checked).map(i=>i.value);
+localStorage.setItem("pantry", JSON.stringify(pantry));
+alert("Saved!");
+showHub();
+}
 
-function openRecipe(recipe){
+/* ================= MATCH SCORE ================= */
 
-let steps = recipe.steps.map(s=>`
-<li>
-${s.text}<br>
-<small>⏱ ${s.time} | 🔥 ${s.temp}</small>
-</li>
-`).join("");
+function score(recipe, pantry){
+let match = recipe.ingredients.filter(i=>pantry.includes(i));
+let missing = recipe.ingredients.filter(i=>!pantry.includes(i));
+return {...recipe, score: match.length / recipe.ingredients.length, missing};
+}
 
-document.getElementById("hub").innerHTML = `
-<h2>${recipe.name}</h2>
+/* ================= SMART COOK ================= */
+
+function showSmart(){
+
+let pantry = JSON.parse(localStorage.getItem("pantry") || "[]");
+
+let ranked = recipes
+.map(r=>score(r, pantry))
+.sort((a,b)=>b.score-a.score)
+.slice(0,3);
+
+let html = `<h2>🧠 Top Matches</h2>`;
+
+ranked.forEach(r=>{
+html += `
+<div class="card">
+<h3>${r.name}</h3>
+<p>Match: ${(r.score*100).toFixed(0)}%</p>
+<p><small>Missing: ${r.missing.join(", ") || "None"}</small></p>
+
+<div class="btn" onclick='startCook(${JSON.stringify(r)})'>
+🍳 Cook
+</div>
+</div>
+`;
+});
+
+html += `<div class="btn" onclick="showHub()">Back</div>`;
+hub.innerHTML = html;
+}
+
+/* ================= COOK MODE ================= */
+
+function startCook(recipe){
+currentRecipe = recipe;
+stepIndex = 0;
+renderStep();
+}
+
+function renderStep(){
+
+clearInterval(timer);
+
+let step = currentRecipe.steps[stepIndex];
+
+hub.innerHTML = `
+<h2>🍳 Cooking: ${currentRecipe.name}</h2>
 
 <div class="card">
-<p><b>Time:</b> ${recipe.time} min</p>
-<p><b>Ingredients:</b> ${recipe.ingredients.join(", ")}</p>
+<h3>Step ${stepIndex+1}/${currentRecipe.steps.length}</h3>
+<p>${step.text}</p>
+<p><small>⏱ ${step.time} min | 🔥 ${step.temp}</small></p>
 </div>
 
 <div class="card">
-<h3>Steps</h3>
-<ol>${steps}</ol>
+<div id="timer">Timer: ${step.time}:00</div>
 </div>
 
-<div class="btn" onclick="loadHub()">⬅ Back</div>
+<div class="btn" onclick="nextStep()">Next Step ➜</div>
+<div class="btn" onclick="showSmart()">Exit</div>
 `;
+
+startTimer(step.time);
 }
 
-/* ================= PLACEHOLDERS ================= */
+function startTimer(min){
+let sec = min * 60;
+let t = document.getElementById("timer");
 
-function showPantry(){
-document.getElementById("hub").innerHTML = `
-<div class="card">🧺 Pantry coming next version</div>
-<div class="btn" onclick="loadHub()">Back</div>
-`;
+timer = setInterval(()=>{
+sec--;
+let m = Math.floor(sec/60);
+let s = sec%60;
+
+t.innerText = `Timer: ${m}:${s<10?"0"+s:s}`;
+
+if(sec<=0){
+clearInterval(timer);
+t.innerText = "Done ⏰";
+}
+},1000);
 }
 
-function showFavorites(){
-document.getElementById("hub").innerHTML = `
-<div class="card">❤️ Favorites coming next version</div>
-<div class="btn" onclick="loadHub()">Back</div>
+function nextStep(){
+if(stepIndex < currentRecipe.steps.length-1){
+stepIndex++;
+renderStep();
+}else{
+hub.innerHTML = `
+<div class="card">
+<h2>🎉 Finished!</h2>
+<p>${currentRecipe.name} complete</p>
+</div>
+
+<div class="btn" onclick="showHub()">Home</div>
 `;
+}
 }
 
 </script>
