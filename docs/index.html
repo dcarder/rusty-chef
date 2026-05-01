@@ -16,14 +16,8 @@ color:white;
 background:black;
 }
 
-/* APP */
-#app{
-position:fixed;
-inset:0;
-background:black;
-}
+#app{position:fixed;inset:0;background:black;}
 
-/* PAGES */
 .page{
 display:none;
 height:100%;
@@ -31,11 +25,8 @@ overflow:auto;
 padding:20px;
 }
 
-.page.active{
-display:block;
-}
+.page.active{display:block;}
 
-/* HEADER */
 .header{
 font-size:22px;
 font-weight:700;
@@ -43,7 +34,21 @@ margin-bottom:10px;
 text-align:center;
 }
 
-/* CARD */
+.topBar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+}
+
+.homeBtn{
+padding:8px 12px;
+border:1px solid rgba(255,255,255,0.3);
+border-radius:10px;
+cursor:pointer;
+font-size:12px;
+}
+
 .card{
 background:rgba(255,255,255,0.06);
 border:1px solid rgba(255,255,255,0.12);
@@ -53,7 +58,6 @@ margin:10px 0;
 text-align:center;
 }
 
-/* ITEM */
 .item{
 display:flex;
 justify-content:space-between;
@@ -71,7 +75,6 @@ background:rgba(79,172,254,0.25);
 border:1px solid rgba(79,172,254,0.6);
 }
 
-/* BUTTON */
 .btn{
 margin-top:15px;
 padding:14px;
@@ -83,7 +86,6 @@ font-weight:700;
 cursor:pointer;
 }
 
-/* BACK */
 .back{
 margin-top:10px;
 padding:10px;
@@ -93,7 +95,6 @@ text-align:center;
 cursor:pointer;
 }
 
-/* HOME HUB BACKGROUND */
 #homeBg{
 position:fixed;
 inset:0;
@@ -106,7 +107,6 @@ height:100%;
 object-fit:cover;
 }
 
-/* DOCK */
 .dock{
 position:fixed;
 bottom:90px;
@@ -131,17 +131,13 @@ backdrop-filter:blur(15px);
 cursor:pointer;
 }
 
-.dockBtn.large{
-width:110px;
-height:110px;
-}
+.dockBtn.large{width:110px;height:110px;}
 
 .dockBtn span{
 font-size:10px;
 margin-top:6px;
 opacity:0.7;
 }
-
 </style>
 </head>
 
@@ -152,23 +148,17 @@ opacity:0.7;
 <!-- HOME HUB -->
 <div id="home" class="page active">
 
-  <!-- BACKGROUND IMAGE -->
   <div id="homeBg">
     <img src="copilot_image_1777179019874.jpeg">
   </div>
 
   <div class="header">🤖 Rusty the Robot Chef</div>
 
-  <div class="card">The Salty Chef’s Help is Ready</div>
+  <div class="card">Smart AI Cooking Assistant</div>
 
-  <!-- 3 BUTTON HUB -->
   <div class="dock">
     <div class="dockBtn" onclick="openRecipes()">🍳<span>Recipes</span></div>
-
-    <div class="dockBtn large" onclick="openSmart()">
-      🧠<span>Smart Cook</span>
-    </div>
-
+    <div class="dockBtn large" onclick="openSmart()">🧠<span>Smart Cook</span></div>
     <div class="dockBtn" onclick="openPantry()">🧺<span>Pantry</span></div>
   </div>
 
@@ -183,20 +173,20 @@ opacity:0.7;
 <!-- DETAIL -->
 <div id="detail" class="page"></div>
 
+<!-- SMART -->
+<div id="smart" class="page"></div>
+
 </div>
 
 <script>
 
-/* =========================
-   GLOBAL STATE
-========================= */
-
+/* STATE */
 let selected = JSON.parse(localStorage.getItem("pantry") || "[]");
 
 /* =========================
-   BACK HOME FIX (IMPORTANT)
+   🔥 FIXED HOME FUNCTION
+   ALWAYS RETURNS TO HUB
 ========================= */
-
 function goHome(){
 
 document.querySelectorAll(".page").forEach(p=>{
@@ -204,177 +194,180 @@ p.classList.remove("active");
 });
 
 document.getElementById("home").classList.add("active");
+
+window.scrollTo(0,0);
 }
 
-/* =========================
-   PANTRY DATA (SAMPLE CORE)
-========================= */
+/* SAFE PAGE SWITCH */
+function show(page){
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active");
+});
+document.getElementById(page).classList.add("active");
+}
 
+/* NAV */
+function openPantry(){loadPantry();}
+function openRecipes(){findRecipes();}
+function openSmart(){loadSmart();}
+
+/* PANTRY ITEMS (expanded) */
 const pantryItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Sausage","Pork chops",
 "Potatoes","Onions","Garlic","Carrots","Broccoli","Spinach",
-"Rice","Pasta","Cheese","Milk","Butter","Tomatoes","Beans"
+"Rice","Pasta","Cheese","Milk","Butter","Tomatoes","Beans",
+"Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Honey",
+"Chicken broth","Beef broth","Bell peppers","Mushrooms","Corn",
+"Peas","Green beans","Cabbage","Lettuce","Cucumber","Zucchini",
+"Apples","Bananas","Lemons","Lime","Ginger","Chili flakes",
+"Paprika","Oregano","Basil","Thyme","Cinnamon","Nutmeg",
+"Shrimp","Salmon","Tuna","Ground turkey","Ham","Steak"
 ];
 
-/* =========================
-   LOAD PANTRY
-========================= */
-
+/* PANTRY */
 function loadPantry(){
 
-let html = `<div class="header">🧺 Pantry</div>`;
+let html = `
+<div class="topBar">
+<div class="homeBtn" onclick="goHome()">🏠 Home</div>
+</div>
+
+<div class="header">🧺 Pantry</div>
+`;
 
 pantryItems.forEach(item=>{
 let on = selected.includes(item);
 
 html += `
-<div class="item ${on ? "selected" : ""}" onclick="toggleItem('${item}')">
-<span>${item}</span>
-<span>${on ? "✔" : ""}</span>
-</div>
-`;
+<div class="item ${on?'selected':''}" onclick="toggleItem('${item}')">
+<span>${item}</span><span>${on?'✔':''}</span>
+</div>`;
 });
 
 html += `
 <div class="btn" onclick="findRecipes()">🍳 What can I cook?</div>
-<div class="back" onclick="goHome()">⬅ Back Home</div>
+<div class="back" onclick="goHome()">⬅ Home</div>
 `;
 
 document.getElementById("pantry").innerHTML = html;
-
 show("pantry");
 }
 
-/* =========================
-   TOGGLE INGREDIENTS
-========================= */
-
 function toggleItem(item){
-
 if(selected.includes(item)){
 selected = selected.filter(i=>i!==item);
 }else{
 selected.push(item);
 }
-
-localStorage.setItem("pantry", JSON.stringify(selected));
+localStorage.setItem("pantry",JSON.stringify(selected));
 loadPantry();
 }
 
-/* =========================
-   RECIPES
-========================= */
-
+/* RECIPES */
 const recipes = [
 {
 name:"Garlic Butter Chicken Rice",
 ingredients:["Chicken breast","Rice","Garlic","Butter","Onions"],
 time:25,
 temp:"375°F",
-steps:[
-"Season chicken",
-"Sear in butter",
-"Add garlic + onions",
-"Cook rice",
-"Combine and simmer"
-]
+steps:["Season chicken","Sear","Add garlic","Cook rice","Combine"]
 },
 {
 name:"Cheesy Bacon Pasta",
 ingredients:["Bacon","Pasta","Cheese","Milk","Butter"],
 time:20,
 temp:"350°F",
-steps:[
-"Cook pasta",
-"Cook bacon",
-"Add milk + butter",
-"Melt cheese",
-"Combine"
-]
+steps:["Cook pasta","Cook bacon","Add milk","Melt cheese","Combine"]
 },
 {
 name:"Veggie Stir Fry",
 ingredients:["Broccoli","Carrots","Onions","Garlic","Rice"],
 time:15,
 temp:"High heat",
-steps:[
-"Heat pan",
-"Add garlic",
-"Add vegetables",
-"Stir fry",
-"Serve"
-]
+steps:["Heat pan","Add garlic","Add veggies","Stir fry","Serve"]
 }
 ];
 
-/* =========================
-   MATCH ENGINE
-========================= */
-
+/* MATCH */
 function findRecipes(){
 
 let ranked = recipes.map(r=>{
 let match = r.ingredients.filter(i=>selected.includes(i)).length;
-return {...r, score: match / r.ingredients.length};
+return {...r,score:match/r.ingredients.length};
 }).sort((a,b)=>b.score-a.score);
 
-let html = `<div class="header">🍳 Best Matches</div>`;
+let html = `
+<div class="topBar">
+<div class="homeBtn" onclick="goHome()">🏠 Home</div>
+</div>
+
+<div class="header">🍳 Matches</div>
+`;
 
 ranked.forEach(r=>{
 html += `
 <div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>
-Match: ${(r.score*100).toFixed(0)}%<br>
-Time: ${r.time} min
-</div>
-`;
+${(r.score*100).toFixed(0)}% match<br>
+${r.time} min
+</div>`;
 });
 
-html += `<div class="back" onclick="loadPantry()">⬅ Back</div>`;
+html += `<div class="back" onclick="loadPantry()">⬅ Pantry</div>`;
 
 document.getElementById("results").innerHTML = html;
-
 show("results");
 }
 
-/* =========================
-   RECIPE DETAIL
-========================= */
-
+/* RECIPE */
 function openRecipe(name){
 
 let r = recipes.find(x=>x.name===name);
 
 let html = `
+<div class="topBar">
+<div class="homeBtn" onclick="goHome()">🏠 Home</div>
+</div>
+
 <div class="header">${r.name}</div>
 
 <div class="card">
-⏱ Time: ${r.time} min<br>
-🌡 Temp: ${r.temp}<br><br>
-<b>Ingredients:</b><br>
-${r.ingredients.join("<br>")}
+⏱ ${r.time} min<br>
+🌡 ${r.temp}<br><br>
+<b>Ingredients:</b><br>${r.ingredients.join("<br>")}
 </div>
 
 <div class="card">
-<b>Steps:</b><br>
-${r.steps.map(s=>"• "+s).join("<br>")}
+<b>Steps:</b><br>${r.steps.map(s=>"• "+s).join("<br>")}
 </div>
 
 <div class="back" onclick="findRecipes()">⬅ Back</div>
 `;
 
 document.getElementById("detail").innerHTML = html;
-
 show("detail");
 }
 
-/* =========================
-   NAV SWITCH
-========================= */
+/* SMART COOK */
+function loadSmart(){
 
-function show(page){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById(page).classList.add("active");
+let html = `
+<div class="topBar">
+<div class="homeBtn" onclick="goHome()">🏠 Home</div>
+</div>
+
+<div class="header">🧠 Smart Cook AI</div>
+
+<div class="card">
+AI recipe generator coming soon.<br>
+This will create meals from your pantry automatically.
+</div>
+
+<div class="back" onclick="goHome()">⬅ Home</div>
+`;
+
+document.getElementById("smart").innerHTML = html;
+show("smart");
 }
 
 /* INIT */
