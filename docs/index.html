@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chef Jeff V8</title>
+<title>Chef Jeff V9</title>
 
 <style>
 html,body{
@@ -16,6 +16,7 @@ font-family:Arial;
 color:white;
 }
 
+/* SPLASH SCREENS */
 .stage{
 position:fixed;
 inset:0;
@@ -32,41 +33,105 @@ height:100%;
 object-fit:cover;
 }
 
-/* HUB */
-#hub{
+/* APP WRAPPER */
+#app{
 position:fixed;
 inset:0;
 display:none;
 background:black;
-padding:20px;
+}
+
+/* PAGES */
+.page{
+display:none;
+height:100%;
 overflow:auto;
-z-index:2000;
+padding:20px;
+padding-bottom:90px;
 }
 
+.page.active{
+display:block;
+}
+
+/* HEADER */
+.header{
+font-size:22px;
+font-weight:700;
+margin-bottom:10px;
+}
+
+/* CARDS */
 .card{
-padding:15px;
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.12);
+border-radius:16px;
+padding:14px;
 margin:10px 0;
-border:1px solid rgba(255,255,255,0.2);
-border-radius:12px;
+backdrop-filter: blur(10px);
 }
 
+/* BUTTONS */
 .btn{
 padding:14px;
+border-radius:14px;
+background:linear-gradient(135deg,rgba(255,255,255,0.18),rgba(255,255,255,0.06));
+border:1px solid rgba(255,255,255,0.2);
 margin-top:10px;
-border:1px solid white;
 text-align:center;
-border-radius:10px;
+font-weight:600;
 cursor:pointer;
+transition:0.15s;
+}
+.btn:active{transform:scale(0.96);}
+
+/* BOTTOM NAV */
+#nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+height:70px;
+background:rgba(0,0,0,0.85);
+backdrop-filter: blur(15px);
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid rgba(255,255,255,0.1);
 }
 
-small{opacity:0.7;}
+.navBtn{
+font-size:12px;
+text-align:center;
+opacity:0.6;
+cursor:pointer;
+}
+.navBtn.active{opacity:1;}
+
+/* FLOAT BUTTON */
+.fab{
+position:fixed;
+bottom:85px;
+right:20px;
+width:60px;
+height:60px;
+border-radius:50%;
+background:linear-gradient(135deg,#ff7a18,#af002d);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:22px;
+cursor:pointer;
+box-shadow:0 10px 25px rgba(0,0,0,0.5);
+}
+
 </style>
 </head>
 
 <body>
 
 <!-- LOGO -->
-<div id="logo" class="stage" style="background:black;">
+<div id="logo" class="stage">
 <img src="rusty_logo.jpeg">
 </div>
 
@@ -75,16 +140,45 @@ small{opacity:0.7;}
 <img src="rusty_intro.jpeg">
 </div>
 
-<!-- HUB -->
-<div id="hub"></div>
+<!-- APP -->
+<div id="app">
+
+<!-- HOME -->
+<div id="home" class="page active">
+<div class="header">🤖 Copilot Hub</div>
+
+<div class="card">Smart Cooking Assistant Ready</div>
+
+<div class="btn" onclick="openRecipes()">🍳 Recipes</div>
+<div class="btn" onclick="openSmart()">🧠 Smart Cook</div>
+<div class="btn" onclick="openPantry()">🧺 Pantry</div>
+</div>
+
+<!-- RECIPES -->
+<div id="recipes" class="page"></div>
+
+<!-- SMART -->
+<div id="smart" class="page"></div>
+
+<!-- PANTRY -->
+<div id="pantry" class="page"></div>
+
+</div>
+
+<!-- FLOAT BUTTON -->
+<div class="fab" onclick="openSmart()">🍳</div>
+
+<!-- NAV -->
+<div id="nav">
+<div class="navBtn active" onclick="show('home')">🏠<br>Home</div>
+<div class="navBtn" onclick="openRecipes()">🍳<br>Recipes</div>
+<div class="navBtn" onclick="openSmart()">🧠<br>Smart</div>
+<div class="navBtn" onclick="openPantry()">🧺<br>Pantry</div>
+</div>
 
 <script>
 
-let currentRecipe = null;
-let stepIndex = 0;
-let timer = null;
-
-/* FLOW */
+/* ===== FLOW ===== */
 setTimeout(()=>{
 document.getElementById("logo").style.display="none";
 document.getElementById("rusty").style.display="flex";
@@ -92,83 +186,89 @@ document.getElementById("rusty").style.display="flex";
 
 setTimeout(()=>{
 document.getElementById("rusty").style.display="none";
-showHub();
+document.getElementById("app").style.display="block";
 },6000);
 
-/* ================= PANTRY (100+ ITEMS) ================= */
+/* ===== NAV CONTROL ===== */
+function show(page){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(page).classList.add("active");
+}
 
+/* ===== PANTRY ===== */
 const pantryItems = [
-"chicken","beef","pork","turkey","salmon","shrimp",
-"rice","pasta","bread","tortilla","oats","quinoa",
-"egg","milk","cheese","butter","cream",
-"garlic","onion","tomato","carrot","broccoli","spinach","lettuce",
-"cucumber","pepper","mushroom","zucchini","potato","sweet potato",
-"corn","peas","cabbage","cauliflower",
-"apple","banana","orange","lemon","lime",
-"salt","pepper","paprika","oregano","basil","thyme",
-"soy sauce","olive oil","vinegar","ketchup","mustard","sugar",
-"beans","lentils","broth","coconut milk"
+"chicken","beef","pork","rice","pasta","egg","milk","cheese",
+"garlic","onion","tomato","carrot","broccoli","pepper",
+"salt","pepper","olive oil","butter","soy sauce",
+"potato","lettuce","spinach","cucumber","corn","beans"
 ];
 
-/* ================= RECIPES ================= */
-
+/* ===== RECIPES ===== */
 const recipes = [
 {
 name:"Garlic Chicken Rice",
-ingredients:["chicken","rice","garlic","salt","olive oil"],
 time:25,
-steps:[
-{ text:"Season chicken", time:2, temp:"Room temp" },
-{ text:"Cook chicken", time:10, temp:"165°F medium heat" },
-{ text:"Add garlic", time:2, temp:"Medium heat" },
-{ text:"Mix rice", time:5, temp:"Low heat" }
-]
+ingredients:["chicken","rice","garlic","salt"]
 },
 {
 name:"Veg Stir Fry",
-ingredients:["broccoli","carrot","onion","soy sauce"],
 time:15,
-steps:[
-{ text:"Chop vegetables", time:5, temp:"—" },
-{ text:"Heat pan", time:2, temp:"High heat" },
-{ text:"Stir fry", time:6, temp:"High heat" }
-]
+ingredients:["broccoli","carrot","soy sauce"]
 },
 {
 name:"Cheesy Eggs",
-ingredients:["egg","cheese","butter","salt"],
 time:10,
-steps:[
-{ text:"Whisk eggs", time:2, temp:"Room temp" },
-{ text:"Melt butter", time:2, temp:"Medium heat" },
-{ text:"Cook eggs", time:3, temp:"Low heat" },
-{ text:"Add cheese", time:1, temp:"Low heat" }
-]
+ingredients:["egg","cheese","butter"]
 }
 ];
 
-/* ================= HUB ================= */
+/* ===== RECIPES ===== */
+function openRecipes(){
 
-function showHub(){
-hub.style.display="block";
-hub.innerHTML = `
-<h1>🤖 Copilot Hub V8</h1>
+let html = `<div class="header">🍳 Recipes</div>`;
 
-<div class="card">Smart Cooking Engine Ready</div>
+recipes.forEach(r=>{
+html += `
+<div class="card">
+<h3>${r.name}</h3>
+<p>⏱ ${r.time} min</p>
+</div>`;
+});
 
-<div class="btn" onclick="showPantry()">🧺 Pantry</div>
-<div class="btn" onclick="showSmart()">🧠 Smart Cook</div>
-<div class="btn" onclick="showRecipes()">🍳 Recipes</div>
-`;
+document.getElementById("recipes").innerHTML = html;
+show("recipes");
 }
 
-/* ================= PANTRY ================= */
+/* ===== SMART MATCH ===== */
+function openSmart(){
 
-function showPantry(){
+let pantry = JSON.parse(localStorage.getItem("pantry") || "[]");
+
+let ranked = recipes.map(r=>{
+let match = r.ingredients.filter(i=>pantry.includes(i)).length;
+return {...r, score: match/r.ingredients.length};
+}).sort((a,b)=>b.score-a.score);
+
+let html = `<div class="header">🧠 Smart Cook</div>`;
+
+ranked.forEach(r=>{
+html += `
+<div class="card">
+<h3>${r.name}</h3>
+<p>Match: ${(r.score*100).toFixed(0)}%</p>
+</div>`;
+});
+
+document.getElementById("smart").innerHTML = html;
+show("smart");
+}
+
+/* ===== PANTRY ===== */
+function openPantry(){
 
 let saved = JSON.parse(localStorage.getItem("pantry") || "[]");
 
-let html = `<h2>🧺 Pantry</h2>`;
+let html = `<div class="header">🧺 Pantry</div>`;
 
 pantryItems.forEach(i=>{
 let checked = saved.includes(i) ? "checked" : "";
@@ -180,127 +280,17 @@ html += `
 </div>`;
 });
 
-html += `
-<div class="btn" onclick="savePantry()">💾 Save</div>
-<div class="btn" onclick="showHub()">Back</div>
-`;
+html += `<div class="btn" onclick="savePantry()">💾 Save Pantry</div>`;
 
-hub.innerHTML = html;
+document.getElementById("pantry").innerHTML = html;
+show("pantry");
 }
 
 function savePantry(){
 let checked = document.querySelectorAll("input:checked");
 let pantry = Array.from(checked).map(i=>i.value);
 localStorage.setItem("pantry", JSON.stringify(pantry));
-alert("Saved!");
-showHub();
-}
-
-/* ================= MATCH SCORE ================= */
-
-function score(recipe, pantry){
-let match = recipe.ingredients.filter(i=>pantry.includes(i));
-let missing = recipe.ingredients.filter(i=>!pantry.includes(i));
-return {...recipe, score: match.length / recipe.ingredients.length, missing};
-}
-
-/* ================= SMART COOK ================= */
-
-function showSmart(){
-
-let pantry = JSON.parse(localStorage.getItem("pantry") || "[]");
-
-let ranked = recipes
-.map(r=>score(r, pantry))
-.sort((a,b)=>b.score-a.score)
-.slice(0,3);
-
-let html = `<h2>🧠 Top Matches</h2>`;
-
-ranked.forEach(r=>{
-html += `
-<div class="card">
-<h3>${r.name}</h3>
-<p>Match: ${(r.score*100).toFixed(0)}%</p>
-<p><small>Missing: ${r.missing.join(", ") || "None"}</small></p>
-
-<div class="btn" onclick='startCook(${JSON.stringify(r)})'>
-🍳 Cook
-</div>
-</div>
-`;
-});
-
-html += `<div class="btn" onclick="showHub()">Back</div>`;
-hub.innerHTML = html;
-}
-
-/* ================= COOK MODE ================= */
-
-function startCook(recipe){
-currentRecipe = recipe;
-stepIndex = 0;
-renderStep();
-}
-
-function renderStep(){
-
-clearInterval(timer);
-
-let step = currentRecipe.steps[stepIndex];
-
-hub.innerHTML = `
-<h2>🍳 Cooking: ${currentRecipe.name}</h2>
-
-<div class="card">
-<h3>Step ${stepIndex+1}/${currentRecipe.steps.length}</h3>
-<p>${step.text}</p>
-<p><small>⏱ ${step.time} min | 🔥 ${step.temp}</small></p>
-</div>
-
-<div class="card">
-<div id="timer">Timer: ${step.time}:00</div>
-</div>
-
-<div class="btn" onclick="nextStep()">Next Step ➜</div>
-<div class="btn" onclick="showSmart()">Exit</div>
-`;
-
-startTimer(step.time);
-}
-
-function startTimer(min){
-let sec = min * 60;
-let t = document.getElementById("timer");
-
-timer = setInterval(()=>{
-sec--;
-let m = Math.floor(sec/60);
-let s = sec%60;
-
-t.innerText = `Timer: ${m}:${s<10?"0"+s:s}`;
-
-if(sec<=0){
-clearInterval(timer);
-t.innerText = "Done ⏰";
-}
-},1000);
-}
-
-function nextStep(){
-if(stepIndex < currentRecipe.steps.length-1){
-stepIndex++;
-renderStep();
-}else{
-hub.innerHTML = `
-<div class="card">
-<h2>🎉 Finished!</h2>
-<p>${currentRecipe.name} complete</p>
-</div>
-
-<div class="btn" onclick="showHub()">Home</div>
-`;
-}
+alert("Pantry Saved!");
 }
 
 </script>
