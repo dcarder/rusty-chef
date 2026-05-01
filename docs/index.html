@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chef Jeff V4</title>
+<title>Chef Jeff V6</title>
 
 <style>
 html,body{
@@ -15,211 +15,124 @@ background:black;
 font-family:Arial;
 }
 
+/* ===== SPLASH SCREENS ===== */
 .screen{
 position:fixed;
 inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
 opacity:0;
-pointer-events:none;
-transition:opacity 800ms ease, transform 800ms ease;
+transition:opacity 1s ease, transform 1s ease;
 transform:scale(1.05);
-z-index:10;
+z-index:9999;
 }
+
 .screen.active{
 opacity:1;
-pointer-events:auto;
 transform:scale(1);
 }
+
 .screen img{
 width:100%;
 height:100%;
 object-fit:cover;
 }
 
-#cameraView{
-position:fixed;
-inset:0;
-z-index:1;
-}
-video{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-#ui{
-position:fixed;
-inset:0;
-z-index:1000;
-pointer-events:none;
-}
-.button{
-pointer-events:auto;
-position:absolute;
-bottom:35px;
-width:110px;
-height:110px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-background:rgba(255,255,255,0.15);
-backdrop-filter:blur(10px);
-border:1px solid rgba(255,255,255,0.3);
-color:white;
-font-size:14px;
-}
-#cameraBtn{right:20px;}
-#factsBtn{left:20px;}
-#recipeBtn{left:50%;transform:translateX(-50%);bottom:20px;}
-
-#statusText{
-position:absolute;
-bottom:170px;
-width:100%;
-text-align:center;
-color:white;
-}
-
-#panel{
+/* ===== COPILOT HUB ===== */
+#hub{
 position:fixed;
 inset:0;
 background:black;
 color:white;
 z-index:2000;
-opacity:0;
-pointer-events:none;
-transition:opacity 300ms ease;
-overflow:auto;
+display:none;
 padding:20px;
-}
-#panel.active{
-opacity:1;
-pointer-events:auto;
+overflow:auto;
 }
 
 .card{
 padding:15px;
 margin:10px 0;
 border:1px solid rgba(255,255,255,0.2);
-border-radius:10px;
+border-radius:12px;
 }
 
-.smallBtn{
-padding:12px;
-border:1px solid white;
+.btn{
+padding:14px;
 margin-top:10px;
+border:1px solid white;
 text-align:center;
+border-radius:10px;
 cursor:pointer;
 }
 
-input,textarea{
-width:100%;
-padding:10px;
-margin-top:5px;
-border-radius:6px;
-border:none;
-}
-
-ol{
-padding-left:18px;
-}
+/* recipe steps */
+ol{padding-left:18px;}
+small{opacity:0.7;}
 </style>
 </head>
 
 <body>
 
-<!-- LOGO -->
+<!-- 1. LOGO -->
 <div id="logo" class="screen active">
 <img src="rusty_logo.jpeg">
 </div>
 
-<!-- INTRO -->
-<div id="intro" class="screen">
+<!-- 2. RUSTY TRANSITION -->
+<div id="rusty" class="screen">
 <img src="rusty_intro.jpeg">
 </div>
 
-<!-- CAMERA -->
-<div id="cameraView">
-<video id="video" autoplay playsinline></video>
-</div>
-
-<!-- UI -->
-<div id="ui">
-<div id="cameraBtn" class="button">📷 Pantry</div>
-<div id="factsBtn" class="button">🥩 Facts</div>
-<div id="recipeBtn" class="button">🍳 Recipes</div>
-<div id="statusText">Booting Chef...</div>
-</div>
-
-<!-- PANEL -->
-<div id="panel"></div>
+<!-- 3. COPILOT HUB -->
+<div id="hub"></div>
 
 <script>
+
 let currentRecipe = null;
 let stepIndex = 0;
 
-/* CAMERA */
-async function startCamera(){
-try{
-const stream = await navigator.mediaDevices.getUserMedia({
-video:{facingMode:"environment"}
-});
-video.srcObject = stream;
-}catch(e){}
+/* ================= FLOW ================= */
+setTimeout(()=>{
+document.getElementById("logo").classList.remove("active");
+document.getElementById("rusty").classList.add("active");
+},3500);
+
+setTimeout(()=>{
+document.getElementById("rusty").style.display="none";
+showHub();
+},7000);
+
+/* ================= COPILOT HUB ================= */
+function showHub(){
+
+document.getElementById("hub").style.display="block";
+
+document.getElementById("hub").innerHTML = `
+<h1>🤖 Copilot Hub</h1>
+
+<div class="card">
+Welcome to Chef Jeff AI
+</div>
+
+<div class="btn" onclick="showRecipes()">🍳 Recipes</div>
+<div class="btn" onclick="showPantry()">🧺 Pantry</div>
+<div class="btn" onclick="showFavorites()">❤️ Favorites</div>
+`;
 }
 
-/* PANEL */
-function openPanel(html){
-panel.innerHTML = html;
-panel.classList.add("active");
-}
-function closePanel(){
-panel.classList.remove("active");
-}
-
-/* STORAGE */
-function getPantry(){
-return JSON.parse(localStorage.getItem("pantry") || "[]");
-}
-function savePantry(p){
-localStorage.setItem("pantry", JSON.stringify(p));
-}
-function getFavorites(){
-return JSON.parse(localStorage.getItem("favorites") || "[]");
-}
-function saveFavorites(f){
-localStorage.setItem("favorites", JSON.stringify(f));
-}
-function getRecipes(){
-return JSON.parse(localStorage.getItem("userRecipes") || "[]");
-}
-function saveRecipes(r){
-localStorage.setItem("userRecipes", JSON.stringify(r));
-}
-
-/* INGREDIENTS */
-const ingredientsList = [
-"chicken","beef","pork","fish","salmon","shrimp",
-"rice","pasta","bread","tortilla","potato","flour",
-"garlic","onion","carrot","broccoli","spinach","zucchini","mushroom",
-"pepper","tomato","lettuce","cucumber","corn",
-"egg","cheese","butter","milk","cream",
-"salt","black pepper","paprika","oregano","basil","thyme",
-"soy sauce","olive oil","vinegar","hot sauce"
-];
-
-/* BASE RECIPES */
-const baseRecipes = [
+/* ================= DATA ================= */
+const recipes = [
 {
 name:"Garlic Chicken Rice",
 ingredients:["chicken","rice","garlic","salt"],
 time:25,
 steps:[
-"Season chicken with salt",
-"Cook chicken in pan",
-"Add garlic",
-"Mix with rice",
-"Serve hot"
+{ text:"Season chicken", time:"2 min", temp:"Room temp" },
+{ text:"Cook chicken", time:"10 min", temp:"165°F / medium heat" },
+{ text:"Add garlic", time:"2 min", temp:"Medium heat" },
+{ text:"Mix with rice", time:"5 min", temp:"Low heat" }
 ]
 },
 {
@@ -227,73 +140,47 @@ name:"Veg Stir Fry",
 ingredients:["broccoli","carrot","pepper","soy sauce"],
 time:15,
 steps:[
-"Chop vegetables",
-"Heat pan",
-"Stir fry vegetables",
-"Add soy sauce",
-"Serve"
+{ text:"Chop vegetables", time:"5 min", temp:"—" },
+{ text:"Heat pan", time:"2 min", temp:"High heat" },
+{ text:"Stir fry", time:"6 min", temp:"High heat" }
 ]
 }
 ];
 
-function allRecipes(){
-return [...baseRecipes, ...getRecipes()];
-}
+/* ================= RECIPES ================= */
+function showRecipes(){
 
-/* PANTRY */
-function showPantry(){
-let pantry = getPantry();
+let html = `<h2>🍳 Recipes</h2>`;
 
-let html = `<h2>🧺 Pantry</h2>`;
-
-ingredientsList.forEach(i=>{
-let checked = pantry.includes(i) ? "checked" : "";
+recipes.forEach(r=>{
 html += `
-<div class="card">
-<label><input type="checkbox" value="${i}" ${checked}> ${i}</label>
+<div class="card" onclick='openRecipe(${JSON.stringify(r)})' style="cursor:pointer">
+<h3>${r.name}</h3>
+<p>⏱ ${r.time} min</p>
 </div>`;
 });
 
-html += `
-<div class="smallBtn" onclick="savePantryUI()">Save Pantry</div>
-<div class="smallBtn" onclick="showRecipes()">Recipes</div>
-<div class="smallBtn" onclick="closePanel()">Close</div>
-`;
+html += `<div class="btn" onclick="showHub()">⬅ Back</div>`;
 
-openPanel(html);
+document.getElementById("hub").innerHTML = html;
 }
 
-function savePantryUI(){
-const checked = document.querySelectorAll("input:checked");
-const pantry = Array.from(checked).map(i=>i.value);
-savePantry(pantry);
-showPantry();
-}
-
-/* FAVORITES */
-function toggleFav(name){
-let fav = getFavorites();
-if(fav.includes(name)){
-fav = fav.filter(f=>f!==name);
-}else{
-fav.push(name);
-}
-saveFavorites(fav);
-showRecipes();
-}
-
-/* OPEN RECIPE DETAIL */
+/* ================= RECIPE DETAIL ================= */
 function openRecipe(recipe){
+
 currentRecipe = recipe;
-stepIndex = 0;
 
-let steps = recipe.steps.map(s=>`<li>${s}</li>`).join("");
+let steps = recipe.steps.map(s=>`
+<li>${s.text}<br>
+<small>⏱ ${s.time} | 🔥 ${s.temp}</small>
+</li>
+`).join("");
 
-openPanel(`
+document.getElementById("hub").innerHTML = `
 <h2>${recipe.name}</h2>
 
 <div class="card">
-<p><b>⏱ Time:</b> ${recipe.time} min</p>
+<p><b>Time:</b> ${recipe.time} min</p>
 <p><b>Ingredients:</b> ${recipe.ingredients.join(", ")}</p>
 </div>
 
@@ -302,12 +189,12 @@ openPanel(`
 <ol>${steps}</ol>
 </div>
 
-<div class="smallBtn" onclick="startCooking()">🍳 Start Cooking Mode</div>
-<div class="smallBtn" onclick="showRecipes()">Back</div>
-`);
+<div class="btn" onclick="startCooking()">🍳 Start Cooking Mode</div>
+<div class="btn" onclick="showRecipes()">⬅ Back</div>
+`;
 }
 
-/* COOKING MODE */
+/* ================= COOK MODE ================= */
 function startCooking(){
 stepIndex = 0;
 renderStep();
@@ -317,17 +204,18 @@ function renderStep(){
 
 let step = currentRecipe.steps[stepIndex];
 
-openPanel(`
-<h2>🍳 Cooking: ${currentRecipe.name}</h2>
+document.getElementById("hub").innerHTML = `
+<h2>🍳 Cooking Mode</h2>
 
 <div class="card">
 <h3>Step ${stepIndex+1} / ${currentRecipe.steps.length}</h3>
-<p>${step}</p>
+<p>${step.text}</p>
+<p><small>⏱ ${step.time} | 🔥 ${step.temp}</small></p>
 </div>
 
-<div class="smallBtn" onclick="nextStep()">Next Step ➜</div>
-<div class="smallBtn" onclick="openRecipe(currentRecipe)">Exit</div>
-`);
+<div class="btn" onclick="nextStep()">Next Step ➜</div>
+<div class="btn" onclick="openRecipe(currentRecipe)">Exit</div>
+`;
 }
 
 function nextStep(){
@@ -335,74 +223,38 @@ if(stepIndex < currentRecipe.steps.length-1){
 stepIndex++;
 renderStep();
 }else{
-openPanel(`
+document.getElementById("hub").innerHTML = `
 <div class="card">
-<h2>🎉 Done!</h2>
-<p>You finished ${currentRecipe.name}</p>
+<h2>🎉 Finished!</h2>
+<p>You completed ${currentRecipe.name}</p>
 </div>
 
-<div class="smallBtn" onclick="showRecipes()">Back</div>
-`);
+<div class="btn" onclick="showHub()">Home</div>
+`;
 }
 }
 
-/* RECIPES */
-function showRecipes(){
-
-let fav = getFavorites();
-let recipes = allRecipes();
-
-let html = `<h2>🍳 Recipes</h2>`;
-
-html += `<input id="search" placeholder="Search recipes...">`;
-
-setTimeout(()=>{
-document.getElementById("search").oninput=(e)=>{
-let val=e.target.value.toLowerCase();
-document.querySelectorAll(".card").forEach(c=>{
-c.style.display=c.innerText.toLowerCase().includes(val)?"block":"none";
-});
-};
-},100);
-
-recipes.forEach(r=>{
-let isFav = fav.includes(r.name) ? "❤️" : "🤍";
-
-html += `
-<div class="card" onclick='openRecipe(${JSON.stringify(r)})' style="cursor:pointer">
-<h3>${r.name} ${isFav}</h3>
-<p>⏱ ${r.time || "?"} min</p>
-
-<div class="smallBtn" onclick="event.stopPropagation(); toggleFav('${r.name}')">
-Toggle Favorite
+/* ================= PANTRY ================= */
+function showPantry(){
+document.getElementById("hub").innerHTML = `
+<h2>🧺 Pantry</h2>
+<div class="card">
+Feature coming next upgrade
 </div>
-</div>`;
-});
-
-html += `<div class="smallBtn" onclick="closePanel()">Close</div>`;
-
-openPanel(html);
+<div class="btn" onclick="showHub()">Back</div>
+`;
 }
 
-/* BUTTONS */
-document.getElementById("cameraBtn").onclick = showPantry;
-document.getElementById("recipeBtn").onclick = showRecipes;
-
-document.getElementById("factsBtn").onclick = ()=>{
-openPanel(`<div class="card">Chef App V4 Cooking Mode Active</div>
-<div class="smallBtn" onclick="closePanel()">Back</div>`);
-};
-
-/* FLOW */
-setTimeout(()=>{
-document.getElementById("logo").classList.remove("active");
-document.getElementById("intro").classList.add("active");
-},3500);
-
-setTimeout(()=>{
-document.getElementById("intro").style.display="none";
-startCamera();
-},8000);
+/* ================= FAVORITES ================= */
+function showFavorites(){
+document.getElementById("hub").innerHTML = `
+<h2>❤️ Favorites</h2>
+<div class="card">
+Feature coming next upgrade
+</div>
+<div class="btn" onclick="showHub()">Back</div>
+`;
+}
 
 </script>
 
