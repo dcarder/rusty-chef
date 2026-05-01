@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chef Jeff V3</title>
+<title>Chef Jeff V4</title>
 
 <style>
 html,body{
@@ -15,7 +15,6 @@ background:black;
 font-family:Arial;
 }
 
-/* SCREENS */
 .screen{
 position:fixed;
 inset:0;
@@ -36,7 +35,6 @@ height:100%;
 object-fit:cover;
 }
 
-/* CAMERA */
 #cameraView{
 position:fixed;
 inset:0;
@@ -48,7 +46,6 @@ height:100%;
 object-fit:cover;
 }
 
-/* UI */
 #ui{
 position:fixed;
 inset:0;
@@ -83,7 +80,6 @@ text-align:center;
 color:white;
 }
 
-/* PANEL */
 #panel{
 position:fixed;
 inset:0;
@@ -123,6 +119,10 @@ margin-top:5px;
 border-radius:6px;
 border:none;
 }
+
+ol{
+padding-left:18px;
+}
 </style>
 </head>
 
@@ -155,9 +155,8 @@ border:none;
 <div id="panel"></div>
 
 <script>
-const video = document.getElementById("video");
-const panel = document.getElementById("panel");
-const statusText = document.getElementById("statusText");
+let currentRecipe = null;
+let stepIndex = 0;
 
 /* CAMERA */
 async function startCamera(){
@@ -166,10 +165,7 @@ const stream = await navigator.mediaDevices.getUserMedia({
 video:{facingMode:"environment"}
 });
 video.srcObject = stream;
-statusText.innerText = "Tap Pantry or Recipes";
-}catch(e){
-statusText.innerText = "Camera unavailable";
-}
+}catch(e){}
 }
 
 /* PANEL */
@@ -188,17 +184,17 @@ return JSON.parse(localStorage.getItem("pantry") || "[]");
 function savePantry(p){
 localStorage.setItem("pantry", JSON.stringify(p));
 }
-function getRecipes(){
-return JSON.parse(localStorage.getItem("userRecipes") || "[]");
-}
-function saveRecipes(r){
-localStorage.setItem("userRecipes", JSON.stringify(r));
-}
 function getFavorites(){
 return JSON.parse(localStorage.getItem("favorites") || "[]");
 }
 function saveFavorites(f){
 localStorage.setItem("favorites", JSON.stringify(f));
+}
+function getRecipes(){
+return JSON.parse(localStorage.getItem("userRecipes") || "[]");
+}
+function saveRecipes(r){
+localStorage.setItem("userRecipes", JSON.stringify(r));
 }
 
 /* INGREDIENTS */
@@ -218,13 +214,25 @@ const baseRecipes = [
 name:"Garlic Chicken Rice",
 ingredients:["chicken","rice","garlic","salt"],
 time:25,
-steps:"Cook chicken → add garlic → mix with rice."
+steps:[
+"Season chicken with salt",
+"Cook chicken in pan",
+"Add garlic",
+"Mix with rice",
+"Serve hot"
+]
 },
 {
 name:"Veg Stir Fry",
 ingredients:["broccoli","carrot","pepper","soy sauce"],
 time:15,
-steps:"Stir fry vegetables and add sauce."
+steps:[
+"Chop vegetables",
+"Heat pan",
+"Stir fry vegetables",
+"Add soy sauce",
+"Serve"
+]
 }
 ];
 
@@ -248,7 +256,7 @@ html += `
 
 html += `
 <div class="smallBtn" onclick="savePantryUI()">Save Pantry</div>
-<div class="smallBtn" onclick="showRecipes()">Find Recipes</div>
+<div class="smallBtn" onclick="showRecipes()">Recipes</div>
 <div class="smallBtn" onclick="closePanel()">Close</div>
 `;
 
@@ -259,25 +267,89 @@ function savePantryUI(){
 const checked = document.querySelectorAll("input:checked");
 const pantry = Array.from(checked).map(i=>i.value);
 savePantry(pantry);
-alert("Saved!");
 showPantry();
 }
 
-/* SCORE */
-function scoreRecipe(recipe, pantry){
-let match = recipe.ingredients.filter(i=>pantry.includes(i));
-return {
-...recipe,
-score: match.length / recipe.ingredients.length,
-missing: recipe.ingredients.filter(i=>!pantry.includes(i))
-};
+/* FAVORITES */
+function toggleFav(name){
+let fav = getFavorites();
+if(fav.includes(name)){
+fav = fav.filter(f=>f!==name);
+}else{
+fav.push(name);
+}
+saveFavorites(fav);
+showRecipes();
+}
+
+/* OPEN RECIPE DETAIL */
+function openRecipe(recipe){
+currentRecipe = recipe;
+stepIndex = 0;
+
+let steps = recipe.steps.map(s=>`<li>${s}</li>`).join("");
+
+openPanel(`
+<h2>${recipe.name}</h2>
+
+<div class="card">
+<p><b>⏱ Time:</b> ${recipe.time} min</p>
+<p><b>Ingredients:</b> ${recipe.ingredients.join(", ")}</p>
+</div>
+
+<div class="card">
+<h3>Steps</h3>
+<ol>${steps}</ol>
+</div>
+
+<div class="smallBtn" onclick="startCooking()">🍳 Start Cooking Mode</div>
+<div class="smallBtn" onclick="showRecipes()">Back</div>
+`);
+}
+
+/* COOKING MODE */
+function startCooking(){
+stepIndex = 0;
+renderStep();
+}
+
+function renderStep(){
+
+let step = currentRecipe.steps[stepIndex];
+
+openPanel(`
+<h2>🍳 Cooking: ${currentRecipe.name}</h2>
+
+<div class="card">
+<h3>Step ${stepIndex+1} / ${currentRecipe.steps.length}</h3>
+<p>${step}</p>
+</div>
+
+<div class="smallBtn" onclick="nextStep()">Next Step ➜</div>
+<div class="smallBtn" onclick="openRecipe(currentRecipe)">Exit</div>
+`);
+}
+
+function nextStep(){
+if(stepIndex < currentRecipe.steps.length-1){
+stepIndex++;
+renderStep();
+}else{
+openPanel(`
+<div class="card">
+<h2>🎉 Done!</h2>
+<p>You finished ${currentRecipe.name}</p>
+</div>
+
+<div class="smallBtn" onclick="showRecipes()">Back</div>
+`);
+}
 }
 
 /* RECIPES */
 function showRecipes(){
-let pantry = getPantry();
-let fav = getFavorites();
 
+let fav = getFavorites();
 let recipes = allRecipes();
 
 let html = `<h2>🍳 Recipes</h2>`;
@@ -297,12 +369,13 @@ recipes.forEach(r=>{
 let isFav = fav.includes(r.name) ? "❤️" : "🤍";
 
 html += `
-<div class="card">
+<div class="card" onclick='openRecipe(${JSON.stringify(r)})' style="cursor:pointer">
 <h3>${r.name} ${isFav}</h3>
 <p>⏱ ${r.time || "?"} min</p>
-<p>${r.steps}</p>
 
-<div class="smallBtn" onclick="toggleFav('${r.name}')">Toggle Favorite</div>
+<div class="smallBtn" onclick="event.stopPropagation(); toggleFav('${r.name}')">
+Toggle Favorite
+</div>
 </div>`;
 });
 
@@ -311,53 +384,12 @@ html += `<div class="smallBtn" onclick="closePanel()">Close</div>`;
 openPanel(html);
 }
 
-/* FAVORITES */
-function toggleFav(name){
-let fav = getFavorites();
-if(fav.includes(name)){
-fav = fav.filter(f=>f!==name);
-}else{
-fav.push(name);
-}
-saveFavorites(fav);
-showRecipes();
-}
-
-/* ADD RECIPE */
-function addRecipe(){
-let html = `
-<h2>➕ Add Recipe</h2>
-<div class="card">
-<input id="name" placeholder="Name">
-<input id="time" placeholder="Time">
-<textarea id="steps" placeholder="Steps"></textarea>
-<input id="ingredients" placeholder="Ingredients (comma separated)">
-</div>
-<div class="smallBtn" onclick="saveRecipe()">Save</div>
-<div class="smallBtn" onclick="showRecipes()">Back</div>
-`;
-openPanel(html);
-}
-
-function saveRecipe(){
-let r=getRecipes();
-r.push({
-name:document.getElementById("name").value,
-time:document.getElementById("time").value,
-steps:document.getElementById("steps").value,
-ingredients:document.getElementById("ingredients").value.split(",")
-});
-saveRecipes(r);
-alert("Saved!");
-showRecipes();
-}
-
 /* BUTTONS */
-document.getElementById("cameraBtn").onclick=showPantry;
-document.getElementById("recipeBtn").onclick=showRecipes;
+document.getElementById("cameraBtn").onclick = showPantry;
+document.getElementById("recipeBtn").onclick = showRecipes;
 
-document.getElementById("factsBtn").onclick=()=>{
-openPanel(`<div class="card">Cooking App V3 Complete</div>
+document.getElementById("factsBtn").onclick = ()=>{
+openPanel(`<div class="card">Chef App V4 Cooking Mode Active</div>
 <div class="smallBtn" onclick="closePanel()">Back</div>`);
 };
 
@@ -371,6 +403,7 @@ setTimeout(()=>{
 document.getElementById("intro").style.display="none";
 startCamera();
 },8000);
+
 </script>
 
 </body>
