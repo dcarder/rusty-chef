@@ -23,22 +23,28 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
         background: black;
         opacity: 0;
-        z-index: 5;
-        transition: opacity 1s ease-in-out;
-        padding: 30px;
+        z-index: -1;
+        transition: opacity 0.8s ease-in-out;
         overflow-y: auto;
+        padding: 30px;
     }
 
-    #yourLogoContainer img,
-    #introContainer img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
+    .factsPage h1, .factsPage h2, .factsPage p {
+        color: white;
+    }
+
+    .navButton {
+        width: 200px;
+        padding: 15px;
+        text-align: center;
+        background: #222;
+        color: white;
+        border: 2px solid white;
+        border-radius: 12px;
+        margin: 30px auto;
+        font-size: 20px;
     }
 
     #cameraScreen {
@@ -122,44 +128,36 @@
 
 <!-- Screen 1: Your logo -->
 <div id="yourLogoContainer" class="fullScreen">
-    <img src="your_logo.jpeg" alt="Your Logo">
+    <img src="your_logo.jpeg" style="width:100%; height:100%; object-fit:contain;">
 </div>
 
 <!-- Screen 2: Rusty intro -->
 <div id="introContainer" class="fullScreen">
-    <img src="rusty_intro.jpeg" alt="Rusty Intro Logo">
+    <img src="rusty_intro.jpeg" style="width:100%; height:100%; object-fit:contain;">
 </div>
 
 <!-- Screen 3: Camera screen -->
-<img id="cameraScreen" src="copilot_image_1777179019874.jpeg" alt="Chef Jeff Camera Screen">
+<img id="cameraScreen" src="copilot_image_1777179019874.jpeg">
 
 <!-- Glowing text -->
 <div id="cameraText">
     Take a picture of your food and we will make something of it
 </div>
 
-<!-- Robot voice -->
+<!-- Audio -->
 <audio id="robotVoice" src="robot_voice.mp3"></audio>
-
-<!-- Rusty intro voice -->
 <audio id="rustyIntroVoice" src="rusty_intro.mp3"></audio>
 
-<!-- Facts Button -->
+<!-- Buttons -->
 <div class="camera-hotspot" id="factsButton">📘 Facts</div>
-
-<!-- Camera Button -->
 <div class="camera-hotspot" id="cameraButton">📷 Camera</div>
 
 <input type="file" id="cameraInput" accept="image/*" capture="environment"/>
 
-<!-- Facts Page -->
-<div id="factsPage" class="fullScreen" style="opacity:0; z-index:-1;">
-
-    <h1 style="color:white; text-align:center; margin-bottom:20px;">Seasoning Facts</h1>
-
-    <!-- Pork -->
-    <h2 style="color:#ffcc66;">🐖 Pork</h2>
-    <p style="color:white; line-height:1.5;">
+<!-- FACTS PAGE 1 — PORK -->
+<div id="factsPork" class="fullScreen factsPage">
+    <h1>🐖 Pork Seasoning Facts</h1>
+    <p>
         <b>1. Sweet + Savory Works Best:</b> Pork has a natural sweetness, so brown sugar, honey, and paprika caramelize beautifully.<br><br>
         <b>2. Mustard Cuts Through Fat:</b> Mustard powder or Dijon adds tang that balances pork’s richness.<br><br>
         <b>3. Rosemary & Thyme Boost Aroma:</b> These herbs complement pork’s mild flavor without overpowering it.<br><br>
@@ -167,9 +165,14 @@
         <b>5. Smoked Spices Add BBQ Character:</b> Smoked paprika or chipotle gives pork a slow‑cooked, smoky flavor even without a grill.
     </p>
 
-    <!-- Beef -->
-    <h2 style="color:#ff6666;">🐄 Beef</h2>
-    <p style="color:white; line-height:1.5;">
+    <div class="navButton" id="nextToBeef">Next → Beef</div>
+    <div class="navButton" id="backToCamera1">← Back to Camera</div>
+</div>
+
+<!-- FACTS PAGE 2 — BEEF -->
+<div id="factsBeef" class="fullScreen factsPage">
+    <h1>🐄 Beef Seasoning Facts</h1>
+    <p>
         <b>1. Black Pepper Is Essential:</b> Pepper enhances beef’s natural umami more than any other seasoning.<br><br>
         <b>2. Garlic + Onion Powder Build Depth:</b> These create a strong savory base that stands up to beef’s richness.<br><br>
         <b>3. Smoked Paprika Adds Warmth:</b> It gives beef a smoky, grilled flavor even when pan‑seared.<br><br>
@@ -177,9 +180,14 @@
         <b>5. Salt Unlocks Juiciness:</b> Proper salting draws moisture to the surface, helping form a flavorful crust.
     </p>
 
-    <!-- Chicken -->
-    <h2 style="color:#66ccff;">🐔 Chicken</h2>
-    <p style="color:white; line-height:1.5;">
+    <div class="navButton" id="nextToChicken">Next → Chicken</div>
+    <div class="navButton" id="backToCamera2">← Back to Camera</div>
+</div>
+
+<!-- FACTS PAGE 3 — CHICKEN -->
+<div id="factsChicken" class="fullScreen factsPage">
+    <h1>🐔 Chicken Seasoning Facts</h1>
+    <p>
         <b>1. Lemon Pepper Brightens Flavor:</b> Chicken is mild, so citrus adds freshness and lift.<br><br>
         <b>2. Garlic Works on Every Cut:</b> Chicken absorbs garlic quickly, making it ideal for marinades.<br><br>
         <b>3. Oregano & Parsley Add Herbal Notes:</b> These herbs give chicken a Mediterranean flavor profile.<br><br>
@@ -187,21 +195,7 @@
         <b>5. Cayenne Adds Adjustable Heat:</b> A pinch wakes up chicken dishes without overwhelming them.
     </p>
 
-    <div id="closeFacts" style="
-        margin-top:40px;
-        width:200px;
-        padding:15px;
-        text-align:center;
-        background:#222;
-        color:white;
-        border:2px solid white;
-        border-radius:12px;
-        margin-left:auto;
-        margin-right:auto;
-        font-size:20px;
-    ">
-        Close
-    </div>
+    <div class="navButton" id="backToCamera3">← Back to Camera</div>
 </div>
 
 <script type="module">
@@ -337,24 +331,46 @@ document.getElementById("cameraInput").addEventListener("change", async (event) 
 });
 
 /* -------------------------------------------------
-   FACTS PAGE OPEN/CLOSE
+   FACTS PAGE NAVIGATION
 ---------------------------------------------------*/
-const factsPage = document.getElementById("factsPage");
-const factsButton = document.getElementById("factsButton");
-const closeFacts = document.getElementById("closeFacts");
+const pork = document.getElementById("factsPork");
+const beef = document.getElementById("factsBeef");
+const chicken = document.getElementById("factsChicken");
 
-factsButton.addEventListener("click", () => {
-    factsPage.style.zIndex = "10";
+function showPage(page) {
+    [pork, beef, chicken].forEach(p => {
+        p.style.opacity = "0";
+        p.style.zIndex = "-1";
+    });
+
     setTimeout(() => {
-        factsPage.style.opacity = "1";
-    }, 10);
+        page.style.zIndex = "10";
+        page.style.opacity = "1";
+    }, 50);
+}
+
+document.getElementById("factsButton").addEventListener("click", () => {
+    showPage(pork);
 });
 
-closeFacts.addEventListener("click", () => {
-    factsPage.style.opacity = "0";
-    setTimeout(() => {
-        factsPage.style.zIndex = "-1";
-    }, 1000);
+document.getElementById("nextToBeef").addEventListener("click", () => {
+    showPage(beef);
+});
+
+document.getElementById("nextToChicken").addEventListener("click", () => {
+    showPage(chicken);
+});
+
+document.getElementById("backToCamera1").addEventListener("click", () => {
+    showPage({ style:{opacity:"0", zIndex:"-1"} });
+});
+
+document.getElementById("backToCamera2").addEventListener("click", () => {
+    showPage({ style:{opacity:"0", zIndex:"-1"} });
+});
+
+document.getElementById("backToCamera3").addEventListener("click", () => {
+    showPage({ style:{opacity:"0", zIndex:"-1"} });
 });
 </script>
 
