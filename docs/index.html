@@ -16,7 +16,7 @@ font-family:Arial;
 color:white;
 }
 
-/* ===== LOADING / LOGO STAGE ===== */
+/* ===== SPLASH ===== */
 .stage{
 position:fixed;
 inset:0;
@@ -26,13 +26,11 @@ justify-content:center;
 z-index:9999;
 }
 
-/* BACKGROUND ALWAYS SHOWS IMAGE (NO BLACK SCREEN) */
 .logoStage{
 background:url("your_logo.jpeg") center center no-repeat;
 background-size:cover;
 }
 
-/* DARK OVERLAY FOR READABILITY */
 .logoOverlay{
 position:absolute;
 inset:0;
@@ -42,38 +40,19 @@ align-items:center;
 justify-content:center;
 }
 
-/* NETFLIX ANIMATION */
 .logoAnim{
 width:100%;
 height:100%;
 object-fit:cover;
 animation:netflixIntro 5s ease forwards;
-transform-origin:center;
 }
 
 @keyframes netflixIntro{
-0%{
-transform:scale(1.2);
-filter:blur(14px);
-opacity:0;
-}
-20%{
-opacity:1;
-filter:blur(8px);
-}
-55%{
-transform:scale(1.05);
-filter:blur(0px);
-opacity:1;
-}
-85%{
-transform:scale(1);
-opacity:1;
-}
-100%{
-transform:scale(1);
-opacity:1;
-}
+0%{transform:scale(1.2);filter:blur(14px);opacity:0;}
+20%{opacity:1;filter:blur(8px);}
+55%{transform:scale(1.05);filter:blur(0);opacity:1;}
+85%{transform:scale(1);opacity:1;}
+100%{transform:scale(1);opacity:1;}
 }
 
 /* NEXT SCREEN */
@@ -91,13 +70,11 @@ display:none;
 background:black;
 }
 
-/* PAGES */
+/* HOME */
 .page{
 display:none;
 height:100%;
-overflow:auto;
-padding:20px;
-padding-bottom:100px;
+overflow:hidden;
 position:relative;
 }
 
@@ -111,86 +88,84 @@ position:fixed;
 inset:0;
 background:url("copilot_image_1777179019874.jpeg") center center no-repeat;
 background-size:cover;
-z-index:-1;
 filter:brightness(0.5);
+z-index:-1;
 }
 
 /* HEADER */
 .header{
 font-size:22px;
 font-weight:700;
-margin-bottom:12px;
-position:relative;
-z-index:2;
+padding:20px;
 }
 
-/* ===== BUTTONS ===== */
-.btn{
+/* ===== DOCK BUTTONS ===== */
+.dock{
+position:fixed;
+bottom:90px;
+left:0;
+right:0;
+
 display:flex;
+justify-content:center;
+align-items:flex-end;
+gap:22px;
+
+z-index:10;
+}
+
+/* base */
+.dockBtn{
+display:flex;
+flex-direction:column;
 align-items:center;
-gap:14px;
+justify-content:center;
 
-padding:16px 18px;
-margin-top:14px;
+border-radius:50%;
 
-border-radius:999px;
-
-background:rgba(255,255,255,0.08);
+background:rgba(255,255,255,0.10);
 border:1px solid rgba(255,255,255,0.18);
-backdrop-filter: blur(18px);
+backdrop-filter: blur(20px);
 
 box-shadow:
-0 12px 30px rgba(0,0,0,0.45),
+0 12px 35px rgba(0,0,0,0.55),
 inset 0 1px 0 rgba(255,255,255,0.15);
 
 cursor:pointer;
 transition:0.25s ease;
 
-position:relative;
-overflow:hidden;
-z-index:2;
+color:white;
+font-weight:600;
 }
 
-.btn:hover{
-transform:translateY(-3px) scale(1.01);
-background:rgba(255,255,255,0.12);
-}
-
-.btn:active{
-transform:scale(0.97);
-}
-
-/* ICON */
-.btnIcon{
+/* small buttons */
+.dockBtn.small{
+width:78px;
+height:78px;
 font-size:20px;
-width:38px;
-height:38px;
-border-radius:50%;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-background:rgba(255,255,255,0.10);
-border:1px solid rgba(255,255,255,0.18);
-flex-shrink:0;
 }
 
-/* TEXT */
-.btnText{
-display:flex;
-flex-direction:column;
-z-index:1;
+/* big middle button */
+.dockBtn.large{
+width:110px;
+height:110px;
+font-size:26px;
+
+background:rgba(255,255,255,0.14);
+box-shadow:
+0 18px 55px rgba(0,0,0,0.65),
+0 0 25px rgba(79,172,254,0.25);
 }
 
-.btnTitle{
-font-size:15px;
-font-weight:700;
-}
-
-.btnSub{
-font-size:11px;
+.dockBtn span{
+font-size:10px;
+margin-top:6px;
 opacity:0.75;
+}
+
+/* press effect */
+.dockBtn:active{
+transform:scale(0.92);
 }
 
 /* CARD */
@@ -199,13 +174,11 @@ background:rgba(0,0,0,0.35);
 border:1px solid rgba(255,255,255,0.12);
 border-radius:16px;
 padding:14px;
-margin:10px 0;
+margin:10px 20px;
 backdrop-filter: blur(10px);
-position:relative;
-z-index:2;
 }
 
-/* NAV */
+/* NAV (optional kept) */
 #nav{
 position:fixed;
 bottom:0;
@@ -213,7 +186,6 @@ left:0;
 right:0;
 height:70px;
 background:rgba(0,0,0,0.85);
-backdrop-filter: blur(15px);
 display:flex;
 justify-content:space-around;
 align-items:center;
@@ -223,28 +195,7 @@ z-index:10;
 
 .navBtn{
 font-size:12px;
-text-align:center;
 opacity:0.6;
-cursor:pointer;
-}
-.navBtn.active{opacity:1;}
-
-/* FLOAT BUTTON */
-.fab{
-position:fixed;
-bottom:85px;
-right:20px;
-width:60px;
-height:60px;
-border-radius:50%;
-background:linear-gradient(135deg,#ff7a18,#af002d);
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:22px;
-cursor:pointer;
-box-shadow:0 10px 25px rgba(0,0,0,0.5);
-z-index:10;
 }
 
 </style>
@@ -252,16 +203,14 @@ z-index:10;
 
 <body>
 
-<!-- LOADING / LOGO (NO BLACK SCREEN ANYMORE) -->
+<!-- LOGO -->
 <div id="logo" class="stage logoStage">
-
   <div class="logoOverlay">
     <img src="your_logo.jpeg" class="logoAnim">
   </div>
-
 </div>
 
-<!-- NEXT SCREEN -->
+<!-- INTRO -->
 <div id="rusty" class="stage" style="display:none;">
   <img src="rusty_intro.jpeg">
 </div>
@@ -277,28 +226,24 @@ z-index:10;
 
 <div class="card">Smart Cooking Assistant Ready</div>
 
-<div class="btn" onclick="openRecipes()">
-<div class="btnIcon">🍳</div>
-<div class="btnText">
-<div class="btnTitle">Recipes</div>
-<div class="btnSub">Discover meals instantly</div>
-</div>
-</div>
+<!-- DOCK BUTTONS -->
+<div class="dock">
 
-<div class="btn" onclick="openSmart()">
-<div class="btnIcon">🧠</div>
-<div class="btnText">
-<div class="btnTitle">Smart Cook</div>
-<div class="btnSub">Best matches from pantry</div>
-</div>
-</div>
+  <div class="dockBtn small" onclick="openRecipes()">
+    <div>🍳</div>
+    <span>Recipes</span>
+  </div>
 
-<div class="btn" onclick="openPantry()">
-<div class="btnIcon">🧺</div>
-<div class="btnText">
-<div class="btnTitle">Pantry</div>
-<div class="btnSub">Your ingredients database</div>
-</div>
+  <div class="dockBtn large" onclick="openSmart()">
+    <div>🧠</div>
+    <span>Smart Cook</span>
+  </div>
+
+  <div class="dockBtn small" onclick="openPantry()">
+    <div>🧺</div>
+    <span>Pantry</span>
+  </div>
+
 </div>
 
 </div>
@@ -309,22 +254,11 @@ z-index:10;
 
 </div>
 
-<!-- NAV -->
-<div id="nav">
-<div class="navBtn active">🏠<br>Home</div>
-<div class="navBtn">🍳<br>Recipes</div>
-<div class="navBtn">🧠<br>Smart</div>
-<div class="navBtn">🧺<br>Pantry</div>
-</div>
-
-<!-- FLOAT -->
-<div class="fab" onclick="openSmart()">🍳</div>
-
 <script>
 
+/* SPLASH FLOW */
 window.onload = () => {
 
-  // Netflix-style timing flow
   setTimeout(() => {
     document.getElementById("logo").style.opacity = "0";
   }, 5000);
@@ -341,15 +275,27 @@ window.onload = () => {
 
 };
 
-/* NAV */
-function show(page){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById(page).classList.add("active");
+/* SIMPLE NAV */
+function openRecipes(){
+document.getElementById("recipes").classList.add("active");
+document.getElementById("home").classList.remove("active");
+document.getElementById("smart").classList.remove("active");
+document.getElementById("pantry").classList.remove("active");
 }
 
-function openRecipes(){show("recipes");}
-function openSmart(){show("smart");}
-function openPantry(){show("pantry");}
+function openSmart(){
+document.getElementById("smart").classList.add("active");
+document.getElementById("home").classList.remove("active");
+document.getElementById("recipes").classList.remove("active");
+document.getElementById("pantry").classList.remove("active");
+}
+
+function openPantry(){
+document.getElementById("pantry").classList.add("active");
+document.getElementById("home").classList.remove("active");
+document.getElementById("recipes").classList.remove("active");
+document.getElementById("smart").classList.remove("active");
+}
 
 </script>
 
