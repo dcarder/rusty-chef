@@ -1,250 +1,188 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chef Jeff</title>
-
-<style>
-html, body {
-    margin:0;
-    padding:0;
-    height:100%;
-    background:black;
-    overflow:hidden;
-    font-family:Arial;
+<title>Chef Jeff</title><style>
+html,body{
+margin:0;
+padding:0;
+height:100%;
+overflow:hidden;
+background:black;
+font-family:Arial;
 }
 
-/* SCREENS */
-.fullScreen {
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:black;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    opacity:0;
-    z-index:-1;
-    transition:opacity 1s;
+/* GLOBAL SCREEN SYSTEM (PRO TRANSITIONS) */
+.screen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+opacity:0;
+transform:scale(1.05);
+filter:blur(10px);
+pointer-events:none;
+transition:opacity 900ms ease, transform 900ms ease, filter 900ms ease;
 }
 
-.fullScreen img {
-    width:100%;
-    height:100%;
-    object-fit:contain;
+.screen.active{
+opacity:1;
+transform:scale(1);
+filter:blur(0);
+pointer-events:auto;
+z-index:10;
 }
 
-/* CAMERA */
-#cameraScreen {
-    position:fixed;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    opacity:0;
-    z-index:1;
-    transition:opacity 1s;
+.screen img{
+width:100%;
+height:100%;
+object-fit:contain;
 }
 
-/* TEXT */
-#cameraText {
-    position:absolute;
-    bottom:260px;
-    width:100%;
-    text-align:center;
-    color:white;
-    font-size:20px;
-    opacity:0;
+/* CAMERA LAYER */
+#cameraScreen{
+position:fixed;
+width:100%;
+height:100%;
+object-fit:cover;
+opacity:0;
+transition:opacity 900ms ease;
+z-index:1;
 }
 
-/* BUTTONS */
-.camera-hotspot {
-    position:absolute;
-    bottom:60px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.15);
-    padding:30px;
-    color:white;
-    font-size:18px;
-    opacity:0;
+#cameraScreen.active{
+opacity:1;
 }
 
-#cameraButton { right:15%; }
-#factsButton { left:15%; }
-
-.navButton {
-    margin:20px auto;
-    padding:15px;
-    width:200px;
-    text-align:center;
-    border:2px solid white;
-    color:white;
-}
-</style>
-</head>
-
-<body>
-
-<!-- SCREENS -->
-<div id="logo" class="fullScreen">
-    <img src="your_logo.jpeg" onerror="this.src='https://via.placeholder.com/800x600'">
-</div>
-
-<div id="intro" class="fullScreen">
-    <img src="rusty_intro.jpeg" onerror="this.src='https://via.placeholder.com/800x600'">
-</div>
-
-<img id="cameraScreen" src="copilot_image_1777179019874.jpeg" 
-onerror="this.src='https://via.placeholder.com/800x600'">
-
-<div id="cameraText">
-Take a picture of your food 🍽️
-</div>
-
-<!-- AUDIO -->
-<audio id="introAudio" src="rusty_intro.mp3"></audio>
-
-<!-- BUTTONS -->
-<div id="cameraButton" class="camera-hotspot">📷</div>
-<div id="factsButton" class="camera-hotspot">📘</div>
-
-<input type="file" id="cameraInput" accept="image/*" capture="environment">
-
-<!-- FACT PAGE -->
-<div id="facts" class="fullScreen">
-    <div style="color:white;text-align:center">
-        <h1>Food Facts</h1>
-        <p>Pork loves sweet + smoky seasoning</p>
-        <p>Beef = salt + pepper king</p>
-        <p>Chicken = lemon + herbs</p>
-        <div class="navButton" id="backBtn">Back</div>
-    </div>
-</div>
-
-<script type="module">
-console.log("APP START");
-
-/* ---------------- AI SAFE LOAD ---------------- */
-let model = null;
-
-try {
-    const { GoogleGenerativeAI } = await import("https://esm.run/@google/generative-ai");
-
-    const genAI = new GoogleGenerativeAI("YOUR_GEMINI_API_KEY");
-    model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    console.log("AI Loaded");
-} catch (e) {
-    console.warn("AI FAILED:", e);
+/* UI TEXT */
+#cameraText{
+position:absolute;
+bottom:220px;
+width:100%;
+text-align:center;
+color:white;
+font-size:20px;
+opacity:0;
+transform:translateY(10px);
+transition:all 800ms ease;
+z-index:5;
 }
 
-/* ---------------- SCREENS ---------------- */
-const logo = document.getElementById("logo");
-const intro = document.getElementById("intro");
+#cameraText.active{
+opacity:1;
+transform:translateY(0);
+}
 
-logo.style.opacity = 1;
-logo.style.zIndex = 10;
+/* BUTTONS (PRO FLOAT) */
+.camera-hotspot{
+position:absolute;
+bottom:60px;
+padding:28px;
+border-radius:50%;
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.25);
+color:white;
+font-size:18px;
+opacity:0;
+transform:translateY(20px) scale(0.9);
+transition:all 700ms cubic-bezier(.2,.8,.2,1);
+z-index:20;
+}
 
-setTimeout(() => {
-    console.log("Intro start");
+.camera-hotspot.active{
+opacity:1;
+transform:translateY(0) scale(1);
+}
 
-    logo.style.opacity = 0;
+#cameraButton{right:40px;}
+#factsButton{left:40px;}
 
-    intro.style.opacity = 1;
-    intro.style.zIndex = 10;
+.navButton{
+margin:20px auto;
+padding:14px;
+width:200px;
+text-align:center;
+border:2px solid white;
+color:white;
+cursor:pointer;
+}
 
-    document.getElementById("introAudio").play().catch(()=>{});
+/* FACTS PAGES */
+.fullScreenPage{
+position:fixed;
+inset:0;
+background:black;
+color:white;
+padding:30px;
+opacity:0;
+transform:translateY(20px);
+pointer-events:none;
+transition:all 700ms ease;
+z-index:5;
+overflow:auto;
+}
 
-}, 3000);
+.fullScreenPage.active{
+opacity:1;
+transform:translateY(0);
+pointer-events:auto;
+z-index:50;
+}
+</style></head>
+<body><!-- SCREENS --><div id="logo" class="screen active">
+<img src="your_logo.jpeg">
+</div><div id="intro" class="screen">
+<img src="rusty_intro.jpeg">
+</div><img id="cameraScreen" src="copilot_image_1777179019874.jpeg"><div id="cameraText">Take a picture of your food 🍽️</div><!-- BUTTONS --><div id="cameraButton" class="camera-hotspot">📷 Camera</div>
+<div id="factsButton" class="camera-hotspot">📘 Facts</div><input type="file" id="cameraInput" accept="image/*" capture="environment"><!-- FACTS --><div id="factsPage" class="fullScreenPage">
+<h1>Food Facts</h1>
+<p>Pork, Beef, Chicken seasoning science made simple.</p>
+<div class="navButton" id="backBtn">Back</div>
+</div><script>
+console.log("PRO TRANSITIONS LOADED");
 
-setTimeout(() => {
-    console.log("Camera screen");
+const logo=document.getElementById("logo");
+const intro=document.getElementById("intro");
+const cam=document.getElementById("cameraScreen");
+const camBtn=document.getElementById("cameraButton");
+const factsBtn=document.getElementById("factsButton");
+const text=document.getElementById("cameraText");
+const facts=document.getElementById("factsPage");
 
-    intro.style.opacity = 0;
+/* SEQUENCE ENGINE (CLEAN + EVENT BASED) */
+setTimeout(()=>{
+logo.classList.remove("active");
+intro.classList.add("active");
+},2500);
 
-    document.getElementById("cameraScreen").style.opacity = 1;
-    document.getElementById("cameraText").style.opacity = 1;
-    document.getElementById("cameraButton").style.opacity = 1;
-    document.getElementById("factsButton").style.opacity = 1;
+setTimeout(()=>{
+intro.classList.remove("active");
+cam.classList.add("active");
+camBtn.classList.add("active");
+factsBtn.classList.add("active");
+text.classList.add("active");
+},6000);
 
-}, 7000);
+/* CAMERA BUTTON */
+camBtn.onclick=()=>document.getElementById("cameraInput").click();
 
-/* ---------------- CAMERA ---------------- */
-document.getElementById("cameraButton").onclick = () => {
-    document.getElementById("cameraInput").click();
+/* FACTS OPEN */
+factsBtn.onclick=()=>{
+facts.classList.add("active");
+cam.classList.remove("active");
+camBtn.classList.remove("active");
+factsBtn.classList.remove("active");
+text.classList.remove("active");
 };
 
-document.getElementById("cameraInput").onchange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (!model) {
-        alert("AI not ready yet");
-        return;
-    }
-
-    alert("Analyzing food...");
-
-    // simplified safe AI call
-    try {
-        const base64 = await fileToBase64(file);
-
-        const result = await model.generateContent([
-            {
-                inlineData: {
-                    data: base64,
-                    mimeType: file.type
-                }
-            },
-            "List food ingredients."
-        ]);
-
-        alert(result.response.text());
-    } catch (err) {
-        console.error(err);
-        alert("AI failed");
-    }
+/* FACTS CLOSE */
+document.getElementById("backBtn").onclick=()=>{
+facts.classList.remove("active");
+cam.classList.add("active");
+camBtn.classList.add("active");
+factsBtn.classList.add("active");
+text.classList.add("active");
 };
-
-function fileToBase64(file) {
-    return new Promise(res => {
-        const reader = new FileReader();
-        reader.onload = () => res(reader.result.split(",")[1]);
-        reader.readAsDataURL(file);
-    });
-}
-
-/* ---------------- FACTS ---------------- */
-const facts = document.getElementById("facts");
-
-document.getElementById("factsButton").onclick = () => {
-    hideCamera();
-    facts.style.opacity = 1;
-    facts.style.zIndex = 20;
-};
-
-document.getElementById("backBtn").onclick = () => {
-    facts.style.opacity = 0;
-    facts.style.zIndex = -1;
-    showCamera();
-};
-
-function hideCamera() {
-    document.getElementById("cameraScreen").style.opacity = 0;
-    document.getElementById("cameraButton").style.opacity = 0;
-    document.getElementById("factsButton").style.opacity = 0;
-    document.getElementById("cameraText").style.opacity = 0;
-}
-
-function showCamera() {
-    document.getElementById("cameraScreen").style.opacity = 1;
-    document.getElementById("cameraButton").style.opacity = 1;
-    document.getElementById("factsButton").style.opacity = 1;
-    document.getElementById("cameraText").style.opacity = 1;
-}
-
-</script>
-
-</body>
+</script></body>
 </html>
