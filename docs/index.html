@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chef Jeff V12</title>
+<title>Chef Jeff AI</title>
 
 <style>
 html,body{
@@ -16,7 +16,7 @@ font-family:Arial;
 color:white;
 }
 
-/* SPLASH */
+/* ===== SPLASH STAGE ===== */
 .stage{
 position:fixed;
 inset:0;
@@ -27,6 +27,46 @@ background:black;
 z-index:9999;
 }
 
+/* ===== NETFLIX LOGO ANIMATION ===== */
+.logoAnim{
+width:100%;
+height:100%;
+object-fit:cover;
+animation:netflixIntro 5s ease forwards;
+transform-origin:center;
+}
+
+@keyframes netflixIntro{
+
+0%{
+transform:scale(1.2);
+filter:blur(14px);
+opacity:0;
+}
+
+20%{
+opacity:1;
+filter:blur(8px);
+}
+
+55%{
+transform:scale(1.05);
+filter:blur(0px);
+opacity:1;
+}
+
+85%{
+transform:scale(1);
+opacity:1;
+}
+
+100%{
+transform:scale(1);
+opacity:1;
+}
+}
+
+/* NEXT SCREEN */
 .stage img{
 width:100%;
 height:100%;
@@ -59,12 +99,10 @@ display:block;
 .copilotBg{
 position:fixed;
 inset:0;
-width:100%;
-height:100%;
 background:url("copilot_image_1777179019874.jpeg") center center no-repeat;
 background-size:cover;
 z-index:-1;
-filter:brightness(0.5) saturate(1.1);
+filter:brightness(0.5);
 }
 
 /* HEADER */
@@ -76,7 +114,7 @@ position:relative;
 z-index:2;
 }
 
-/* 🫧 BUBBLE GLASS BUTTONS */
+/* ===== BUTTONS ===== */
 .btn{
 display:flex;
 align-items:center;
@@ -100,23 +138,11 @@ transition:0.25s ease;
 
 position:relative;
 overflow:hidden;
-
 z-index:2;
 }
 
-.btn::before{
-content:"";
-position:absolute;
-inset:0;
-border-radius:999px;
-background:linear-gradient(120deg,rgba(255,122,24,0.25),rgba(79,172,254,0.15));
-opacity:0.35;
-filter:blur(12px);
-z-index:0;
-}
-
 .btn:hover{
-transform:translateY(-3px) scale(1.02);
+transform:translateY(-3px) scale(1.01);
 background:rgba(255,255,255,0.12);
 }
 
@@ -137,9 +163,7 @@ justify-content:center;
 
 background:rgba(255,255,255,0.10);
 border:1px solid rgba(255,255,255,0.18);
-
 flex-shrink:0;
-z-index:1;
 }
 
 /* TEXT */
@@ -152,13 +176,11 @@ z-index:1;
 .btnTitle{
 font-size:15px;
 font-weight:700;
-color:white;
 }
 
 .btnSub{
 font-size:11px;
 opacity:0.75;
-color:white;
 }
 
 /* CARD */
@@ -169,8 +191,8 @@ border-radius:16px;
 padding:14px;
 margin:10px 0;
 backdrop-filter: blur(10px);
-position:relative;
 z-index:2;
+position:relative;
 }
 
 /* NAV */
@@ -220,20 +242,19 @@ z-index:10;
 
 <body>
 
-<!-- LOGO -->
+<!-- LOGO (NETFLIX INTRO) -->
 <div id="logo" class="stage">
-<img src="rusty_logo.jpeg">
+  <img src="your_logo.jpeg" class="logoAnim" />
 </div>
 
-<!-- RUSTY -->
+<!-- NEXT SCREEN -->
 <div id="rusty" class="stage" style="display:none;">
-<img src="rusty_intro.jpeg">
+  <img src="rusty_intro.jpeg" />
 </div>
 
 <!-- APP -->
 <div id="app">
 
-<!-- HOME -->
 <div id="home" class="page active">
 
 <div class="copilotBg"></div>
@@ -268,139 +289,52 @@ z-index:10;
 
 </div>
 
-<!-- RECIPES -->
 <div id="recipes" class="page"></div>
-
-<!-- SMART -->
 <div id="smart" class="page"></div>
-
-<!-- PANTRY -->
 <div id="pantry" class="page"></div>
 
+</div>
+
+<!-- NAV -->
+<div id="nav">
+<div class="navBtn active">🏠<br>Home</div>
+<div class="navBtn">🍳<br>Recipes</div>
+<div class="navBtn">🧠<br>Smart</div>
+<div class="navBtn">🧺<br>Pantry</div>
 </div>
 
 <!-- FLOAT -->
 <div class="fab" onclick="openSmart()">🍳</div>
 
-<!-- NAV -->
-<div id="nav">
-<div class="navBtn active" onclick="show('home')">🏠<br>Home</div>
-<div class="navBtn" onclick="openRecipes()">🍳<br>Recipes</div>
-<div class="navBtn" onclick="openSmart()">🧠<br>Smart</div>
-<div class="navBtn" onclick="openPantry()">🧺<br>Pantry</div>
-</div>
-
 <script>
 
-/* SPLASH FLOW */
-setTimeout(()=>{
-document.getElementById("logo").style.display="none";
-document.getElementById("rusty").style.display="flex";
-},3000);
+/* FLOW CONTROL */
+window.onload = () => {
 
-setTimeout(()=>{
-document.getElementById("rusty").style.display="none";
-document.getElementById("app").style.display="block";
-},6000);
+  // logo 5 seconds (Netflix animation handles visuals)
+  setTimeout(() => {
+    document.getElementById("logo").style.display = "none";
+    document.getElementById("rusty").style.display = "flex";
+  }, 5000);
 
-/* NAV */
+  // app load
+  setTimeout(() => {
+    document.getElementById("rusty").style.display = "none";
+    document.getElementById("app").style.display = "block";
+  }, 8500);
+
+};
+
+/* NAV SIMPLE */
 function show(page){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 document.getElementById(page).classList.add("active");
 }
 
-/* PANTRY */
-const pantryItems = [
-"chicken","beef","pork","rice","pasta","egg","milk","cheese",
-"garlic","onion","tomato","carrot","broccoli",
-"salt","pepper","olive oil","butter","soy sauce",
-"potato","spinach","lettuce","corn","beans"
-];
-
-/* RECIPES */
-const recipes = [
-{
-name:"Garlic Chicken Rice",
-time:25,
-ingredients:["chicken","rice","garlic","salt"]
-},
-{
-name:"Veg Stir Fry",
-time:15,
-ingredients:["broccoli","carrot","soy sauce"]
-},
-{
-name:"Cheesy Eggs",
-time:10,
-ingredients:["egg","cheese","butter"]
-}
-];
-
-/* RECIPES */
-function openRecipes(){
-let html = `<div class="header">🍳 Recipes</div>`;
-recipes.forEach(r=>{
-html += `
-<div class="card">
-<h3>${r.name}</h3>
-<p>⏱ ${r.time} min</p>
-</div>`;
-});
-document.getElementById("recipes").innerHTML = html;
-show("recipes");
-}
-
-/* SMART */
-function openSmart(){
-let pantry = JSON.parse(localStorage.getItem("pantry") || "[]");
-
-let ranked = recipes.map(r=>{
-let match = r.ingredients.filter(i=>pantry.includes(i)).length;
-return {...r, score: match/r.ingredients.length};
-}).sort((a,b)=>b.score-a.score);
-
-let html = `<div class="header">🧠 Smart Cook</div>`;
-
-ranked.forEach(r=>{
-html += `
-<div class="card">
-<h3>${r.name}</h3>
-<p>Match: ${(r.score*100).toFixed(0)}%</p>
-</div>`;
-});
-
-document.getElementById("smart").innerHTML = html;
-show("smart");
-}
-
-/* PANTRY */
-function openPantry(){
-let saved = JSON.parse(localStorage.getItem("pantry") || "[]");
-
-let html = `<div class="header">🧺 Pantry</div>`;
-
-pantryItems.forEach(i=>{
-let checked = saved.includes(i) ? "checked" : "";
-html += `
-<div class="card">
-<label>
-<input type="checkbox" value="${i}" ${checked}> ${i}
-</label>
-</div>`;
-});
-
-html += `<div class="card" onclick="savePantry()">💾 Save Pantry</div>`;
-
-document.getElementById("pantry").innerHTML = html;
-show("pantry");
-}
-
-function savePantry(){
-let checked = document.querySelectorAll("input:checked");
-let pantry = Array.from(checked).map(i=>i.value);
-localStorage.setItem("pantry", JSON.stringify(pantry));
-alert("Saved!");
-}
+/* PLACEHOLDER FUNCTIONS */
+function openRecipes(){show("recipes");}
+function openSmart(){show("smart");}
+function openPantry(){show("pantry");}
 
 </script>
 
