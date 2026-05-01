@@ -32,7 +32,7 @@ height:100%;
 object-fit:cover;
 }
 
-/* ===== CAMERA VIEW ===== */
+/* CAMERA VIEW */
 #cameraView{
 position:fixed;
 inset:0;
@@ -47,7 +47,7 @@ height:100%;
 object-fit:cover;
 }
 
-/* ===== UI LAYER ===== */
+/* UI LAYER */
 #ui{
 position:fixed;
 inset:0;
@@ -70,6 +70,12 @@ backdrop-filter:blur(10px);
 border:1px solid rgba(255,255,255,0.3);
 color:white;
 font-size:18px;
+opacity:0;
+transition:opacity 400ms ease;
+}
+
+.button.show{
+opacity:1;
 }
 
 #cameraBtn{right:30px;}
@@ -82,9 +88,15 @@ width:100%;
 text-align:center;
 color:white;
 font-size:18px;
+opacity:0;
+transition:opacity 400ms ease;
 }
 
-/* ===== FACTS + RESULTS ===== */
+#text.show{
+opacity:1;
+}
+
+/* PANEL */
 #panel{
 position:fixed;
 inset:0;
@@ -128,16 +140,14 @@ align-items:center;
 color:white;
 z-index:3000;
 }
-</style></head><body><!-- START SCREENS --><div id="logo" class="screen active">
+</style></head><body><!-- SCREENS --><div id="logo" class="screen active">
 <img src="your_logo.jpeg">
 </div><div id="intro" class="screen">
 <img src="rusty_intro.jpeg">
-</div><!-- CAMERA --><div id="cameraView">
-<video id="cameraVideo" autoplay playsinline></video>
-</div><!-- UI --><div id="ui">
+</div><img id="cameraScreen" src="copilot_image_1777179019874.jpeg"><!-- UI --><div id="ui">
 <div id="cameraBtn" class="button">📷 Camera</div>
 <div id="factsBtn" class="button">📘 Facts</div>
-<div id="text">Tap camera to scan food</div>
+<div id="text">Loading camera preview...</div>
 </div><!-- PANEL --><div id="panel"></div><!-- LOADING --><div id="loading">Analyzing food...</div><script>
 console.log("AI APP LOADED");
 
@@ -147,10 +157,13 @@ let current=State.LOGO;
 
 const logo=document.getElementById("logo");
 const intro=document.getElementById("intro");
+const camImg=document.getElementById("cameraScreen");
 const panel=document.getElementById("panel");
-const camView=document.getElementById("cameraView");
-const video=document.getElementById("cameraVideo");
 const loading=document.getElementById("loading");
+
+const camBtn=document.getElementById("cameraBtn");
+const factsBtn=document.getElementById("factsBtn");
+const text=document.getElementById("text");
 
 function set(state){
 current=state;
@@ -162,12 +175,9 @@ if(state===State.LOGO)logo.classList.add("active");
 if(state===State.INTRO)intro.classList.add("active");
 
 if(state===State.CAMERA){
-camView.style.display="block";
-startCamera();
-}
-else{
-camView.style.display="none";
-stopCamera();
+camBtn.classList.remove("show");
+factsBtn.classList.remove("show");
+text.classList.remove("show");
 }
 
 if(state===State.FACTS){
@@ -186,58 +196,59 @@ panel.classList.add("active");
 }
 }
 
-/* ===== CAMERA ===== */
+/* ===== WAIT FOR COPILOT IMAGE ===== */
+function startAppWhenImageReady(){
+
+camImg.onload=()=>{
+console.log("Camera image loaded → showing UI");
+set(State.CAMERA);
+
+setTimeout(()=>{
+camBtn.classList.add("show");
+factsBtn.classList.add("show");
+text.classList.add("show");
+},300);
+};
+
+// fallback if cached
+if(camImg.complete){
+camImg.onload();
+}
+}
+
+/* ===== CAMERA (optional real video) ===== */
 async function startCamera(){
 try{
 const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
-video.srcObject=stream;
-}catch(e){
-alert("Camera blocked or not supported");
-}
+document.getElementById("cameraVideo").srcObject=stream;
+}catch(e){console.log("camera blocked");}
 }
 
-function stopCamera(){
-if(video.srcObject){
-video.srcObject.getTracks().forEach(t=>t.stop());
-video.srcObject=null;
-}
-}
-
-/* ===== AI (SAFE PLACEHOLDER) ===== */
-async function analyze(){
+/* ===== AI FAKE ===== */
+function analyze(){
 loading.style.display="flex";
-
-// fake AI fallback so app always works
 setTimeout(()=>{
 loading.style.display="none";
 set(State.RESULTS);
 panel.innerHTML=`
 <h1>🍽️ AI Results</h1>
-<div class="card">
-<b>Detected:</b> Chicken, rice, garlic
-</div>
-<div class="card">
-<b>Recipe:</b> Garlic chicken rice bowl
-</div>
-<div class="card">
-<b>Steps:</b> Cook chicken → add garlic → mix rice → season
-</div>
+<div class="card"><b>Detected:</b> Chicken, garlic, rice</div>
+<div class="card"><b>Recipe:</b> Garlic chicken rice bowl</div>
 <div class="smallBtn" onclick="set(State.CAMERA)">Back</div>
 `;
-},1500);
+},1200);
 }
 
-/* ===== BUTTONS ===== */
-document.getElementById("cameraBtn").onclick=()=>set(State.CAMERA);
-document.getElementById("factsBtn").onclick=()=>set(State.FACTS);
+/* BUTTONS */
+camBtn.onclick=()=>set(State.CAMERA);
+factsBtn.onclick=()=>set(State.FACTS);
 
-/* TAP SCREEN TO SCAN */
-camView.onclick=()=>analyze();
+camImg.onclick=()=>analyze();
 
-/* ===== BOOT ===== */
+/* BOOT SEQUENCE */
 set(State.LOGO);
-setTimeout(()=>set(State.INTRO),2500);
-setTimeout(()=>set(State.CAMERA),5000);
+setTimeout(()=>set(State.INTRO),2000);
+setTimeout(()=>startAppWhenImageReady(),4500);
 
 </script></body>
 </html>
