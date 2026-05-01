@@ -47,10 +47,8 @@ margin-bottom:10px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-
 padding:12px;
 margin:6px 0;
-
 background:rgba(255,255,255,0.06);
 border:1px solid rgba(255,255,255,0.12);
 border-radius:12px;
@@ -93,6 +91,11 @@ text-align:center;
 cursor:pointer;
 }
 
+/* SCROLL FIX */
+.page{
+-webkit-overflow-scrolling:touch;
+}
+
 </style>
 </head>
 
@@ -106,77 +109,56 @@ cursor:pointer;
 <!-- RESULTS -->
 <div id="results" class="page"></div>
 
-<!-- DETAIL -->
+<!-- RECIPE DETAIL -->
 <div id="detail" class="page"></div>
 
 </div>
 
 <script>
 
-/* ===== PANTRY ===== */
-
-const pantryItems = [
-"Chicken breast","Ground beef","Bacon","Eggs","Sausage","Pork chops",
-"Potatoes","Onions","Garlic","Carrots","Broccoli","Spinach",
-"Rice","Pasta","Cheese","Milk","Butter","Tomatoes","Beans"
-];
-
-/* ===== RECIPES ===== */
-
-const recipes = [
-{
-name:"Garlic Butter Chicken Rice",
-ingredients:["Chicken breast","Rice","Garlic","Butter","Onions"],
-time:25,
-temp:"375°F",
-steps:[
-"Season chicken with salt and pepper",
-"Sear chicken in pan with butter",
-"Add garlic + onions",
-"Cook rice separately",
-"Combine and simmer"
-]
-},
-{
-name:"Cheesy Bacon Pasta",
-ingredients:["Bacon","Pasta","Cheese","Milk","Butter"],
-time:20,
-temp:"350°F",
-steps:[
-"Cook pasta",
-"Fry bacon until crispy",
-"Add milk and butter",
-"Stir in cheese",
-"Combine everything"
-]
-},
-{
-name:"Veggie Stir Fry",
-ingredients:["Broccoli","Carrots","Onions","Garlic","Rice"],
-time:15,
-temp:"High heat",
-steps:[
-"Heat pan",
-"Add garlic",
-"Add vegetables",
-"Stir fry 7 minutes",
-"Serve over rice"
-]
-}
-];
-
 let selected = JSON.parse(localStorage.getItem("pantry") || "[]");
 
-/* ===== PANTRY UI ===== */
+/* =========================
+   PANTRY V4 (70+ ITEMS)
+========================= */
 
 function loadPantry(){
 
+let items = [
+/* MEATS */
+"Chicken breast","Ground beef","Bacon","Eggs","Sausage","Pork chops","Turkey","Steak","Ham","Shrimp","Salmon",
+
+/* VEGGIES */
+"Potatoes","Onions","Garlic","Carrots","Broccoli","Spinach","Tomatoes","Lettuce","Celery","Bell peppers","Cucumbers","Mushrooms","Zucchini","Corn","Green beans","Cabbage","Sweet potatoes","Jalapeños","Avocado",
+
+/* FRUITS */
+"Apples","Bananas","Oranges","Lemons","Limes","Strawberries","Blueberries","Grapes","Pineapple","Peaches",
+
+/* DAIRY */
+"Milk","Butter","Cheese","Yogurt","Sour cream","Cream cheese","Heavy cream","Parmesan","Half & half",
+
+/* STARCHES */
+"Rice","Pasta","Bread","Tortillas","Oats","Flour","Cereal","Crackers","Potato chips",
+
+/* CANNED */
+"Canned beans","Canned tomatoes","Canned tuna","Canned soup","Broth","Peanut butter","Jam","Honey",
+
+/* SPICES */
+"Salt","Black pepper","Garlic powder","Onion powder","Paprika","Cumin","Oregano","Thyme","Cayenne","Chili powder","Italian seasoning","Cinnamon","Red pepper flakes","Seasoned salt",
+
+/* SAUCES */
+"Ketchup","Mustard","Mayonnaise","Soy sauce","BBQ sauce","Hot sauce","Ranch","Worcestershire","Salad dressing","Teriyaki sauce",
+
+/* OILS / BAKING */
+"Olive oil","Vegetable oil","Vinegar","Brown sugar","White sugar","Baking powder","Baking soda"
+];
+
 let html = `
 <div class="header">🧺 Pantry</div>
-<p>Tap ingredients you have:</p>
+<p>Select ingredients you have:</p>
 `;
 
-pantryItems.forEach(item=>{
+items.forEach(item=>{
 let on = selected.includes(item);
 
 html += `
@@ -187,16 +169,19 @@ html += `
 `;
 });
 
+/* BUTTONS */
 html += `
+<div class="btn" onclick="show('home')">⬅ Back to Home</div>
 <div class="btn" onclick="findRecipes()">🍳 What can I cook?</div>
 `;
 
 document.getElementById("pantry").innerHTML = html;
-
 show("pantry");
 }
 
-/* ===== TOGGLE ===== */
+/* =========================
+   TOGGLE ITEMS
+========================= */
 
 function toggleItem(item){
 
@@ -210,16 +195,61 @@ localStorage.setItem("pantry", JSON.stringify(selected));
 loadPantry();
 }
 
-/* ===== MATCH ENGINE ===== */
+/* =========================
+   RECIPES DATABASE
+========================= */
+
+const recipes = [
+{
+name:"Garlic Butter Chicken Rice",
+ingredients:["Chicken breast","Rice","Garlic","Butter","Onions"],
+time:25,
+temp:"375°F",
+steps:[
+"Season chicken",
+"Sear in butter",
+"Add garlic + onions",
+"Cook rice",
+"Combine and simmer"
+]
+},
+{
+name:"Cheesy Bacon Pasta",
+ingredients:["Bacon","Pasta","Cheese","Milk","Butter"],
+time:20,
+temp:"350°F",
+steps:[
+"Cook pasta",
+"Cook bacon",
+"Add milk + butter",
+"Melt cheese",
+"Combine"
+]
+},
+{
+name:"Veggie Stir Fry",
+ingredients:["Broccoli","Carrots","Onions","Garlic","Rice"],
+time:15,
+temp:"High heat",
+steps:[
+"Heat pan",
+"Add garlic",
+"Add vegetables",
+"Stir fry",
+"Serve over rice"
+]
+}
+];
+
+/* =========================
+   MATCH ENGINE
+========================= */
 
 function findRecipes(){
 
 let ranked = recipes.map(r=>{
 let match = r.ingredients.filter(i=>selected.includes(i)).length;
-return {
-...r,
-score: match / r.ingredients.length
-};
+return {...r, score: match / r.ingredients.length};
 }).sort((a,b)=>b.score-a.score);
 
 let html = `<div class="header">🍳 Best Matches</div>`;
@@ -241,7 +271,9 @@ document.getElementById("results").innerHTML = html;
 show("results");
 }
 
-/* ===== RECIPE DETAIL ===== */
+/* =========================
+   RECIPE DETAIL
+========================= */
 
 function openRecipe(name){
 
@@ -253,7 +285,6 @@ let html = `
 <div class="card">
 ⏱ Time: ${r.time} min<br>
 🌡 Temp: ${r.temp}<br><br>
-
 <b>Ingredients:</b><br>
 ${r.ingredients.join("<br>")}
 </div>
@@ -263,7 +294,7 @@ ${r.ingredients.join("<br>")}
 ${r.steps.map(s=>"• "+s).join("<br>")}
 </div>
 
-<div class="back" onclick="findRecipes()">⬅ Back</div>
+<div class="back" onclick="findRecipes()">⬅ Back to results</div>
 `;
 
 document.getElementById("detail").innerHTML = html;
@@ -271,7 +302,9 @@ document.getElementById("detail").innerHTML = html;
 show("detail");
 }
 
-/* ===== NAV ===== */
+/* =========================
+   NAV
+========================= */
 
 function show(page){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
