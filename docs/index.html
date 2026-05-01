@@ -175,7 +175,7 @@ color:white;
   </div>
 
   <div class="header">🤖 Rusty the Robot Chef</div>
-  <div class="card">AI Cooking System v5</div>
+  <div class="card">AI Cooking System v6</div>
 
   <div class="dock">
     <div class="dockBtn" onclick="openRecipes()">🍳<span>Recipes</span></div>
@@ -207,37 +207,109 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 document.getElementById("home").classList.add("active");
 }
 
-/* BUTTON FIX */
+/* BUTTONS */
 function openIngredients(){ loadIngredients(); }
 function openRecipes(){ findRecipes(); }
 function openSmart(){ loadSmart(); }
 
 /* INGREDIENT LIST */
-const ingredientItems = ["Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic","Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Lettuce","Cucumber","Bell peppers","Mushrooms","Shrimp","Salmon","Tuna","Turkey","Steak","Pork chops","Sausage","Beans","Corn","Peas","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Honey","Lemon","Lime","Ginger","Chili flakes","Paprika","Oregano","Basil","Thyme","Cinnamon","Nutmeg","Curry powder","Rice noodles","Tortilla","Bread","Cream","Yogurt","Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Pineapple","Coconut milk","Chicken broth","Beef broth","Fish sauce","Mustard","Ketchup","Mayonnaise","Vinegar","Green beans","Zucchini","Eggplant","Cauliflower","Cabbage","Chives","Parsley","Dill","Walnuts","Almonds","Oats","Chocolate","Coffee","Tea","Maple syrup","Brown sugar","Tofu","Quinoa","Lentils","Chickpeas","Hot sauce","BBQ sauce","Teriyaki sauce","Worcestershire sauce","Sesame oil","Peanut butter","Jam","Crackers","Granola","Marshmallows"];
+const ingredientItems = ["Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic","Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Lettuce","Cucumber","Bell peppers","Mushrooms"];
 
-/* RECIPES */
+/* REAL RECIPES WITH DETAILED STEPS */
 const recipesDB = [
-{name:"Grilled Chicken Breast",ingredients:["Chicken breast","Olive oil","Salt","Pepper","Garlic"],steps:["Season chicken","Cook in pan","Flip until done","Rest","Serve"],time:20},
-{name:"Chicken Alfredo Pasta",ingredients:["Pasta","Chicken breast","Butter","Cream","Parmesan","Garlic"],steps:["Boil pasta","Cook chicken","Make sauce","Combine","Serve"],time:30},
-{name:"Beef Tacos",ingredients:["Ground beef","Tortilla","Onion","Taco seasoning","Cheese"],steps:["Cook beef","Add seasoning","Warm tortillas","Assemble","Serve"],time:25},
-{name:"Spaghetti Bolognese",ingredients:["Pasta","Ground beef","Tomato sauce","Onion","Garlic"],steps:["Boil pasta","Cook beef","Simmer sauce","Mix","Serve"],time:40},
-{name:"Bacon and Eggs",ingredients:["Bacon","Eggs","Salt","Pepper"],steps:["Cook bacon","Fry eggs","Season","Serve"],time:10}
+{
+name:"Grilled Chicken Breast",
+ingredients:["Chicken breast","Olive oil","Salt","Pepper","Garlic"],
+steps:[
+{step:"Prep chicken",time:5,temp:"none",detail:"Pat dry chicken and season evenly."},
+{step:"Heat pan",time:3,temp:"medium-high (375°F)",detail:"Preheat skillet until hot."},
+{step:"Cook first side",time:6,temp:"medium-high",detail:"Cook without moving until golden."},
+{step:"Flip and finish",time:6,temp:"medium",detail:"Cook until internal temp reaches 165°F."},
+{step:"Rest",time:5,temp:"none",detail:"Let juices redistribute before serving."}
+],
+time:25
+},
+{
+name:"Beef Tacos",
+ingredients:["Ground beef","Tortilla","Onion","Taco seasoning","Cheese"],
+steps:[
+{step:"Brown beef",time:8,temp:"medium-high",detail:"Cook until no pink remains."},
+{step:"Season",time:3,temp:"medium",detail:"Add seasoning and simmer."},
+{step:"Warm tortillas",time:2,temp:"low",detail:"Heat until soft."},
+{step:"Assemble",time:3,temp:"none",detail:"Add toppings and serve."}
+],
+time:20
+}
 ];
 
-/* ENGINE */
-function makeRecipe(i){
+/* ENGINE (NO REPEATS) */
+function findRecipes(){
 
-let base = recipesDB[i % recipesDB.length];
+let pool = [...recipesDB];
 
-let match = base.ingredients.filter(x=>selected.includes(x)).length;
+for(let i=pool.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[pool[i],pool[j]]=[pool[j],pool[i]];
+}
 
-return {
-name:base.name,
-ingredients:base.ingredients,
-steps:base.steps,
-time:base.time,
-score:match/base.ingredients.length
-};
+let recipes = pool.map(r=>{
+let match = r.ingredients.filter(x=>selected.includes(x)).length;
+return {...r,score:match/r.ingredients.length};
+});
+
+recipes.sort((a,b)=>b.score-a.score);
+
+window.generatedRecipes = recipes;
+
+let html = `<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
+<div class="header">🍳 What Can I Cook?</div>`;
+
+recipes.forEach(r=>{
+html += `<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b><br>
+${(r.score*100).toFixed(0)}% match<br>
+${r.time} min
+</div>`;
+});
+
+html += `<div class="back" onclick="loadIngredients()">⬅ Ingredients</div>`;
+document.getElementById("results").innerHTML = html;
+show("results");
+}
+
+/* DETAIL VIEW (FULL STEP SYSTEM) */
+function openRecipe(name){
+
+let r = (window.generatedRecipes||[]).find(x=>x.name===name);
+if(!r){goHome();return;}
+
+let stepsHTML = r.steps.map((s,i)=>`
+<div class="card">
+<b>Step ${i+1}: ${s.step}</b><br><br>
+⏱ ${s.time} min<br>
+🌡 ${s.temp}<br><br>
+${s.detail}
+</div>
+`).join("");
+
+let html = `
+<div class="topBar">
+<div class="homeBtn" onclick="goHome()">🏠 Home</div>
+</div>
+
+<div class="header">${r.name}</div>
+
+<div class="card">
+<b>Ingredients:</b><br>${r.ingredients.join("<br>")}
+</div>
+
+${stepsHTML}
+
+<div class="back" onclick="findRecipes()">⬅ Back</div>
+`;
+
+document.getElementById("detail").innerHTML = html;
+show("detail");
 }
 
 /* INGREDIENTS PAGE */
@@ -269,80 +341,12 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 loadIngredients();
 }
 
-/* RECIPES (NO REPEATS) */
-function findRecipes(){
-
-let pool = [...recipesDB];
-
-// shuffle
-for(let i=pool.length-1;i>0;i--){
-let j=Math.floor(Math.random()*(i+1));
-[pool[i],pool[j]]=[pool[j],pool[i]];
-}
-
-let recipes = pool.map(r=>{
-
-let match = r.ingredients.filter(x=>selected.includes(x)).length;
-
-return {
-name:r.name,
-ingredients:r.ingredients,
-steps:r.steps,
-time:r.time,
-score:match/r.ingredients.length
-};
-});
-
-recipes.sort((a,b)=>b.score-a.score);
-
-window.generatedRecipes = recipes;
-
-let html = `<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
-<div class="header">🍳 What Can I Cook?</div>`;
-
-recipes.forEach(r=>{
-html += `<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>
-${(r.score*100).toFixed(0)}% match<br>
-${r.time} min
-</div>`;
-});
-
-html += `<div class="back" onclick="loadIngredients()">⬅ Ingredients</div>`;
-document.getElementById("results").innerHTML = html;
-show("results");
-}
-
-/* DETAIL */
-function openRecipe(name){
-
-let r = (window.generatedRecipes||[]).find(x=>x.name===name);
-if(!r){goHome();return;}
-
-let html = `<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
-<div class="header">${r.name}</div>
-
-<div class="card">
-⏱ ${r.time} min<br><br>
-<b>Ingredients:</b><br>${r.ingredients.join("<br>")}
-</div>
-
-<div class="card">
-<b>Steps:</b><br>${r.steps.map(s=>"• "+s).join("<br>")}
-</div>
-
-<div class="back" onclick="findRecipes()">⬅ Back</div>`;
-
-document.getElementById("detail").innerHTML = html;
-show("detail");
-}
-
 /* SMART */
 function loadSmart(){
 document.getElementById("smart").innerHTML = `
 <div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
 <div class="header">🧠 AI Chef Mode</div>
-<div class="card">Ingredients system active.</div>
+<div class="card">Fully detailed cooking system active.</div>
 <div class="back" onclick="goHome()">⬅ Home</div>`;
 show("smart");
 }
