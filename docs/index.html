@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chef Jeff V11</title>
+<title>Chef Jeff V12</title>
 
 <style>
 html,body{
@@ -61,10 +61,8 @@ position:fixed;
 inset:0;
 width:100%;
 height:100%;
-
 background:url("copilot_image_1777179019874.jpeg") center center no-repeat;
 background-size:cover;
-
 z-index:-1;
 filter:brightness(0.5) saturate(1.1);
 }
@@ -78,23 +76,23 @@ position:relative;
 z-index:2;
 }
 
-/* GLASS BUTTONS */
+/* 🫧 BUBBLE GLASS BUTTONS */
 .btn{
 display:flex;
 align-items:center;
 gap:14px;
 
-padding:18px;
+padding:16px 18px;
 margin-top:14px;
 
-border-radius:22px;
+border-radius:999px;
 
-background:rgba(255,255,255,0.10);
-border:1px solid rgba(255,255,255,0.20);
-backdrop-filter: blur(20px);
+background:rgba(255,255,255,0.08);
+border:1px solid rgba(255,255,255,0.18);
+backdrop-filter: blur(18px);
 
 box-shadow:
-0 15px 40px rgba(0,0,0,0.5),
+0 12px 30px rgba(0,0,0,0.45),
 inset 0 1px 0 rgba(255,255,255,0.15);
 
 cursor:pointer;
@@ -106,9 +104,20 @@ overflow:hidden;
 z-index:2;
 }
 
+.btn::before{
+content:"";
+position:absolute;
+inset:0;
+border-radius:999px;
+background:linear-gradient(120deg,rgba(255,122,24,0.25),rgba(79,172,254,0.15));
+opacity:0.35;
+filter:blur(12px);
+z-index:0;
+}
+
 .btn:hover{
-transform:translateY(-3px);
-background:rgba(255,255,255,0.14);
+transform:translateY(-3px) scale(1.02);
+background:rgba(255,255,255,0.12);
 }
 
 .btn:active{
@@ -117,33 +126,39 @@ transform:scale(0.97);
 
 /* ICON */
 .btnIcon{
-font-size:22px;
-width:42px;
-height:42px;
-border-radius:14px;
+font-size:20px;
+width:38px;
+height:38px;
+border-radius:50%;
 
 display:flex;
 align-items:center;
 justify-content:center;
 
-background:rgba(255,255,255,0.12);
+background:rgba(255,255,255,0.10);
 border:1px solid rgba(255,255,255,0.18);
+
+flex-shrink:0;
+z-index:1;
 }
 
 /* TEXT */
 .btnText{
 display:flex;
 flex-direction:column;
+z-index:1;
 }
 
 .btnTitle{
-font-size:16px;
+font-size:15px;
 font-weight:700;
+color:white;
 }
 
 .btnSub{
 font-size:11px;
-opacity:0.65;
+opacity:0.75;
+color:white;
 }
 
 /* CARD */
@@ -182,7 +197,7 @@ cursor:pointer;
 }
 .navBtn.active{opacity:1;}
 
-/* FLOAT */
+/* FLOAT BUTTON */
 .fab{
 position:fixed;
 bottom:85px;
@@ -221,7 +236,6 @@ z-index:10;
 <!-- HOME -->
 <div id="home" class="page active">
 
-<!-- COPILOT BACKGROUND -->
 <div class="copilotBg"></div>
 
 <div class="header">🤖 Copilot Hub</div>
@@ -240,7 +254,7 @@ z-index:10;
 <div class="btnIcon">🧠</div>
 <div class="btnText">
 <div class="btnTitle">Smart Cook</div>
-<div class="btnSub">Best match from pantry</div>
+<div class="btnSub">Best matches from pantry</div>
 </div>
 </div>
 
@@ -278,7 +292,7 @@ z-index:10;
 
 <script>
 
-/* FLOW */
+/* SPLASH FLOW */
 setTimeout(()=>{
 document.getElementById("logo").style.display="none";
 document.getElementById("rusty").style.display="flex";
