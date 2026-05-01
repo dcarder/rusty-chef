@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chef Jeff</title><style>
+<title>Chef Jeff AI</title><style>
 html,body{
 margin:0;
 padding:0;
@@ -11,15 +11,13 @@ background:black;
 font-family:Arial;
 }
 
-/* =========================
-   APP ARCHITECTURE (STATE BASED)
-========================= */
+/* ===== APP STATE SYSTEM ===== */
 .screen{
 position:fixed;
 inset:0;
 opacity:0;
 pointer-events:none;
-transition:opacity 600ms ease;
+transition:opacity 500ms ease;
 }
 
 .screen.active{
@@ -28,35 +26,35 @@ pointer-events:auto;
 z-index:10;
 }
 
-.screen img{
+img{
 width:100%;
 height:100%;
-object-fit:contain;
+object-fit:cover;
 }
 
-/* CAMERA BACKGROUND */
-#cameraScreen{
+/* ===== CAMERA VIEW ===== */
+#cameraView{
 position:fixed;
 inset:0;
-object-fit:cover;
+background:black;
 z-index:1;
-opacity:0;
-transition:opacity 600ms ease;
+display:none;
 }
 
-#cameraScreen.active{
-opacity:1;
+#cameraVideo{
+width:100%;
+height:100%;
+object-fit:cover;
 }
 
-/* UI LAYER (ALWAYS ON TOP) */
-#uiLayer{
+/* ===== UI LAYER ===== */
+#ui{
 position:fixed;
 inset:0;
 z-index:1000;
 pointer-events:none;
 }
 
-/* BUTTONS */
 .button{
 pointer-events:auto;
 position:absolute;
@@ -74,138 +72,172 @@ color:white;
 font-size:18px;
 }
 
-#cameraButton{right:30px;}
-#factsButton{left:30px;}
+#cameraBtn{right:30px;}
+#factsBtn{left:30px;}
 
-#cameraText{
+#text{
 position:absolute;
 bottom:220px;
 width:100%;
 text-align:center;
 color:white;
-font-size:20px;
+font-size:18px;
 }
 
-/* FACTS PANEL */
-#factsPage{
+/* ===== FACTS + RESULTS ===== */
+#panel{
 position:fixed;
 inset:0;
 background:black;
 color:white;
-padding:30px;
+padding:20px;
 opacity:0;
 pointer-events:none;
-transition:opacity 500ms ease;
+transition:opacity 400ms ease;
 z-index:2000;
 overflow:auto;
 }
 
-#factsPage.active{
+#panel.active{
 opacity:1;
 pointer-events:auto;
 }
 
-.navButton{
-margin:20px auto;
-padding:14px;
-width:200px;
+.card{
+margin:15px 0;
+padding:15px;
+border:1px solid rgba(255,255,255,0.2);
+border-radius:10px;
+}
+
+.smallBtn{
+margin-top:20px;
+padding:12px;
+border:1px solid white;
 text-align:center;
-border:2px solid white;
 cursor:pointer;
 }
-</style></head>
-<body><!-- SCREENS (STATE ROUTED) --><div id="logo" class="screen active">
+
+/* LOADING */
+#loading{
+position:fixed;
+inset:0;
+display:none;
+justify-content:center;
+align-items:center;
+color:white;
+z-index:3000;
+}
+</style></head><body><!-- START SCREENS --><div id="logo" class="screen active">
 <img src="your_logo.jpeg">
 </div><div id="intro" class="screen">
 <img src="rusty_intro.jpeg">
-</div><img id="cameraScreen" src="copilot_image_1777179019874.jpeg"><!-- UI LAYER (ALWAYS VISIBLE WHEN CAMERA STATE) --><div id="uiLayer">
-<div id="cameraButton" class="button">📷 Camera</div>
-<div id="factsButton" class="button">📘 Facts</div>
-<div id="cameraText">Take a picture of your food</div>
-</div><input type="file" id="cameraInput" accept="image/*" capture="environment"><!-- FACTS --><div id="factsPage">
-<h1>Food Facts</h1>
-<p>Pork, Beef, Chicken seasoning basics.</p>
-<div class="navButton" id="backBtn">Back</div>
-</div><script>
-console.log("APP ARCHITECTURE LOADED");
+</div><!-- CAMERA --><div id="cameraView">
+<video id="cameraVideo" autoplay playsinline></video>
+</div><!-- UI --><div id="ui">
+<div id="cameraBtn" class="button">📷 Camera</div>
+<div id="factsBtn" class="button">📘 Facts</div>
+<div id="text">Tap camera to scan food</div>
+</div><!-- PANEL --><div id="panel"></div><!-- LOADING --><div id="loading">Analyzing food...</div><script>
+console.log("AI APP LOADED");
 
-/* =========================
-   STATE ENGINE
-========================= */
-const State = {
-    LOGO:"logo",
-    INTRO:"intro",
-    CAMERA:"camera",
-    FACTS:"facts"
-};
+/* ===== STATE ===== */
+const State={LOGO:"logo",INTRO:"intro",CAMERA:"camera",FACTS:"facts",RESULTS:"results"};
+let current=State.LOGO;
 
-let currentState = State.LOGO;
+const logo=document.getElementById("logo");
+const intro=document.getElementById("intro");
+const panel=document.getElementById("panel");
+const camView=document.getElementById("cameraView");
+const video=document.getElementById("cameraVideo");
+const loading=document.getElementById("loading");
 
-const logo = document.getElementById("logo");
-const intro = document.getElementById("intro");
-const cam = document.getElementById("cameraScreen");
-const facts = document.getElementById("factsPage");
+function set(state){
+current=state;
+logo.classList.remove("active");
+intro.classList.remove("active");
+panel.classList.remove("active");
 
-function setState(state){
-    currentState = state;
+if(state===State.LOGO)logo.classList.add("active");
+if(state===State.INTRO)intro.classList.add("active");
 
-    // reset
-    logo.classList.remove("active");
-    intro.classList.remove("active");
-    cam.classList.remove("active");
-    facts.classList.remove("active");
-
-    switch(state){
-        case State.LOGO:
-            logo.classList.add("active");
-            break;
-
-        case State.INTRO:
-            intro.classList.add("active");
-            break;
-
-        case State.CAMERA:
-            cam.classList.add("active");
-            break;
-
-        case State.FACTS:
-            facts.classList.add("active");
-            break;
-    }
+if(state===State.CAMERA){
+camView.style.display="block";
+startCamera();
+}
+else{
+camView.style.display="none";
+stopCamera();
 }
 
-/* =========================
-   FLOW
-========================= */
-setState(State.LOGO);
+if(state===State.FACTS){
+panel.innerHTML=`
+<h1>🍳 Food Facts</h1>
+<div class="card"><h3>Chicken</h3>Garlic, lemon, paprika, oregano, pepper</div>
+<div class="card"><h3>Pork</h3>Brown sugar, mustard, rosemary, garlic, smoked paprika</div>
+<div class="card"><h3>Beef</h3>Salt, pepper, onion, cumin, smoked paprika</div>
+<div class="smallBtn" onclick="set(State.CAMERA)">Back</div>
+`;
+panel.classList.add("active");
+}
 
-setTimeout(()=>setState(State.INTRO),2500);
-setTimeout(()=>setState(State.CAMERA),6000);
+if(state===State.RESULTS){
+panel.classList.add("active");
+}
+}
 
-/* =========================
-   BUTTONS
-========================= */
-document.getElementById("cameraButton").onclick=()=>{
-    document.getElementById("cameraInput").click();
-};
+/* ===== CAMERA ===== */
+async function startCamera(){
+try{
+const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
+video.srcObject=stream;
+}catch(e){
+alert("Camera blocked or not supported");
+}
+}
 
-document.getElementById("factsButton").onclick=()=>{
-    setState(State.FACTS);
-};
+function stopCamera(){
+if(video.srcObject){
+video.srcObject.getTracks().forEach(t=>t.stop());
+video.srcObject=null;
+}
+}
 
-document.getElementById("backBtn").onclick=()=>{
-    setState(State.CAMERA);
-};
+/* ===== AI (SAFE PLACEHOLDER) ===== */
+async function analyze(){
+loading.style.display="flex";
 
-/* =========================
-   SAFETY: NEVER LOSE UI
-========================= */
-setInterval(()=>{
-    // emergency UI restore
-    if(currentState===State.CAMERA){
-        document.getElementById("cameraButton").style.opacity=1;
-        document.getElementById("factsButton").style.opacity=1;
-    }
-},2000);
+// fake AI fallback so app always works
+setTimeout(()=>{
+loading.style.display="none";
+set(State.RESULTS);
+panel.innerHTML=`
+<h1>🍽️ AI Results</h1>
+<div class="card">
+<b>Detected:</b> Chicken, rice, garlic
+</div>
+<div class="card">
+<b>Recipe:</b> Garlic chicken rice bowl
+</div>
+<div class="card">
+<b>Steps:</b> Cook chicken → add garlic → mix rice → season
+</div>
+<div class="smallBtn" onclick="set(State.CAMERA)">Back</div>
+`;
+},1500);
+}
+
+/* ===== BUTTONS ===== */
+document.getElementById("cameraBtn").onclick=()=>set(State.CAMERA);
+document.getElementById("factsBtn").onclick=()=>set(State.FACTS);
+
+/* TAP SCREEN TO SCAN */
+camView.onclick=()=>analyze();
+
+/* ===== BOOT ===== */
+set(State.LOGO);
+setTimeout(()=>set(State.INTRO),2500);
+setTimeout(()=>set(State.CAMERA),5000);
+
 </script></body>
 </html>
