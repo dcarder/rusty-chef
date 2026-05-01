@@ -36,7 +36,7 @@
     }
 
     .navButton {
-        width: 200px;
+        width: 220px;
         padding: 15px;
         text-align: center;
         background: #222;
@@ -337,6 +337,20 @@ const pork = document.getElementById("factsPork");
 const beef = document.getElementById("factsBeef");
 const chicken = document.getElementById("factsChicken");
 
+function hideCameraUI() {
+    document.getElementById("cameraScreen").style.opacity = "0";
+    document.getElementById("cameraButton").style.opacity = "0";
+    document.getElementById("factsButton").style.opacity = "0";
+    document.getElementById("cameraText").style.opacity = "0";
+}
+
+function showCameraUI() {
+    document.getElementById("cameraScreen").style.opacity = "1";
+    document.getElementById("cameraButton").style.opacity = "1";
+    document.getElementById("factsButton").style.opacity = "1";
+    document.getElementById("cameraText").style.opacity = "1";
+}
+
 function showPage(page) {
     [pork, beef, chicken].forEach(p => {
         p.style.opacity = "0";
@@ -349,7 +363,17 @@ function showPage(page) {
     }, 50);
 }
 
+function returnToCamera() {
+    [pork, beef, chicken].forEach(p => {
+        p.style.opacity = "0";
+        p.style.zIndex = "-1";
+    });
+
+    showCameraUI();
+}
+
 document.getElementById("factsButton").addEventListener("click", () => {
+    hideCameraUI();
     showPage(pork);
 });
 
@@ -361,17 +385,9 @@ document.getElementById("nextToChicken").addEventListener("click", () => {
     showPage(chicken);
 });
 
-document.getElementById("backToCamera1").addEventListener("click", () => {
-    showPage({ style:{opacity:"0", zIndex:"-1"} });
-});
-
-document.getElementById("backToCamera2").addEventListener("click", () => {
-    showPage({ style:{opacity:"0", zIndex:"-1"} });
-});
-
-document.getElementById("backToCamera3").addEventListener("click", () => {
-    showPage({ style:{opacity:"0", zIndex:"-1"} });
-});
+document.getElementById("backToCamera1").addEventListener("click", returnToCamera);
+document.getElementById("backToCamera2").addEventListener("click", returnToCamera);
+document.getElementById("backToCamera3").addEventListener("click", returnToCamera);
 </script>
 
 </body>
