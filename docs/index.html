@@ -1,393 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chef Jeff</title>
 
 <style>
-    html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
-        background: black;
-        font-family: Arial, sans-serif;
-        user-select: none;
-        touch-action: manipulation;
-    }
+html, body {
+    margin:0;
+    padding:0;
+    height:100%;
+    background:black;
+    overflow:hidden;
+    font-family:Arial;
+}
 
-    .fullScreen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: black;
-        opacity: 0;
-        z-index: -1;
-        transition: opacity 0.8s ease-in-out;
-        overflow-y: auto;
-        padding: 30px;
-    }
+/* SCREENS */
+.fullScreen {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    opacity:0;
+    z-index:-1;
+    transition:opacity 1s;
+}
 
-    .factsPage h1, .factsPage h2, .factsPage p {
-        color: white;
-    }
+.fullScreen img {
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
 
-    .navButton {
-        width: 220px;
-        padding: 15px;
-        text-align: center;
-        background: #222;
-        color: white;
-        border: 2px solid white;
-        border-radius: 12px;
-        margin: 30px auto;
-        font-size: 20px;
-    }
+/* CAMERA */
+#cameraScreen {
+    position:fixed;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    opacity:0;
+    z-index:1;
+    transition:opacity 1s;
+}
 
-    #cameraScreen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        object-fit: cover;
-        z-index: 1;
-        opacity: 0;
-        transition: opacity 1s ease-in-out;
-    }
+/* TEXT */
+#cameraText {
+    position:absolute;
+    bottom:260px;
+    width:100%;
+    text-align:center;
+    color:white;
+    font-size:20px;
+    opacity:0;
+}
 
-    #cameraText {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        text-align: center;
-        color: white;
-        font-size: 22px;
-        font-weight: 600;
-        opacity: 0;
-        transition: opacity 1s ease-in-out;
-        z-index: 4;
-        bottom: calc(8vh + 160px + 144px);
-        text-shadow:
-            0 0 8px rgba(255, 255, 255, 0.8),
-            0 0 16px rgba(255, 255, 255, 0.6),
-            0 0 24px rgba(255, 255, 255, 0.4);
-        animation: glowPulse 3s ease-in-out infinite;
-    }
+/* BUTTONS */
+.camera-hotspot {
+    position:absolute;
+    bottom:60px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.15);
+    padding:30px;
+    color:white;
+    font-size:18px;
+    opacity:0;
+}
 
-    @keyframes glowPulse {
-        0% { text-shadow: 0 0 6px rgba(255,255,255,0.7); }
-        50% { text-shadow: 0 0 24px rgba(255,255,255,1); }
-        100% { text-shadow: 0 0 6px rgba(255,255,255,0.7); }
-    }
+#cameraButton { right:15%; }
+#factsButton { left:15%; }
 
-    .camera-hotspot {
-        position: absolute;
-        bottom: 8vh;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(6px);
-        border: 2px solid rgba(255, 255, 255, 0.25);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        text-align: center;
-        z-index: 4;
-        opacity: 0;
-        transition: opacity 1s ease-in-out;
-    }
-
-    #cameraButton {
-        width: 160px;
-        height: 160px;
-        font-size: 18px;
-        left: 75%;
-        transform: translateX(-50%);
-    }
-
-    #factsButton {
-        width: 120px;
-        height: 120px;
-        font-size: 16px;
-        left: 25%;
-        transform: translateX(-50%);
-    }
-
-    #cameraInput {
-        display: none;
-    }
+.navButton {
+    margin:20px auto;
+    padding:15px;
+    width:200px;
+    text-align:center;
+    border:2px solid white;
+    color:white;
+}
 </style>
 </head>
 
 <body>
 
-<!-- Screen 1: Your logo -->
-<div id="yourLogoContainer" class="fullScreen">
-    <img src="your_logo.jpeg" style="width:100%; height:100%; object-fit:contain;">
+<!-- SCREENS -->
+<div id="logo" class="fullScreen">
+    <img src="your_logo.jpeg" onerror="this.src='https://via.placeholder.com/800x600'">
 </div>
 
-<!-- Screen 2: Rusty intro -->
-<div id="introContainer" class="fullScreen">
-    <img src="rusty_intro.jpeg" style="width:100%; height:100%; object-fit:contain;">
+<div id="intro" class="fullScreen">
+    <img src="rusty_intro.jpeg" onerror="this.src='https://via.placeholder.com/800x600'">
 </div>
 
-<!-- Screen 3: Camera screen -->
-<img id="cameraScreen" src="copilot_image_1777179019874.jpeg">
+<img id="cameraScreen" src="copilot_image_1777179019874.jpeg" 
+onerror="this.src='https://via.placeholder.com/800x600'">
 
-<!-- Glowing text -->
 <div id="cameraText">
-    Take a picture of your food and we will make something of it
+Take a picture of your food 🍽️
 </div>
 
-<!-- Audio -->
-<audio id="robotVoice" src="robot_voice.mp3"></audio>
-<audio id="rustyIntroVoice" src="rusty_intro.mp3"></audio>
+<!-- AUDIO -->
+<audio id="introAudio" src="rusty_intro.mp3"></audio>
 
-<!-- Buttons -->
-<div class="camera-hotspot" id="factsButton">📘 Facts</div>
-<div class="camera-hotspot" id="cameraButton">📷 Camera</div>
+<!-- BUTTONS -->
+<div id="cameraButton" class="camera-hotspot">📷</div>
+<div id="factsButton" class="camera-hotspot">📘</div>
 
-<input type="file" id="cameraInput" accept="image/*" capture="environment"/>
+<input type="file" id="cameraInput" accept="image/*" capture="environment">
 
-<!-- FACTS PAGE 1 — PORK -->
-<div id="factsPork" class="fullScreen factsPage">
-    <h1>🐖 Pork Seasoning Facts</h1>
-    <p>
-        <b>1. Sweet + Savory Works Best:</b> Pork has a natural sweetness, so brown sugar, honey, and paprika caramelize beautifully.<br><br>
-        <b>2. Mustard Cuts Through Fat:</b> Mustard powder or Dijon adds tang that balances pork’s richness.<br><br>
-        <b>3. Rosemary & Thyme Boost Aroma:</b> These herbs complement pork’s mild flavor without overpowering it.<br><br>
-        <b>4. Garlic Deepens Umami:</b> Pork absorbs garlic extremely well, enhancing savory depth.<br><br>
-        <b>5. Smoked Spices Add BBQ Character:</b> Smoked paprika or chipotle gives pork a slow‑cooked, smoky flavor even without a grill.
-    </p>
-
-    <div class="navButton" id="nextToBeef">Next → Beef</div>
-    <div class="navButton" id="backToCamera1">← Back to Camera</div>
-</div>
-
-<!-- FACTS PAGE 2 — BEEF -->
-<div id="factsBeef" class="fullScreen factsPage">
-    <h1>🐄 Beef Seasoning Facts</h1>
-    <p>
-        <b>1. Black Pepper Is Essential:</b> Pepper enhances beef’s natural umami more than any other seasoning.<br><br>
-        <b>2. Garlic + Onion Powder Build Depth:</b> These create a strong savory base that stands up to beef’s richness.<br><br>
-        <b>3. Smoked Paprika Adds Warmth:</b> It gives beef a smoky, grilled flavor even when pan‑seared.<br><br>
-        <b>4. Chili Powder & Cumin Add Earthiness:</b> These spices pair perfectly with beef’s bold flavor profile.<br><br>
-        <b>5. Salt Unlocks Juiciness:</b> Proper salting draws moisture to the surface, helping form a flavorful crust.
-    </p>
-
-    <div class="navButton" id="nextToChicken">Next → Chicken</div>
-    <div class="navButton" id="backToCamera2">← Back to Camera</div>
-</div>
-
-<!-- FACTS PAGE 3 — CHICKEN -->
-<div id="factsChicken" class="fullScreen factsPage">
-    <h1>🐔 Chicken Seasoning Facts</h1>
-    <p>
-        <b>1. Lemon Pepper Brightens Flavor:</b> Chicken is mild, so citrus adds freshness and lift.<br><br>
-        <b>2. Garlic Works on Every Cut:</b> Chicken absorbs garlic quickly, making it ideal for marinades.<br><br>
-        <b>3. Oregano & Parsley Add Herbal Notes:</b> These herbs give chicken a Mediterranean flavor profile.<br><br>
-        <b>4. Paprika Adds Color & Sweetness:</b> It makes chicken look golden while adding mild flavor.<br><br>
-        <b>5. Cayenne Adds Adjustable Heat:</b> A pinch wakes up chicken dishes without overwhelming them.
-    </p>
-
-    <div class="navButton" id="backToCamera3">← Back to Camera</div>
+<!-- FACT PAGE -->
+<div id="facts" class="fullScreen">
+    <div style="color:white;text-align:center">
+        <h1>Food Facts</h1>
+        <p>Pork loves sweet + smoky seasoning</p>
+        <p>Beef = salt + pepper king</p>
+        <p>Chicken = lemon + herbs</p>
+        <div class="navButton" id="backBtn">Back</div>
+    </div>
 </div>
 
 <script type="module">
-/* -------------------------------------------------
-   GEMINI CLIENT (NO SERVER)
----------------------------------------------------*/
-import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+console.log("APP START");
 
-const genAI = new GoogleGenerativeAI("YOUR_GEMINI_API_KEY");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+/* ---------------- AI SAFE LOAD ---------------- */
+let model = null;
 
-async function analyzeFoodImage(file) {
-    const base64 = await toBase64(file);
+try {
+    const { GoogleGenerativeAI } = await import("https://esm.run/@google/generative-ai");
 
-    const visionResponse = await model.generateContent([
-        {
-            inlineData: {
-                data: base64,
-                mimeType: file.type
-            }
-        },
-        "Identify all food ingredients in this image. Respond ONLY with a JSON array of ingredient names."
-    ]);
+    const genAI = new GoogleGenerativeAI("YOUR_GEMINI_API_KEY");
+    model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const ingredients = JSON.parse(visionResponse.response.text().trim());
-
-    const recipeResponse = await model.generateContent(
-        `Using these ingredients: ${ingredients.join(", ")},
-         give me 5 recipes I can make.
-         Respond ONLY in JSON as an array of objects with: title, ingredients, steps.`
-    );
-
-    const recipes = JSON.parse(recipeResponse.response.text().trim());
-
-    return { ingredients, recipes };
+    console.log("AI Loaded");
+} catch (e) {
+    console.warn("AI FAILED:", e);
 }
 
-function toBase64(file) {
-    return new Promise((resolve) => {
+/* ---------------- SCREENS ---------------- */
+const logo = document.getElementById("logo");
+const intro = document.getElementById("intro");
+
+logo.style.opacity = 1;
+logo.style.zIndex = 10;
+
+setTimeout(() => {
+    console.log("Intro start");
+
+    logo.style.opacity = 0;
+
+    intro.style.opacity = 1;
+    intro.style.zIndex = 10;
+
+    document.getElementById("introAudio").play().catch(()=>{});
+
+}, 3000);
+
+setTimeout(() => {
+    console.log("Camera screen");
+
+    intro.style.opacity = 0;
+
+    document.getElementById("cameraScreen").style.opacity = 1;
+    document.getElementById("cameraText").style.opacity = 1;
+    document.getElementById("cameraButton").style.opacity = 1;
+    document.getElementById("factsButton").style.opacity = 1;
+
+}, 7000);
+
+/* ---------------- CAMERA ---------------- */
+document.getElementById("cameraButton").onclick = () => {
+    document.getElementById("cameraInput").click();
+};
+
+document.getElementById("cameraInput").onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!model) {
+        alert("AI not ready yet");
+        return;
+    }
+
+    alert("Analyzing food...");
+
+    // simplified safe AI call
+    try {
+        const base64 = await fileToBase64(file);
+
+        const result = await model.generateContent([
+            {
+                inlineData: {
+                    data: base64,
+                    mimeType: file.type
+                }
+            },
+            "List food ingredients."
+        ]);
+
+        alert(result.response.text());
+    } catch (err) {
+        console.error(err);
+        alert("AI failed");
+    }
+};
+
+function fileToBase64(file) {
+    return new Promise(res => {
         const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result.split(",")[1]);
+        reader.onload = () => res(reader.result.split(",")[1]);
         reader.readAsDataURL(file);
     });
 }
 
-/* -------------------------------------------------
-   UNLOCK AUDIO ON FIRST TAP
----------------------------------------------------*/
-document.addEventListener("click", () => {
-    const robot = document.getElementById("robotVoice");
-    const rustyAudio = document.getElementById("rustyIntroVoice");
+/* ---------------- FACTS ---------------- */
+const facts = document.getElementById("facts");
 
-    robot.play().catch(() => {});
-    rustyAudio.play().catch(() => {});
+document.getElementById("factsButton").onclick = () => {
+    hideCamera();
+    facts.style.opacity = 1;
+    facts.style.zIndex = 20;
+};
 
-    robot.pause();
-    robot.currentTime = 0;
+document.getElementById("backBtn").onclick = () => {
+    facts.style.opacity = 0;
+    facts.style.zIndex = -1;
+    showCamera();
+};
 
-}, { once: true });
-
-/* -----------------------------
-   SCREEN TRANSITION SEQUENCE
-------------------------------*/
-const yourLogo = document.getElementById("yourLogoContainer");
-yourLogo.style.opacity = "1";
-
-setTimeout(() => {
-    yourLogo.style.opacity = "0";
-
-    const rusty = document.getElementById("introContainer");
-    rusty.style.opacity = "1";
-
-    const rustyAudio = document.getElementById("rustyIntroVoice");
-    rustyAudio.volume = 1;
-    rustyAudio.currentTime = 0;
-    rustyAudio.play().catch(() => {});
-
-    setTimeout(() => {
-        let fadeDuration = 1000;
-        let fadeSteps = 20;
-        let stepTime = fadeDuration / fadeSteps;
-        let volumeStep = rustyAudio.volume / fadeSteps;
-
-        let fadeInterval = setInterval(() => {
-            if (rustyAudio.volume - volumeStep > 0) {
-                rustyAudio.volume -= volumeStep;
-            } else {
-                rustyAudio.volume = 0;
-                rustyAudio.pause();
-                rustyAudio.currentTime = 0;
-                clearInterval(fadeInterval);
-            }
-        }, stepTime);
-
-    }, 10000);
-
-    setTimeout(() => {
-        rusty.style.opacity = "0";
-
-        setTimeout(() => {
-            document.getElementById("cameraScreen").style.opacity = "1";
-            document.getElementById("cameraButton").style.opacity = "1";
-            document.getElementById("factsButton").style.opacity = "1";
-            document.getElementById("cameraText").style.opacity = "1";
-
-            rusty.style.zIndex = "-1";
-            yourLogo.style.zIndex = "-1";
-
-        }, 1500);
-
-    }, 7500);
-
-}, 4500);
-
-/* -------------------------------------------------
-   CAMERA BUTTON
----------------------------------------------------*/
-document.getElementById("cameraButton").addEventListener("click", () => {
-    document.getElementById("cameraInput").click();
-});
-
-/* -------------------------------------------------
-   HANDLE PHOTO → GEMINI → REDIRECT
----------------------------------------------------*/
-document.getElementById("cameraInput").addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const result = await analyzeFoodImage(file);
-
-    window.location.href =
-        `/recipes?items=${encodeURIComponent(JSON.stringify(result.ingredients))}`;
-});
-
-/* -------------------------------------------------
-   FACTS PAGE NAVIGATION
----------------------------------------------------*/
-const pork = document.getElementById("factsPork");
-const beef = document.getElementById("factsBeef");
-const chicken = document.getElementById("factsChicken");
-
-function hideCameraUI() {
-    document.getElementById("cameraScreen").style.opacity = "0";
-    document.getElementById("cameraButton").style.opacity = "0";
-    document.getElementById("factsButton").style.opacity = "0";
-    document.getElementById("cameraText").style.opacity = "0";
+function hideCamera() {
+    document.getElementById("cameraScreen").style.opacity = 0;
+    document.getElementById("cameraButton").style.opacity = 0;
+    document.getElementById("factsButton").style.opacity = 0;
+    document.getElementById("cameraText").style.opacity = 0;
 }
 
-function showCameraUI() {
-    document.getElementById("cameraScreen").style.opacity = "1";
-    document.getElementById("cameraButton").style.opacity = "1";
-    document.getElementById("factsButton").style.opacity = "1";
-    document.getElementById("cameraText").style.opacity = "1";
+function showCamera() {
+    document.getElementById("cameraScreen").style.opacity = 1;
+    document.getElementById("cameraButton").style.opacity = 1;
+    document.getElementById("factsButton").style.opacity = 1;
+    document.getElementById("cameraText").style.opacity = 1;
 }
 
-function showPage(page) {
-    [pork, beef, chicken].forEach(p => {
-        p.style.opacity = "0";
-        p.style.zIndex = "-1";
-    });
-
-    setTimeout(() => {
-        page.style.zIndex = "10";
-        page.style.opacity = "1";
-    }, 50);
-}
-
-function returnToCamera() {
-    [pork, beef, chicken].forEach(p => {
-        p.style.opacity = "0";
-        p.style.zIndex = "-1";
-    });
-
-    showCameraUI();
-}
-
-document.getElementById("factsButton").addEventListener("click", () => {
-    hideCameraUI();
-    showPage(pork);
-});
-
-document.getElementById("nextToBeef").addEventListener("click", () => {
-    showPage(beef);
-});
-
-document.getElementById("nextToChicken").addEventListener("click", () => {
-    showPage(chicken);
-});
-
-document.getElementById("backToCamera1").addEventListener("click", returnToCamera);
-document.getElementById("backToCamera2").addEventListener("click", returnToCamera);
-document.getElementById("backToCamera3").addEventListener("click", returnToCamera);
 </script>
 
 </body>
