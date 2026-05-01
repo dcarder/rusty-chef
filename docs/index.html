@@ -11,9 +11,9 @@ margin:0;
 padding:0;
 height:100%;
 overflow:hidden;
-background:black;
 font-family:Arial;
 color:white;
+background:black;
 }
 
 /* APP */
@@ -40,6 +40,7 @@ display:block;
 font-size:22px;
 font-weight:700;
 margin-bottom:10px;
+text-align:center;
 }
 
 /* CARD */
@@ -49,6 +50,7 @@ border:1px solid rgba(255,255,255,0.12);
 border-radius:14px;
 padding:12px;
 margin:10px 0;
+text-align:center;
 }
 
 /* ITEM */
@@ -91,7 +93,20 @@ text-align:center;
 cursor:pointer;
 }
 
-/* DOCK HOME UI */
+/* HOME HUB BACKGROUND */
+#homeBg{
+position:fixed;
+inset:0;
+z-index:-1;
+}
+
+#homeBg img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* DOCK */
 .dock{
 position:fixed;
 bottom:90px;
@@ -134,17 +149,28 @@ opacity:0.7;
 
 <div id="app">
 
-<!-- HOME (3 BUTTON SCREEN) -->
+<!-- HOME HUB -->
 <div id="home" class="page active">
-<div class="header">🤖 Rusty the Robot Chef</div>
 
-<div class="card">🧂 The Salty Chef’s help is ready</div>
+  <!-- BACKGROUND IMAGE -->
+  <div id="homeBg">
+    <img src="copilot_image_1777179019874.jpeg">
+  </div>
 
-<div class="dock">
-  <div class="dockBtn" onclick="openRecipes()">🍳<span>Recipes</span></div>
-  <div class="dockBtn large" onclick="openSmart()">🧠<span>Smart Cook</span></div>
-  <div class="dockBtn" onclick="openPantry()">🧺<span>Pantry</span></div>
-</div>
+  <div class="header">🤖 Rusty the Robot Chef</div>
+
+  <div class="card">The Salty Chef’s Help is Ready</div>
+
+  <!-- 3 BUTTON HUB -->
+  <div class="dock">
+    <div class="dockBtn" onclick="openRecipes()">🍳<span>Recipes</span></div>
+
+    <div class="dockBtn large" onclick="openSmart()">
+      🧠<span>Smart Cook</span>
+    </div>
+
+    <div class="dockBtn" onclick="openPantry()">🧺<span>Pantry</span></div>
+  </div>
 
 </div>
 
@@ -161,9 +187,15 @@ opacity:0.7;
 
 <script>
 
-/* ======================
-   NAV RESET FIX (IMPORTANT)
-====================== */
+/* =========================
+   GLOBAL STATE
+========================= */
+
+let selected = JSON.parse(localStorage.getItem("pantry") || "[]");
+
+/* =========================
+   BACK HOME FIX (IMPORTANT)
+========================= */
 
 function goHome(){
 
@@ -174,11 +206,9 @@ p.classList.remove("active");
 document.getElementById("home").classList.add("active");
 }
 
-/* ======================
-   PANTRY DATA
-====================== */
-
-let selected = JSON.parse(localStorage.getItem("pantry") || "[]");
+/* =========================
+   PANTRY DATA (SAMPLE CORE)
+========================= */
 
 const pantryItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Sausage","Pork chops",
@@ -186,9 +216,9 @@ const pantryItems = [
 "Rice","Pasta","Cheese","Milk","Butter","Tomatoes","Beans"
 ];
 
-/* ======================
+/* =========================
    LOAD PANTRY
-====================== */
+========================= */
 
 function loadPantry(){
 
@@ -207,7 +237,7 @@ html += `
 
 html += `
 <div class="btn" onclick="findRecipes()">🍳 What can I cook?</div>
-<div class="back" onclick="goHome()">⬅ Back to Home</div>
+<div class="back" onclick="goHome()">⬅ Back Home</div>
 `;
 
 document.getElementById("pantry").innerHTML = html;
@@ -215,9 +245,9 @@ document.getElementById("pantry").innerHTML = html;
 show("pantry");
 }
 
-/* ======================
+/* =========================
    TOGGLE INGREDIENTS
-====================== */
+========================= */
 
 function toggleItem(item){
 
@@ -231,9 +261,9 @@ localStorage.setItem("pantry", JSON.stringify(selected));
 loadPantry();
 }
 
-/* ======================
+/* =========================
    RECIPES
-====================== */
+========================= */
 
 const recipes = [
 {
@@ -277,9 +307,9 @@ steps:[
 }
 ];
 
-/* ======================
+/* =========================
    MATCH ENGINE
-====================== */
+========================= */
 
 function findRecipes(){
 
@@ -303,12 +333,13 @@ Time: ${r.time} min
 html += `<div class="back" onclick="loadPantry()">⬅ Back</div>`;
 
 document.getElementById("results").innerHTML = html;
+
 show("results");
 }
 
-/* ======================
+/* =========================
    RECIPE DETAIL
-====================== */
+========================= */
 
 function openRecipe(name){
 
@@ -333,12 +364,13 @@ ${r.steps.map(s=>"• "+s).join("<br>")}
 `;
 
 document.getElementById("detail").innerHTML = html;
+
 show("detail");
 }
 
-/* ======================
-   NAV
-====================== */
+/* =========================
+   NAV SWITCH
+========================= */
 
 function show(page){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
