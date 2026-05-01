@@ -16,18 +16,33 @@ font-family:Arial;
 color:white;
 }
 
-/* ===== SPLASH STAGE ===== */
+/* ===== LOADING / LOGO STAGE ===== */
 .stage{
 position:fixed;
 inset:0;
 display:flex;
 align-items:center;
 justify-content:center;
-background:black;
 z-index:9999;
 }
 
-/* ===== NETFLIX LOGO ANIMATION ===== */
+/* BACKGROUND ALWAYS SHOWS IMAGE (NO BLACK SCREEN) */
+.logoStage{
+background:url("your_logo.jpeg") center center no-repeat;
+background-size:cover;
+}
+
+/* DARK OVERLAY FOR READABILITY */
+.logoOverlay{
+position:absolute;
+inset:0;
+background:rgba(0,0,0,0.35);
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+/* NETFLIX ANIMATION */
 .logoAnim{
 width:100%;
 height:100%;
@@ -37,29 +52,24 @@ transform-origin:center;
 }
 
 @keyframes netflixIntro{
-
 0%{
 transform:scale(1.2);
 filter:blur(14px);
 opacity:0;
 }
-
 20%{
 opacity:1;
 filter:blur(8px);
 }
-
 55%{
 transform:scale(1.05);
 filter:blur(0px);
 opacity:1;
 }
-
 85%{
 transform:scale(1);
 opacity:1;
 }
-
 100%{
 transform:scale(1);
 opacity:1;
@@ -191,8 +201,8 @@ border-radius:16px;
 padding:14px;
 margin:10px 0;
 backdrop-filter: blur(10px);
-z-index:2;
 position:relative;
+z-index:2;
 }
 
 /* NAV */
@@ -242,14 +252,18 @@ z-index:10;
 
 <body>
 
-<!-- LOGO (NETFLIX INTRO) -->
-<div id="logo" class="stage">
-  <img src="your_logo.jpeg" class="logoAnim" />
+<!-- LOADING / LOGO (NO BLACK SCREEN ANYMORE) -->
+<div id="logo" class="stage logoStage">
+
+  <div class="logoOverlay">
+    <img src="your_logo.jpeg" class="logoAnim">
+  </div>
+
 </div>
 
 <!-- NEXT SCREEN -->
 <div id="rusty" class="stage" style="display:none;">
-  <img src="rusty_intro.jpeg" />
+  <img src="rusty_intro.jpeg">
 </div>
 
 <!-- APP -->
@@ -308,30 +322,31 @@ z-index:10;
 
 <script>
 
-/* FLOW CONTROL */
 window.onload = () => {
 
-  // logo 5 seconds (Netflix animation handles visuals)
+  // Netflix-style timing flow
+  setTimeout(() => {
+    document.getElementById("logo").style.opacity = "0";
+  }, 5000);
+
   setTimeout(() => {
     document.getElementById("logo").style.display = "none";
     document.getElementById("rusty").style.display = "flex";
-  }, 5000);
+  }, 5500);
 
-  // app load
   setTimeout(() => {
     document.getElementById("rusty").style.display = "none";
     document.getElementById("app").style.display = "block";
-  }, 8500);
+  }, 9000);
 
 };
 
-/* NAV SIMPLE */
+/* NAV */
 function show(page){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 document.getElementById(page).classList.add("active");
 }
 
-/* PLACEHOLDER FUNCTIONS */
 function openRecipes(){show("recipes");}
 function openSmart(){show("smart");}
 function openPantry(){show("pantry");}
