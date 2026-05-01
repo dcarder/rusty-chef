@@ -60,8 +60,6 @@ text-align:center;
 box-shadow:0 4px 15px rgba(0,0,0,0.4);
 }
 
-.card:active{transform:scale(0.98);}
-
 .item{
 display:flex;
 justify-content:space-between;
@@ -177,16 +175,16 @@ color:white;
   </div>
 
   <div class="header">🤖 Rusty the Robot Chef</div>
-  <div class="card">AI Cooking System v5 (No Repeats)</div>
+  <div class="card">AI Cooking System v5</div>
 
   <div class="dock">
     <div class="dockBtn" onclick="openRecipes()">🍳<span>Recipes</span></div>
     <div class="dockBtn large" onclick="openSmart()">🧠<span>AI Cook</span></div>
-    <div class="dockBtn" onclick="openPantry()">🧺<span>Pantry</span></div>
+    <div class="dockBtn" onclick="openIngredients()">🧺<span>Ingredients</span></div>
   </div>
 </div>
 
-<div id="pantry" class="page"></div>
+<div id="ingredients" class="page"></div>
 <div id="results" class="page"></div>
 <div id="detail" class="page"></div>
 <div id="smart" class="page"></div>
@@ -195,7 +193,7 @@ color:white;
 
 <script>
 
-let selected = JSON.parse(localStorage.getItem("pantry") || "[]");
+let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
 
 /* NAV */
 function show(page){
@@ -210,14 +208,14 @@ document.getElementById("home").classList.add("active");
 }
 
 /* BUTTON FIX */
-function openPantry(){ loadPantry(); }
+function openIngredients(){ loadIngredients(); }
 function openRecipes(){ findRecipes(); }
 function openSmart(){ loadSmart(); }
 
-/* PANTRY */
-const pantryItems = ["Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic","Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Lettuce","Cucumber","Bell peppers","Mushrooms","Shrimp","Salmon","Tuna","Turkey","Steak","Pork chops","Sausage","Beans","Corn","Peas","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Honey","Lemon","Lime","Ginger","Chili flakes","Paprika","Oregano","Basil","Thyme","Cinnamon","Nutmeg","Curry powder","Rice noodles","Tortilla","Bread","Cream","Yogurt","Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Pineapple","Coconut milk","Chicken broth","Beef broth","Fish sauce","Mustard","Ketchup","Mayonnaise","Vinegar","Green beans","Zucchini","Eggplant","Cauliflower","Cabbage","Chives","Parsley","Dill","Walnuts","Almonds","Oats","Chocolate","Coffee","Tea","Maple syrup","Brown sugar","Tofu","Quinoa","Lentils","Chickpeas","Hot sauce","BBQ sauce","Teriyaki sauce","Worcestershire sauce","Sesame oil","Peanut butter","Jam","Crackers","Granola","Marshmallows"];
+/* INGREDIENT LIST */
+const ingredientItems = ["Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic","Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Lettuce","Cucumber","Bell peppers","Mushrooms","Shrimp","Salmon","Tuna","Turkey","Steak","Pork chops","Sausage","Beans","Corn","Peas","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Honey","Lemon","Lime","Ginger","Chili flakes","Paprika","Oregano","Basil","Thyme","Cinnamon","Nutmeg","Curry powder","Rice noodles","Tortilla","Bread","Cream","Yogurt","Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Pineapple","Coconut milk","Chicken broth","Beef broth","Fish sauce","Mustard","Ketchup","Mayonnaise","Vinegar","Green beans","Zucchini","Eggplant","Cauliflower","Cabbage","Chives","Parsley","Dill","Walnuts","Almonds","Oats","Chocolate","Coffee","Tea","Maple syrup","Brown sugar","Tofu","Quinoa","Lentils","Chickpeas","Hot sauce","BBQ sauce","Teriyaki sauce","Worcestershire sauce","Sesame oil","Peanut butter","Jam","Crackers","Granola","Marshmallows"];
 
-/* REAL RECIPES */
+/* RECIPES */
 const recipesDB = [
 {name:"Grilled Chicken Breast",ingredients:["Chicken breast","Olive oil","Salt","Pepper","Garlic"],steps:["Season chicken","Cook in pan","Flip until done","Rest","Serve"],time:20},
 {name:"Chicken Alfredo Pasta",ingredients:["Pasta","Chicken breast","Butter","Cream","Parmesan","Garlic"],steps:["Boil pasta","Cook chicken","Make sauce","Combine","Serve"],time:30},
@@ -226,18 +224,62 @@ const recipesDB = [
 {name:"Bacon and Eggs",ingredients:["Bacon","Eggs","Salt","Pepper"],steps:["Cook bacon","Fry eggs","Season","Serve"],time:10}
 ];
 
-/* 🔥 NO REPEAT ENGINE */
+/* ENGINE */
+function makeRecipe(i){
+
+let base = recipesDB[i % recipesDB.length];
+
+let match = base.ingredients.filter(x=>selected.includes(x)).length;
+
+return {
+name:base.name,
+ingredients:base.ingredients,
+steps:base.steps,
+time:base.time,
+score:match/base.ingredients.length
+};
+}
+
+/* INGREDIENTS PAGE */
+function loadIngredients(){
+
+let html = `<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
+<div class="header">🧺 Ingredients</div>`;
+
+ingredientItems.forEach(item=>{
+let on = selected.includes(item);
+html += `<div class="item ${on?'selected':''}" onclick="toggleItem('${item}')">
+<span>${item}</span><span>${on?'✔':''}</span>
+</div>`;
+});
+
+html += `<div class="btn" onclick="findRecipes()">🍳 Generate Recipes</div>
+<div class="back" onclick="goHome()">⬅ Home</div>`;
+
+document.getElementById("ingredients").innerHTML = html;
+show("ingredients");
+}
+
+function toggleItem(item){
+selected = selected.includes(item)
+? selected.filter(i=>i!==item)
+: [...selected,item];
+
+localStorage.setItem("ingredients",JSON.stringify(selected));
+loadIngredients();
+}
+
+/* RECIPES (NO REPEATS) */
 function findRecipes(){
 
 let pool = [...recipesDB];
 
 // shuffle
 for(let i=pool.length-1;i>0;i--){
-let j = Math.floor(Math.random()*(i+1));
+let j=Math.floor(Math.random()*(i+1));
 [pool[i],pool[j]]=[pool[j],pool[i]];
 }
 
-// map results
 let recipes = pool.map(r=>{
 
 let match = r.ingredients.filter(x=>selected.includes(x)).length;
@@ -259,15 +301,14 @@ let html = `<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Hom
 <div class="header">🍳 What Can I Cook?</div>`;
 
 recipes.forEach(r=>{
-html += `
-<div class="card" onclick="openRecipe('${r.name}')">
+html += `<div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>
 ${(r.score*100).toFixed(0)}% match<br>
 ${r.time} min
 </div>`;
 });
 
-html += `<div class="back" onclick="loadPantry()">⬅ Pantry</div>`;
+html += `<div class="back" onclick="loadIngredients()">⬅ Ingredients</div>`;
 document.getElementById("results").innerHTML = html;
 show("results");
 }
@@ -296,46 +337,18 @@ document.getElementById("detail").innerHTML = html;
 show("detail");
 }
 
-/* PANTRY */
-function loadPantry(){
-let html = `<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
-<div class="header">🧺 Pantry</div>`;
-
-pantryItems.forEach(item=>{
-let on = selected.includes(item);
-html += `<div class="item ${on?'selected':''}" onclick="toggleItem('${item}')">
-<span>${item}</span><span>${on?'✔':''}</span>
-</div>`;
-});
-
-html += `<div class="btn" onclick="findRecipes()">🍳 Generate Recipes</div>
-<div class="back" onclick="goHome()">⬅ Home</div>`;
-
-document.getElementById("pantry").innerHTML = html;
-show("pantry");
-}
-
-function toggleItem(item){
-selected = selected.includes(item)
-? selected.filter(i=>i!==item)
-: [...selected,item];
-
-localStorage.setItem("pantry",JSON.stringify(selected));
-loadPantry();
-}
-
 /* SMART */
 function loadSmart(){
 document.getElementById("smart").innerHTML = `
 <div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
 <div class="header">🧠 AI Chef Mode</div>
-<div class="card">No-repeat recipe engine active.</div>
+<div class="card">Ingredients system active.</div>
 <div class="back" onclick="goHome()">⬅ Home</div>`;
 show("smart");
 }
 
 /* INIT */
-loadPantry();
+loadIngredients();
 
 </script>
 
