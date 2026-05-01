@@ -11,7 +11,6 @@ background:black;
 font-family:Arial;
 }
 
-/* ===== APP STATE SYSTEM ===== */
 .screen{
 position:fixed;
 inset:0;
@@ -32,22 +31,20 @@ height:100%;
 object-fit:cover;
 }
 
-/* CAMERA VIEW */
 #cameraView{
 position:fixed;
 inset:0;
-background:black;
 z-index:1;
-display:none;
 }
 
-#cameraVideo{
+#cameraScreen{
+position:fixed;
+inset:0;
 width:100%;
 height:100%;
 object-fit:cover;
 }
 
-/* UI LAYER */
 #ui{
 position:fixed;
 inset:0;
@@ -70,12 +67,6 @@ backdrop-filter:blur(10px);
 border:1px solid rgba(255,255,255,0.3);
 color:white;
 font-size:18px;
-opacity:0;
-transition:opacity 400ms ease;
-}
-
-.button.show{
-opacity:1;
 }
 
 #cameraBtn{right:30px;}
@@ -88,15 +79,8 @@ width:100%;
 text-align:center;
 color:white;
 font-size:18px;
-opacity:0;
-transition:opacity 400ms ease;
 }
 
-#text.show{
-opacity:1;
-}
-
-/* PANEL */
 #panel{
 position:fixed;
 inset:0;
@@ -105,9 +89,9 @@ color:white;
 padding:20px;
 opacity:0;
 pointer-events:none;
-transition:opacity 400ms ease;
-z-index:2000;
 overflow:auto;
+z-index:2000;
+transition:opacity 400ms ease;
 }
 
 #panel.active{
@@ -129,151 +113,73 @@ border:1px solid white;
 text-align:center;
 cursor:pointer;
 }
-
-/* LOADING */
-#loading{
-position:fixed;
-inset:0;
-display:none;
-justify-content:center;
-align-items:center;
-color:white;
-z-index:3000;
-}
-</style></head><body><!-- SCREENS --><div id="logo" class="screen active">
+</style></head><body><div id="logo" class="screen active">
 <img src="your_logo.jpeg">
 </div><div id="intro" class="screen">
 <img src="rusty_intro.jpeg">
-</div><img id="cameraScreen" src="copilot_image_1777179019874.jpeg"><!-- UI --><div id="ui">
+</div><img id="cameraScreen" src="copilot_image_1777179019874.jpeg"><div id="ui">
 <div id="cameraBtn" class="button">📷 Camera</div>
 <div id="factsBtn" class="button">📘 Facts</div>
-<div id="text">Loading camera preview...</div>
-</div><!-- PANEL --><div id="panel"></div><!-- LOADING --><div id="loading">Analyzing food...</div><script>
-console.log("AI APP LOADED");
-
-/* ===== STATE ===== */
-const State={LOGO:"logo",INTRO:"intro",CAMERA:"camera",FACTS:"facts",RESULTS:"results"};
-let current=State.LOGO;
+<div id="text">Tap camera to scan food</div>
+</div><div id="panel"></div><script>
+const State={LOGO:"logo",INTRO:"intro",CAMERA:"camera",FACTS:"facts"};
 
 const logo=document.getElementById("logo");
 const intro=document.getElementById("intro");
-const camImg=document.getElementById("cameraScreen");
 const panel=document.getElementById("panel");
-const loading=document.getElementById("loading");
-
-const camBtn=document.getElementById("cameraBtn");
-const factsBtn=document.getElementById("factsBtn");
-const text=document.getElementById("text");
+const cam=document.getElementById("cameraScreen");
 
 function set(state){
-current=state;
 logo.classList.remove("active");
 intro.classList.remove("active");
 panel.classList.remove("active");
 
-if(state===State.LOGO)logo.classList.add("active");
-if(state===State.INTRO)intro.classList.add("active");
+if(state==="logo")logo.classList.add("active");
+if(state==="intro")intro.classList.add("active");
+if(state==="camera")cam.style.display="block";
 
-if(state===State.CAMERA){
-camBtn.classList.remove("show");
-factsBtn.classList.remove("show");
-text.classList.remove("show");
-}
-
-if(state===State.FACTS){
+if(state==="facts"){
 panel.innerHTML=`
-<h1>🍳 Food Facts (Seasonings & Why They Work)</h1>
+<h1>🍳 Food Facts (Seasonings + WHY they work)</h1>
 
 <div class="card">
 <h3>🐔 Chicken</h3>
-<p><b>Garlic</b> – boosts savory depth because chicken is mild and absorbs flavors well.</p>
-<p><b>Lemon</b> – adds acidity that brightens and cuts through natural fat.</p>
-<p><b>Paprika</b> – adds color and mild sweetness that enhances visual + flavor appeal.</p>
-<p><b>Oregano</b> – brings herbal freshness that balances richness.</p>
-<p><b>Black pepper</b> – enhances natural umami without overpowering delicate meat.</p>
+<p><b>Garlic</b> – works because chicken is mild and absorbs seasoning deeply, boosting savory flavor.</p>
+<p><b>Lemon</b> – acidity cuts through natural fat and brightens taste.</p>
+<p><b>Paprika</b> – adds sweetness + color, enhancing perception of flavor.</p>
+<p><b>Oregano</b> – herbal balance that prevents blandness.</p>
+<p><b>Black pepper</b> – enhances umami without overpowering light meat.</p>
 </div>
 
 <div class="card">
 <h3>🐖 Pork</h3>
-<p><b>Brown sugar</b> – caramelizes during cooking, enhancing pork’s natural sweetness.</p>
-<p><b>Mustard</b> – adds tang that cuts through pork fat for balance.</p>
-<p><b>Rosemary</b> – earthy aroma pairs with pork’s richness for depth.</p>
-<p><b>Garlic</b> – intensifies savory notes because pork holds seasoning well.</p>
-<p><b>Smoked paprika</b> – gives BBQ-style flavor even without grilling.</p>
+<p><b>Brown sugar</b> – caramelizes during heat, amplifying natural pork sweetness.</p>
+<p><b>Mustard</b> – cuts fatty richness with sharp acidity.</p>
+<p><b>Rosemary</b> – strong aroma matches pork’s heavy flavor profile.</p>
+<p><b>Garlic</b> – binds with fat to deepen savory notes.</p>
+<p><b>Smoked paprika</b> – mimics slow BBQ cooking flavor.</p>
 </div>
 
 <div class="card">
 <h3>🐄 Beef</h3>
-<p><b>Salt</b> – draws out moisture and enhances natural beef flavor for better crust.</p>
-<p><b>Black pepper</b> – amplifies beef’s strong umami profile.</p>
-<p><b>Onion powder</b> – builds deep savory base flavor in fatty meats.</p>
-<p><b>Cumin</b> – adds earthy warmth that complements beef richness.</p>
-<p><b>Smoked paprika</b> – adds grilled flavor even in stovetop cooking.</p>
+<p><b>Salt</b> – draws out moisture and forms a flavorful crust when cooked.</p>
+<p><b>Black pepper</b> – intensifies beef’s natural umami compounds.</p>
+<p><b>Onion powder</b> – builds background savory depth.</p>
+<p><b>Cumin</b> – adds earthy warmth that pairs with fat content.</p>
+<p><b>Smoked paprika</b> – adds grilled smokiness without charcoal.</p>
 </div>
 
-<div class="smallBtn" onclick="set(State.CAMERA)">Back</div>
+<div class="smallBtn" onclick="set('camera')">Back</div>
 `;
 panel.classList.add("active");
 }
-
-if(state===State.RESULTS){
-panel.classList.add("active");
-}
 }
 
-/* ===== WAIT FOR COPILOT IMAGE ===== */
-function startAppWhenImageReady(){
+document.getElementById("factsBtn").onclick=()=>set("facts");
+document.getElementById("cameraBtn").onclick=()=>set("camera");
 
-camImg.onload=()=>{
-console.log("Camera image loaded → showing UI");
-set(State.CAMERA);
-
-setTimeout(()=>{
-camBtn.classList.add("show");
-factsBtn.classList.add("show");
-text.classList.add("show");
-},300);
-};
-
-// fallback if cached
-if(camImg.complete){
-camImg.onload();
-}
-}
-
-/* ===== CAMERA (optional real video) ===== */
-async function startCamera(){
-try{
-const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
-document.getElementById("cameraVideo").srcObject=stream;
-}catch(e){console.log("camera blocked");}
-}
-
-/* ===== AI FAKE ===== */
-function analyze(){
-loading.style.display="flex";
-setTimeout(()=>{
-loading.style.display="none";
-set(State.RESULTS);
-panel.innerHTML=`
-<h1>🍽️ AI Results</h1>
-<div class="card"><b>Detected:</b> Chicken, garlic, rice</div>
-<div class="card"><b>Recipe:</b> Garlic chicken rice bowl</div>
-<div class="smallBtn" onclick="set(State.CAMERA)">Back</div>
-`;
-},1200);
-}
-
-/* BUTTONS */
-camBtn.onclick=()=>set(State.CAMERA);
-factsBtn.onclick=()=>set(State.FACTS);
-
-camImg.onclick=()=>analyze();
-
-/* BOOT SEQUENCE */
-set(State.LOGO);
-setTimeout(()=>set(State.INTRO),2000);
-setTimeout(()=>startAppWhenImageReady(),4500);
-
+set("logo");
+setTimeout(()=>set("intro"),2000);
+setTimeout(()=>set("camera"),4000);
 </script></body>
 </html>
