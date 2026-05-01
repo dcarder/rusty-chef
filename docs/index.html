@@ -16,7 +16,7 @@ color:white;
 background:black;
 }
 
-#app{position:fixed;inset:0;background:black;}
+#app{position:fixed;inset:0;}
 
 .page{
 display:none;
@@ -30,8 +30,8 @@ padding:20px;
 .header{
 font-size:22px;
 font-weight:700;
-margin-bottom:10px;
 text-align:center;
+margin-bottom:10px;
 }
 
 .topBar{
@@ -61,12 +61,11 @@ text-align:center;
 .item{
 display:flex;
 justify-content:space-between;
-align-items:center;
 padding:12px;
 margin:6px 0;
-background:rgba(255,255,255,0.06);
-border:1px solid rgba(255,255,255,0.12);
 border-radius:12px;
+border:1px solid rgba(255,255,255,0.12);
+background:rgba(255,255,255,0.05);
 cursor:pointer;
 }
 
@@ -114,7 +113,7 @@ left:0;
 right:0;
 display:flex;
 justify-content:center;
-gap:22px;
+gap:20px;
 }
 
 .dockBtn{
@@ -127,7 +126,6 @@ align-items:center;
 justify-content:center;
 background:rgba(255,255,255,0.1);
 border:1px solid rgba(255,255,255,0.2);
-backdrop-filter:blur(15px);
 cursor:pointer;
 }
 
@@ -135,8 +133,8 @@ cursor:pointer;
 
 .dockBtn span{
 font-size:10px;
-margin-top:6px;
 opacity:0.7;
+margin-top:5px;
 }
 </style>
 </head>
@@ -152,11 +150,12 @@ opacity:0.7;
   </div>
 
   <div class="header">🤖 Rusty the Robot Chef</div>
-  <div class="card">Smart AI Cooking Assistant</div>
+
+  <div class="card">AI Cooking System v3</div>
 
   <div class="dock">
     <div class="dockBtn" onclick="openRecipes()">🍳<span>Recipes</span></div>
-    <div class="dockBtn large" onclick="openSmart()">🧠<span>Smart Cook</span></div>
+    <div class="dockBtn large" onclick="openSmart()">🧠<span>AI Cook</span></div>
     <div class="dockBtn" onclick="openPantry()">🧺<span>Pantry</span></div>
   </div>
 </div>
@@ -184,18 +183,30 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 document.getElementById("home").classList.add("active");
 }
 
-/* PANTRY */
+/* =========================
+   🧺 100 INGREDIENTS
+========================= */
+
 const pantryItems = [
-"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta",
-"Cheese","Milk","Butter","Garlic","Onions","Tomatoes",
-"Broccoli","Carrots","Potatoes","Shrimp","Soy sauce","Bread"
+"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
+"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Lettuce","Cucumber","Bell peppers","Mushrooms",
+"Shrimp","Salmon","Tuna","Turkey","Steak","Pork chops","Sausage","Beans","Corn","Peas",
+"Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Honey","Lemon","Lime","Ginger",
+"Chili flakes","Paprika","Oregano","Basil","Thyme","Cinnamon","Nutmeg","Curry powder","Rice noodles","Tortilla",
+"Bread","Cream","Yogurt","Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries",
+"Blueberries","Pineapple","Coconut milk","Chicken broth","Beef broth","Fish sauce","Mustard","Ketchup","Mayonnaise","Vinegar",
+"Green beans","Zucchini","Eggplant","Cauliflower","Cabbage","Chives","Parsley","Dill","Walnuts","Almonds",
+"Oats","Chocolate","Coffee","Tea","Maple syrup","Brown sugar","Tofu","Quinoa","Lentils","Chickpeas",
+"Hot sauce","BBQ sauce","Teriyaki sauce","Worcestershire sauce","Sesame oil","Peanut butter","Jam","Crackers","Granola","Marshmallows"
 ];
 
+/* PANTRY */
 function loadPantry(){
 let html = `
 <div class="topBar">
 <div class="homeBtn" onclick="goHome()">🏠 Home</div>
 </div>
+
 <div class="header">🧺 Pantry</div>
 `;
 
@@ -209,7 +220,7 @@ html += `
 });
 
 html += `
-<div class="btn" onclick="findRecipes()">🍳 What can I cook?</div>
+<div class="btn" onclick="findRecipes()">🍳 Generate Recipes</div>
 <div class="back" onclick="goHome()">⬅ Home</div>
 `;
 
@@ -228,76 +239,55 @@ loadPantry();
 }
 
 /* =========================
-   🔥 AI RECIPE GENERATOR
+   🍳 AI RECIPE ENGINE (100)
 ========================= */
 
-const baseMeals = [
-"Chicken Rice Bowl","Beef Stir Fry","Garlic Pasta","Veggie Soup",
-"Egg Fried Rice","Chicken Wrap","Shrimp Bowl","Steak Skillet",
-"Cheese Pasta","BBQ Chicken","Tuna Salad","Breakfast Skillet"
-];
-
-function generateRecipe(name){
+function makeRecipe(i){
 
 let ingredients = [];
-let steps = [];
 
-if(name.includes("Chicken")){
-ingredients = ["Chicken breast","Garlic","Rice","Onions"];
-}
-else if(name.includes("Beef")){
-ingredients = ["Ground beef","Onions","Garlic","Rice"];
-}
-else if(name.includes("Pasta")){
-ingredients = ["Pasta","Cheese","Butter","Garlic"];
-}
-else if(name.includes("Veggie")){
-ingredients = ["Broccoli","Carrots","Onions","Rice"];
-}
-else if(name.includes("Egg")){
-ingredients = ["Eggs","Butter","Salt"];
-}
-else if(name.includes("Shrimp")){
-ingredients = ["Shrimp","Garlic","Rice","Butter"];
-}
-else{
-ingredients = ["Protein","Spices","Base ingredient"];
+for(let j=0;j<5;j++){
+ingredients.push(pantryItems[(i*11 + j) % pantryItems.length]);
 }
 
-steps = [
-"Prep ingredients",
-"Cook base",
-"Season and mix",
-"Finish and serve"
-];
-
-let match = ingredients.filter(i=>selected.includes(i)).length;
+let match = ingredients.filter(x=>selected.includes(x)).length;
 
 return {
-name,
+name:"AI Recipe #" + (i+1),
 ingredients,
-steps,
-time: 15 + Math.floor(Math.random()*30),
+steps:[
+"Prep ingredients",
+"Cook base",
+"Add seasoning",
+"Finish and plate"
+],
+time: 10 + (i % 40),
 temp:"Medium heat",
-score: match/ingredients.length
+score: match / ingredients.length
 };
 }
 
-/* MATCH RECIPES */
 function findRecipes(){
 
-let generated = baseMeals.map(generateRecipe)
-.sort((a,b)=>b.score-a.score);
+let recipes = [];
+
+for(let i=0;i<100;i++){
+recipes.push(makeRecipe(i));
+}
+
+recipes.sort((a,b)=>b.score-a.score);
+
+window.generatedRecipes = recipes;
 
 let html = `
 <div class="topBar">
 <div class="homeBtn" onclick="goHome()">🏠 Home</div>
 </div>
 
-<div class="header">🍳 AI Matches</div>
+<div class="header">🍳 100 AI Recipes</div>
 `;
 
-generated.forEach(r=>{
+recipes.forEach(r=>{
 html += `
 <div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>
@@ -308,13 +298,11 @@ ${r.time} min
 
 html += `<div class="back" onclick="loadPantry()">⬅ Pantry</div>`;
 
-window.generatedRecipes = generated;
-
 document.getElementById("results").innerHTML = html;
 show("results");
 }
 
-/* OPEN RECIPE */
+/* DETAIL */
 function openRecipe(name){
 
 let r = window.generatedRecipes.find(x=>x.name===name);
@@ -350,10 +338,10 @@ let html = `
 <div class="homeBtn" onclick="goHome()">🏠 Home</div>
 </div>
 
-<div class="header">🧠 Smart Cook AI</div>
+<div class="header">🧠 AI Chef Mode</div>
 
 <div class="card">
-This system now generates infinite recipes based on your pantry.
+This system now generates 100+ dynamic recipes from your pantry instantly.
 </div>
 
 <div class="back" onclick="goHome()">⬅ Home</div>
@@ -363,6 +351,7 @@ document.getElementById("smart").innerHTML = html;
 show("smart");
 }
 
+/* INIT */
 loadPantry();
 
 </script>
