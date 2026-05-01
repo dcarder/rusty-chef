@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chef Jeff AI</title>
+<title>Chef Jeff</title>
 
 <style>
 html,body{
@@ -15,23 +15,21 @@ background:black;
 font-family:Arial;
 }
 
-/* ===== SCREENS ===== */
+/* SCREENS */
 .screen{
 position:fixed;
 inset:0;
 opacity:0;
 pointer-events:none;
-transition: opacity 800ms ease, transform 800ms ease;
-transform: scale(1.08);
+transition:opacity 800ms ease, transform 800ms ease;
+transform:scale(1.05);
 z-index:10;
 }
-
 .screen.active{
 opacity:1;
 pointer-events:auto;
-transform: scale(1);
+transform:scale(1);
 }
-
 .screen img{
 width:100%;
 height:100%;
@@ -44,7 +42,6 @@ position:fixed;
 inset:0;
 z-index:1;
 }
-
 video{
 width:100%;
 height:100%;
@@ -58,7 +55,6 @@ inset:0;
 z-index:1000;
 pointer-events:none;
 }
-
 .button{
 pointer-events:auto;
 position:absolute;
@@ -75,7 +71,6 @@ border:1px solid rgba(255,255,255,0.3);
 color:white;
 font-size:14px;
 }
-
 #cameraBtn{right:20px;}
 #factsBtn{left:20px;}
 #recipeBtn{left:50%;transform:translateX(-50%);bottom:20px;}
@@ -86,7 +81,6 @@ bottom:170px;
 width:100%;
 text-align:center;
 color:white;
-font-size:14px;
 }
 
 /* PANEL */
@@ -102,7 +96,6 @@ transition:opacity 300ms ease;
 overflow:auto;
 padding:20px;
 }
-
 #panel.active{
 opacity:1;
 pointer-events:auto;
@@ -110,7 +103,7 @@ pointer-events:auto;
 
 .card{
 padding:15px;
-margin:12px 0;
+margin:10px 0;
 border:1px solid rgba(255,255,255,0.2);
 border-radius:10px;
 }
@@ -118,49 +111,21 @@ border-radius:10px;
 .smallBtn{
 padding:12px;
 border:1px solid white;
+margin-top:15px;
 text-align:center;
 cursor:pointer;
-margin-top:20px;
-}
-
-/* LOADING */
-#loading{
-position:fixed;
-inset:0;
-background:black;
-color:white;
-display:none;
-align-items:center;
-justify-content:center;
-z-index:3000;
-flex-direction:column;
-}
-
-.spinner{
-width:45px;
-height:45px;
-border:4px solid rgba(255,255,255,0.2);
-border-top:4px solid white;
-border-radius:50%;
-animation:spin 1s linear infinite;
-margin-bottom:10px;
-}
-
-@keyframes spin{
-from{transform:rotate(0deg)}
-to{transform:rotate(360deg)}
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGO (3.5s) -->
+<!-- LOGO -->
 <div id="logo" class="screen active">
 <img src="rusty_logo.jpeg">
 </div>
 
-<!-- INTRO (4.5s) -->
+<!-- INTRO -->
 <div id="intro" class="screen">
 <img src="rusty_intro.jpeg">
 </div>
@@ -172,42 +137,19 @@ to{transform:rotate(360deg)}
 
 <!-- UI -->
 <div id="ui">
-<div id="cameraBtn" class="button">📷 Scan</div>
+<div id="cameraBtn" class="button">📷 Pantry</div>
 <div id="factsBtn" class="button">🥩 Facts</div>
-<div id="recipeBtn" class="button">🍳 Recipe</div>
-<div id="statusText">Booting Chef AI...</div>
+<div id="recipeBtn" class="button">🍳 Recipes</div>
+<div id="statusText">Booting Chef...</div>
 </div>
 
 <!-- PANEL -->
 <div id="panel"></div>
 
-<!-- LOADING -->
-<div id="loading">
-<div class="spinner"></div>
-<div>Chef AI Thinking...</div>
-</div>
-
 <script>
 const video = document.getElementById("video");
 const panel = document.getElementById("panel");
-const loading = document.getElementById("loading");
 const statusText = document.getElementById("statusText");
-
-function vibrate(){if(navigator.vibrate) navigator.vibrate(80);}
-function speak(t){try{speechSynthesis.speak(new SpeechSynthesisUtterance(t));}catch(e){}}
-
-function showLoading(){loading.style.display="flex";}
-function hideLoading(){loading.style.display="none";}
-
-function openPanel(html){
-panel.innerHTML = html;
-panel.classList.add("active");
-vibrate();
-}
-
-function closePanel(){
-panel.classList.remove("active");
-}
 
 /* CAMERA */
 async function startCamera(){
@@ -216,108 +158,156 @@ const stream = await navigator.mediaDevices.getUserMedia({
 video:{facingMode:"environment"}
 });
 video.srcObject = stream;
-statusText.innerText = "Ready to scan food";
-}catch(err){
-statusText.innerText = "Camera blocked or unavailable";
+statusText.innerText = "Manage your pantry";
+}catch(e){
+statusText.innerText = "Camera unavailable";
 }
 }
 
-/* AI CALL (client demo) */
-async function callAI(prompt){
-showLoading();
+/* PANEL */
+function openPanel(html){
+panel.innerHTML = html;
+panel.classList.add("active");
+}
+function closePanel(){
+panel.classList.remove("active");
+}
 
-try{
-const res = await fetch("https://api.openai.com/v1/responses",{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"Authorization":"Bearer YOUR_API_KEY_HERE"
-},
-body:JSON.stringify({
-model:"gpt-4.1-mini",
-input:[
+/* STORAGE */
+function getPantry(){
+return JSON.parse(localStorage.getItem("pantry") || "[]");
+}
+function savePantry(p){
+localStorage.setItem("pantry", JSON.stringify(p));
+}
+
+/* INGREDIENTS */
+const ingredientsList = [
+"chicken","beef","pork","rice","garlic","onion",
+"pepper","salt","butter","egg","cheese","tomato"
+];
+
+/* RECIPES */
+const recipes = [
 {
-role:"user",
-content:[{type:"input_text",text:prompt}]
+name:"Garlic Chicken Rice",
+ingredients:["chicken","rice","garlic"],
+time:20,
+steps:"Cook chicken, sauté garlic, serve over rice."
+},
+{
+name:"Beef Stir Fry",
+ingredients:["beef","onion","pepper"],
+time:15,
+steps:"Stir fry beef with onion and pepper."
+},
+{
+name:"Cheesy Omelette",
+ingredients:["egg","cheese","butter"],
+time:10,
+steps:"Cook eggs in butter, add cheese, fold."
+},
+{
+name:"Pork Skillet",
+ingredients:["pork","garlic","onion"],
+time:25,
+steps:"Cook pork with garlic and onion."
 }
-]
-})
+];
+
+/* PANTRY UI */
+function showPantry(){
+let pantry = getPantry();
+
+let html = `<h2>🧺 Your Pantry</h2>`;
+
+ingredientsList.forEach(i=>{
+let checked = pantry.includes(i) ? "checked" : "";
+html += `
+<div class="card">
+<label>
+<input type="checkbox" value="${i}" ${checked}> ${i}
+</label>
+</div>`;
 });
 
-const data = await res.json();
-const text =
-data.output?.[0]?.content?.find(c => c.type === "output_text")?.text
-|| "No response";
-
-hideLoading();
-
-openPanel(`
-<h2>🍳 Chef AI</h2>
-<div class="card">${text}</div>
+html += `
+<div class="smallBtn" onclick="savePantryUI()">Save Pantry</div>
+<div class="smallBtn" onclick="showRecipes()">Find Recipes</div>
 <div class="smallBtn" onclick="closePanel()">Close</div>
-`);
+`;
 
-speak(text);
-
-}catch(e){
-hideLoading();
-openPanel(`
-<div class="card">AI Error: check API key or network</div>
-<div class="smallBtn" onclick="closePanel()">Close</div>
-`);
+openPanel(html);
 }
+
+function savePantryUI(){
+const checked = document.querySelectorAll("input:checked");
+const pantry = Array.from(checked).map(i=>i.value);
+savePantry(pantry);
+alert("Saved!");
+showPantry();
+}
+
+/* MATCHING */
+function scoreRecipe(recipe, pantry){
+let matched = recipe.ingredients.filter(i=>pantry.includes(i));
+return {
+...recipe,
+score: matched.length / recipe.ingredients.length,
+missing: recipe.ingredients.filter(i=>!pantry.includes(i))
+};
+}
+
+/* SHOW RECIPES */
+function showRecipes(){
+let pantry = getPantry();
+
+if(pantry.length === 0){
+alert("Add ingredients first");
+return;
+}
+
+let maxTime = prompt("Max cook time? (optional)");
+maxTime = maxTime ? parseInt(maxTime) : null;
+
+let results = recipes
+.map(r=>scoreRecipe(r,pantry))
+.filter(r=>!maxTime || r.time <= maxTime)
+.sort((a,b)=>b.score - a.score)
+.slice(0,3);
+
+let html = `<h2>🍳 Top Recipes</h2>`;
+
+results.forEach(r=>{
+html += `
+<div class="card">
+<h3>${r.name}</h3>
+<p>Match: ${Math.round(r.score*100)}%</p>
+<p>⏱ ${r.time} min</p>
+<p>${r.steps}</p>
+<p><b>Missing:</b> ${r.missing.join(", ") || "None"}</p>
+</div>`;
+});
+
+html += `<div class="smallBtn" onclick="closePanel()">Close</div>`;
+
+openPanel(html);
 }
 
 /* BUTTONS */
-document.getElementById("cameraBtn").onclick = ()=>{
-callAI("Identify food in camera view and describe it like a chef.");
-};
+document.getElementById("cameraBtn").onclick = showPantry;
+document.getElementById("recipeBtn").onclick = showRecipes;
 
-/* FACTS */
 document.getElementById("factsBtn").onclick = ()=>{
 openPanel(`
-<h2>🥩 Meats & Seasonings Guide</h2>
-
-<div class="card">
-<h3>🐔 Chicken</h3>
-<p>Garlic → builds savory base flavor</p>
-<p>Lemon → balances fat & adds brightness</p>
-<p>Paprika → adds smoky warmth & color</p>
-</div>
-
-<div class="card">
-<h3>🐖 Pork</h3>
-<p>Brown sugar → caramelization & crust</p>
-<p>Mustard → cuts richness</p>
-<p>Smoked paprika → BBQ depth</p>
-</div>
-
-<div class="card">
-<h3>🐄 Beef</h3>
-<p>Salt → enhances natural umami crust</p>
-<p>Black pepper → sharpens flavor profile</p>
-<p>Onion powder → deep savory base</p>
-</div>
-
+<h2>🥩 Meat Guide</h2>
+<div class="card">Chicken → garlic, lemon</div>
+<div class="card">Beef → salt, pepper</div>
 <div class="smallBtn" onclick="closePanel()">Back</div>
 `);
 };
 
-/* RECIPE */
-document.getElementById("recipeBtn").onclick = ()=>{
-callAI(`
-Create a full restaurant-quality recipe.
-
-Include:
-- Dish name
-- Ingredients with measurements
-- Step-by-step instructions
-- Cook time + difficulty
-- Chef plating tips
-`);
-};
-
-/* INTRO FLOW */
+/* FLOW */
 setTimeout(()=>{
 document.getElementById("logo").classList.remove("active");
 document.getElementById("intro").classList.add("active");
@@ -327,7 +317,6 @@ setTimeout(()=>{
 document.getElementById("intro").style.display="none";
 startCamera();
 },8000);
-
 </script>
 
 </body>
