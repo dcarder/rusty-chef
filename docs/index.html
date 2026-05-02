@@ -18,18 +18,34 @@ background:black;
 
 #app{position:fixed;inset:0;}
 
-.page{display:none;height:100%;overflow:auto;padding:20px;}
+.page{
+display:none;
+height:100%;
+overflow:auto;
+padding:20px;
+}
+
 .page.active{display:block;}
 
-.header{text-align:center;font-size:22px;font-weight:700;margin-bottom:10px;}
+.header{
+text-align:center;
+font-size:22px;
+font-weight:700;
+margin-bottom:10px;
+}
 
-.topBar{display:flex;justify-content:space-between;margin-bottom:10px;}
+.topBar{
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
+}
 
 .homeBtn{
 padding:8px 12px;
 border-radius:10px;
 cursor:pointer;
 background:rgba(255,255,255,0.1);
+border:1px solid rgba(255,255,255,0.2);
 }
 
 .card{
@@ -67,14 +83,16 @@ cursor:pointer;
 .dock{
 position:fixed;
 bottom:90px;
-left:0;right:0;
+left:0;
+right:0;
 display:flex;
 justify-content:center;
 gap:20px;
 }
 
 .dockBtn{
-width:100px;height:100px;
+width:100px;
+height:100px;
 border-radius:20px;
 display:flex;
 flex-direction:column;
@@ -85,13 +103,23 @@ cursor:pointer;
 }
 
 .dockBtn.large{
-width:130px;height:130px;
+width:130px;
+height:130px;
 background:linear-gradient(135deg,#4facfe,#00f2fe);
 color:black;
 }
 
-#homeBg{position:fixed;inset:0;z-index:-1;}
-#homeBg img{width:100%;height:100%;object-fit:cover;}
+#homeBg{
+position:fixed;
+inset:0;
+z-index:-1;
+}
+
+#homeBg img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
 </style>
 </head>
 
@@ -99,19 +127,22 @@ color:black;
 
 <div id="app">
 
+<!-- HOME -->
 <div id="home" class="page active">
+
 <div id="homeBg">
 <img src="copilot_image_1777179019874.jpeg"/>
 </div>
 
 <div class="header">🤖 Rusty AI Chef</div>
-<div class="card">AI Cooking Assistant with Timers</div>
+<div class="card">Full AI Cooking Assistant</div>
 
 <div class="dock">
 <div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
 <div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
 <div class="dockBtn" onclick="goHome()">🏠<span>Home</span></div>
 </div>
+
 </div>
 
 <div id="ingredients" class="page"></div>
@@ -122,18 +153,29 @@ color:black;
 
 <script>
 
-/* INGREDIENTS */
+/* =========================
+   100 INGREDIENTS RESTORED
+========================= */
+
 const ingredientItems = [
-"Chicken breast","Ground beef","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
-"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Steak","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon","Lime","Paprika","Oregano",
-"Basil","Curry powder","Tortilla","Bread","Parmesan","Cheddar","Mozzarella","Avocado","Chicken broth",
-"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Honey","Yogurt"
+"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
+"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
+"Tuna","Steak","Pork chops","Sausage","Turkey","Flour","Sugar","Salt","Pepper","Olive oil",
+"Soy sauce","Lemon","Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rosemary",
+"Rice noodles","Tortilla","Bread","Parmesan","Cheddar","Mozzarella","Feta","Avocado","Apples","Bananas",
+"Strawberries","Blueberries","Chicken broth","Beef broth","Fish sauce","Worcestershire sauce","Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil",
+"Peanut butter","Jam","Walnuts","Almonds","Cashews","Green beans","Zucchini","Eggplant","Cauliflower","Cabbage",
+"Sweet potato","Pumpkin","Corn","Ramen noodles","Oats","Cornstarch","Chocolate","Coffee","Tea","Maple syrup",
+"Brown sugar","Honey","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar","Chickpeas","Lentils",
+"Quinoa","Tofu","Crackers","Granola","Marshmallows","Parsley","Chives","Cinnamon","Nutmeg","Ginger"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
 
-/* AI GENERATOR WITH TIMERS */
+/* =========================
+   AI RECIPE ENGINE
+========================= */
+
 function generateAIRecipe(){
 
 if(selected.length < 3){
@@ -141,7 +183,7 @@ return [{
 name:"Select More Ingredients",
 ingredients:[],
 protein:"None",
-steps:[{text:"Pick at least 3 ingredients.",time:0}]
+steps:[{text:"Pick at least 3 ingredients to generate recipes.",time:0}]
 }];
 }
 
@@ -150,35 +192,41 @@ let used=[...selected].sort(()=>Math.random()-0.5).slice(0,6);
 let protein = used.find(i =>
 i.includes("Chicken")||i.includes("Beef")||
 i.includes("Shrimp")||i.includes("Salmon")||
-i.includes("Egg")
+i.includes("Egg")||i.includes("Turkey")
 ) || "Main Ingredient";
 
 return [{
-name:`AI ${protein} Dish`,
+name:`AI ${protein} Skillet Dish`,
 ingredients:used,
 protein:protein,
 steps:[
-{ text:`Prep ingredients and dry ${protein}.`, time:300 },
-{ text:`Heat pan to 350–400°F.`, time:120 },
-{ text:`Cook ${protein} until done (see temps).`, time:480 },
-{ text:`Add vegetables and cook.`, time:420 },
-{ text:`Season and combine.`, time:180 },
-{ text:`Rest before serving.`, time:120 }
+{ text:`Prep all ingredients and dry ${protein}.`, time:300 },
+{ text:`Heat pan to 350–400°F with oil.`, time:120 },
+{ text:`Cook ${protein} 6–10 minutes (target safe temp).`, time:480 },
+{ text:`Add vegetables and aromatics.`, time:420 },
+{ text:`Season and combine flavors.`, time:180 },
+{ text:`Rest dish for 2 minutes before serving.`, time:120 }
 ]
 }];
 }
 
-/* SPICE GUIDE */
+/* =========================
+   SPICE GUIDE
+========================= */
+
 function getCuisineGuide(name){
 return [
-"Salt – enhances flavor.",
-"Fat – carries taste.",
-"Acid – balances dish.",
-"Spices – add depth."
+"Salt – enhances all flavors.",
+"Fat (oil/butter) – carries flavor and richness.",
+"Acid (lemon/vinegar) – balances heaviness.",
+"Spices – define cuisine identity and depth."
 ];
 }
 
-/* TIMER ENGINE */
+/* =========================
+   TIMER SYSTEM
+========================= */
+
 let timers = {};
 
 function startTimer(i){
@@ -192,23 +240,25 @@ let display = document.getElementById("timer"+i);
 
 timers[i] = setInterval(()=>{
 
-let min = Math.floor(time/60);
-let sec = time%60;
+let m = Math.floor(time/60);
+let s = time%60;
 
-display.innerHTML = `⏳ ${min}:${sec.toString().padStart(2,'0')}`;
+display.innerHTML = `⏳ ${m}:${s.toString().padStart(2,'0')}`;
 
 time--;
 
 if(time < 0){
 clearInterval(timers[i]);
 display.innerHTML = "✅ Done!";
-navigator.vibrate && navigator.vibrate(300);
+if(navigator.vibrate) navigator.vibrate(200);
 }
 
 },1000);
 }
 
-/* UI */
+/* =========================
+   UI
+========================= */
 
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
@@ -231,7 +281,10 @@ show("ingredients");
 }
 
 function toggle(i){
-selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
+selected=selected.includes(i)
+?selected.filter(x=>x!==i)
+:[...selected,i];
+
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openIngredients();
 }
@@ -256,19 +309,16 @@ show("recipes");
 function openRecipe(name){
 
 let r=window.generated.find(x=>x.name===name);
+let guide=getCuisineGuide(r.name);
 
 let html=`<div class="topBar"><div class="homeBtn" onclick="openRecipes()">⬅ Back</div></div>
 <div class="header">${r.name}</div>
 
 <div class="card"><b>Ingredients:</b><br>${r.ingredients.join("<br>")}</div>
 
-<div class="card"><b>💪 What is Protein?</b><br><br>
-Protein (${r.protein}) is the main part of your dish. It must be cooked properly:
-<br><br>
-Chicken → 165°F<br>
-Beef → 135–145°F<br>
-Fish → 145°F
-</div>`;
+<div class="card"><b>💪 Protein Info:</b><br>${r.protein}</div>
+
+<div class="card"><b>🌍 Flavor Guide:</b><br>${guide.join("<br>")}</div>`;
 
 r.steps.forEach((s,i)=>{
 html+=`
@@ -276,9 +326,9 @@ html+=`
 <b>Step ${i+1}</b><br><br>
 ${s.text}<br><br>
 
-⏱ ${Math.floor(s.time/60)} min ${s.time%60}s
+⏱ ${Math.floor(s.time/60)}m ${s.time%60}s
 
-<div class="btn" onclick="startTimer(${i})">▶ Start</div>
+<div class="btn" onclick="startTimer(${i})">▶ Start Timer</div>
 
 <div id="timer${i}">Ready</div>
 </div>`;
@@ -288,7 +338,9 @@ document.getElementById("detail").innerHTML=html;
 show("detail");
 }
 
-function goHome(){show("home");}
+function goHome(){
+show("home");
+}
 
 openIngredients();
 
