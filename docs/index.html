@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Smart Kitchen OS v10</title>
+<title>Smart Kitchen OS v11</title>
 
 <style>
 html,body{
@@ -27,11 +27,11 @@ margin-bottom:10px;
 
 .card{
 background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.15);
 border-radius:14px;
 padding:14px;
 margin:10px 0;
 white-space:pre-wrap;
+border:1px solid rgba(255,255,255,0.15);
 }
 
 .item{
@@ -57,6 +57,12 @@ border-radius:12px;
 margin-top:10px;
 cursor:pointer;
 }
+
+.timer{
+font-size:20px;
+text-align:center;
+margin-top:10px;
+}
 </style>
 </head>
 
@@ -65,7 +71,7 @@ cursor:pointer;
 <div id="app">
 
 <div id="home" class="page active">
-<div class="header">Smart Kitchen OS v10</div>
+<div class="header">Smart Kitchen OS v11</div>
 <div class="btn" onclick="openPantry()">Open Pantry</div>
 </div>
 
@@ -78,54 +84,51 @@ cursor:pointer;
 <script>
 
 /* =========================
-100 INGREDIENTS RESTORED
+PANTRY
 ========================= */
-
-const ingredientItems = [
-"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
-"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
-"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
-"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
-"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
-"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
-"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
-"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
-"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
-];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-25 REAL BUDGET RECIPES
+RECIPES (NOW WITH TIMELINE + TEMP)
 ========================= */
 
 const recipes = [
-{name:"Chicken Fried Rice",ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"]},
-{name:"Garlic Pasta",ingredients:["Pasta","Garlic","Butter","Salt","Pepper"]},
-{name:"Omelette",ingredients:["Eggs","Cheese","Onions","Tomatoes"]},
-{name:"Chicken Bowl",ingredients:["Chicken breast","Rice","Broccoli","Soy sauce"]},
-{name:"Beef Stir Fry",ingredients:["Ground beef","Soy sauce","Onions","Bell peppers"]},
-{name:"Tuna Rice Bowl",ingredients:["Rice","Tuna","Lemon"]},
-{name:"Baked Potatoes",ingredients:["Potatoes","Butter","Cheese"]},
-{name:"Chicken Soup",ingredients:["Chicken broth","Chicken breast","Carrots","Onions"]},
-{name:"Veggie Stir Fry",ingredients:["Broccoli","Carrots","Onions","Soy sauce"]},
-{name:"Chicken Quesadilla",ingredients:["Chicken breast","Tortilla","Cheese"]},
-{name:"Shrimp Rice Bowl",ingredients:["Shrimp","Rice","Garlic"]},
-{name:"Salmon Plate",ingredients:["Salmon","Lemon","Salt"]},
-{name:"Fried Rice Simple",ingredients:["Rice","Eggs","Soy sauce"]},
-{name:"Garlic Butter Pasta",ingredients:["Pasta","Butter","Garlic"]},
-{name:"BBQ Chicken Bowl",ingredients:["Chicken breast","BBQ sauce","Rice"]},
-{name:"Teriyaki Chicken",ingredients:["Chicken breast","Teriyaki sauce","Rice"]},
-{name:"Cheesy Rice",ingredients:["Rice","Cheese","Butter"]},
-{name:"Chicken Garlic Rice",ingredients:["Chicken breast","Rice","Garlic","Soy sauce"]},
-{name:"Egg Scramble",ingredients:["Eggs","Butter","Salt"]},
-{name:"Chicken Pasta",ingredients:["Chicken breast","Pasta","Butter"]},
-{name:"Veggie Rice",ingredients:["Rice","Carrots","Broccoli"]},
-{name:"Steak Plate",ingredients:["Steak","Salt","Pepper"]},
-{name:"Chicken Wrap",ingredients:["Chicken breast","Tortilla","Cheese"]},
-{name:"Simple Soup",ingredients:["Chicken broth","Carrots","Onions"]},
-{name:"Rice & Egg Bowl",ingredients:["Rice","Eggs","Soy sauce"]}
+{
+name:"Chicken Fried Rice",
+ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
+steps:[
+{t:"Prep chicken, chop vegetables, cook rice ahead.",time:5,temp:"Room"},
+{t:"Heat pan to 375°F, add oil and cook chicken until browned.",time:8,temp:"375°F"},
+{t:"Add vegetables, stir-fry until softened.",time:5,temp:"Medium-high"},
+{t:"Add rice + soy sauce, stir 5–7 min until combined.",time:7,temp:"400°F high heat"},
+{t:"Let rest 2 minutes before serving.",time:2,temp:"Off heat"}
+]
+},
+
+{
+name:"Garlic Butter Pasta",
+ingredients:["Pasta","Garlic","Butter","Salt","Pepper"],
+steps:[
+{t:"Boil water and cook pasta until al dente.",time:10,temp:"212°F boiling"},
+{t:"Melt butter in pan at medium heat.",time:2,temp:"325°F"},
+{t:"Add garlic, cook until fragrant.",time:2,temp:"300°F"},
+{t:"Toss pasta into butter sauce.",time:3,temp:"Low heat"},
+{t:"Season and serve hot.",time:1,temp:"Off heat"}
+]
+},
+
+{
+name:"Chicken Bowl",
+ingredients:["Chicken breast","Rice","Broccoli","Soy sauce"],
+steps:[
+{t:"Cook rice separately.",time:15,temp:"212°F"},
+{t:"Heat pan to 375°F, cook chicken until golden.",time:10,temp:"375°F"},
+{t:"Steam broccoli until tender.",time:6,temp:"212°F steam"},
+{t:"Combine all and add soy sauce.",time:3,temp:"Low heat"},
+{t:"Rest before serving.",time:2,temp:"Off heat"}
+]
+}
 ];
 
 /* =========================
@@ -146,49 +149,21 @@ return recipes
 }
 
 /* =========================
-EXPORT SYSTEM
-========================= */
-
-function buildExportList(recipe){
-let missing = recipe.ingredients.filter(i=>!selected.includes(i));
-return missing.map(i=>`${i} - grocery item - search fresh`).join("\n");
-}
-
-function copyText(text){
-navigator.clipboard.writeText(text);
-alert("🧾 Shopping list copied!");
-}
-
-/* =========================
 UI
 ========================= */
 
 function openPantry(){
 
-let html=`<div class="header">Pantry (100 Ingredients)</div>`;
+let html=`<div class="header">Pantry</div>`;
 
-ingredientItems.forEach(i=>{
-let on = selected.includes(i);
-
-html+=`
-<div class="item ${on?'selected':''}" onclick="toggle('${i}')">
-${i} ${on?'✔':''}
-</div>`;
+selected.forEach(i=>{
+html+=`<div class="item">${i}</div>`;
 });
 
 html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
 
 document.getElementById("pantry").innerHTML=html;
 show("pantry");
-}
-
-function toggle(i){
-selected = selected.includes(i)
-? selected.filter(x=>x!==i)
-: [...selected,i];
-
-localStorage.setItem("ingredients",JSON.stringify(selected));
-openPantry();
 }
 
 function showMatches(){
@@ -210,41 +185,80 @@ document.getElementById("results").innerHTML=html;
 show("results");
 }
 
+/* =========================
+COOKING ENGINE (STEP TIMER)
+========================= */
+
+let current=null;
+let stepIndex=0;
+let timer=null;
+let timeLeft=0;
+
 function openRecipe(name){
 
-let r = recipes.find(x=>x.name===name);
+current = recipes.find(r=>r.name===name);
+stepIndex=0;
 
-let instructions = `### Instructions
+renderStep();
+show("recipe");
+}
 
-1. Gather ingredients: ${r.ingredients.join(", ")}
-2. Prep everything (wash, chop, organize)
-3. Cook main components using proper heat
-4. Combine and season properly
-5. Serve hot and fresh
-`;
+function renderStep(){
 
-let missing = r.ingredients.filter(i=>!selected.includes(i));
-let groceryText = missing.length ? missing.join(", ") : "You already have everything!";
-let exportList = buildExportList(r);
+let step = current.steps[stepIndex];
 
 document.getElementById("recipe").innerHTML=`
-<div class="header">${r.name}</div>
-
-<div class="card">${instructions}</div>
+<div class="header">${current.name}</div>
 
 <div class="card">
-🛒 Grocery List<br><br>
-${groceryText}
+<b>Step ${stepIndex+1}</b><br><br>
+${step.t}<br><br>
+🔥 Temperature: ${step.temp}<br>
+⏱ Time: ${step.time} min
 </div>
 
-<div class="btn" onclick="copyText(exportList)">
-🧾 Export to Instacart / Walmart
-</div>
+<div class="timer" id="timerBox">Ready</div>
 
+<div class="btn" onclick="startTimer()">Start Step Timer</div>
+<div class="btn" onclick="nextStep()">Next Step</div>
 <div class="btn" onclick="openPantry()">Back</div>
 `;
+}
 
-show("recipe");
+function startTimer(){
+
+clearInterval(timer);
+
+let step = current.steps[stepIndex];
+timeLeft = step.time * 60;
+
+timer = setInterval(()=>{
+
+timeLeft--;
+
+let m = Math.floor(timeLeft/60);
+let s = timeLeft%60;
+
+document.getElementById("timerBox").innerHTML =
+`⏱ ${m}:${s.toString().padStart(2,"0")}`;
+
+if(timeLeft<=0){
+clearInterval(timer);
+document.getElementById("timerBox").innerHTML="✔ Step Complete";
+}
+},1000);
+}
+
+function nextStep(){
+clearInterval(timer);
+
+if(stepIndex < current.steps.length-1){
+stepIndex++;
+renderStep();
+}else{
+document.getElementById("recipe").innerHTML +=
+`<div class="card">🎉 Recipe Complete!</div>`;
+}
 }
 
 function show(id){
