@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Rusty the Robot Chef</title>
+<title>Rusty AI Chef</title>
 
 <style>
 html,body{
@@ -18,44 +18,25 @@ background:black;
 
 #app{position:fixed;inset:0;}
 
-.page{
-display:none;
-height:100%;
-overflow:auto;
-padding:20px;
-}
-
+.page{display:none;height:100%;overflow:auto;padding:20px;}
 .page.active{display:block;}
 
-.header{
-font-size:22px;
-font-weight:700;
-text-align:center;
-margin-bottom:10px;
-}
+.header{text-align:center;font-size:22px;font-weight:700;margin-bottom:10px;}
 
-.topBar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:10px;
-}
+.topBar{display:flex;justify-content:space-between;margin-bottom:10px;}
 
 .homeBtn{
 padding:8px 12px;
 border-radius:10px;
 cursor:pointer;
-font-size:12px;
-background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.2);
+background:rgba(255,255,255,0.1);
 }
 
 .card{
 background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.15);
-border-radius:16px;
 padding:14px;
 margin:10px 0;
+border-radius:16px;
 }
 
 .item{
@@ -64,69 +45,53 @@ justify-content:space-between;
 padding:12px;
 margin:6px 0;
 border-radius:12px;
-border:1px solid rgba(255,255,255,0.12);
 background:rgba(255,255,255,0.05);
 cursor:pointer;
 }
 
 .item.selected{
-background:rgba(79,172,254,0.25);
-border:1px solid rgba(79,172,254,0.6);
+background:rgba(79,172,254,0.3);
 }
 
 .btn{
-margin-top:15px;
-padding:14px;
-border-radius:14px;
-text-align:center;
+margin-top:10px;
+padding:12px;
 background:linear-gradient(135deg,#4facfe,#00f2fe);
 color:black;
 font-weight:700;
+text-align:center;
+border-radius:12px;
 cursor:pointer;
 }
 
 .dock{
 position:fixed;
 bottom:90px;
-left:0;
-right:0;
+left:0;right:0;
 display:flex;
 justify-content:center;
 gap:20px;
 }
 
 .dockBtn{
-width:100px;
-height:100px;
+width:100px;height:100px;
 border-radius:20px;
 display:flex;
 flex-direction:column;
-align-items:center;
 justify-content:center;
+align-items:center;
+background:rgba(255,255,255,0.1);
 cursor:pointer;
-font-weight:700;
-background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.2);
 }
 
 .dockBtn.large{
-width:130px;
-height:130px;
+width:130px;height:130px;
 background:linear-gradient(135deg,#4facfe,#00f2fe);
 color:black;
 }
 
-#homeBg{
-position:fixed;
-inset:0;
-z-index:-1;
-}
-
-#homeBg img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
+#homeBg{position:fixed;inset:0;z-index:-1;}
+#homeBg img{width:100%;height:100%;object-fit:cover;}
 </style>
 </head>
 
@@ -135,18 +100,18 @@ object-fit:cover;
 <div id="app">
 
 <div id="home" class="page active">
-  <div id="homeBg">
-    <img src="copilot_image_1777179019874.jpeg" />
-  </div>
+<div id="homeBg">
+<img src="copilot_image_1777179019874.jpeg"/>
+</div>
 
-  <div class="header">🤖 Rusty AI Chef</div>
-  <div class="card">AI Recipe Generator + Flavor Intelligence</div>
+<div class="header">🤖 Rusty AI Chef</div>
+<div class="card">AI Cooking Assistant with Timers</div>
 
-  <div class="dock">
-    <div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
-    <div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
-    <div class="dockBtn" onclick="goHome()">🏠<span>Home</span></div>
-  </div>
+<div class="dock">
+<div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
+<div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
+<div class="dockBtn" onclick="goHome()">🏠<span>Home</span></div>
+</div>
 </div>
 
 <div id="ingredients" class="page"></div>
@@ -168,89 +133,79 @@ const ingredientItems = [
 
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
 
-/* AI GENERATOR */
+/* AI GENERATOR WITH TIMERS */
 function generateAIRecipe(){
 
 if(selected.length < 3){
 return [{
 name:"Select More Ingredients",
-time:0,
 ingredients:[],
-steps:["Pick at least 3 ingredients."]
+protein:"None",
+steps:[{text:"Pick at least 3 ingredients.",time:0}]
 }];
 }
 
-const methods=["Grilled","Pan-Seared","Stir-Fry","Baked","Roasted"];
-const cuisines=["Mediterranean","Mexican","Asian","Italian","American"];
-
 let used=[...selected].sort(()=>Math.random()-0.5).slice(0,6);
-let method=methods[Math.floor(Math.random()*methods.length)];
-let cuisine=cuisines[Math.floor(Math.random()*cuisines.length)];
+
+let protein = used.find(i =>
+i.includes("Chicken")||i.includes("Beef")||
+i.includes("Shrimp")||i.includes("Salmon")||
+i.includes("Egg")
+) || "Main Ingredient";
 
 return [{
-name:`${method} ${cuisine} Dish`,
-time:20+Math.floor(Math.random()*30),
+name:`AI ${protein} Dish`,
 ingredients:used,
+protein:protein,
 steps:[
-"Prep ingredients.",
-"Heat pan to medium-high.",
-"Cook protein or base first.",
-"Add vegetables and spices.",
-"Simmer and combine flavors.",
-"Serve hot."
+{ text:`Prep ingredients and dry ${protein}.`, time:300 },
+{ text:`Heat pan to 350–400°F.`, time:120 },
+{ text:`Cook ${protein} until done (see temps).`, time:480 },
+{ text:`Add vegetables and cook.`, time:420 },
+{ text:`Season and combine.`, time:180 },
+{ text:`Rest before serving.`, time:120 }
 ]
 }];
 }
 
-/* 🌍 SPICE GUIDE */
+/* SPICE GUIDE */
 function getCuisineGuide(name){
-
-if(name.includes("Mediterranean")){
-return [
-"Olive oil – smooth richness.",
-"Garlic – strong base flavor.",
-"Lemon – brightness and acidity.",
-"Oregano/Basil – fresh herbal notes.",
-"Flavor: light, fresh, tangy."
-];
-}
-
-if(name.includes("Mexican")){
-return [
-"Chili powder – heat and depth.",
-"Cumin – warm earthy flavor.",
-"Paprika – smoky sweetness.",
-"Lime – balances richness.",
-"Flavor: bold, smoky, spicy."
-];
-}
-
-if(name.includes("Asian")){
-return [
-"Soy sauce – umami saltiness.",
-"Ginger – sharp freshness.",
-"Garlic – aromatic base.",
-"Sesame oil – nutty aroma.",
-"Flavor: savory, aromatic."
-];
-}
-
-if(name.includes("Italian")){
-return [
-"Garlic – flavor base.",
-"Basil – sweet herb.",
-"Oregano – earthy herb.",
-"Tomato – rich acidity.",
-"Flavor: rich, herb-based."
-];
-}
-
 return [
 "Salt – enhances flavor.",
 "Fat – carries taste.",
 "Acid – balances dish.",
 "Spices – add depth."
 ];
+}
+
+/* TIMER ENGINE */
+let timers = {};
+
+function startTimer(i){
+
+let step = window.generated[0].steps[i];
+let time = step.time;
+
+clearInterval(timers[i]);
+
+let display = document.getElementById("timer"+i);
+
+timers[i] = setInterval(()=>{
+
+let min = Math.floor(time/60);
+let sec = time%60;
+
+display.innerHTML = `⏳ ${min}:${sec.toString().padStart(2,'0')}`;
+
+time--;
+
+if(time < 0){
+clearInterval(timers[i]);
+display.innerHTML = "✅ Done!";
+navigator.vibrate && navigator.vibrate(300);
+}
+
+},1000);
 }
 
 /* UI */
@@ -290,7 +245,7 @@ let html=`<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home<
 
 list.forEach(r=>{
 html+=`<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>${r.time} min
+<b>${r.name}</b>
 </div>`;
 });
 
@@ -299,20 +254,34 @@ show("recipes");
 }
 
 function openRecipe(name){
+
 let r=window.generated.find(x=>x.name===name);
-let guide=getCuisineGuide(r.name);
 
 let html=`<div class="topBar"><div class="homeBtn" onclick="openRecipes()">⬅ Back</div></div>
 <div class="header">${r.name}</div>
 
 <div class="card"><b>Ingredients:</b><br>${r.ingredients.join("<br>")}</div>
 
-<div class="card"><b>🌍 Flavor & Spice Guide:</b><br><br>
-${guide.map(g=>"• "+g).join("<br>")}
+<div class="card"><b>💪 What is Protein?</b><br><br>
+Protein (${r.protein}) is the main part of your dish. It must be cooked properly:
+<br><br>
+Chicken → 165°F<br>
+Beef → 135–145°F<br>
+Fish → 145°F
 </div>`;
 
 r.steps.forEach((s,i)=>{
-html+=`<div class="card"><b>Step ${i+1}</b><br><br>${s}</div>`;
+html+=`
+<div class="card">
+<b>Step ${i+1}</b><br><br>
+${s.text}<br><br>
+
+⏱ ${Math.floor(s.time/60)} min ${s.time%60}s
+
+<div class="btn" onclick="startTimer(${i})">▶ Start</div>
+
+<div id="timer${i}">Ready</div>
+</div>`;
 });
 
 document.getElementById("detail").innerHTML=html;
