@@ -59,7 +59,7 @@ cursor:pointer;
 }
 
 /* =========================
-🏠 HOME SCREEN PRO ANIMATION
+HOME ANIMATION (SAFE)
 ========================= */
 
 #homeBg{
@@ -81,7 +81,6 @@ from{opacity:0; transform:scale(1.05);}
 to{opacity:1; transform:scale(1);}
 }
 
-/* LOGO INTRO */
 #introLogo{
 position:absolute;
 top:38%;
@@ -101,38 +100,26 @@ text-align:center;
 100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
 }
 
-/* BOTTOM DOCK */
 .bottomDock{
 position:fixed;
-bottom:-140px;
+bottom:20px;
 left:0;
 right:0;
 display:flex;
 justify-content:center;
 gap:20px;
-padding:10px;
-opacity:0;
-animation:dockSlide 1s ease forwards;
-animation-delay:1.2s;
-}
-
-@keyframes dockSlide{
-0%{bottom:-140px; opacity:0;}
-80%{bottom:30px; opacity:1;}
-100%{bottom:20px; opacity:1;}
 }
 
 .bottomDock .btn{
 width:160px;
+}
+
+/* timer */
+.timer{
 text-align:center;
-animation:btnPulse 2s ease-in-out 2s infinite;
+font-size:20px;
+margin-top:10px;
 }
-
-@keyframes btnPulse{
-0%,100%{transform:scale(1);}
-50%{transform:scale(1.03);}
-}
-
 </style>
 </head>
 
@@ -140,7 +127,7 @@ animation:btnPulse 2s ease-in-out 2s infinite;
 
 <div id="app">
 
-<!-- 🏠 HOME (ONLY CHANGE IS VISUAL LAYER + ANIMATION) -->
+<!-- 🏠 HOME -->
 <div id="home" class="page active">
 
   <div id="homeBg">
@@ -170,7 +157,7 @@ animation:btnPulse 2s ease-in-out 2s infinite;
 <script>
 
 /* =========================
-100 INGREDIENTS (UNCHANGED)
+100 INGREDIENTS (RESTORED)
 ========================= */
 
 const ingredientItems = [
@@ -189,7 +176,7 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-RECIPE ENGINE (UNCHANGED)
+RECIPES
 ========================= */
 
 const recipes = [
@@ -207,7 +194,7 @@ steps:[
 ];
 
 /* =========================
-MATCH ENGINE (UNCHANGED)
+MATCH SYSTEM
 ========================= */
 
 function score(r){
@@ -223,26 +210,8 @@ return recipes.map(score)
 }
 
 /* =========================
-HOME FIX (NO BEHAVIOR CHANGE)
+PANTRY
 ========================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-  const dock = document.getElementById("dock");
-  dock.style.pointerEvents = "none";
-
-  setTimeout(() => {
-    dock.style.pointerEvents = "auto";
-  }, 1500);
-});
-
-/* =========================
-NAV (UNCHANGED)
-========================= */
-
-function show(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-}
 
 function openPantry(){
 
@@ -272,6 +241,10 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
+/* =========================
+RECIPES LIST (FIXED CLICK)
+========================= */
+
 function showMatches(){
 
 let top = topRecipes();
@@ -280,15 +253,106 @@ let html=`<div class="header">🍳 Top Recipes</div>`;
 
 top.forEach(r=>{
 html+=`
-<div class="card">
+<div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>
 Match: ${r.match}<br>
-Missing: ${r.missing.join(", ")||"None"}
+Missing: ${r.missing.join(", ")||"None"}<br>
+<br><span style="color:#4facfe">Tap to Cook →</span>
 </div>`;
 });
 
 document.getElementById("results").innerHTML=html;
 show("results");
+}
+
+/* =========================
+COOKING ENGINE (RESTORED)
+========================= */
+
+let current=null;
+let stepIndex=0;
+let timer=null;
+let timeLeft=0;
+
+function openRecipe(name){
+
+current = recipes.find(r=>r.name===name);
+stepIndex=0;
+
+renderStep();
+show("recipe");
+}
+
+function renderStep(){
+
+let step = current.steps[stepIndex];
+
+document.getElementById("recipe").innerHTML=`
+<div class="header">${current.name}</div>
+
+<div class="card">
+<b>Step ${stepIndex+1}</b><br><br>
+${step.t}<br><br>
+🌡 ${step.temp}<br>
+⏱ ${step.time} min
+</div>
+
+<div class="timer" id="timerBox">Ready</div>
+
+<div class="btn" onclick="startTimer()">Start Timer</div>
+<div class="btn" onclick="nextStep()">Next Step</div>
+<div class="btn" onclick="goHome()">Home</div>
+`;
+}
+
+function startTimer(){
+
+clearInterval(timer);
+
+let step = current.steps[stepIndex];
+timeLeft = step.time * 60;
+
+timer = setInterval(()=>{
+
+timeLeft--;
+
+let m=Math.floor(timeLeft/60);
+let s=timeLeft%60;
+
+document.getElementById("timerBox").innerHTML=
+`⏱ ${m}:${s.toString().padStart(2,"0")}`;
+
+if(timeLeft<=0){
+clearInterval(timer);
+document.getElementById("timerBox").innerHTML="✔ Done";
+}
+},1000);
+}
+
+function nextStep(){
+
+clearInterval(timer);
+
+if(stepIndex < current.steps.length-1){
+stepIndex++;
+renderStep();
+}else{
+document.getElementById("recipe").innerHTML +=
+`<div class="card">🎉 Recipe Complete</div>`;
+}
+}
+
+/* =========================
+NAV
+========================= */
+
+function show(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+
+function goHome(){
+show("home");
 }
 
 </script>
