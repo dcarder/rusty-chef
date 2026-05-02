@@ -85,16 +85,6 @@ font-weight:700;
 cursor:pointer;
 }
 
-.back{
-margin-top:10px;
-padding:10px;
-border-radius:10px;
-text-align:center;
-cursor:pointer;
-background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.2);
-}
-
 .dock{
 position:fixed;
 bottom:90px;
@@ -126,7 +116,6 @@ background:linear-gradient(135deg,#4facfe,#00f2fe);
 color:black;
 }
 
-/* BACKGROUND */
 #homeBg{
 position:fixed;
 inset:0;
@@ -145,16 +134,13 @@ object-fit:cover;
 
 <div id="app">
 
-<!-- HOME -->
 <div id="home" class="page active">
-
   <div id="homeBg">
     <img src="copilot_image_1777179019874.jpeg" />
   </div>
 
   <div class="header">🤖 Rusty AI Chef</div>
-
-  <div class="card">AI Recipe Generator + 100 Ingredients System</div>
+  <div class="card">AI Recipe Generator + Flavor Intelligence</div>
 
   <div class="dock">
     <div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
@@ -171,29 +157,18 @@ object-fit:cover;
 
 <script>
 
-/* =========================
-   100 INGREDIENTS (UNCHANGED)
-========================= */
-
+/* INGREDIENTS */
 const ingredientItems = [
-"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
-"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
-"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
-"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
-"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
-"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
-"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
-"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
-"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
+"Chicken breast","Ground beef","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
+"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Bell peppers","Mushrooms","Shrimp","Salmon",
+"Steak","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon","Lime","Paprika","Oregano",
+"Basil","Curry powder","Tortilla","Bread","Parmesan","Cheddar","Mozzarella","Avocado","Chicken broth",
+"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Honey","Yogurt"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
 
-/* =========================
-   🧠 REAL AI RECIPE GENERATOR
-========================= */
-
+/* AI GENERATOR */
 function generateAIRecipe(){
 
 if(selected.length < 3){
@@ -201,46 +176,84 @@ return [{
 name:"Select More Ingredients",
 time:0,
 ingredients:[],
-steps:["Pick at least 3 ingredients to generate an AI recipe."]
+steps:["Pick at least 3 ingredients."]
 }];
 }
 
-const methods = ["Grilled","Pan-Seared","Stir-Fry","Baked","One-Pot","Roasted"];
-const cuisines = ["Italian","Asian","Mexican","American","Mediterranean"];
+const methods=["Grilled","Pan-Seared","Stir-Fry","Baked","Roasted"];
+const cuisines=["Mediterranean","Mexican","Asian","Italian","American"];
 
-let shuffled = [...selected].sort(()=>Math.random()-0.5);
-let used = shuffled.slice(0,6);
-
-let method = methods[Math.floor(Math.random()*methods.length)];
-let cuisine = cuisines[Math.floor(Math.random()*cuisines.length)];
-
-let protein = used.find(i =>
-i.includes("Chicken") || i.includes("Beef") ||
-i.includes("Shrimp") || i.includes("Salmon") ||
-i.includes("Pork") || i.includes("Turkey")
-) || "Mixed Protein";
+let used=[...selected].sort(()=>Math.random()-0.5).slice(0,6);
+let method=methods[Math.floor(Math.random()*methods.length)];
+let cuisine=cuisines[Math.floor(Math.random()*cuisines.length)];
 
 return [{
-name:`${method} ${protein} ${cuisine} Bowl`,
-time: 20 + Math.floor(Math.random()*35),
-ingredients: used,
+name:`${method} ${cuisine} Dish`,
+time:20+Math.floor(Math.random()*30),
+ingredients:used,
 steps:[
-`Gather ingredients: ${used.join(", ")}.`,
-`Prepare all items by washing, chopping, and seasoning lightly.`,
-`Heat pan or pot to medium-high heat (350–400°F).`,
-`Add oil and cook protein (${protein}) until browned on all sides.`,
-`Add vegetables and aromatics from selected ingredients.`,
-`Season with salt, pepper, and sauces that match ${cuisine} style.`,
-`Stir and cook for 10–15 minutes until everything is tender and combined.`,
-`Taste and adjust seasoning balance (salt, acid, spice).`,
-`Let rest for 2 minutes before serving for best flavor absorption.`
+"Prep ingredients.",
+"Heat pan to medium-high.",
+"Cook protein or base first.",
+"Add vegetables and spices.",
+"Simmer and combine flavors.",
+"Serve hot."
 ]
 }];
 }
 
-/* =========================
-   UI
-========================= */
+/* 🌍 SPICE GUIDE */
+function getCuisineGuide(name){
+
+if(name.includes("Mediterranean")){
+return [
+"Olive oil – smooth richness.",
+"Garlic – strong base flavor.",
+"Lemon – brightness and acidity.",
+"Oregano/Basil – fresh herbal notes.",
+"Flavor: light, fresh, tangy."
+];
+}
+
+if(name.includes("Mexican")){
+return [
+"Chili powder – heat and depth.",
+"Cumin – warm earthy flavor.",
+"Paprika – smoky sweetness.",
+"Lime – balances richness.",
+"Flavor: bold, smoky, spicy."
+];
+}
+
+if(name.includes("Asian")){
+return [
+"Soy sauce – umami saltiness.",
+"Ginger – sharp freshness.",
+"Garlic – aromatic base.",
+"Sesame oil – nutty aroma.",
+"Flavor: savory, aromatic."
+];
+}
+
+if(name.includes("Italian")){
+return [
+"Garlic – flavor base.",
+"Basil – sweet herb.",
+"Oregano – earthy herb.",
+"Tomato – rich acidity.",
+"Flavor: rich, herb-based."
+];
+}
+
+return [
+"Salt – enhances flavor.",
+"Fat – carries taste.",
+"Acid – balances dish.",
+"Spices – add depth."
+];
+}
+
+/* UI */
 
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
@@ -257,33 +270,27 @@ html+=`<div class="item ${on?'selected':''}" onclick="toggle('${i}')">
 <span>${i}</span><span>${on?'✔':''}</span></div>`;
 });
 
-html+=`<div class="btn" onclick="openRecipes()">🍳 Generate AI Recipe</div>`;
+html+=`<div class="btn" onclick="openRecipes()">🍳 Generate Recipe</div>`;
 document.getElementById("ingredients").innerHTML=html;
 show("ingredients");
 }
 
 function toggle(i){
-selected=selected.includes(i)
-? selected.filter(x=>x!==i)
-: [...selected,i];
-
+selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openIngredients();
 }
 
 function openRecipes(){
-
-let list = generateAIRecipe();
-window.generated = list;
+let list=generateAIRecipe();
+window.generated=list;
 
 let html=`<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
-<div class="header">🍳 AI Generated Recipe</div>`;
+<div class="header">🍳 AI Recipe</div>`;
 
 list.forEach(r=>{
-html+=`
-<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>
-${r.time} min
+html+=`<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b><br>${r.time} min
 </div>`;
 });
 
@@ -292,13 +299,17 @@ show("recipes");
 }
 
 function openRecipe(name){
-
-let r = window.generated.find(x=>x.name===name);
+let r=window.generated.find(x=>x.name===name);
+let guide=getCuisineGuide(r.name);
 
 let html=`<div class="topBar"><div class="homeBtn" onclick="openRecipes()">⬅ Back</div></div>
 <div class="header">${r.name}</div>
 
-<div class="card"><b>Ingredients:</b><br>${r.ingredients.join("<br>")}</div>`;
+<div class="card"><b>Ingredients:</b><br>${r.ingredients.join("<br>")}</div>
+
+<div class="card"><b>🌍 Flavor & Spice Guide:</b><br><br>
+${guide.map(g=>"• "+g).join("<br>")}
+</div>`;
 
 r.steps.forEach((s,i)=>{
 html+=`<div class="card"><b>Step ${i+1}</b><br><br>${s}</div>`;
@@ -308,9 +319,7 @@ document.getElementById("detail").innerHTML=html;
 show("detail");
 }
 
-function goHome(){
-show("home");
-}
+function goHome(){show("home");}
 
 openIngredients();
 
