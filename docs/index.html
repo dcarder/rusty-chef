@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Smart Kitchen OS v9</title>
+<title>Smart Kitchen OS v10</title>
 
 <style>
 html,body{
@@ -42,6 +42,11 @@ border:1px solid rgba(255,255,255,0.2);
 cursor:pointer;
 }
 
+.item.selected{
+background:rgba(79,172,254,0.25);
+border:1px solid rgba(79,172,254,0.6);
+}
+
 .btn{
 padding:14px;
 background:#4facfe;
@@ -60,7 +65,7 @@ cursor:pointer;
 <div id="app">
 
 <div id="home" class="page active">
-<div class="header">Smart Kitchen OS v9</div>
+<div class="header">Smart Kitchen OS v10</div>
 <div class="btn" onclick="openPantry()">Open Pantry</div>
 </div>
 
@@ -73,13 +78,26 @@ cursor:pointer;
 <script>
 
 /* =========================
-PANTRY STATE
+100 INGREDIENTS RESTORED
 ========================= */
+
+const ingredientItems = [
+"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
+"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
+"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
+"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
+"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
+"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
+"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
+"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
+"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
+"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
+];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-RECIPES DATABASE (25 REAL MEALS)
+25 REAL BUDGET RECIPES
 ========================= */
 
 const recipes = [
@@ -128,21 +146,13 @@ return recipes
 }
 
 /* =========================
-EXPORT ENGINE (INSTACART / WALMART STYLE)
+EXPORT SYSTEM
 ========================= */
 
 function buildExportList(recipe){
-
 let missing = recipe.ingredients.filter(i=>!selected.includes(i));
-
-return missing.map(i => {
-return `${i} - grocery item - search fresh`;
-}).join("\n");
+return missing.map(i=>`${i} - grocery item - search fresh`).join("\n");
 }
-
-/* =========================
-COPY TO CLIPBOARD
-========================= */
 
 function copyText(text){
 navigator.clipboard.writeText(text);
@@ -155,10 +165,15 @@ UI
 
 function openPantry(){
 
-let html=`<div class="header">Pantry</div>`;
+let html=`<div class="header">Pantry (100 Ingredients)</div>`;
 
-selected.forEach(i=>{
-html+=`<div class="item">${i}</div>`;
+ingredientItems.forEach(i=>{
+let on = selected.includes(i);
+
+html+=`
+<div class="item ${on?'selected':''}" onclick="toggle('${i}')">
+${i} ${on?'✔':''}
+</div>`;
 });
 
 html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
@@ -167,11 +182,20 @@ document.getElementById("pantry").innerHTML=html;
 show("pantry");
 }
 
+function toggle(i){
+selected = selected.includes(i)
+? selected.filter(x=>x!==i)
+: [...selected,i];
+
+localStorage.setItem("ingredients",JSON.stringify(selected));
+openPantry();
+}
+
 function showMatches(){
 
 let top = topRecipes();
 
-let html=`<div class="header">Top Recipes</div>`;
+let html=`<div class="header">Top 3 Recipes</div>`;
 
 top.forEach(r=>{
 html+=`
@@ -193,18 +217,14 @@ let r = recipes.find(x=>x.name===name);
 let instructions = `### Instructions
 
 1. Gather ingredients: ${r.ingredients.join(", ")}
-2. Prep all ingredients (wash, chop, organize)
+2. Prep everything (wash, chop, organize)
 3. Cook main components using proper heat
 4. Combine and season properly
 5. Serve hot and fresh
 `;
 
 let missing = r.ingredients.filter(i=>!selected.includes(i));
-
-let groceryText = missing.length
-? missing.join(", ")
-: "You already have everything!";
-
+let groceryText = missing.length ? missing.join(", ") : "You already have everything!";
 let exportList = buildExportList(r);
 
 document.getElementById("recipe").innerHTML=`
