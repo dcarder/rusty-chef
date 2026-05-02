@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Pro Kitchen OS - AI Chef</title>
+<title>Pro Kitchen OS</title>
 
 <style>
 html,body{
@@ -40,6 +40,7 @@ border:1px solid rgba(255,255,255,0.15);
 border-radius:16px;
 padding:14px;
 margin:10px 0;
+white-space:pre-wrap;
 }
 
 .item{
@@ -125,12 +126,12 @@ object-fit:cover;
 <img src="copilot_image_1777179019874.jpeg"/>
 </div>
 
-<div class="card">PRO KITCHEN OS - AI CHEF SYSTEM</div>
+<div class="card">PRO KITCHEN OS</div>
 
 <div class="dock">
 <div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
 <div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
-<div class="dockBtn" onclick="toggleChefMode()">👨‍🍳<span>Chef Mode</span></div>
+<div class="dockBtn" onclick="toggleChefMode()">👨‍🍳<span>Chef</span></div>
 </div>
 
 </div>
@@ -144,40 +145,28 @@ object-fit:cover;
 <script>
 
 /* =========================
-VOICE + RAMSAY MODE
+VOICE (RAMSAY MODE)
 ========================= */
 
 let chefMode="ramsay";
 
 function speak(text){
-
 window.speechSynthesis.cancel();
 
 if(chefMode==="ramsay"){
-text = ramsayTone(text);
+let insults=[
+"Focus up!","That’s weak cooking!","Come on, better than that!","No shortcuts!"
+];
+text = insults[Math.floor(Math.random()*insults.length)] + " " + text;
 }
 
 let msg=new SpeechSynthesisUtterance(text);
 msg.rate=chefMode==="ramsay"?1.15:1;
-
 window.speechSynthesis.speak(msg);
 }
 
-function ramsayTone(text){
-
-let lines=[
-"Focus up!",
-"That’s not good enough!",
-"Better—keep going!",
-"You call that cooking?",
-"Alright, now we’re talking!"
-];
-
-return lines[Math.floor(Math.random()*lines.length)]+" "+text;
-}
-
 /* =========================
-FULL 100 INGREDIENTS
+100 INGREDIENTS
 ========================= */
 
 const ingredientItems=[
@@ -196,26 +185,18 @@ const ingredientItems=[
 let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-INGREDIENT CLASSIFICATION
+CLASSIFY SYSTEM
 ========================= */
 
 function classify(list){
-
-let cat={
-protein:[],
-veg:[],
-starch:[],
-fat:[],
-acid:[],
-other:[]
-};
+let cat={protein:[],veg:[],starch:[],fat:[],acid:[],other:[]};
 
 list.forEach(i=>{
 
-if(["Chicken breast","Beef","Shrimp","Salmon","Tuna","Pork chops","Eggs","Tofu","Turkey"].includes(i))
+if(["Chicken breast","Ground beef","Bacon","Eggs","Shrimp","Salmon","Tuna","Steak","Pork chops","Tofu","Turkey"].includes(i))
 cat.protein.push(i);
 
-else if(["Carrots","Onions","Broccoli","Spinach","Peppers","Tomatoes","Mushrooms"].includes(i))
+else if(["Carrots","Onions","Broccoli","Spinach","Mushrooms","Tomatoes","Bell peppers"].includes(i))
 cat.veg.push(i);
 
 else if(["Rice","Pasta","Bread","Tortilla","Ramen noodles","Potatoes","Quinoa"].includes(i))
@@ -224,7 +205,7 @@ cat.starch.push(i);
 else if(["Butter","Olive oil","Cheese","Cream","Avocado"].includes(i))
 cat.fat.push(i);
 
-else if(["Lemon","Lime","Vinegar","Tomatoes"].includes(i))
+else if(["Lemon","Lime","Vinegar"].includes(i))
 cat.acid.push(i);
 
 else cat.other.push(i);
@@ -235,68 +216,57 @@ return cat;
 }
 
 /* =========================
-PRO KITCHEN VALIDATION
-========================= */
-
-function validateDish(cat){
-
-let warnings=[];
-
-if(cat.protein.length===0)warnings.push("No protein detected");
-if(cat.fat.length===0)warnings.push("No fat source");
-if(cat.acid.length===0)warnings.push("No acid for balance");
-if(cat.starch.length===0)warnings.push("No base/starch foundation");
-
-return warnings;
-}
-
-/* =========================
-RECIPE ENGINE
+PLATED RECIPE ENGINE
 ========================= */
 
 function generateAIRecipe(){
 
 if(selected.length<3){
 return [{
-name:"Insufficient Ingredients",
+name:"Select More Ingredients",
 time:0,
 ingredients:[],
-steps:[{text:"Select more ingredients.",time:0}]
+steps:[{text:"Pick at least 3 ingredients.",time:0}]
 }];
 }
 
 let cat=classify(selected);
-let warnings=validateDish(cat);
 
-let protein=cat.protein[0]||"Mixed Protein";
+let main = cat.protein[0] || cat.starch[0] || "Mixed Dish";
+let sides = [...cat.veg, ...cat.starch].filter(i=>i!==main);
+let support = [...cat.fat, ...cat.acid];
+let extras = cat.other;
 
 let steps=[];
 
-/* PRE-CHECK */
-if(warnings.length){
-steps.push({text:"KITCHEN ALERT: "+warnings.join(" | "),time:10});
+/* PLATE STRUCTURE */
+steps.push({
+text:
+`PLATE STRUCTURE:\n
+MAIN: ${main}\n
+SIDES: ${sides.join(", ")||"none"}\n
+SUPPORT: ${support.join(", ")||"none"}\n
+EXTRAS: ${extras.join(", ")||"none"}\n
+Reason: Each category has a job in flavor, texture, or balance.`,
+time:10
+});
+
+steps.push({text:`Cook MAIN (${main}) first. This is the center of the dish.`,time:420});
+
+if(sides.length){
+steps.push({text:`Prepare SIDES separately: ${sides.join(", ")}.`,time:300});
 }
 
-/* STRUCTURE */
-steps.push({text:`Protein: ${cat.protein.join(", ")||"none"}. Builds structure.`,time:10});
-steps.push({text:`Veg: ${cat.veg.join(", ")||"none"}. Adds freshness.`,time:10});
-steps.push({text:`Starch: ${cat.starch.join(", ")||"none"}. Adds body.`,time:10});
-
-steps.push({text:"Heat pan to 375–400°F for proper searing.",time:60});
-steps.push({text:`Cook ${protein} until fully browned and safe.`,time:420});
-
-if(cat.veg.length){
-steps.push({text:`Add vegetables: ${cat.veg.join(", ")}`,time:300});
+if(support.length){
+steps.push({text:`Build SUPPORT flavors (fat/acid balance): ${support.join(", ")}.`,time:120});
 }
 
-if(cat.starch.length){
-steps.push({text:`Prepare base: ${cat.starch.join(", ")}`,time:400});
-}
+steps.push({text:`Combine ONLY at the end. Never mix early or texture collapses.`,time:60});
 
-steps.push({text:"Final seasoning balance: salt, fat, acid, umami.",time:120});
+steps.push({text:`Final plating: main centered, sides balanced, support lightly applied.`,time:60});
 
 return [{
-name:`Pro Kitchen ${protein} Dish`,
+name:`Plated Dish: ${main}`,
 time:40,
 ingredients:selected,
 steps
@@ -304,7 +274,7 @@ steps
 }
 
 /* =========================
-UI LOGIC (UNCHANGED CORE)
+UI LOGIC
 ========================= */
 
 let activeRecipe=null;
@@ -319,7 +289,7 @@ document.getElementById(id).classList.add("active");
 
 function openIngredients(){
 
-let html=`<div class="header">PRO KITCHEN INGREDIENTS</div>`;
+let html=`<div class="header">Ingredients</div>`;
 
 ingredientItems.forEach(i=>{
 let on=selected.includes(i);
@@ -364,9 +334,7 @@ speak(step.text);
 
 document.getElementById("detail").innerHTML=`
 <div class="header">${activeRecipe.name}</div>
-
 <div class="card">${step.text}</div>
-
 <div class="card" id="timerBox">⏱ ${step.time}s</div>
 
 <div class="btn" onclick="startTimer()">Start</div>
@@ -390,7 +358,6 @@ speak("Step complete");
 }
 
 function nextStep(){
-
 clearInterval(timer);
 
 if(stepIndex<activeRecipe.steps.length-1){
@@ -406,10 +373,15 @@ goHome();
 function toggleChefMode(){
 chefMode = chefMode==="ramsay"?"normal":"ramsay";
 alert("Chef Mode: "+chefMode);
-speak("Mode changed.");
+speak("Mode switched.");
 }
 
-function goHome(){show("home");}
+function goHome(){
+stepIndex=0;
+activeRecipe=null;
+clearInterval(timer);
+show("home");
+}
 
 openIngredients();
 
