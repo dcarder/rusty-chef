@@ -31,6 +31,7 @@ border-radius:14px;
 padding:14px;
 margin:10px 0;
 border:1px solid rgba(255,255,255,0.15);
+white-space:pre-wrap;
 }
 
 .item{
@@ -178,7 +179,7 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-25 REAL RECIPES
+25 RECIPES (UNCHANGED)
 ========================= */
 
 const recipes = [
@@ -338,6 +339,116 @@ return recipes.map(score)
 }
 
 /* =========================
+🛒 RESTORED SHOP LINKS
+========================= */
+
+function buildStoreLinks(recipe){
+let missing = recipe.ingredients.filter(i => !selected.includes(i));
+
+return missing.map(i => {
+let q = encodeURIComponent(i);
+
+return {
+name:i,
+instacart:`https://www.instacart.com/store/search?search=${q}`,
+walmart:`https://www.walmart.com/search?q=${q}`
+};
+});
+}
+
+/* =========================
+COOKING ENGINE (RESTORED DETAIL)
+========================= */
+
+let current=null;
+let stepIndex=0;
+let timer=null;
+let timeLeft=0;
+
+function openRecipe(name){
+current=recipes.find(r=>r.name===name);
+stepIndex=0;
+renderStep();
+show("recipe");
+}
+
+function renderStep(){
+
+let step=current.steps[stepIndex];
+let links=buildStoreLinks(current);
+
+/* 🍳 DETAILED INSTRUCTIONS */
+let instruction=`
+### Instructions
+1. ${step.t}
+2. Set temperature to ${step.temp}.
+3. Cook for ${step.time} minutes using consistent heat.
+4. Stir, flip, or monitor every 2–3 minutes.
+5. Ensure even cooking and avoid burning.
+6. Adjust seasoning as needed during cooking.
+7. Let rest briefly before serving.
+`;
+
+/* 🛒 SHOPPING UI */
+let shopHTML=`<div class="card"><b>🛒 Instacart / Walmart</b><br><br>`;
+
+links.forEach(l=>{
+shopHTML+=`
+<div class="card">
+<b>${l.name}</b><br>
+<a href="${l.instacart}" target="_blank">Instacart</a> |
+<a href="${l.walmart}" target="_blank">Walmart</a>
+</div>`;
+});
+
+shopHTML+=`</div>`;
+
+document.getElementById("recipe").innerHTML=`
+<div class="header">${current.name}</div>
+
+<div class="card">
+<b>Step ${stepIndex+1}</b><br><br>
+${instruction}
+</div>
+
+<div class="timer" id="timerBox">Ready</div>
+
+<div class="btn" onclick="startTimer()">Start Timer</div>
+<div class="btn" onclick="nextStep()">Next Step</div>
+<div class="btn" onclick="goHome()">Home</div>
+
+${shopHTML}
+`;
+}
+
+function startTimer(){
+clearInterval(timer);
+let step=current.steps[stepIndex];
+timeLeft=step.time*60;
+
+timer=setInterval(()=>{
+timeLeft--;
+let m=Math.floor(timeLeft/60);
+let s=timeLeft%60;
+document.getElementById("timerBox").innerHTML=`⏱ ${m}:${s.toString().padStart(2,"0")}`;
+if(timeLeft<=0){
+clearInterval(timer);
+document.getElementById("timerBox").innerHTML="✔ Done";
+}
+},1000);
+}
+
+function nextStep(){
+clearInterval(timer);
+if(stepIndex<current.steps.length-1){
+stepIndex++;
+renderStep();
+}else{
+document.getElementById("recipe").innerHTML+=`<div class="card">Complete</div>`;
+}
+}
+
+/* =========================
 NAV
 ========================= */
 
@@ -375,66 +486,6 @@ Missing: ${r.missing.join(", ")||"None"}
 });
 document.getElementById("results").innerHTML=html;
 show("results");
-}
-
-let current=null;
-let stepIndex=0;
-let timer=null;
-let timeLeft=0;
-
-function openRecipe(name){
-current=recipes.find(r=>r.name===name);
-stepIndex=0;
-renderStep();
-show("recipe");
-}
-
-function renderStep(){
-let step=current.steps[stepIndex];
-
-document.getElementById("recipe").innerHTML=`
-<div class="header">${current.name}</div>
-
-<div class="card">
-<b>Step ${stepIndex+1}</b><br><br>
-${step.t}<br><br>
-🌡 ${step.temp}<br>
-⏱ ${step.time} min
-</div>
-
-<div class="timer" id="timerBox">Ready</div>
-
-<div class="btn" onclick="startTimer()">Start Timer</div>
-<div class="btn" onclick="nextStep()">Next Step</div>
-<div class="btn" onclick="goHome()">Home</div>
-`;
-}
-
-function startTimer(){
-clearInterval(timer);
-let step=current.steps[stepIndex];
-timeLeft=step.time*60;
-
-timer=setInterval(()=>{
-timeLeft--;
-let m=Math.floor(timeLeft/60);
-let s=timeLeft%60;
-document.getElementById("timerBox").innerHTML=`⏱ ${m}:${s.toString().padStart(2,"0")}`;
-if(timeLeft<=0){
-clearInterval(timer);
-document.getElementById("timerBox").innerHTML="✔ Done";
-}
-},1000);
-}
-
-function nextStep(){
-clearInterval(timer);
-if(stepIndex<current.steps.length-1){
-stepIndex++;
-renderStep();
-}else{
-document.getElementById("recipe").innerHTML+=`<div class="card">Done</div>`;
-}
 }
 
 function goHome(){show("home");}
