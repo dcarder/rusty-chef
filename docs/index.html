@@ -18,27 +18,12 @@ background:black;
 
 #app{position:fixed;inset:0;}
 
-.page{
-display:none;
-height:100%;
-overflow:auto;
-padding:20px;
-}
-
+.page{display:none;height:100%;overflow:auto;padding:20px;}
 .page.active{display:block;}
 
-.header{
-text-align:center;
-font-size:22px;
-font-weight:700;
-margin-bottom:10px;
-}
+.header{text-align:center;font-size:22px;font-weight:700;margin-bottom:10px;}
 
-.topBar{
-display:flex;
-justify-content:space-between;
-margin-bottom:10px;
-}
+.topBar{display:flex;justify-content:space-between;margin-bottom:10px;}
 
 .homeBtn{
 padding:8px 12px;
@@ -80,35 +65,6 @@ border-radius:12px;
 cursor:pointer;
 }
 
-.dock{
-position:fixed;
-bottom:90px;
-left:0;
-right:0;
-display:flex;
-justify-content:center;
-gap:20px;
-}
-
-.dockBtn{
-width:100px;
-height:100px;
-border-radius:20px;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-background:rgba(255,255,255,0.1);
-cursor:pointer;
-}
-
-.dockBtn.large{
-width:130px;
-height:130px;
-background:linear-gradient(135deg,#4facfe,#00f2fe);
-color:black;
-}
-
 #homeBg{
 position:fixed;
 inset:0;
@@ -127,7 +83,6 @@ object-fit:cover;
 
 <div id="app">
 
-<!-- HOME -->
 <div id="home" class="page active">
 
 <div id="homeBg">
@@ -135,13 +90,9 @@ object-fit:cover;
 </div>
 
 <div class="header">🤖 Rusty AI Chef</div>
-<div class="card">Full AI Cooking Assistant</div>
+<div class="card">Smart Cooking Assistant</div>
 
-<div class="dock">
-<div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
-<div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
-<div class="dockBtn" onclick="goHome()">🏠<span>Home</span></div>
-</div>
+<div class="btn" onclick="openIngredients()">🧺 Open Ingredients</div>
 
 </div>
 
@@ -154,7 +105,7 @@ object-fit:cover;
 <script>
 
 /* =========================
-   100 INGREDIENTS RESTORED
+   100 INGREDIENTS (OPTION C FIX APPLIED)
 ========================= */
 
 const ingredientItems = [
@@ -167,13 +118,16 @@ const ingredientItems = [
 "Peanut butter","Jam","Walnuts","Almonds","Cashews","Green beans","Zucchini","Eggplant","Cauliflower","Cabbage",
 "Sweet potato","Pumpkin","Corn","Ramen noodles","Oats","Cornstarch","Chocolate","Coffee","Tea","Maple syrup",
 "Brown sugar","Honey","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar","Chickpeas","Lentils",
-"Quinoa","Tofu","Crackers","Granola","Marshmallows","Parsley","Chives","Cinnamon","Nutmeg","Ginger"
+"Quinoa","Tofu","Crackers","Granola","Marshmallows","Parsley","Chives","Cinnamon","Nutmeg","Ginger",
+
+// 🧠 OPTION C FIX (REPLACES GENERIC “Beans”)
+"Black beans","Kidney beans","Pinto beans","Cannellini beans"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
 
 /* =========================
-   AI RECIPE ENGINE
+   SIMPLE AI RECIPE ENGINE
 ========================= */
 
 function generateAIRecipe(){
@@ -183,7 +137,7 @@ return [{
 name:"Select More Ingredients",
 ingredients:[],
 protein:"None",
-steps:[{text:"Pick at least 3 ingredients to generate recipes.",time:0}]
+steps:[{text:"Pick at least 3 ingredients.",time:0}]
 }];
 }
 
@@ -202,58 +156,12 @@ protein:protein,
 steps:[
 { text:`Prep all ingredients and dry ${protein}.`, time:300 },
 { text:`Heat pan to 350–400°F with oil.`, time:120 },
-{ text:`Cook ${protein} 6–10 minutes (target safe temp).`, time:480 },
-{ text:`Add vegetables and aromatics.`, time:420 },
+{ text:`Cook ${protein} until fully browned and safe temperature is reached.`, time:480 },
+{ text:`Add vegetables and beans if selected.`, time:420 },
 { text:`Season and combine flavors.`, time:180 },
-{ text:`Rest dish for 2 minutes before serving.`, time:120 }
+{ text:`Let rest before serving.`, time:120 }
 ]
 }];
-}
-
-/* =========================
-   SPICE GUIDE
-========================= */
-
-function getCuisineGuide(name){
-return [
-"Salt – enhances all flavors.",
-"Fat (oil/butter) – carries flavor and richness.",
-"Acid (lemon/vinegar) – balances heaviness.",
-"Spices – define cuisine identity and depth."
-];
-}
-
-/* =========================
-   TIMER SYSTEM
-========================= */
-
-let timers = {};
-
-function startTimer(i){
-
-let step = window.generated[0].steps[i];
-let time = step.time;
-
-clearInterval(timers[i]);
-
-let display = document.getElementById("timer"+i);
-
-timers[i] = setInterval(()=>{
-
-let m = Math.floor(time/60);
-let s = time%60;
-
-display.innerHTML = `⏳ ${m}:${s.toString().padStart(2,'0')}`;
-
-time--;
-
-if(time < 0){
-clearInterval(timers[i]);
-display.innerHTML = "✅ Done!";
-if(navigator.vibrate) navigator.vibrate(200);
-}
-
-},1000);
 }
 
 /* =========================
@@ -266,7 +174,7 @@ document.getElementById(id).classList.add("active");
 }
 
 function openIngredients(){
-let html=`<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
+let html=`<div class="topBar"><div class="homeBtn" onclick="show('home')">🏠 Home</div></div>
 <div class="header">🧺 Ingredients</div>`;
 
 ingredientItems.forEach(i=>{
@@ -293,7 +201,7 @@ function openRecipes(){
 let list=generateAIRecipe();
 window.generated=list;
 
-let html=`<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
+let html=`<div class="topBar"><div class="homeBtn" onclick="openIngredients()">⬅ Back</div></div>
 <div class="header">🍳 AI Recipe</div>`;
 
 list.forEach(r=>{
@@ -309,40 +217,28 @@ show("recipes");
 function openRecipe(name){
 
 let r=window.generated.find(x=>x.name===name);
-let guide=getCuisineGuide(r.name);
 
 let html=`<div class="topBar"><div class="homeBtn" onclick="openRecipes()">⬅ Back</div></div>
 <div class="header">${r.name}</div>
 
 <div class="card"><b>Ingredients:</b><br>${r.ingredients.join("<br>")}</div>
 
-<div class="card"><b>💪 Protein Info:</b><br>${r.protein}</div>
+<div class="card"><b>💪 Protein:</b><br>${r.protein}</div>
 
-<div class="card"><b>🌍 Flavor Guide:</b><br>${guide.join("<br>")}</div>`;
+<div class="card"><b>🍳 Cooking Steps:</b></div>`;
 
 r.steps.forEach((s,i)=>{
 html+=`
 <div class="card">
 <b>Step ${i+1}</b><br><br>
 ${s.text}<br><br>
-
 ⏱ ${Math.floor(s.time/60)}m ${s.time%60}s
-
-<div class="btn" onclick="startTimer(${i})">▶ Start Timer</div>
-
-<div id="timer${i}">Ready</div>
 </div>`;
 });
 
 document.getElementById("detail").innerHTML=html;
 show("detail");
 }
-
-function goHome(){
-show("home");
-}
-
-openIngredients();
 
 </script>
 
