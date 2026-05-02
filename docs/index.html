@@ -80,35 +80,6 @@ border-radius:12px;
 cursor:pointer;
 }
 
-.dock{
-position:fixed;
-bottom:90px;
-left:0;
-right:0;
-display:flex;
-justify-content:center;
-gap:20px;
-}
-
-.dockBtn{
-width:100px;
-height:100px;
-border-radius:20px;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-background:rgba(255,255,255,0.1);
-cursor:pointer;
-}
-
-.dockBtn.large{
-width:130px;
-height:130px;
-background:linear-gradient(135deg,#4facfe,#00f2fe);
-color:black;
-}
-
 #homeBg{
 position:fixed;
 inset:0;
@@ -129,20 +100,14 @@ object-fit:cover;
 
 <!-- HOME -->
 <div id="home" class="page active">
-
 <div id="homeBg">
 <img src="copilot_image_1777179019874.jpeg"/>
 </div>
 
 <div class="header">🤖 Rusty AI Chef</div>
-<div class="card">Full AI Cooking Assistant</div>
+<div class="card">Full Smart Cooking Engine</div>
 
-<div class="dock">
-<div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
-<div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
-<div class="dockBtn" onclick="goHome()">🏠<span>Home</span></div>
-</div>
-
+<div class="btn" onclick="openIngredients()">🧺 Open Ingredients</div>
 </div>
 
 <div id="ingredients" class="page"></div>
@@ -154,7 +119,7 @@ object-fit:cover;
 <script>
 
 /* =========================
-   100 INGREDIENTS RESTORED
+   100 INGREDIENT DATABASE
 ========================= */
 
 const ingredientItems = [
@@ -167,94 +132,17 @@ const ingredientItems = [
 "Peanut butter","Jam","Walnuts","Almonds","Cashews","Green beans","Zucchini","Eggplant","Cauliflower","Cabbage",
 "Sweet potato","Pumpkin","Corn","Ramen noodles","Oats","Cornstarch","Chocolate","Coffee","Tea","Maple syrup",
 "Brown sugar","Honey","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar","Chickpeas","Lentils",
-"Quinoa","Tofu","Crackers","Granola","Marshmallows","Parsley","Chives","Cinnamon","Nutmeg","Ginger"
+"Quinoa","Tofu","Crackers","Granola","Marshmallows","Parsley","Chives","Cinnamon","Nutmeg","Ginger",
+"Black beans","Kidney beans","Pinto beans","Cannellini beans"
 ];
+
+/* =========================
+   CLEAN LOCAL STORAGE BUG FIX
+========================= */
 
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
-
-/* =========================
-   AI RECIPE ENGINE
-========================= */
-
-function generateAIRecipe(){
-
-if(selected.length < 3){
-return [{
-name:"Select More Ingredients",
-ingredients:[],
-protein:"None",
-steps:[{text:"Pick at least 3 ingredients to generate recipes.",time:0}]
-}];
-}
-
-let used=[...selected].sort(()=>Math.random()-0.5).slice(0,6);
-
-let protein = used.find(i =>
-i.includes("Chicken")||i.includes("Beef")||
-i.includes("Shrimp")||i.includes("Salmon")||
-i.includes("Egg")||i.includes("Turkey")
-) || "Main Ingredient";
-
-return [{
-name:`AI ${protein} Skillet Dish`,
-ingredients:used,
-protein:protein,
-steps:[
-{ text:`Prep all ingredients and dry ${protein}.`, time:300 },
-{ text:`Heat pan to 350–400°F with oil.`, time:120 },
-{ text:`Cook ${protein} 6–10 minutes (target safe temp).`, time:480 },
-{ text:`Add vegetables and aromatics.`, time:420 },
-{ text:`Season and combine flavors.`, time:180 },
-{ text:`Rest dish for 2 minutes before serving.`, time:120 }
-]
-}];
-}
-
-/* =========================
-   SPICE GUIDE
-========================= */
-
-function getCuisineGuide(name){
-return [
-"Salt – enhances all flavors.",
-"Fat (oil/butter) – carries flavor and richness.",
-"Acid (lemon/vinegar) – balances heaviness.",
-"Spices – define cuisine identity and depth."
-];
-}
-
-/* =========================
-   TIMER SYSTEM
-========================= */
-
-let timers = {};
-
-function startTimer(i){
-
-let step = window.generated[0].steps[i];
-let time = step.time;
-
-clearInterval(timers[i]);
-
-let display = document.getElementById("timer"+i);
-
-timers[i] = setInterval(()=>{
-
-let m = Math.floor(time/60);
-let s = time%60;
-
-display.innerHTML = `⏳ ${m}:${s.toString().padStart(2,'0')}`;
-
-time--;
-
-if(time < 0){
-clearInterval(timers[i]);
-display.innerHTML = "✅ Done!";
-if(navigator.vibrate) navigator.vibrate(200);
-}
-
-},1000);
-}
+selected = selected.filter(i => ingredientItems.includes(i));
+localStorage.setItem("ingredients", JSON.stringify(selected));
 
 /* =========================
    UI
@@ -265,8 +153,12 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 document.getElementById(id).classList.add("active");
 }
 
+/* =========================
+   INGREDIENT UI
+========================= */
+
 function openIngredients(){
-let html=`<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
+let html=`<div class="topBar"><div class="homeBtn" onclick="show('home')">🏠 Home</div></div>
 <div class="header">🧺 Ingredients</div>`;
 
 ingredientItems.forEach(i=>{
@@ -289,16 +181,112 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openIngredients();
 }
 
+/* =========================
+   CUISINE INTELLIGENCE
+========================= */
+
+function detectCuisine(items){
+
+let score={mexican:0,italian:0,asian:0,american:0};
+
+items.forEach(i=>{
+let x=i.toLowerCase();
+
+if(["tortilla","beans","corn","lime","hot sauce"].some(w=>x.includes(w))) score.mexican++;
+if(["pasta","basil","olive oil","parmesan","mozzarella"].some(w=>x.includes(w))) score.italian++;
+if(["soy sauce","rice","noodles","sesame","ginger"].some(w=>x.includes(w))) score.asian++;
+if(["beef","chicken","potato","bread","cheddar"].some(w=>x.includes(w))) score.american++;
+});
+
+return Object.keys(score).reduce((a,b)=>score[a]>score[b]?a:b);
+}
+
+/* =========================
+   RECIPE ENGINE
+========================= */
+
+function generateAIRecipe(){
+
+if(selected.length < 3){
+return [{name:"Select More Ingredients",ingredients:[],protein:"None",steps:[{text:"Pick at least 3 ingredients.",time:0}]}];
+}
+
+let used=[...selected].sort(()=>Math.random()-0.5).slice(0,6);
+
+let cuisine = detectCuisine(used);
+
+let protein = used.find(i =>
+i.includes("Chicken")||i.includes("Beef")||
+i.includes("Shrimp")||i.includes("Salmon")||
+i.includes("Egg")||i.includes("Turkey")
+) || "Main Ingredient";
+
+/* INGREDIENT AWARE STEPS */
+let steps=[];
+
+steps.push({text:`Prep all ingredients for ${cuisine.toUpperCase()} cooking style.`,time:300});
+
+if(used.some(i=>i.includes("Ramen"))){
+steps.push({text:`Boil water (100°C). Cook ramen 2–4 minutes until tender.`,time:240});
+}
+
+if(used.some(i=>i.includes("Rice"))){
+steps.push({text:`Simmer rice for 15–20 minutes until fluffy.`,time:900});
+}
+
+if(used.some(i=>i.includes("Pasta"))){
+steps.push({text:`Boil salted water. Cook pasta 8–12 minutes.`,time:720});
+}
+
+steps.push({
+text:`Cook ${protein} to safe temperature (165°F poultry / 145°F fish / 160°F beef).`,
+time:480
+});
+
+steps.push({
+text:`Add vegetables and combine flavors using ${cuisine} spices.`,
+time:420
+});
+
+steps.push({
+text:`Finish dish and let rest before serving.`,
+time:180
+});
+
+/* CUISINE FLAVOR */
+let flavor={
+mexican:"cumin, chili, lime",
+italian:"basil, oregano, garlic, olive oil",
+asian:"soy sauce, ginger, sesame oil",
+american:"salt, pepper, butter, paprika"
+};
+
+return [{
+name:`${cuisine.toUpperCase()} AI ${protein} Dish`,
+ingredients:used,
+protein:protein,
+cuisine:cuisine,
+flavor:flavor[cuisine],
+steps:steps
+}];
+}
+
+/* =========================
+   RECIPES
+========================= */
+
 function openRecipes(){
+
 let list=generateAIRecipe();
 window.generated=list;
 
-let html=`<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
+let html=`<div class="topBar"><div class="homeBtn" onclick="openIngredients()">⬅ Back</div></div>
 <div class="header">🍳 AI Recipe</div>`;
 
 list.forEach(r=>{
 html+=`<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b>
+<b>${r.name}</b><br>
+${r.cuisine.toUpperCase()} STYLE
 </div>`;
 });
 
@@ -309,40 +297,30 @@ show("recipes");
 function openRecipe(name){
 
 let r=window.generated.find(x=>x.name===name);
-let guide=getCuisineGuide(r.name);
 
 let html=`<div class="topBar"><div class="homeBtn" onclick="openRecipes()">⬅ Back</div></div>
 <div class="header">${r.name}</div>
 
 <div class="card"><b>Ingredients:</b><br>${r.ingredients.join("<br>")}</div>
 
-<div class="card"><b>💪 Protein Info:</b><br>${r.protein}</div>
+<div class="card"><b>Protein:</b><br>${r.protein}</div>
 
-<div class="card"><b>🌍 Flavor Guide:</b><br>${guide.join("<br>")}</div>`;
+<div class="card"><b>Cuisine:</b><br>${r.cuisine}</div>
+
+<div class="card"><b>Flavor Profile:</b><br>${r.flavor}</div>`;
 
 r.steps.forEach((s,i)=>{
 html+=`
 <div class="card">
 <b>Step ${i+1}</b><br><br>
 ${s.text}<br><br>
-
 ⏱ ${Math.floor(s.time/60)}m ${s.time%60}s
-
-<div class="btn" onclick="startTimer(${i})">▶ Start Timer</div>
-
-<div id="timer${i}">Ready</div>
 </div>`;
 });
 
 document.getElementById("detail").innerHTML=html;
 show("detail");
 }
-
-function goHome(){
-show("home");
-}
-
-openIngredients();
 
 </script>
 
