@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Rusty the Robot Chef</title>
+<title>Rusty Chef AI - Ramsay Mode</title>
 
 <style>
 html,body{
@@ -32,22 +32,6 @@ font-size:22px;
 font-weight:700;
 text-align:center;
 margin-bottom:10px;
-}
-
-.topBar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:10px;
-}
-
-.homeBtn{
-padding:8px 12px;
-border-radius:10px;
-cursor:pointer;
-font-size:12px;
-background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.2);
 }
 
 .card{
@@ -137,17 +121,17 @@ object-fit:cover;
 <!-- HOME -->
 <div id="home" class="page active">
 
-  <div id="homeBg">
-    <img src="copilot_image_1777179019874.jpeg" />
-  </div>
+<div id="homeBg">
+<img src="copilot_image_1777179019874.jpeg"/>
+</div>
 
-  <div class="card">AI Recipe Generator + Voice Cooking Assistant</div>
+<div class="card">AI Chef System - Ramsay Mode Enabled</div>
 
-  <div class="dock">
-    <div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
-    <div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
-    <div class="dockBtn" onclick="goHome()">🏠<span>Home</span></div>
-  </div>
+<div class="dock">
+<div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
+<div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
+<div class="dockBtn" onclick="toggleChefMode()">👨‍🍳<span>Chef Mode</span></div>
+</div>
 
 </div>
 
@@ -160,86 +144,164 @@ object-fit:cover;
 <script>
 
 /* =========================
-   VOICE CHEF ENGINE
+VOICE SYSTEM (RAMSAY MODE)
 ========================= */
 
-let voiceEnabled = true;
+let chefMode = "ramsay"; // "normal" | "ramsay"
 
 function speak(text){
-if(!voiceEnabled) return;
+
 window.speechSynthesis.cancel();
+
+if(chefMode === "ramsay"){
+text = ramsayFilter(text);
+}
+
 let msg = new SpeechSynthesisUtterance(text);
-msg.rate = 1;
-msg.pitch = 1;
-msg.volume = 1;
+msg.rate = chefMode === "ramsay" ? 1.15 : 1;
+msg.pitch = chefMode === "ramsay" ? 0.85 : 1;
+
 window.speechSynthesis.speak(msg);
 }
 
-/* =========================
-   INGREDIENTS
-========================= */
+function ramsayFilter(text){
 
-const ingredientItems = [
-"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
-"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
-"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
-"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
-"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
-"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
-"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
-"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
-"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
+let roast = [
+"Come on! Focus up!",
+"This is not how we cook in a proper kitchen!",
+"You're rushing it—slow down!",
+"Absolutely unacceptable!",
+"You call that cooking?"
 ];
 
-let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
+let praise = [
+"Alright, that’s more like it.",
+"Good, now we’re cooking properly.",
+"Not bad—keep going.",
+"That’s better!"
+];
+
+let pick = Math.random() > 0.5 ? praise : roast;
+
+return pick[Math.floor(Math.random()*pick.length)] + " " + text;
+}
 
 /* =========================
-   AI RECIPE ENGINE
+MEMORY SYSTEM
+========================= */
+
+let chefMemory = JSON.parse(localStorage.getItem("chefMemory") || JSON.stringify({
+favorites:{}
+}));
+
+function saveMemory(){
+localStorage.setItem("chefMemory",JSON.stringify(chefMemory));
+}
+
+function learn(i){
+chefMemory.favorites[i]=(chefMemory.favorites[i]||0)+1;
+saveMemory();
+}
+
+/* =========================
+RAMSAY MODE TOGGLE
+========================= */
+
+function toggleChefMode(){
+
+if(chefMode === "ramsay"){
+chefMode = "normal";
+alert("Normal Chef Mode ON");
+speak("Calm chef mode activated.");
+}else{
+chefMode = "ramsay";
+alert("Gordon Ramsay Mode ON 🔥");
+speak("Right then. Impress me. Let's cook properly.");
+}
+
+}
+
+/* =========================
+INGREDIENTS
+========================= */
+
+const ingredientItems=[
+"Chicken breast","Ground beef","Eggs","Rice","Pasta","Cheese","Butter","Garlic",
+"Onions","Tomatoes","Broccoli","Spinach","Mushrooms","Shrimp","Salmon",
+"Salt","Pepper","Olive oil","Soy sauce","Lemon","Lime",
+"Rice noodles","Tortilla","Bread","Hot sauce","BBQ sauce","Ramen noodles","Corn","Tofu"
+];
+
+let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
+
+/* =========================
+RECIPE ENGINE
 ========================= */
 
 function generateAIRecipe(){
 
-if(selected.length < 3){
+if(selected.length<3){
 return [{
-name:"Select More Ingredients",
+name:"You Need More Ingredients",
 time:0,
 ingredients:[],
-steps:[{text:"Pick at least 3 ingredients.",time:0}]
+steps:[{text:"Pick at least 3 ingredients before wasting my time.",time:0}]
 }];
 }
 
-let protein = selected.find(i =>
-i.includes("Chicken") || i.includes("Beef") ||
-i.includes("Shrimp") || i.includes("Salmon") ||
-i.includes("Pork") || i.includes("Turkey")
-) || "Mixed Protein";
+selected.forEach(learn);
+
+let protein=selected.find(i=>
+i.includes("Chicken")||i.includes("Beef")||
+i.includes("Shrimp")||i.includes("Salmon")||
+i.includes("Tofu")
+)||"Mixed Protein";
+
+let veg=selected.filter(i=>
+["Carrots","Onions","Broccoli","Spinach","Mushrooms","Tomatoes"].includes(i)
+);
+
+let base=selected.find(i=>
+["Rice","Pasta","Bread","Tortilla","Ramen noodles"].includes(i)
+);
+
+let steps=[];
+
+steps.push({text:`Right—you're using ${selected.join(", ")}. Let's see if you can handle it.`,time:10});
+
+steps.push({text:`Heat pan properly. No shortcuts. 375°F minimum.`,time:60});
+
+steps.push({text:`Cook ${protein} until properly browned. If it's undercooked, start again.`,time:420});
+
+if(veg.length){
+steps.push({text:`Add vegetables: ${veg.join(", ")}. Don't overcook them.`,time:300});
+}
+
+if(base){
+steps.push({text:`Prepare ${base} separately. No soggy food allowed.`,time:400});
+}
+
+steps.push({text:`Final step—season properly. If it tastes bland, that's on you.`,time:120});
 
 return [{
-name:`Chef Style ${protein} Dish`,
-time:30,
-ingredients:selected.slice(0,6),
-steps:[
-{text:`Prep ingredients.`,time:120},
-{text:`Heat pan to 375°F.`,time:60},
-{text:`Cook ${protein} until fully done.`,time:420},
-{text:`Add vegetables and combine.`,time:300},
-{text:`Finish seasoning and plating.`,time:120}
-]
+name:`Ramsay Style ${protein} Dish`,
+time:35,
+ingredients:selected,
+steps
 }];
 }
 
 /* =========================
-   TIMER + VOICE COOKING
+UI STATE
 ========================= */
 
-let currentStep = 0;
-let activeRecipe = null;
-let timer = null;
-let timeLeft = 0;
+let activeRecipe=null;
+let stepIndex=0;
+let timer=null;
+let timeLeft=0;
 
 /* =========================
-   UI
+UI
 ========================= */
 
 function show(id){
@@ -249,120 +311,87 @@ document.getElementById(id).classList.add("active");
 
 function openIngredients(){
 
-let html=`<div class="header">🧺 Ingredients</div>`;
+let html=`<div class="header">Ingredients</div>`;
 
 ingredientItems.forEach(i=>{
 let on=selected.includes(i);
 html+=`<div class="item ${on?'selected':''}" onclick="toggle('${i}')">
-<span>${i}</span><span>${on?'✔':''}</span></div>`;
+${i} ${on?'✔':''}
+</div>`;
 });
 
-html+=`<div class="btn" onclick="openRecipes()">🍳 Generate Recipe</div>`;
+html+=`<div class="btn" onclick="openRecipes()">Generate Recipe</div>`;
 
 document.getElementById("ingredients").innerHTML=html;
 show("ingredients");
 }
 
 function toggle(i){
-selected=selected.includes(i)
-?selected.filter(x=>x!==i)
-:[...selected,i];
-
+selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openIngredients();
 }
 
 function openRecipes(){
+activeRecipe=generateAIRecipe()[0];
+stepIndex=0;
 
-let list=generateAIRecipe();
-activeRecipe=list[0];
+document.getElementById("recipes").innerHTML=`
+<div class="header">${activeRecipe.name}</div>
+<div class="card" onclick="openRecipe()">Start Cooking</div>
+`;
 
-let html=`<div class="header">🍳 Recipe</div>`;
-
-html+=`
-<div class="card" onclick="openRecipe()">
-<b>${activeRecipe.name}</b><br>${activeRecipe.time} min
-</div>`;
-
-document.getElementById("recipes").innerHTML=html;
 show("recipes");
 }
 
 function openRecipe(){
-currentStep=0;
 renderStep();
 show("detail");
 }
 
-/* =========================
-   STEP + VOICE + TIMER
-========================= */
-
 function renderStep(){
 
-let step = activeRecipe.steps[currentStep];
-
+let step=activeRecipe.steps[stepIndex];
 speak(step.text);
 
-let html=`
+document.getElementById("detail").innerHTML=`
 <div class="header">${activeRecipe.name}</div>
 
-<div class="card">
-<b>Step ${currentStep+1}</b><br><br>
-${step.text}
-</div>
+<div class="card">${step.text}</div>
 
-<div class="card" id="timerBox">
-⏱ ${formatTime(step.time)}
-</div>
+<div class="card" id="timerBox">⏱ ${step.time}s</div>
 
-<div class="btn" onclick="startTimer()">▶ Start</div>
-<div class="btn" onclick="nextStep()">⏭ Next</div>
+<div class="btn" onclick="startTimer()">Start</div>
+<div class="btn" onclick="nextStep()">Next</div>
 `;
-
-document.getElementById("detail").innerHTML=html;
 }
 
 function startTimer(){
 
 clearInterval(timer);
+timeLeft=activeRecipe.steps[stepIndex].time;
 
-let step = activeRecipe.steps[currentStep];
-timeLeft = step.time;
-
-updateTimer();
-
-timer = setInterval(()=>{
+timer=setInterval(()=>{
 timeLeft--;
-updateTimer();
+document.getElementById("timerBox").innerHTML="⏱ "+timeLeft+"s";
 
-if(timeLeft <= 0){
+if(timeLeft<=0){
 clearInterval(timer);
-document.getElementById("timerBox").innerHTML="✅ Done";
-speak("Step complete");
+speak("Step complete. Try not to mess it up.");
 }
 },1000);
 }
 
-function updateTimer(){
-document.getElementById("timerBox").innerHTML="⏱ "+formatTime(timeLeft);
-}
-
-function formatTime(t){
-let m=Math.floor(t/60);
-let s=t%60;
-return `${m}:${s.toString().padStart(2,'0')}`;
-}
-
 function nextStep(){
+
 clearInterval(timer);
 
-if(currentStep < activeRecipe.steps.length-1){
-currentStep++;
-speak("Next step");
+if(stepIndex<activeRecipe.steps.length-1){
+stepIndex++;
+speak("Next step. Keep up.");
 renderStep();
 }else{
-speak("Recipe complete. Enjoy your meal.");
+speak("Finished. Not bad... for once.");
 goHome();
 }
 }
