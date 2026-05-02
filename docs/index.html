@@ -65,6 +65,7 @@ border-radius:12px;
 cursor:pointer;
 }
 
+/* HOME */
 #homeBg{
 position:fixed;
 inset:0;
@@ -83,6 +84,7 @@ object-fit:cover;
 
 <div id="app">
 
+<!-- HOME -->
 <div id="home" class="page active">
 
 <div id="homeBg">
@@ -90,7 +92,7 @@ object-fit:cover;
 </div>
 
 <div class="header">🤖 Rusty AI Chef</div>
-<div class="card">Smart Cooking Assistant</div>
+<div class="card">Cooking Assistant System</div>
 
 <div class="btn" onclick="openIngredients()">🧺 Open Ingredients</div>
 
@@ -105,7 +107,7 @@ object-fit:cover;
 <script>
 
 /* =========================
-   100 INGREDIENTS (OPTION C FIX APPLIED)
+   100 INGREDIENTS
 ========================= */
 
 const ingredientItems = [
@@ -119,12 +121,19 @@ const ingredientItems = [
 "Sweet potato","Pumpkin","Corn","Ramen noodles","Oats","Cornstarch","Chocolate","Coffee","Tea","Maple syrup",
 "Brown sugar","Honey","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar","Chickpeas","Lentils",
 "Quinoa","Tofu","Crackers","Granola","Marshmallows","Parsley","Chives","Cinnamon","Nutmeg","Ginger",
-
-// 🧠 OPTION C FIX (REPLACES GENERIC “Beans”)
 "Black beans","Kidney beans","Pinto beans","Cannellini beans"
 ];
 
+/* =========================
+   🔧 FIX: REMOVE GHOST DATA (NO UI CHANGES)
+========================= */
+
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
+
+const validIngredients = new Set(ingredientItems);
+
+selected = selected.filter(item => validIngredients.has(item));
+localStorage.setItem("ingredients", JSON.stringify(selected));
 
 /* =========================
    SIMPLE AI RECIPE ENGINE
@@ -150,16 +159,16 @@ i.includes("Egg")||i.includes("Turkey")
 ) || "Main Ingredient";
 
 return [{
-name:`AI ${protein} Skillet Dish`,
+name:`AI ${protein} Dish`,
 ingredients:used,
 protein:protein,
 steps:[
-{ text:`Prep all ingredients and dry ${protein}.`, time:300 },
-{ text:`Heat pan to 350–400°F with oil.`, time:120 },
-{ text:`Cook ${protein} until fully browned and safe temperature is reached.`, time:480 },
-{ text:`Add vegetables and beans if selected.`, time:420 },
-{ text:`Season and combine flavors.`, time:180 },
-{ text:`Let rest before serving.`, time:120 }
+{ text:`Prep ingredients and dry ${protein}.`, time:300 },
+{ text:`Heat pan to 350–400°F.`, time:120 },
+{ text:`Cook ${protein} until fully cooked.`, time:480 },
+{ text:`Add vegetables and combine flavors.`, time:420 },
+{ text:`Season and adjust taste.`, time:180 },
+{ text:`Rest before serving.`, time:120 }
 ]
 }];
 }
@@ -223,9 +232,9 @@ let html=`<div class="topBar"><div class="homeBtn" onclick="openRecipes()">⬅ B
 
 <div class="card"><b>Ingredients:</b><br>${r.ingredients.join("<br>")}</div>
 
-<div class="card"><b>💪 Protein:</b><br>${r.protein}</div>
+<div class="card"><b>Protein:</b><br>${r.protein}</div>
 
-<div class="card"><b>🍳 Cooking Steps:</b></div>`;
+<div class="card"><b>Steps:</b></div>`;
 
 r.steps.forEach((s,i)=>{
 html+=`
