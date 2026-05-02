@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Pro Kitchen OS v5</title>
+<title>Pro Kitchen OS v6</title>
 
 <style>
 html,body{
@@ -70,6 +70,11 @@ font-weight:700;
 cursor:pointer;
 }
 
+#timerBox{
+font-size:18px;
+text-align:center;
+}
+
 .dock{
 position:fixed;
 bottom:90px;
@@ -126,7 +131,7 @@ object-fit:cover;
 <img src="copilot_image_1777179019874.jpeg"/>
 </div>
 
-<div class="card">PRO KITCHEN OS v5 - COOKBOOK AI CHEF</div>
+<div class="card">REAL CHEF AI v6</div>
 
 <div class="dock">
 <div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
@@ -144,7 +149,7 @@ object-fit:cover;
 <script>
 
 /* =========================
-INGREDIENTS
+100 INGREDIENTS
 ========================= */
 
 const ingredientItems=[
@@ -158,106 +163,106 @@ const ingredientItems=[
 let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-COOK PROFILES
+CHEF BRAIN (REAL LOGIC)
 ========================= */
 
-function getCookProfile(i){
+function pickMain(list){
+
+const proteins=["Chicken breast","Ground beef","Eggs","Shrimp","Salmon","Steak"];
+const starches=["Rice","Pasta","Potatoes","Rice noodles","Bread","Tortilla"];
+
+for(let i of list){
+if(proteins.includes(i)) return i;
+}
+
+for(let i of list){
+if(starches.includes(i)) return i;
+}
+
+return list[0];
+}
+
+function pickSides(list, main){
+return list.filter(i=>i!==main).slice(0,6);
+}
+
+/* =========================
+COOK TIMES
+========================= */
+
+function cookTime(i){
 
 const map={
-"Chicken breast":{time:"12–18 min",temp:"400°F"},
-"Steak":{time:"8–12 min",temp:"450°F"},
-"Eggs":{time:"3–6 min",temp:"300°F"},
-"Rice":{time:"15–20 min",temp:"200°F simmer"},
-"Pasta":{time:"8–12 min",temp:"212°F boil"},
-"Potatoes":{time:"25–35 min",temp:"425°F"},
-"Broccoli":{time:"6–10 min",temp:"350°F"},
-"Onions":{time:"8–12 min",temp:"350°F"},
-"Tomatoes":{time:"5–8 min",temp:"300°F"},
-"Shrimp":{time:"4–6 min",temp:"375°F"},
-"Salmon":{time:"10–14 min",temp:"400°F"}
+"Chicken breast":14,
+"Steak":10,
+"Eggs":5,
+"Rice":18,
+"Pasta":10,
+"Potatoes":30,
+"Shrimp":5,
+"Salmon":12
 };
 
-return map[i]||{time:"10–15 min",temp:"375°F"};
+return map[i]||12;
 }
 
 /* =========================
-CLASSIFY SYSTEM
-========================= */
-
-function classify(list){
-
-let c={protein:[],veg:[],starch:[],fat:[],acid:[],other:[]};
-
-list.forEach(i=>{
-
-if(["Chicken breast","Ground beef","Eggs","Shrimp","Salmon","Steak"].includes(i))
-c.protein.push(i);
-
-else if(["Broccoli","Onions","Tomatoes","Carrots","Spinach","Mushrooms","Bell peppers"].includes(i))
-c.veg.push(i);
-
-else if(["Rice","Pasta","Bread","Tortilla","Potatoes"].includes(i))
-c.starch.push(i);
-
-else if(["Butter","Olive oil","Cheese"].includes(i))
-c.fat.push(i);
-
-else if(["Lemon","Lime","Vinegar"].includes(i))
-c.acid.push(i);
-
-else c.other.push(i);
-
-});
-
-return c;
-}
-
-/* =========================
-COOKBOOK STYLE ENGINE
-========================= */
-
-function buildInstructions(main, sides, support){
-
-let mainP = getCookProfile(main);
-
-let text = `### Instructions\n\n`;
-
-text += `1. Prepare ${main} and all selected ingredients. Wash, chop, and organize everything before cooking for a smooth workflow.\n\n`;
-
-text += `2. Season ${main} with salt, pepper, and aromatics. Let it rest for 10–15 minutes to absorb flavor.\n\n`;
-
-text += `3. Heat cooking surface to ${mainP.temp}. Cook ${main} for ${mainP.time}, ensuring proper browning and doneness. Avoid overcrowding the pan.\n\n`;
-
-if(sides.length){
-text += `4. Meanwhile, cook side ingredients (${sides.join(", ")}) separately at medium heat (350–425°F). Stir frequently for even cooking.\n\n`;
-}
-
-if(support.length){
-text += `5. Add supporting flavors (${support.join(", ")}). Reduce heat to 200–250°F and gently combine to build depth of flavor.\n\n`;
-}
-
-text += `6. Combine all components carefully. Taste and adjust seasoning. Let rest for 2–3 minutes before serving.\n`;
-
-return text;
-}
-
-/* =========================
-RECIPE ENGINE
+RECIPE ENGINE (REAL CHEF LOGIC)
 ========================= */
 
 function generateAIRecipe(){
 
-let cat=classify(selected);
+let main = pickMain(selected);
+let sides = pickSides(selected, main);
 
-let main=cat.protein[0]||cat.starch[0]||"Mixed Dish";
-let sides=[...cat.veg,...cat.starch].filter(i=>i!==main);
-let support=[...cat.fat,...cat.acid];
+let steps=[];
+
+/* STEP 1 */
+steps.push({
+text:`Prepare ${main} and all ingredients. Wash, chop, and organize before cooking.`,
+time:5
+});
+
+/* STEP 2 */
+steps.push({
+text:`Cook ${main} as the main focus. Use proper heat and avoid overcrowding.`,
+time:cookTime(main)
+});
+
+/* STEP 3 */
+if(sides.length){
+steps.push({
+text:`Cook supporting ingredients (${sides.join(", ")}) separately.`,
+time:8
+});
+}
+
+/* STEP 4 */
+steps.push({
+text:`Combine everything and adjust seasoning (salt, acid, fat balance).`,
+time:3
+});
+
+/* STEP 5 */
+steps.push({
+text:`Plate dish and let rest before serving.`,
+time:2
+});
 
 return [{
-name:`Chef-Style ${main}`,
-instructions: buildInstructions(main, sides, support)
+name:`Chef Dish: ${main}`,
+steps
 }];
 }
+
+/* =========================
+TIMER SYSTEM
+========================= */
+
+let activeRecipe=null;
+let stepIndex=0;
+let timer=null;
+let timeLeft=0;
 
 /* =========================
 UI
@@ -286,26 +291,79 @@ show("ingredients");
 }
 
 function toggle(i){
-selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
+selected=selected.includes(i)
+? selected.filter(x=>x!==i)
+: [...selected,i];
+
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openIngredients();
 }
 
 function openRecipes(){
+activeRecipe = generateAIRecipe()[0];
+stepIndex=0;
 
-let r = generateAIRecipe()[0];
+renderStep();
+show("detail");
+}
+
+function renderStep(){
+
+let step = activeRecipe.steps[stepIndex];
 
 document.getElementById("detail").innerHTML=`
-<div class="header">${r.name}</div>
+<div class="header">${activeRecipe.name}</div>
 
 <div class="card">
-${r.instructions}
+<b>Step ${stepIndex+1}</b><br><br>
+${step.text}<br><br>
+⏱ Time: ${step.time} min
 </div>
 
-<div class="btn" onclick="show('home')">Back Home</div>
-`;
+<div class="card" id="timerBox">Ready</div>
 
-show("detail");
+<div class="btn" onclick="startTimer()">Start</div>
+<div class="btn" onclick="nextStep()">Next</div>
+`;
+}
+
+/* =========================
+REAL TIMER
+========================= */
+
+function startTimer(){
+
+clearInterval(timer);
+
+let step = activeRecipe.steps[stepIndex];
+timeLeft = step.time * 60;
+
+timer = setInterval(()=>{
+
+timeLeft--;
+
+let m=Math.floor(timeLeft/60);
+let s=timeLeft%60;
+
+document.getElementById("timerBox").innerHTML=
+`⏱ ${m}:${s.toString().padStart(2,"0")}`;
+
+if(timeLeft<=0){
+clearInterval(timer);
+document.getElementById("timerBox").innerHTML="✔ Done";
+}
+},1000);
+}
+
+function nextStep(){
+clearInterval(timer);
+
+if(stepIndex<activeRecipe.steps.length-1){
+stepIndex++;
+renderStep();
+}else{
+show("home");
+}
 }
 
 openIngredients();
