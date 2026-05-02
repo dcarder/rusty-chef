@@ -85,16 +85,6 @@ font-weight:700;
 cursor:pointer;
 }
 
-.back{
-margin-top:10px;
-padding:10px;
-border-radius:10px;
-text-align:center;
-cursor:pointer;
-background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.2);
-}
-
 .dock{
 position:fixed;
 bottom:90px;
@@ -126,7 +116,6 @@ background:linear-gradient(135deg,#4facfe,#00f2fe);
 color:black;
 }
 
-/* BACKGROUND */
 #homeBg{
 position:fixed;
 inset:0;
@@ -152,15 +141,14 @@ object-fit:cover;
     <img src="copilot_image_1777179019874.jpeg" />
   </div>
 
-  <div class="header">🤖 Rusty AI Chef</div>
-
-  <div class="card">AI Recipe Generator + 100 Ingredients System</div>
+  <div class="card">AI Recipe Generator + Voice Cooking Assistant</div>
 
   <div class="dock">
     <div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
     <div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
     <div class="dockBtn" onclick="goHome()">🏠<span>Home</span></div>
   </div>
+
 </div>
 
 <div id="ingredients" class="page"></div>
@@ -172,7 +160,23 @@ object-fit:cover;
 <script>
 
 /* =========================
-   100 INGREDIENTS (UNCHANGED)
+   VOICE CHEF ENGINE
+========================= */
+
+let voiceEnabled = true;
+
+function speak(text){
+if(!voiceEnabled) return;
+window.speechSynthesis.cancel();
+let msg = new SpeechSynthesisUtterance(text);
+msg.rate = 1;
+msg.pitch = 1;
+msg.volume = 1;
+window.speechSynthesis.speak(msg);
+}
+
+/* =========================
+   INGREDIENTS
 ========================= */
 
 const ingredientItems = [
@@ -191,7 +195,7 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
 
 /* =========================
-   🧠 REAL AI RECIPE GENERATOR
+   AI RECIPE ENGINE
 ========================= */
 
 function generateAIRecipe(){
@@ -201,42 +205,38 @@ return [{
 name:"Select More Ingredients",
 time:0,
 ingredients:[],
-steps:["Pick at least 3 ingredients to generate an AI recipe."]
+steps:[{text:"Pick at least 3 ingredients.",time:0}]
 }];
 }
 
-const methods = ["Grilled","Pan-Seared","Stir-Fry","Baked","One-Pot","Roasted"];
-const cuisines = ["Italian","Asian","Mexican","American","Mediterranean"];
-
-let shuffled = [...selected].sort(()=>Math.random()-0.5);
-let used = shuffled.slice(0,6);
-
-let method = methods[Math.floor(Math.random()*methods.length)];
-let cuisine = cuisines[Math.floor(Math.random()*cuisines.length)];
-
-let protein = used.find(i =>
+let protein = selected.find(i =>
 i.includes("Chicken") || i.includes("Beef") ||
 i.includes("Shrimp") || i.includes("Salmon") ||
 i.includes("Pork") || i.includes("Turkey")
 ) || "Mixed Protein";
 
 return [{
-name:`${method} ${protein} ${cuisine} Bowl`,
-time: 20 + Math.floor(Math.random()*35),
-ingredients: used,
+name:`Chef Style ${protein} Dish`,
+time:30,
+ingredients:selected.slice(0,6),
 steps:[
-`Gather ingredients: ${used.join(", ")}.`,
-`Prepare all items by washing, chopping, and seasoning lightly.`,
-`Heat pan or pot to medium-high heat (350–400°F).`,
-`Add oil and cook protein (${protein}) until browned on all sides.`,
-`Add vegetables and aromatics from selected ingredients.`,
-`Season with salt, pepper, and sauces that match ${cuisine} style.`,
-`Stir and cook for 10–15 minutes until everything is tender and combined.`,
-`Taste and adjust seasoning balance (salt, acid, spice).`,
-`Let rest for 2 minutes before serving for best flavor absorption.`
+{text:`Prep ingredients.`,time:120},
+{text:`Heat pan to 375°F.`,time:60},
+{text:`Cook ${protein} until fully done.`,time:420},
+{text:`Add vegetables and combine.`,time:300},
+{text:`Finish seasoning and plating.`,time:120}
 ]
 }];
 }
+
+/* =========================
+   TIMER + VOICE COOKING
+========================= */
+
+let currentStep = 0;
+let activeRecipe = null;
+let timer = null;
+let timeLeft = 0;
 
 /* =========================
    UI
@@ -248,8 +248,8 @@ document.getElementById(id).classList.add("active");
 }
 
 function openIngredients(){
-let html=`<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
-<div class="header">🧺 Ingredients</div>`;
+
+let html=`<div class="header">🧺 Ingredients</div>`;
 
 ingredientItems.forEach(i=>{
 let on=selected.includes(i);
@@ -257,15 +257,16 @@ html+=`<div class="item ${on?'selected':''}" onclick="toggle('${i}')">
 <span>${i}</span><span>${on?'✔':''}</span></div>`;
 });
 
-html+=`<div class="btn" onclick="openRecipes()">🍳 Generate AI Recipe</div>`;
+html+=`<div class="btn" onclick="openRecipes()">🍳 Generate Recipe</div>`;
+
 document.getElementById("ingredients").innerHTML=html;
 show("ingredients");
 }
 
 function toggle(i){
 selected=selected.includes(i)
-? selected.filter(x=>x!==i)
-: [...selected,i];
+?selected.filter(x=>x!==i)
+:[...selected,i];
 
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openIngredients();
@@ -273,39 +274,97 @@ openIngredients();
 
 function openRecipes(){
 
-let list = generateAIRecipe();
-window.generated = list;
+let list=generateAIRecipe();
+activeRecipe=list[0];
 
-let html=`<div class="topBar"><div class="homeBtn" onclick="goHome()">🏠 Home</div></div>
-<div class="header">🍳 AI Generated Recipe</div>`;
+let html=`<div class="header">🍳 Recipe</div>`;
 
-list.forEach(r=>{
 html+=`
-<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>
-${r.time} min
+<div class="card" onclick="openRecipe()">
+<b>${activeRecipe.name}</b><br>${activeRecipe.time} min
 </div>`;
-});
 
 document.getElementById("recipes").innerHTML=html;
 show("recipes");
 }
 
-function openRecipe(name){
+function openRecipe(){
+currentStep=0;
+renderStep();
+show("detail");
+}
 
-let r = window.generated.find(x=>x.name===name);
+/* =========================
+   STEP + VOICE + TIMER
+========================= */
 
-let html=`<div class="topBar"><div class="homeBtn" onclick="openRecipes()">⬅ Back</div></div>
-<div class="header">${r.name}</div>
+function renderStep(){
 
-<div class="card"><b>Ingredients:</b><br>${r.ingredients.join("<br>")}</div>`;
+let step = activeRecipe.steps[currentStep];
 
-r.steps.forEach((s,i)=>{
-html+=`<div class="card"><b>Step ${i+1}</b><br><br>${s}</div>`;
-});
+speak(step.text);
+
+let html=`
+<div class="header">${activeRecipe.name}</div>
+
+<div class="card">
+<b>Step ${currentStep+1}</b><br><br>
+${step.text}
+</div>
+
+<div class="card" id="timerBox">
+⏱ ${formatTime(step.time)}
+</div>
+
+<div class="btn" onclick="startTimer()">▶ Start</div>
+<div class="btn" onclick="nextStep()">⏭ Next</div>
+`;
 
 document.getElementById("detail").innerHTML=html;
-show("detail");
+}
+
+function startTimer(){
+
+clearInterval(timer);
+
+let step = activeRecipe.steps[currentStep];
+timeLeft = step.time;
+
+updateTimer();
+
+timer = setInterval(()=>{
+timeLeft--;
+updateTimer();
+
+if(timeLeft <= 0){
+clearInterval(timer);
+document.getElementById("timerBox").innerHTML="✅ Done";
+speak("Step complete");
+}
+},1000);
+}
+
+function updateTimer(){
+document.getElementById("timerBox").innerHTML="⏱ "+formatTime(timeLeft);
+}
+
+function formatTime(t){
+let m=Math.floor(t/60);
+let s=t%60;
+return `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function nextStep(){
+clearInterval(timer);
+
+if(currentStep < activeRecipe.steps.length-1){
+currentStep++;
+speak("Next step");
+renderStep();
+}else{
+speak("Recipe complete. Enjoy your meal.");
+goHome();
+}
 }
 
 function goHome(){
