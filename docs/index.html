@@ -3,119 +3,54 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Pro Kitchen OS v6</title>
+<title>Smart Kitchen OS v9</title>
 
 <style>
 html,body{
 margin:0;
 padding:0;
 height:100%;
-overflow:hidden;
-font-family:Arial;
-color:white;
 background:black;
+color:white;
+font-family:Arial;
 }
 
-#app{position:fixed;inset:0;}
-
-.page{
-display:none;
-height:100%;
-overflow:auto;
-padding:20px;
-}
-
+.page{display:none;padding:20px;}
 .page.active{display:block;}
 
 .header{
+text-align:center;
 font-size:22px;
 font-weight:700;
-text-align:center;
 margin-bottom:10px;
 }
 
 .card{
 background:rgba(255,255,255,0.08);
 border:1px solid rgba(255,255,255,0.15);
-border-radius:16px;
+border-radius:14px;
 padding:14px;
 margin:10px 0;
 white-space:pre-wrap;
 }
 
 .item{
-display:flex;
-justify-content:space-between;
-padding:12px;
+padding:10px;
 margin:6px 0;
-border-radius:12px;
-border:1px solid rgba(255,255,255,0.12);
-background:rgba(255,255,255,0.05);
+border-radius:10px;
+border:1px solid rgba(255,255,255,0.2);
 cursor:pointer;
-}
-
-.item.selected{
-background:rgba(79,172,254,0.25);
-border:1px solid rgba(79,172,254,0.6);
 }
 
 .btn{
-margin-top:15px;
 padding:14px;
-border-radius:14px;
-text-align:center;
-background:linear-gradient(135deg,#4facfe,#00f2fe);
+background:#4facfe;
 color:black;
 font-weight:700;
-cursor:pointer;
-}
-
-#timerBox{
-font-size:18px;
 text-align:center;
-}
-
-.dock{
-position:fixed;
-bottom:90px;
-left:0;
-right:0;
-display:flex;
-justify-content:center;
-gap:20px;
-}
-
-.dockBtn{
-width:100px;
-height:100px;
-border-radius:20px;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
+border-radius:12px;
+margin-top:10px;
 cursor:pointer;
-font-weight:700;
-background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.2);
-}
-
-.dockBtn.large{
-width:130px;
-height:130px;
-background:linear-gradient(135deg,#4facfe,#00f2fe);
-color:black;
-}
-
-#homeBg{
-position:fixed;
-inset:0;
-z-index:-1;
-}
-
-#homeBg img{
-width:100%;
-height:100%;
-object-fit:cover;
 }
 </style>
 </head>
@@ -124,249 +59,180 @@ object-fit:cover;
 
 <div id="app">
 
-<!-- HOME -->
 <div id="home" class="page active">
-
-<div id="homeBg">
-<img src="copilot_image_1777179019874.jpeg"/>
+<div class="header">Smart Kitchen OS v9</div>
+<div class="btn" onclick="openPantry()">Open Pantry</div>
 </div>
 
-<div class="card">REAL CHEF AI v6</div>
-
-<div class="dock">
-<div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
-<div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
-</div>
-
-</div>
-
-<div id="ingredients" class="page"></div>
-<div id="recipes" class="page"></div>
-<div id="detail" class="page"></div>
+<div id="pantry" class="page"></div>
+<div id="results" class="page"></div>
+<div id="recipe" class="page"></div>
 
 </div>
 
 <script>
 
 /* =========================
-100 INGREDIENTS
+PANTRY STATE
 ========================= */
 
-const ingredientItems=[
-"Chicken breast","Ground beef","Eggs","Rice","Pasta","Cheese","Butter","Garlic",
-"Onions","Tomatoes","Potatoes","Broccoli","Spinach","Shrimp","Salmon","Steak",
-"Olive oil","Soy sauce","Lemon","Lime","Rice noodles","Tortilla","Bread",
-"Carrots","Bell peppers","Mushrooms","Chicken broth","Beef broth","Hot sauce",
-"BBQ sauce","Teriyaki sauce","Sesame oil","Vinegar","Sugar","Salt","Pepper"
+let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
+
+/* =========================
+RECIPES DATABASE (25 REAL MEALS)
+========================= */
+
+const recipes = [
+{name:"Chicken Fried Rice",ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"]},
+{name:"Garlic Pasta",ingredients:["Pasta","Garlic","Butter","Salt","Pepper"]},
+{name:"Omelette",ingredients:["Eggs","Cheese","Onions","Tomatoes"]},
+{name:"Chicken Bowl",ingredients:["Chicken breast","Rice","Broccoli","Soy sauce"]},
+{name:"Beef Stir Fry",ingredients:["Ground beef","Soy sauce","Onions","Bell peppers"]},
+{name:"Tuna Rice Bowl",ingredients:["Rice","Tuna","Lemon"]},
+{name:"Baked Potatoes",ingredients:["Potatoes","Butter","Cheese"]},
+{name:"Chicken Soup",ingredients:["Chicken broth","Chicken breast","Carrots","Onions"]},
+{name:"Veggie Stir Fry",ingredients:["Broccoli","Carrots","Onions","Soy sauce"]},
+{name:"Chicken Quesadilla",ingredients:["Chicken breast","Tortilla","Cheese"]},
+{name:"Shrimp Rice Bowl",ingredients:["Shrimp","Rice","Garlic"]},
+{name:"Salmon Plate",ingredients:["Salmon","Lemon","Salt"]},
+{name:"Fried Rice Simple",ingredients:["Rice","Eggs","Soy sauce"]},
+{name:"Garlic Butter Pasta",ingredients:["Pasta","Butter","Garlic"]},
+{name:"BBQ Chicken Bowl",ingredients:["Chicken breast","BBQ sauce","Rice"]},
+{name:"Teriyaki Chicken",ingredients:["Chicken breast","Teriyaki sauce","Rice"]},
+{name:"Cheesy Rice",ingredients:["Rice","Cheese","Butter"]},
+{name:"Chicken Garlic Rice",ingredients:["Chicken breast","Rice","Garlic","Soy sauce"]},
+{name:"Egg Scramble",ingredients:["Eggs","Butter","Salt"]},
+{name:"Chicken Pasta",ingredients:["Chicken breast","Pasta","Butter"]},
+{name:"Veggie Rice",ingredients:["Rice","Carrots","Broccoli"]},
+{name:"Steak Plate",ingredients:["Steak","Salt","Pepper"]},
+{name:"Chicken Wrap",ingredients:["Chicken breast","Tortilla","Cheese"]},
+{name:"Simple Soup",ingredients:["Chicken broth","Carrots","Onions"]},
+{name:"Rice & Egg Bowl",ingredients:["Rice","Eggs","Soy sauce"]}
 ];
 
-let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
-
 /* =========================
-CHEF BRAIN (REAL LOGIC)
+MATCH SYSTEM
 ========================= */
 
-function pickMain(list){
-
-const proteins=["Chicken breast","Ground beef","Eggs","Shrimp","Salmon","Steak"];
-const starches=["Rice","Pasta","Potatoes","Rice noodles","Bread","Tortilla"];
-
-for(let i of list){
-if(proteins.includes(i)) return i;
+function score(r){
+let match = r.ingredients.filter(i=>selected.includes(i)).length;
+let missing = r.ingredients.filter(i=>!selected.includes(i));
+return {...r,match,missing};
 }
 
-for(let i of list){
-if(starches.includes(i)) return i;
-}
-
-return list[0];
-}
-
-function pickSides(list, main){
-return list.filter(i=>i!==main).slice(0,6);
+function topRecipes(){
+return recipes
+.map(score)
+.sort((a,b)=>b.match-a.match)
+.slice(0,3);
 }
 
 /* =========================
-COOK TIMES
+EXPORT ENGINE (INSTACART / WALMART STYLE)
 ========================= */
 
-function cookTime(i){
+function buildExportList(recipe){
 
-const map={
-"Chicken breast":14,
-"Steak":10,
-"Eggs":5,
-"Rice":18,
-"Pasta":10,
-"Potatoes":30,
-"Shrimp":5,
-"Salmon":12
-};
+let missing = recipe.ingredients.filter(i=>!selected.includes(i));
 
-return map[i]||12;
+return missing.map(i => {
+return `${i} - grocery item - search fresh`;
+}).join("\n");
 }
 
 /* =========================
-RECIPE ENGINE (REAL CHEF LOGIC)
+COPY TO CLIPBOARD
 ========================= */
 
-function generateAIRecipe(){
-
-let main = pickMain(selected);
-let sides = pickSides(selected, main);
-
-let steps=[];
-
-/* STEP 1 */
-steps.push({
-text:`Prepare ${main} and all ingredients. Wash, chop, and organize before cooking.`,
-time:5
-});
-
-/* STEP 2 */
-steps.push({
-text:`Cook ${main} as the main focus. Use proper heat and avoid overcrowding.`,
-time:cookTime(main)
-});
-
-/* STEP 3 */
-if(sides.length){
-steps.push({
-text:`Cook supporting ingredients (${sides.join(", ")}) separately.`,
-time:8
-});
+function copyText(text){
+navigator.clipboard.writeText(text);
+alert("🧾 Shopping list copied!");
 }
-
-/* STEP 4 */
-steps.push({
-text:`Combine everything and adjust seasoning (salt, acid, fat balance).`,
-time:3
-});
-
-/* STEP 5 */
-steps.push({
-text:`Plate dish and let rest before serving.`,
-time:2
-});
-
-return [{
-name:`Chef Dish: ${main}`,
-steps
-}];
-}
-
-/* =========================
-TIMER SYSTEM
-========================= */
-
-let activeRecipe=null;
-let stepIndex=0;
-let timer=null;
-let timeLeft=0;
 
 /* =========================
 UI
 ========================= */
+
+function openPantry(){
+
+let html=`<div class="header">Pantry</div>`;
+
+selected.forEach(i=>{
+html+=`<div class="item">${i}</div>`;
+});
+
+html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
+
+document.getElementById("pantry").innerHTML=html;
+show("pantry");
+}
+
+function showMatches(){
+
+let top = topRecipes();
+
+let html=`<div class="header">Top Recipes</div>`;
+
+top.forEach(r=>{
+html+=`
+<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b><br>
+Match: ${r.match}<br>
+Missing: ${r.missing.join(", ")||"None"}
+</div>`;
+});
+
+document.getElementById("results").innerHTML=html;
+show("results");
+}
+
+function openRecipe(name){
+
+let r = recipes.find(x=>x.name===name);
+
+let instructions = `### Instructions
+
+1. Gather ingredients: ${r.ingredients.join(", ")}
+2. Prep all ingredients (wash, chop, organize)
+3. Cook main components using proper heat
+4. Combine and season properly
+5. Serve hot and fresh
+`;
+
+let missing = r.ingredients.filter(i=>!selected.includes(i));
+
+let groceryText = missing.length
+? missing.join(", ")
+: "You already have everything!";
+
+let exportList = buildExportList(r);
+
+document.getElementById("recipe").innerHTML=`
+<div class="header">${r.name}</div>
+
+<div class="card">${instructions}</div>
+
+<div class="card">
+🛒 Grocery List<br><br>
+${groceryText}
+</div>
+
+<div class="btn" onclick="copyText(exportList)">
+🧾 Export to Instacart / Walmart
+</div>
+
+<div class="btn" onclick="openPantry()">Back</div>
+`;
+
+show("recipe");
+}
 
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 document.getElementById(id).classList.add("active");
 }
 
-function openIngredients(){
-
-let html=`<div class="header">Ingredients</div>`;
-
-ingredientItems.forEach(i=>{
-let on=selected.includes(i);
-html+=`<div class="item ${on?'selected':''}" onclick="toggle('${i}')">
-${i} ${on?'✔':''}
-</div>`;
-});
-
-html+=`<div class="btn" onclick="openRecipes()">Generate Recipe</div>`;
-
-document.getElementById("ingredients").innerHTML=html;
-show("ingredients");
-}
-
-function toggle(i){
-selected=selected.includes(i)
-? selected.filter(x=>x!==i)
-: [...selected,i];
-
-localStorage.setItem("ingredients",JSON.stringify(selected));
-openIngredients();
-}
-
-function openRecipes(){
-activeRecipe = generateAIRecipe()[0];
-stepIndex=0;
-
-renderStep();
-show("detail");
-}
-
-function renderStep(){
-
-let step = activeRecipe.steps[stepIndex];
-
-document.getElementById("detail").innerHTML=`
-<div class="header">${activeRecipe.name}</div>
-
-<div class="card">
-<b>Step ${stepIndex+1}</b><br><br>
-${step.text}<br><br>
-⏱ Time: ${step.time} min
-</div>
-
-<div class="card" id="timerBox">Ready</div>
-
-<div class="btn" onclick="startTimer()">Start</div>
-<div class="btn" onclick="nextStep()">Next</div>
-`;
-}
-
-/* =========================
-REAL TIMER
-========================= */
-
-function startTimer(){
-
-clearInterval(timer);
-
-let step = activeRecipe.steps[stepIndex];
-timeLeft = step.time * 60;
-
-timer = setInterval(()=>{
-
-timeLeft--;
-
-let m=Math.floor(timeLeft/60);
-let s=timeLeft%60;
-
-document.getElementById("timerBox").innerHTML=
-`⏱ ${m}:${s.toString().padStart(2,"0")}`;
-
-if(timeLeft<=0){
-clearInterval(timer);
-document.getElementById("timerBox").innerHTML="✔ Done";
-}
-},1000);
-}
-
-function nextStep(){
-clearInterval(timer);
-
-if(stepIndex<activeRecipe.steps.length-1){
-stepIndex++;
-renderStep();
-}else{
-show("home");
-}
-}
-
-openIngredients();
+openPantry();
 
 </script>
 
