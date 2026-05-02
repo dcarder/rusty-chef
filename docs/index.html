@@ -31,7 +31,6 @@ border-radius:14px;
 padding:14px;
 margin:10px 0;
 border:1px solid rgba(255,255,255,0.15);
-white-space:pre-wrap;
 }
 
 .item{
@@ -58,16 +57,13 @@ margin-top:10px;
 cursor:pointer;
 }
 
-/* =========================
-🏠 HOME PRO OS ANIMATION
-========================= */
-
-#home{
-position:relative;
-overflow:hidden;
+.timer{
+text-align:center;
+font-size:20px;
+margin-top:10px;
 }
 
-/* background image */
+/* HOME ANIMATION */
 #homeBg{
 position:fixed;
 inset:0;
@@ -87,7 +83,6 @@ from{opacity:0; transform:scale(1.05);}
 to{opacity:1; transform:scale(1);}
 }
 
-/* logo */
 #introLogo{
 position:absolute;
 top:38%;
@@ -107,7 +102,6 @@ text-align:center;
 100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
 }
 
-/* bottom buttons */
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -121,19 +115,12 @@ animation-delay:1.2s;
 }
 
 @keyframes dockIn{
-from{transform:translateY(80px); opacity:0;}
-to{transform:translateY(0); opacity:1;}
+from{transform:translateY(80px);opacity:0;}
+to{transform:translateY(0);opacity:1;}
 }
 
 .bottomDock .btn{
 width:160px;
-}
-
-/* timer */
-.timer{
-text-align:center;
-font-size:20px;
-margin-top:10px;
 }
 </style>
 </head>
@@ -142,7 +129,7 @@ margin-top:10px;
 
 <div id="app">
 
-<!-- 🏠 HOME (UNCHANGED LOGIC, ONLY UI LAYER ADDED) -->
+<!-- 🏠 HOME -->
 <div id="home" class="page active">
 
   <div id="homeBg">
@@ -151,9 +138,9 @@ margin-top:10px;
 
   <div id="introLogo">🍳 Smart Kitchen OS</div>
 
-  <div class="bottomDock" id="dock">
-    <div class="btn" onclick="openPantry()">🧺 Pantry (100 Ingredients)</div>
-    <div class="btn" onclick="showMatches()">🍳 Smart Recipes</div>
+  <div class="bottomDock">
+    <div class="btn" onclick="openPantry()">🧺 Pantry</div>
+    <div class="btn" onclick="showMatches()">🍳 Recipes</div>
   </div>
 
 </div>
@@ -172,7 +159,7 @@ margin-top:10px;
 <script>
 
 /* =========================
-UNCHANGED CORE DATA
+100 INGREDIENTS
 ========================= */
 
 const ingredientItems = [
@@ -191,7 +178,7 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-RECIPES (UNCHANGED)
+25 REAL RECIPES
 ========================= */
 
 const recipes = [
@@ -199,33 +186,148 @@ const recipes = [
 name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
 steps:[
-{t:"Prep ingredients.",time:5,temp:"Room"},
-{t:"Cook chicken at 375°F.",time:8,temp:"375°F"},
-{t:"Stir-fry vegetables.",time:5,temp:"350°F"},
-{t:"Add rice + soy sauce.",time:7,temp:"400°F"},
-{t:"Rest.",time:2,temp:"Off heat"}
+{t:"Prep ingredients",time:5,temp:"Room"},
+{t:"Cook chicken",time:8,temp:"375°F"},
+{t:"Stir-fry vegetables",time:5,temp:"350°F"},
+{t:"Add rice + soy sauce",time:7,temp:"400°F"}
 ]
 },
 {
 name:"Garlic Pasta",
-ingredients:["Pasta","Garlic","Butter","Salt","Pepper"],
+ingredients:["Pasta","Garlic","Butter","Salt","Pepper","Parmesan"],
 steps:[
-{t:"Boil pasta 212°F.",time:10,temp:"212°F"},
-{t:"Melt butter 325°F.",time:2,temp:"325°F"},
-{t:"Cook garlic.",time:2,temp:"300°F"},
-{t:"Mix pasta.",time:3,temp:"Low heat"},
-{t:"Serve.",time:1,temp:"Off heat"}
+{t:"Boil pasta",time:10,temp:"212°F"},
+{t:"Melt butter",time:2,temp:"325°F"},
+{t:"Cook garlic",time:2,temp:"300°F"}
 ]
+},
+{
+name:"Beef Stir Fry",
+ingredients:["Ground beef","Soy sauce","Onions","Bell peppers","Rice"],
+steps:[{t:"Cook beef",time:8,temp:"375°F"}]
+},
+{
+name:"Chicken Tacos",
+ingredients:["Chicken breast","Tortilla","Cheese","Tomatoes","Onions"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Shrimp Pasta",
+ingredients:["Shrimp","Pasta","Garlic","Butter"],
+steps:[{t:"Cook shrimp",time:6,temp:"350°F"}]
+},
+{
+name:"Omelette",
+ingredients:["Eggs","Cheese","Butter"],
+steps:[{t:"Cook eggs",time:5,temp:"325°F"}]
+},
+{
+name:"Grilled Cheese",
+ingredients:["Bread","Cheddar","Butter"],
+steps:[{t:"Grill sandwich",time:4,temp:"325°F"}]
+},
+{
+name:"Chicken Soup",
+ingredients:["Chicken breast","Chicken broth","Carrots","Onions"],
+steps:[{t:"Simmer soup",time:12,temp:"212°F"}]
+},
+{
+name:"BBQ Chicken Bowl",
+ingredients:["Chicken breast","BBQ sauce","Rice"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Veggie Stir Fry",
+ingredients:["Broccoli","Carrots","Bell peppers","Soy sauce"],
+steps:[{t:"Stir fry",time:8,temp:"400°F"}]
+},
+
+{
+name:"Teriyaki Chicken",
+ingredients:["Chicken breast","Teriyaki sauce","Rice"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Tuna Salad",
+ingredients:["Tuna","Mayonnaise","Onions"],
+steps:[{t:"Mix",time:5,temp:"No heat"}]
+},
+{
+name:"Chicken Wrap",
+ingredients:["Chicken breast","Tortilla","Lettuce"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Garlic Rice",
+ingredients:["Rice","Garlic","Butter"],
+steps:[{t:"Cook rice",time:12,temp:"212°F"}]
+},
+{
+name:"Sweet Potato Bowl",
+ingredients:["Sweet potato","Butter"],
+steps:[{t:"Bake",time:25,temp:"400°F"}]
+},
+
+{
+name:"Egg Fried Noodles",
+ingredients:["Ramen noodles","Eggs","Soy sauce"],
+steps:[{t:"Cook noodles",time:5,temp:"212°F"}]
+},
+{
+name:"Cheesy Rice",
+ingredients:["Rice","Cheese"],
+steps:[{t:"Cook rice",time:12,temp:"212°F"}]
+},
+{
+name:"Chicken Quesadilla",
+ingredients:["Chicken breast","Tortilla","Cheese"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Cream Pasta",
+ingredients:["Pasta","Cream","Butter"],
+steps:[{t:"Cook pasta",time:10,temp:"212°F"}]
+},
+{
+name:"Garlic Shrimp",
+ingredients:["Shrimp","Garlic"],
+steps:[{t:"Cook shrimp",time:6,temp:"350°F"}]
+},
+
+{
+name:"Pork Fried Rice",
+ingredients:["Pork chops","Rice","Eggs"],
+steps:[{t:"Cook pork",time:8,temp:"375°F"}]
+},
+{
+name:"Veg Omelette",
+ingredients:["Eggs","Spinach","Cheese"],
+steps:[{t:"Cook eggs",time:6,temp:"325°F"}]
+},
+{
+name:"Chicken Bowl",
+ingredients:["Chicken breast","Broccoli","Rice"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Simple Pasta",
+ingredients:["Pasta","Tomatoes","Garlic"],
+steps:[{t:"Boil pasta",time:10,temp:"212°F"}]
+},
+{
+name:"Chicken Sandwich",
+ingredients:["Chicken breast","Bread","Cheese"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
 }
 ];
 
 /* =========================
-MATCH ENGINE (UNCHANGED)
+MATCH ENGINE
 ========================= */
 
 function score(r){
-let match = r.ingredients.filter(i=>selected.includes(i)).length;
-let missing = r.ingredients.filter(i=>!selected.includes(i));
+let match=r.ingredients.filter(i=>selected.includes(i)).length;
+let missing=r.ingredients.filter(i=>!selected.includes(i));
 return {...r,match,missing};
 }
 
@@ -236,8 +338,44 @@ return recipes.map(score)
 }
 
 /* =========================
-COOKING ENGINE (UNCHANGED)
+NAV
 ========================= */
+
+function show(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+
+function openPantry(){
+let html=`<div class="header">🧺 Pantry</div>`;
+ingredientItems.forEach(i=>{
+let on=selected.includes(i);
+html+=`<div class="item ${on?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
+});
+html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
+document.getElementById("pantry").innerHTML=html;
+show("pantry");
+}
+
+function toggle(i){
+selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
+localStorage.setItem("ingredients",JSON.stringify(selected));
+openPantry();
+}
+
+function showMatches(){
+let top=topRecipes();
+let html=`<div class="header">🍳 Top Recipes</div>`;
+top.forEach(r=>{
+html+=`<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b><br>
+Match: ${r.match}<br>
+Missing: ${r.missing.join(", ")||"None"}
+</div>`;
+});
+document.getElementById("results").innerHTML=html;
+show("results");
+}
 
 let current=null;
 let stepIndex=0;
@@ -245,16 +383,14 @@ let timer=null;
 let timeLeft=0;
 
 function openRecipe(name){
-
-current = recipes.find(r=>r.name===name);
+current=recipes.find(r=>r.name===name);
 stepIndex=0;
 renderStep();
 show("recipe");
 }
 
 function renderStep(){
-
-let step = current.steps[stepIndex];
+let step=current.steps[stepIndex];
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
@@ -275,22 +411,15 @@ ${step.t}<br><br>
 }
 
 function startTimer(){
-
 clearInterval(timer);
+let step=current.steps[stepIndex];
+timeLeft=step.time*60;
 
-let step = current.steps[stepIndex];
-timeLeft = step.time * 60;
-
-timer = setInterval(()=>{
-
+timer=setInterval(()=>{
 timeLeft--;
-
 let m=Math.floor(timeLeft/60);
 let s=timeLeft%60;
-
-document.getElementById("timerBox").innerHTML=
-`⏱ ${m}:${s.toString().padStart(2,"0")}`;
-
+document.getElementById("timerBox").innerHTML=`⏱ ${m}:${s.toString().padStart(2,"0")}`;
 if(timeLeft<=0){
 clearInterval(timer);
 document.getElementById("timerBox").innerHTML="✔ Done";
@@ -300,73 +429,15 @@ document.getElementById("timerBox").innerHTML="✔ Done";
 
 function nextStep(){
 clearInterval(timer);
-
-if(stepIndex < current.steps.length-1){
+if(stepIndex<current.steps.length-1){
 stepIndex++;
 renderStep();
 }else{
-document.getElementById("recipe").innerHTML +=
-`<div class="card">🎉 Recipe Complete</div>`;
+document.getElementById("recipe").innerHTML+=`<div class="card">Done</div>`;
 }
 }
 
-/* =========================
-PANTRY + NAV (UNCHANGED)
-========================= */
-
-function openPantry(){
-let html=`<div class="header">🧺 Pantry</div>`;
-
-ingredientItems.forEach(i=>{
-let on = selected.includes(i);
-
-html+=`
-<div class="item ${on?'selected':''}" onclick="toggle('${i}')">
-${i} ${on?'✔':''}
-</div>`;
-});
-
-html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
-document.getElementById("pantry").innerHTML=html;
-show("pantry");
-}
-
-function toggle(i){
-selected = selected.includes(i)
-? selected.filter(x=>x!==i)
-: [...selected,i];
-
-localStorage.setItem("ingredients",JSON.stringify(selected));
-openPantry();
-}
-
-function showMatches(){
-
-let top = topRecipes();
-
-let html=`<div class="header">🍳 Top Recipes</div>`;
-
-top.forEach(r=>{
-html+=`
-<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>
-Match: ${r.match}<br>
-Missing: ${r.missing.join(", ")||"None"}
-</div>`;
-});
-
-document.getElementById("results").innerHTML=html;
-show("results");
-}
-
-function show(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-}
-
-function goHome(){
-show("home");
-}
+function goHome(){show("home");}
 
 </script>
 
