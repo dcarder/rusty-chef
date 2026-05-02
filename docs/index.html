@@ -36,22 +36,6 @@ text-shadow:0 0 10px rgba(79,172,254,0.8);
 margin-bottom:10px;
 }
 
-.topBar{
-display:flex;
-justify-content:space-between;
-margin-bottom:10px;
-gap:10px;
-}
-
-.homeBtn{
-padding:8px 12px;
-border-radius:10px;
-cursor:pointer;
-background:rgba(255,255,255,0.12);
-border:1px solid rgba(255,255,255,0.2);
-font-size:12px;
-}
-
 .card{
 background:rgba(255,255,255,0.08);
 padding:14px;
@@ -73,18 +57,45 @@ cursor:pointer;
 background:rgba(79,172,254,0.3);
 }
 
-.btn{
-margin-top:10px;
-padding:12px;
-background:linear-gradient(135deg,#4facfe,#00f2fe);
-color:black;
-font-weight:700;
-text-align:center;
-border-radius:12px;
-cursor:pointer;
+/* 🔥 RESTORED DOCK */
+.dock{
+position:fixed;
+bottom:90px;
+left:0;
+right:0;
+display:flex;
+justify-content:center;
+gap:20px;
 }
 
-/* HOME BACKGROUND */
+.dockBtn{
+width:85px;
+height:85px;
+border-radius:50%;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+background:rgba(255,255,255,0.1);
+border:1px solid rgba(255,255,255,0.2);
+cursor:pointer;
+font-size:22px;
+}
+
+.dockBtn.large{
+width:110px;
+height:110px;
+background:rgba(79,172,254,0.25);
+border:1px solid rgba(79,172,254,0.6);
+}
+
+.dockBtn span{
+font-size:10px;
+opacity:0.8;
+margin-top:5px;
+}
+
+/* HOME BG */
 #homeBg{
 position:fixed;
 inset:0;
@@ -95,6 +106,17 @@ z-index:-1;
 width:100%;
 height:100%;
 object-fit:cover;
+}
+
+.btn{
+margin-top:10px;
+padding:12px;
+background:linear-gradient(135deg,#4facfe,#00f2fe);
+color:black;
+font-weight:700;
+text-align:center;
+border-radius:12px;
+cursor:pointer;
 }
 </style>
 </head>
@@ -110,64 +132,27 @@ object-fit:cover;
 <img src="copilot_image_1777179019874.jpeg"/>
 </div>
 
-<div class="header">
-🤖 Rusty the Robot Chef
-</div>
+<div class="header">🤖 Rusty the Robot Chef</div>
 
-<div class="card">Smart Cooking System</div>
+<div class="card">Smart Cooking Engine</div>
 
-<!-- 3 BUTTON HUB -->
-<div style="
-position:fixed;
-bottom:90px;
-left:0;
-right:0;
-display:flex;
-justify-content:center;
-gap:20px;
-">
+<!-- 🔥 RESTORED 3-BUTTON DOCK -->
+<div class="dock">
 
-<div onclick="openRecipes()" style="
-width:90px;height:90px;
-border-radius:50%;
-background:rgba(255,255,255,0.12);
-border:1px solid rgba(255,255,255,0.2);
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-">
-🍳<div style="font-size:10px;margin-top:5px;">Recipes</div>
-</div>
+  <div class="dockBtn" onclick="openRecipes()">
+    🍳
+    <span>Recipes</span>
+  </div>
 
-<div onclick="openIngredients()" style="
-width:120px;height:120px;
-border-radius:50%;
-background:rgba(79,172,254,0.25);
-border:1px solid rgba(79,172,254,0.6);
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-">
-🧠<div style="font-size:10px;margin-top:5px;">AI Cook</div>
-</div>
+  <div class="dockBtn large" onclick="openIngredients()">
+    🧠
+    <span>AI Cook</span>
+  </div>
 
-<div onclick="openIngredients()" style="
-width:90px;height:90px;
-border-radius:50%;
-background:rgba(255,255,255,0.12);
-border:1px solid rgba(255,255,255,0.2);
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-">
-🧺<div style="font-size:10px;margin-top:5px;">Ingredients</div>
-</div>
+  <div class="dockBtn" onclick="openIngredients()">
+    🧺
+    <span>Ingredients</span>
+  </div>
 
 </div>
 
@@ -182,7 +167,7 @@ cursor:pointer;
 <script>
 
 /* =========================
-   INGREDIENTS (UNCHANGED CORE SYSTEM)
+   INGREDIENTS (100)
 ========================= */
 
 const ingredientItems = [
@@ -199,18 +184,178 @@ const ingredientItems = [
 "Black beans","Kidney beans","Pinto beans","Cannellini beans"
 ];
 
-/* STORAGE FIX */
+/* CLEAN STORAGE */
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
 selected = selected.filter(i => ingredientItems.includes(i));
 localStorage.setItem("ingredients", JSON.stringify(selected));
 
-/* NAV */
+/* =========================
+   NAV
+========================= */
+
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 document.getElementById(id).classList.add("active");
 }
 
-/* (All cooking logic, timers, cuisine system remain unchanged from your last working version) */
+/* =========================
+   INGREDIENT UI
+========================= */
+
+function openIngredients(){
+
+let html=`<div class="header">🧺 Ingredients</div>`;
+
+ingredientItems.forEach(i=>{
+let on=selected.includes(i);
+html+=`<div class="item ${on?'selected':''}" onclick="toggle('${i}')">
+<span>${i}</span><span>${on?'✔':''}</span></div>`;
+});
+
+html+=`<div class="btn" onclick="openRecipes()">🍳 Generate Recipe</div>`;
+
+document.getElementById("ingredients").innerHTML=html;
+show("ingredients");
+}
+
+function toggle(i){
+selected=selected.includes(i)
+?selected.filter(x=>x!==i)
+:[...selected,i];
+
+localStorage.setItem("ingredients",JSON.stringify(selected));
+openIngredients();
+}
+
+/* =========================
+   CUISINE DETECTION
+========================= */
+
+function detectCuisine(items){
+
+let score={mexican:0,italian:0,asian:0,american:0};
+
+items.forEach(i=>{
+let x=i.toLowerCase();
+
+if(["tortilla","beans","corn","lime","hot sauce"].some(w=>x.includes(w))) score.mexican++;
+if(["pasta","basil","olive oil","parmesan","mozzarella"].some(w=>x.includes(w))) score.italian++;
+if(["soy sauce","rice","noodles","sesame","ginger"].some(w=>x.includes(w))) score.asian++;
+if(["beef","chicken","potato","bread","cheddar"].some(w=>x.includes(w))) score.american++;
+});
+
+return Object.keys(score).reduce((a,b)=>score[a]>score[b]?a:b);
+}
+
+/* =========================
+   RECIPE ENGINE
+========================= */
+
+function generateAIRecipe(){
+
+if(selected.length < 3){
+return [{name:"Select More Ingredients",ingredients:[],protein:"None",steps:[{text:"Pick at least 3 ingredients.",time:0}]}];
+}
+
+let used=[...selected].sort(()=>Math.random()-0.5).slice(0,6);
+
+let cuisine = detectCuisine(used);
+
+let protein = used.find(i =>
+i.includes("Chicken")||i.includes("Beef")||
+i.includes("Shrimp")||i.includes("Salmon")||
+i.includes("Egg")||i.includes("Turkey")||
+i.includes("Pork")
+) || "Main Ingredient";
+
+let steps=[];
+
+steps.push({text:`Prep ingredients for ${cuisine.toUpperCase()} cooking style.`,time:300});
+
+if(used.some(i=>i.includes("Ramen"))){
+steps.push({text:`Boil water 100°C. Cook ramen 2–4 min.`,time:240});
+}
+
+if(used.some(i=>i.includes("Rice"))){
+steps.push({text:`Simmer rice 15–20 min until fluffy.`,time:900});
+}
+
+if(used.some(i=>i.includes("Pasta"))){
+steps.push({text:`Boil salted water. Cook pasta 8–12 min.`,time:720});
+}
+
+steps.push({
+text:`Cook ${protein} to safe internal temperature.`,
+time:480
+});
+
+steps.push({
+text:`Add vegetables and apply ${cuisine} flavor profile.`,
+time:420
+});
+
+steps.push({
+text:`Let dish rest before serving.`,
+time:180
+});
+
+return [{
+name:`${cuisine.toUpperCase()} AI ${protein} Dish`,
+ingredients:used,
+protein:protein,
+cuisine:cuisine,
+steps:steps
+}];
+}
+
+/* =========================
+   RECIPES
+========================= */
+
+function openRecipes(){
+
+let list=generateAIRecipe();
+window.generated=list;
+
+let html=`<div class="header">🍳 AI Recipe</div>`;
+
+list.forEach(r=>{
+html+=`<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b><br>
+${r.cuisine.toUpperCase()}
+</div>`;
+});
+
+document.getElementById("recipes").innerHTML=html;
+show("recipes");
+}
+
+/* =========================
+   DETAIL
+========================= */
+
+function openRecipe(name){
+
+let r=window.generated.find(x=>x.name===name);
+
+let html=`<div class="header">${r.name}</div>
+
+<div class="card"><b>Ingredients:</b><br>${r.ingredients.join("<br>")}</div>
+<div class="card"><b>Protein:</b> ${r.protein}</div>
+<div class="card"><b>Cuisine:</b> ${r.cuisine}</div>`;
+
+r.steps.forEach((s,i)=>{
+html+=`
+<div class="card">
+<b>Step ${i+1}</b><br><br>
+${s.text}<br><br>
+⏱ ${Math.floor(s.time/60)}m ${s.time%60}s
+</div>`;
+});
+
+document.getElementById("detail").innerHTML=html;
+show("detail");
+}
 
 </script>
 
