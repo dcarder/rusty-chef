@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Pro Kitchen OS</title>
+<title>Pro Kitchen OS v3</title>
 
 <style>
 html,body{
@@ -126,12 +126,12 @@ object-fit:cover;
 <img src="copilot_image_1777179019874.jpeg"/>
 </div>
 
-<div class="card">PRO KITCHEN OS</div>
+<div class="card">PRO KITCHEN OS v3</div>
 
 <div class="dock">
 <div class="dockBtn" onclick="openRecipes()">🍳<span>Cook</span></div>
 <div class="dockBtn large" onclick="openIngredients()">🧺<span>Ingredients</span></div>
-<div class="dockBtn" onclick="toggleChefMode()">👨‍🍳<span>Chef</span></div>
+<div class="dockBtn" onclick="openAppliances()">🔥<span>Setup</span></div>
 </div>
 
 </div>
@@ -145,25 +145,37 @@ object-fit:cover;
 <script>
 
 /* =========================
-VOICE (RAMSAY MODE)
+VOICE MODE
 ========================= */
 
 let chefMode="ramsay";
 
 function speak(text){
+
 window.speechSynthesis.cancel();
 
 if(chefMode==="ramsay"){
-let insults=[
-"Focus up!","That’s weak cooking!","Come on, better than that!","No shortcuts!"
-];
-text = insults[Math.floor(Math.random()*insults.length)] + " " + text;
+let r=["Focus!","Not good enough!","Better than that!","Come on chef!"];
+text = r[Math.floor(Math.random()*r.length)]+" "+text;
 }
 
 let msg=new SpeechSynthesisUtterance(text);
-msg.rate=chefMode==="ramsay"?1.15:1;
+msg.rate=1.1;
 window.speechSynthesis.speak(msg);
 }
+
+/* =========================
+DATA STORAGE
+========================= */
+
+let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
+
+let availableAppliances=JSON.parse(localStorage.getItem("appliances")||JSON.stringify({
+stove:true,
+oven:true,
+airfryer:true,
+grill:true
+}));
 
 /* =========================
 100 INGREDIENTS
@@ -182,91 +194,132 @@ const ingredientItems=[
 "Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
 ];
 
-let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
-
 /* =========================
 CLASSIFY SYSTEM
 ========================= */
 
 function classify(list){
-let cat={protein:[],veg:[],starch:[],fat:[],acid:[],other:[]};
+
+let c={protein:[],veg:[],starch:[],fat:[],acid:[],other:[]};
 
 list.forEach(i=>{
 
-if(["Chicken breast","Ground beef","Bacon","Eggs","Shrimp","Salmon","Tuna","Steak","Pork chops","Tofu","Turkey"].includes(i))
-cat.protein.push(i);
+if(["Chicken breast","Ground beef","Eggs","Shrimp","Salmon","Steak","Tofu","Turkey","Pork chops"].includes(i))
+c.protein.push(i);
 
-else if(["Carrots","Onions","Broccoli","Spinach","Mushrooms","Tomatoes","Bell peppers"].includes(i))
-cat.veg.push(i);
+else if(["Onions","Broccoli","Spinach","Mushrooms","Tomatoes","Carrots","Bell peppers"].includes(i))
+c.veg.push(i);
 
 else if(["Rice","Pasta","Bread","Tortilla","Ramen noodles","Potatoes","Quinoa"].includes(i))
-cat.starch.push(i);
+c.starch.push(i);
 
 else if(["Butter","Olive oil","Cheese","Cream","Avocado"].includes(i))
-cat.fat.push(i);
+c.fat.push(i);
 
 else if(["Lemon","Lime","Vinegar"].includes(i))
-cat.acid.push(i);
+c.acid.push(i);
 
-else cat.other.push(i);
+else c.other.push(i);
 
 });
 
-return cat;
+return c;
 }
 
 /* =========================
-PLATED RECIPE ENGINE
+COOK PROFILES (TIME + TEMP)
+========================= */
+
+function getCookProfile(i){
+
+const map={
+"Chicken breast":{t:"12–18 min",temp:"400°F"},
+"Steak":{t:"8–12 min",temp:"450°F"},
+"Eggs":{t:"3–6 min",temp:"300°F"},
+"Rice":{t:"15–20 min",temp:"200°F"},
+"Pasta":{t:"8–12 min",temp:"212°F"},
+"Potatoes":{t:"25–35 min",temp:"425°F"},
+"Broccoli":{t:"6–10 min",temp:"350°F"},
+"Onions":{t:"8–12 min",temp:"350°F"},
+"Tomatoes":{t:"5–8 min",temp:"300°F"}
+};
+
+return map[i]||{t:"10–15 min",temp:"375°F"};
+}
+
+/* =========================
+APPLIANCE CONTROL
+========================= */
+
+function openAppliances(){
+
+let html=`<div class="header">Your Kitchen Setup</div>`;
+
+for(let k in availableAppliances){
+html+=`
+<div class="item ${availableAppliances[k]?'selected':''}" onclick="toggleAppliance('${k}')">
+${k.toUpperCase()} ${availableAppliances[k]?'✔':''}
+</div>`;
+}
+
+html+=`<div class="btn" onclick="saveAppliances()">Save Setup</div>`;
+
+document.getElementById("ingredients").innerHTML=html;
+show("ingredients");
+}
+
+function toggleAppliance(k){
+availableAppliances[k]=!availableAppliances[k];
+openAppliances();
+}
+
+function saveAppliances(){
+localStorage.setItem("appliances",JSON.stringify(availableAppliances));
+show("home");
+speak("Kitchen setup saved.");
+}
+
+/* =========================
+RECIPE ENGINE
 ========================= */
 
 function generateAIRecipe(){
 
-if(selected.length<3){
-return [{
-name:"Select More Ingredients",
-time:0,
-ingredients:[],
-steps:[{text:"Pick at least 3 ingredients.",time:0}]
-}];
-}
-
 let cat=classify(selected);
 
-let main = cat.protein[0] || cat.starch[0] || "Mixed Dish";
-let sides = [...cat.veg, ...cat.starch].filter(i=>i!==main);
-let support = [...cat.fat, ...cat.acid];
-let extras = cat.other;
+let main=cat.protein[0]||cat.starch[0]||"Mixed Dish";
+let sides=[...cat.veg,...cat.starch].filter(i=>i!==main);
+let support=[...cat.fat,...cat.acid];
+
+let guide=selected.map(i=>{
+let p=getCookProfile(i);
+return `${i} → ${p.t}, ${p.temp}`;
+}).join("\n");
+
+/* pick available appliance */
+let appliance = availableAppliances.grill ? "grill"
+: availableAppliances.oven ? "oven"
+: availableAppliances.airfryer ? "airfryer"
+: "stove";
 
 let steps=[];
 
-/* PLATE STRUCTURE */
-steps.push({
-text:
-`PLATE STRUCTURE:\n
-MAIN: ${main}\n
-SIDES: ${sides.join(", ")||"none"}\n
-SUPPORT: ${support.join(", ")||"none"}\n
-EXTRAS: ${extras.join(", ")||"none"}\n
-Reason: Each category has a job in flavor, texture, or balance.`,
-time:10
-});
+steps.push({text:`APPLIANCE: ${appliance.toUpperCase()}\n\n${guide}`,time:10});
 
-steps.push({text:`Cook MAIN (${main}) first. This is the center of the dish.`,time:420});
+steps.push({text:`Cook MAIN: ${main} first at correct temperature.`,time:420});
 
 if(sides.length){
-steps.push({text:`Prepare SIDES separately: ${sides.join(", ")}.`,time:300});
+steps.push({text:`Cook SIDES: ${sides.join(", ")}`,time:300});
 }
 
 if(support.length){
-steps.push({text:`Build SUPPORT flavors (fat/acid balance): ${support.join(", ")}.`,time:120});
+steps.push({text:`Add SUPPORT flavors: ${support.join(", ")}`,time:120});
 }
 
-steps.push({text:`Combine ONLY at the end. Never mix early or texture collapses.`,time:60});
-
-steps.push({text:`Final plating: main centered, sides balanced, support lightly applied.`,time:60});
+steps.push({text:`FINAL: Combine everything only when fully cooked.`,time:60});
 
 return [{
-name:`Plated Dish: ${main}`,
+name:`Kitchen Dish: ${main}`,
 time:40,
 ingredients:selected,
 steps
@@ -274,7 +327,7 @@ steps
 }
 
 /* =========================
-UI LOGIC
+UI
 ========================= */
 
 let activeRecipe=null;
@@ -335,52 +388,31 @@ speak(step.text);
 document.getElementById("detail").innerHTML=`
 <div class="header">${activeRecipe.name}</div>
 <div class="card">${step.text}</div>
-<div class="card" id="timerBox">⏱ ${step.time}s</div>
-
 <div class="btn" onclick="startTimer()">Start</div>
 <div class="btn" onclick="nextStep()">Next</div>
 `;
 }
 
 function startTimer(){
-
 clearInterval(timer);
-timeLeft=activeRecipe.steps[stepIndex].time;
-
+timeLeft=30;
 timer=setInterval(()=>{
 timeLeft--;
-document.getElementById("timerBox").innerHTML="⏱ "+timeLeft+"s";
 if(timeLeft<=0){
 clearInterval(timer);
-speak("Step complete");
+speak("Step complete.");
 }
 },1000);
 }
 
 function nextStep(){
 clearInterval(timer);
-
-if(stepIndex<activeRecipe.steps.length-1){
 stepIndex++;
-speak("Next step");
-renderStep();
-}else{
-speak("Cooking complete.");
-goHome();
-}
-}
-
-function toggleChefMode(){
-chefMode = chefMode==="ramsay"?"normal":"ramsay";
-alert("Chef Mode: "+chefMode);
-speak("Mode switched.");
-}
-
-function goHome(){
-stepIndex=0;
-activeRecipe=null;
-clearInterval(timer);
+if(stepIndex>=activeRecipe.steps.length){
 show("home");
+}else{
+renderStep();
+}
 }
 
 openIngredients();
