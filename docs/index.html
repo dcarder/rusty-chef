@@ -136,7 +136,7 @@ color:black;
 <div id="home" class="page active">
   <div class="header">🤖 Rusty the Robot Chef</div>
 
-  <div class="card">40 Real Recipes + 100 Ingredients + Chef-Level Instructions</div>
+  <div class="card">40 Real Recipes + 100 Ingredients + Advanced Cooking Instructions</div>
 
   <div class="dock">
     <div class="dockBtn" onclick="openRecipes()">🍳<span>Recipes</span></div>
@@ -229,75 +229,74 @@ let dessert = /Cookie|Brownie/.test(r.name);
 
 if(fish){
 return [
-"Pat fish completely dry with paper towels.",
-"Season with salt, pepper, and lemon.",
-"Heat pan to 375–400°F until oil shimmers.",
-"Sear 3–5 minutes without moving.",
-"Flip carefully and cook 2–4 minutes.",
-"Finish with butter baste for flavor.",
-"Cook until 145°F internal temp.",
-"Rest 2 minutes before serving."
+"Pat fish completely dry to ensure proper searing and prevent steaming.",
+"Season evenly with salt, pepper, and lemon juice.",
+"Preheat pan to 375–400°F until oil lightly shimmers.",
+"Place fish gently and do not move for 3–5 minutes to build crust.",
+"Flip once golden crust forms and cook 2–4 minutes.",
+"Lower heat and baste with butter or garlic for flavor depth.",
+"Cook until fish flakes easily and reaches 145°F internal temp.",
+"Rest 2 minutes before serving for juice stabilization."
 ];
 }
 
 if(chicken){
 return [
-"Dry chicken thoroughly.",
-"Season evenly with salt, pepper, garlic.",
-"Heat pan to 350°F medium heat.",
-"Sear 5–7 minutes per side.",
-"Cook until 165°F internal temp.",
-"Optional: add sauce last 2 minutes.",
-"Rest 5 minutes before slicing."
+"Dry chicken fully and season evenly on all sides.",
+"Preheat pan to 350°F medium heat with oil.",
+"Cook chicken 5–7 minutes without moving for crust formation.",
+"Flip and cook until internal temp reaches 165°F.",
+"Add sauce only in final minutes to prevent burning.",
+"Rest 5 minutes before slicing to retain moisture."
 ];
 }
 
 if(beef){
 return [
-"Bring beef to room temp.",
-"Season heavily.",
-"Heat pan to 400–450°F.",
-"Sear 3–5 minutes per side.",
-"Cook to preferred doneness.",
-"Rest 5–10 minutes.",
-"Slice against grain."
+"Bring beef to room temperature for even cooking.",
+"Season heavily right before cooking.",
+"Heat pan to 400–450°F high heat.",
+"Sear 3–5 minutes per side without moving.",
+"Cook to desired doneness (rare–well done).",
+"Rest 5–10 minutes before slicing.",
+"Slice against grain for tenderness."
 ];
 }
 
 if(pasta){
 return [
-"Boil salted water.",
-"Cook pasta 8–12 minutes.",
-"Reserve pasta water.",
-"Combine with sauce on low heat.",
-"Add water to emulsify sauce.",
-"Serve immediately."
+"Boil salted water until fully rolling boil.",
+"Cook pasta 8–12 minutes until al dente.",
+"Reserve pasta water before draining.",
+"Combine pasta with sauce over low heat.",
+"Add water slowly to emulsify sauce.",
+"Serve immediately while hot."
 ];
 }
 
 if(dessert){
 return [
-"Preheat oven (325–375°F).",
+"Preheat oven fully before baking.",
 "Mix dry and wet ingredients separately.",
-"Combine gently.",
-"Bake until set.",
-"Cool 10–15 minutes.",
-"Serve."
+"Combine gently without overmixing.",
+"Bake until edges set and center soft.",
+"Cool 10–15 minutes before serving."
 ];
 }
 
 return [
-"Prep ingredients.",
-"Heat pan to medium.",
-"Cook main ingredient.",
-"Add seasoning.",
-"Simmer until done.",
+"Prep ingredients before cooking.",
+"Heat pan to medium heat.",
+"Cook main ingredient thoroughly.",
+"Add seasoning and aromatics.",
+"Simmer until flavors combine.",
 "Serve hot."
 ];
+
 }
 
 /* =========================
-   UI
+   UI LOGIC
 ========================= */
 
 function show(id){
