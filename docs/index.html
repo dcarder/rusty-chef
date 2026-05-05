@@ -111,7 +111,7 @@ object-fit:cover;
 }
 
 /* =========================
-🔥 FIRE TITLE (RESTORED + FIXED)
+🔥 TITLE + FIRE
 ========================= */
 
 #introLogo{
@@ -135,7 +135,6 @@ display:flex;
 flex-direction:column;
 line-height:0.9;
 font-weight:900;
-text-align:center;
 }
 
 .the{font-size:34px;}
@@ -172,7 +171,7 @@ filter:drop-shadow(0 0 8px #ffb300);
 100%{opacity:0; transform:translateY(-90px) scale(.8);}
 }
 
-/* HOME BUTTONS */
+/* BUTTONS */
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -202,12 +201,9 @@ width:160px;
     <img src="copilot_image_1777179019874.jpeg"/>
   </div>
 
-  <!-- TITLE -->
   <div id="introLogo">
-
     <div class="titleRow">
 
-      <!-- LEFT FIRE -->
       <div class="flame">
         <span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span>
       </div>
@@ -218,13 +214,11 @@ width:160px;
         <div class="chef">CHEF</div>
       </div>
 
-      <!-- RIGHT FIRE -->
       <div class="flame">
         <span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span>
       </div>
 
     </div>
-
   </div>
 
   <div class="bottomDock">
@@ -247,7 +241,7 @@ width:160px;
 
 <script>
 
-/* PAGE SWITCH */
+/* PAGE SYSTEM */
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>{
@@ -264,7 +258,7 @@ const ingredientItems = [
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* FULL RECIPES */
+/* RECIPES */
 const recipes = [
 {
 name:"Chicken Fried Rice",
@@ -282,15 +276,7 @@ ingredients:["Pasta","Garlic","Butter","Salt","Pepper","Cheese"],
 steps:[
 {t:"Boil pasta",time:10,temp:"212°F"},
 {t:"Melt butter",time:2,temp:"Low"},
-{t:"Add garlic",time:2,temp:"Low"}
-]
-},
-{
-name:"Beef Stir Fry",
-ingredients:["Ground beef","Soy sauce","Onions","Bell peppers","Rice"],
-steps:[
-{t:"Cook beef",time:8,temp:"375°F"},
-{t:"Add vegetables",time:5,temp:"High"}
+{t:"Add garlic and sauté",time:2,temp:"Low"}
 ]
 }
 ];
@@ -303,15 +289,18 @@ return {...r,match,missing};
 }
 
 function showMatches(){
-let top=recipes.map(score).sort((a,b)=>b.match-a.match);
+let sorted=recipes.map(score).sort((a,b)=>b.match-a.match);
+
 let html=`<div class="header">🍳 Recipes</div>`;
-top.forEach(r=>{
-html+=`<div class="card" onclick="openRecipe('${r.name}')">
+sorted.forEach(r=>{
+html+=`
+<div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>
 Match: ${r.match}<br>
 Missing: ${r.missing.join(", ")||"None"}
 </div>`;
 });
+
 document.getElementById("results").innerHTML=html;
 show("results");
 }
@@ -337,19 +326,30 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* RECIPE */
+/* RECIPE ENGINE (DEEP INSTRUCTIONS) */
 let current=null;
 let stepIndex=0;
 
 function openRecipe(name){
 current=recipes.find(r=>r.name===name);
 stepIndex=0;
-render();
+renderRecipe();
 show("recipe");
 }
 
-function render(){
+function renderRecipe(){
+
 let step=current.steps[stepIndex];
+
+/* 🔥 DEEP GUIDE */
+let guide = `
+1. Prepare workspace and ensure ingredients are ready.
+2. Follow temperature precisely: ${step.temp}.
+3. Cook time: ${step.time} minutes.
+4. Look for color change, aroma release, and texture shift.
+5. Stir or flip to avoid burning or sticking.
+6. Taste-check if applicable before moving on.
+`;
 
 let shop="";
 current.ingredients.forEach(i=>{
@@ -369,9 +369,12 @@ document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
 
 <div class="card">
-Step: ${step.t}<br>
-Time: ${step.time}<br>
-Temp: ${step.temp}
+<b>Step:</b> ${step.t}<br>
+<b>Time:</b> ${step.time} min<br>
+<b>Temp:</b> ${step.temp}<br><br>
+
+<b>👨‍🍳 Cooking Guide</b><br>
+${guide}
 </div>
 
 <div class="btn" onclick="goHome()">Home</div>
