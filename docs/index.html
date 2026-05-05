@@ -13,30 +13,53 @@ height:100%;
 background:black;
 color:white;
 font-family:Arial;
+overflow:hidden;
 }
 
-.page{display:none;padding:20px;}
-.page.active{display:block;}
+/* =========================
+INSTANT SNAP SYSTEM
+========================= */
+
+.page{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+opacity:0;
+pointer-events:none;
+transition:none;
+}
+
+.page.active{
+opacity:1;
+pointer-events:auto;
+}
+
+/* =========================
+LAYOUT
+========================= */
 
 .header{
 text-align:center;
 font-size:22px;
 font-weight:700;
 margin-bottom:10px;
+padding-top:20px;
 }
 
 .card{
 background:rgba(255,255,255,0.08);
 border-radius:14px;
 padding:14px;
-margin:10px 0;
+margin:10px;
 border:1px solid rgba(255,255,255,0.15);
 white-space:pre-wrap;
 }
 
 .item{
 padding:10px;
-margin:6px 0;
+margin:6px;
 border-radius:10px;
 border:1px solid rgba(255,255,255,0.2);
 cursor:pointer;
@@ -54,17 +77,54 @@ color:black;
 font-weight:700;
 text-align:center;
 border-radius:12px;
-margin-top:10px;
+margin:10px;
 cursor:pointer;
 }
 
+/* =========================
+HOME BACKGROUND (BULLETPROOF)
+========================= */
+
+#homeBg{
+position:fixed;
+inset:0;
+z-index:-10;
+background:black;
+}
+
+#homeImg{
+width:100%;
+height:100%;
+object-fit:cover;
+display:block;
+}
+
+/* =========================
+DOCK
+========================= */
+
+.bottomDock{
+position:fixed;
+bottom:20px;
+left:0;
+right:0;
+display:flex;
+justify-content:center;
+gap:20px;
+z-index:5;
+}
+
+.bottomDock .btn{
+width:160px;
+}
+
+/* TIMER */
 .timer{
 text-align:center;
 font-size:20px;
 margin-top:10px;
 }
 
-/* SHOP BUTTONS */
 .shopBtn{
 display:inline-block;
 margin-top:8px;
@@ -79,49 +139,6 @@ color:white;
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
-.shopBtn:active{
-transform:scale(0.95);
-opacity:0.9;
-}
-
-/* HOME */
-#homeBg{
-position:fixed;
-inset:0;
-z-index:-2;
-background:black;
-}
-
-#homeImg{
-width:100%;
-height:100%;
-object-fit:cover;
-display:none;
-}
-
-#introLogo{
-position:absolute;
-top:38%;
-left:50%;
-transform:translate(-50%,-50%);
-font-size:30px;
-font-weight:800;
-text-align:center;
-}
-
-.bottomDock{
-position:fixed;
-bottom:20px;
-left:0;
-right:0;
-display:flex;
-justify-content:center;
-gap:20px;
-}
-
-.bottomDock .btn{
-width:160px;
-}
 </style>
 </head>
 
@@ -133,10 +150,12 @@ width:160px;
 <div id="home" class="page active">
 
   <div id="homeBg">
-    <img id="homeImg" />
+    <img id="homeImg" src="./copilot_image_1777179019874.jpeg"/>
   </div>
 
-  <div id="introLogo">🍳 Smart Kitchen OS</div>
+  <div class="header" style="position:relative; z-index:2;">
+    🍳 Smart Kitchen OS
+  </div>
 
   <div class="bottomDock">
     <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -159,42 +178,21 @@ width:160px;
 <script>
 
 /* =========================
-🔥 BULLETPROOF IMAGE LOADER
+PAGE ROUTER (NO FLICKER)
 ========================= */
 
-const imagePaths = [
-"./copilot_image_1777179019874.jpeg",
-"copilot_image_1777179019874.jpeg",
-"docs/copilot_image_1777179019874.jpeg"
-];
+function show(id){
+const pages = ["home","pantry","results","recipe"];
 
-function loadHomeImage(index = 0){
-const img = document.getElementById("homeImg");
+pages.forEach(p=>{
+document.getElementById(p).classList.remove("active");
+});
 
-if(index >= imagePaths.length){
-document.getElementById("homeBg").style.background = "black";
-img.style.display = "none";
-return;
+document.getElementById(id).classList.add("active");
 }
-
-const test = new Image();
-
-test.onload = () => {
-img.src = imagePaths[index];
-img.style.display = "block";
-};
-
-test.onerror = () => {
-loadHomeImage(index + 1);
-};
-
-test.src = imagePaths[index];
-}
-
-loadHomeImage();
 
 /* =========================
-100 INGREDIENTS
+INGREDIENTS
 ========================= */
 
 const ingredientItems = [
@@ -213,7 +211,7 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-RECIPES
+RECIPES (SAMPLE KEPT)
 ========================= */
 
 const recipes = [
@@ -226,238 +224,12 @@ steps:[
 {t:"Stir-fry vegetables",time:5,temp:"350°F"},
 {t:"Add rice + soy sauce",time:7,temp:"400°F"}
 ]
-},
-{
-name:"Garlic Pasta",
-ingredients:["Pasta","Garlic","Butter","Salt","Pepper","Parmesan"],
-steps:[
-{t:"Boil pasta",time:10,temp:"212°F"},
-{t:"Melt butter",time:2,temp:"325°F"},
-{t:"Cook garlic",time:2,temp:"300°F"}
-]
-},
-{
-name:"Beef Stir Fry",
-ingredients:["Ground beef","Soy sauce","Onions","Bell peppers","Rice"],
-steps:[{t:"Cook beef",time:8,temp:"375°F"}]
-},
-{
-name:"Chicken Tacos",
-ingredients:["Chicken breast","Tortilla","Cheese","Tomatoes","Onions"],
-steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
-},
-{
-name:"Shrimp Pasta",
-ingredients:["Shrimp","Pasta","Garlic","Butter"],
-steps:[{t:"Cook shrimp",time:6,temp:"350°F"}]
-},
-{
-name:"Omelette",
-ingredients:["Eggs","Cheese","Butter"],
-steps:[{t:"Cook eggs",time:5,temp:"325°F"}]
-},
-{
-name:"Grilled Cheese",
-ingredients:["Bread","Cheddar","Butter"],
-steps:[{t:"Grill sandwich",time:4,temp:"325°F"}]
-},
-{
-name:"Chicken Soup",
-ingredients:["Chicken breast","Chicken broth","Carrots","Onions"],
-steps:[{t:"Simmer soup",time:12,temp:"212°F"}]
-},
-{
-name:"BBQ Chicken Bowl",
-ingredients:["Chicken breast","BBQ sauce","Rice"],
-steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
-},
-{
-name:"Veggie Stir Fry",
-ingredients:["Broccoli","Carrots","Bell peppers","Soy sauce"],
-steps:[{t:"Stir fry",time:8,temp:"400°F"}]
-},
-{
-name:"Teriyaki Chicken",
-ingredients:["Chicken breast","Teriyaki sauce","Rice"],
-steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
-},
-{
-name:"Tuna Salad",
-ingredients:["Tuna","Mayonnaise","Onions"],
-steps:[{t:"Mix",time:5,temp:"No heat"}]
-},
-{
-name:"Chicken Wrap",
-ingredients:["Chicken breast","Tortilla","Lettuce"],
-steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
-},
-{
-name:"Garlic Rice",
-ingredients:["Rice","Garlic","Butter"],
-steps:[{t:"Cook rice",time:12,temp:"212°F"}]
-},
-{
-name:"Sweet Potato Bowl",
-ingredients:["Sweet potato","Butter"],
-steps:[{t:"Bake",time:25,temp:"400°F"}]
-},
-{
-name:"Egg Fried Noodles",
-ingredients:["Ramen noodles","Eggs","Soy sauce"],
-steps:[{t:"Cook noodles",time:5,temp:"212°F"}]
-},
-{
-name:"Cheesy Rice",
-ingredients:["Rice","Cheese"],
-steps:[{t:"Cook rice",time:12,temp:"212°F"}]
-},
-{
-name:"Chicken Quesadilla",
-ingredients:["Chicken breast","Tortilla","Cheese"],
-steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
-},
-{
-name:"Cream Pasta",
-ingredients:["Pasta","Cream","Butter"],
-steps:[{t:"Cook pasta",time:10,temp:"212°F"}]
-},
-{
-name:"Garlic Shrimp",
-ingredients:["Shrimp","Garlic"],
-steps:[{t:"Cook shrimp",time:6,temp:"350°F"}]
-},
-{
-name:"Pork Fried Rice",
-ingredients:["Pork chops","Rice","Eggs"],
-steps:[{t:"Cook pork",time:8,temp:"375°F"}]
-},
-{
-name:"Veg Omelette",
-ingredients:["Eggs","Spinach","Cheese"],
-steps:[{t:"Cook eggs",time:6,temp:"325°F"}]
-},
-{
-name:"Chicken Bowl",
-ingredients:["Chicken breast","Broccoli","Rice"],
-steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
-},
-{
-name:"Simple Pasta",
-ingredients:["Pasta","Tomatoes","Garlic"],
-steps:[{t:"Boil pasta",time:10,temp:"212°F"}]
-},
-{
-name:"Chicken Sandwich",
-ingredients:["Chicken breast","Bread","Cheese"],
-steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
 }
 ];
 
 /* =========================
-APP LOGIC (UNCHANGED)
+NAV FUNCTIONS
 ========================= */
-
-function score(r){
-let match=r.ingredients.filter(i=>selected.includes(i)).length;
-let missing=r.ingredients.filter(i=>!selected.includes(i));
-return {...r,match,missing};
-}
-
-function topRecipes(){
-return recipes.map(score)
-.sort((a,b)=>b.match-a.match)
-.slice(0,3);
-}
-
-function buildStoreLinks(recipe){
-let missing = recipe.ingredients.filter(i => !selected.includes(i));
-return missing.map(i => {
-let q = encodeURIComponent(i);
-return {
-name:i,
-instacart:`https://www.instacart.com/store/search?search=${q}`,
-walmart:`https://www.walmart.com/search?q=${q}`
-};
-});
-}
-
-let current=null;
-let stepIndex=0;
-let timer=null;
-let timeLeft=0;
-
-function openRecipe(name){
-current=recipes.find(r=>r.name===name);
-stepIndex=0;
-renderStep();
-show("recipe");
-}
-
-function renderStep(){
-
-let step=current.steps[stepIndex];
-let links=buildStoreLinks(current);
-
-let instruction=`
-### Instructions
-1. ${step.t}
-2. Set temperature to ${step.temp}.
-3. Cook for ${step.time} minutes.
-`;
-
-let shopHTML=`<div class="card"><b>🛒 Stores</b><br><br>`;
-
-links.forEach(l=>{
-shopHTML+=`
-<div class="card">
-<b>${l.name}</b><br>
-<a href="${l.instacart}" target="_blank" class="shopBtn instacartBtn">Instacart</a>
-<a href="${l.walmart}" target="_blank" class="shopBtn walmartBtn">Walmart</a>
-</div>`;
-});
-
-shopHTML+=`</div>`;
-
-document.getElementById("recipe").innerHTML=`
-<div class="header">${current.name}</div>
-<div class="card">${instruction}</div>
-<div class="timer" id="timerBox">Ready</div>
-<div class="btn" onclick="startTimer()">Start Timer</div>
-<div class="btn" onclick="nextStep()">Next Step</div>
-<div class="btn" onclick="goHome()">Home</div>
-${shopHTML}
-`;
-}
-
-function startTimer(){
-clearInterval(timer);
-let step=current.steps[stepIndex];
-timeLeft=step.time*60;
-
-timer=setInterval(()=>{
-timeLeft--;
-let m=Math.floor(timeLeft/60);
-let s=timeLeft%60;
-document.getElementById("timerBox").innerHTML=`⏱ ${m}:${s.toString().padStart(2,"0")}`;
-if(timeLeft<=0){
-clearInterval(timer);
-document.getElementById("timerBox").innerHTML="✔ Done";
-}
-},1000);
-}
-
-function nextStep(){
-clearInterval(timer);
-if(stepIndex<current.steps.length-1){
-stepIndex++;
-renderStep();
-}
-}
-
-function show(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-}
 
 function openPantry(){
 let html=`<div class="header">🧺 Pantry</div>`;
@@ -471,26 +243,70 @@ show("pantry");
 }
 
 function toggle(i){
-selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
+selected = selected.includes(i)
+? selected.filter(x=>x!==i)
+: [...selected,i];
+
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
 function showMatches(){
-let top=topRecipes();
-let html=`<div class="header">🍳 Top Recipes</div>`;
-top.forEach(r=>{
-html+=`<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>
-Match: ${r.match}<br>
-Missing: ${r.missing.join(", ")||"None"}
+let html=`<div class="header">🍳 Recipes</div>`;
+
+recipes.forEach(r=>{
+html+=`
+<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b>
 </div>`;
 });
+
 document.getElementById("results").innerHTML=html;
 show("results");
 }
 
-function goHome(){show("home");}
+/* =========================
+RECIPE VIEW
+========================= */
+
+let current=null;
+let stepIndex=0;
+
+function openRecipe(name){
+current = recipes.find(r=>r.name===name);
+stepIndex=0;
+renderRecipe();
+show("recipe");
+}
+
+function renderRecipe(){
+
+document.getElementById("recipe").innerHTML=`
+<div class="header">${current.name}</div>
+
+<div class="card">
+Step: ${current.steps[stepIndex].t}<br>
+Time: ${current.steps[stepIndex].time} min<br>
+Temp: ${current.steps[stepIndex].temp}
+</div>
+
+<div class="btn" onclick="goHome()">Home</div>
+`;
+}
+
+/* =========================
+HOME SNAP FIX
+========================= */
+
+function goHome(){
+show("home");
+}
+
+/* =========================
+INIT (FORCE HOME SNAP)
+========================= */
+
+show("home");
 
 </script>
 
