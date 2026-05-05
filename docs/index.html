@@ -14,7 +14,6 @@ width:100%;
 background:black;
 color:white;
 font-family:Arial;
-
 position:fixed;
 inset:0;
 overflow:hidden;
@@ -55,7 +54,6 @@ border-radius:14px;
 padding:14px;
 margin:10px 0;
 border:1px solid rgba(255,255,255,0.15);
-white-space:pre-wrap;
 }
 
 .item{
@@ -82,7 +80,7 @@ margin-top:10px;
 cursor:pointer;
 }
 
-/* SHOP */
+/* SHOP BUTTONS */
 .shopBtn{
 display:inline-block;
 margin-top:8px;
@@ -108,67 +106,31 @@ z-index:-2;
 width:100%;
 height:100%;
 object-fit:cover;
+animation:zoomIn 2s ease;
 }
 
-/* FIRE TITLE */
+@keyframes zoomIn{
+from{transform:scale(1.08); opacity:0;}
+to{transform:scale(1); opacity:1;}
+}
+
+/* TITLE */
 #introLogo{
 position:fixed;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
-z-index:10;
-}
-
-.titleRow{
-display:flex;
-align-items:center;
-justify-content:center;
-gap:14px;
-}
-
-.titleText{
-display:flex;
-flex-direction:column;
+font-size:44px;
 font-weight:900;
-line-height:0.9;
+animation:fadeIn 1.5s ease;
 }
 
-.the{font-size:34px;}
-.rusty{font-size:56px;}
-.chef{font-size:48px;}
-
-/* FIRE ANIMATION */
-.flame{
-width:45px;
-height:110px;
-position:relative;
-overflow:hidden;
+@keyframes fadeIn{
+from{opacity:0; transform:translate(-50%,-60%) scale(0.9);}
+to{opacity:1; transform:translate(-50%,-50%) scale(1);}
 }
 
-.flame span{
-position:absolute;
-bottom:0;
-animation:rise 1.2s infinite ease-in-out;
-opacity:0;
-font-size:20px;
-filter:drop-shadow(0 0 10px orange);
-}
-
-.flame span:nth-child(1){left:50%;animation-delay:0s;}
-.flame span:nth-child(2){left:40%;animation-delay:.2s;}
-.flame span:nth-child(3){left:60%;animation-delay:.4s;}
-.flame span:nth-child(4){left:45%;animation-delay:.6s;}
-.flame span:nth-child(5){left:55%;animation-delay:.8s;}
-
-@keyframes rise{
-0%{transform:translateY(0) scale(.6);opacity:0;}
-20%{opacity:1;}
-60%{transform:translateY(-60px) scale(1.2);}
-100%{transform:translateY(-120px) scale(.7);opacity:0;}
-}
-
-/* HOME BUTTONS */
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -177,39 +139,11 @@ right:0;
 display:flex;
 justify-content:center;
 gap:20px;
-z-index:5;
 }
 
 .bottomDock .btn{
 width:160px;
 }
-
-/* =========================
-🔥 ADDED: HOME BOOT ANIMATION (ONLY CHANGE)
-========================= */
-
-body.boot #homeBg{
-animation:bgIn 1.2s ease forwards;
-}
-
-body.boot #introLogo{
-animation:logoIn 1.4s ease forwards;
-}
-
-body.boot .bottomDock{
-opacity:0;
-transform:translateY(40px);
-animation:dockIn 0.9s ease forwards;
-animation-delay:1.2s;
-}
-
-@keyframes dockIn{
-to{
-opacity:1;
-transform:translateY(0);
-}
-}
-
 </style>
 </head>
 
@@ -224,27 +158,7 @@ transform:translateY(0);
     <img src="copilot_image_1777179019874.jpeg"/>
   </div>
 
-  <div id="introLogo">
-
-    <div class="titleRow">
-
-      <div class="flame">
-        <span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span>
-      </div>
-
-      <div class="titleText">
-        <div class="the">THE</div>
-        <div class="rusty">RUSTY</div>
-        <div class="chef">CHEF</div>
-      </div>
-
-      <div class="flame">
-        <span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span>
-      </div>
-
-    </div>
-
-  </div>
+  <div id="introLogo">🔥 THE RUSTY CHEF 🔥</div>
 
   <div class="bottomDock">
     <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -253,8 +167,13 @@ transform:translateY(0);
 
 </div>
 
+<!-- PANTRY -->
 <div id="pantry" class="page"></div>
+
+<!-- RESULTS -->
 <div id="results" class="page"></div>
+
+<!-- RECIPE -->
 <div id="recipe" class="page"></div>
 
 </div>
@@ -269,23 +188,11 @@ document.getElementById(id).classList.add("active");
 });
 }
 
-/* 🔥 ADDED: boot animation trigger */
-window.addEventListener("load",()=>{
-document.body.classList.add("boot");
-});
-
 /* INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
-"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
-"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
-"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
-"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
-"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
-"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
-"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
+"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
@@ -297,26 +204,63 @@ name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
 steps:[
 {t:"Prep ingredients",time:5,temp:"Room"},
-{t:"Cook chicken",time:8,temp:"375°F"},
+{t:"Cook chicken fully",time:8,temp:"375°F"},
 {t:"Stir-fry vegetables",time:5,temp:"350°F"},
-{t:"Add rice + soy sauce",time:7,temp:"400°F"}
+{t:"Combine rice + soy sauce",time:7,temp:"400°F"}
+]
+},
+{
+name:"Garlic Pasta",
+ingredients:["Pasta","Garlic","Butter","Salt","Pepper","Cheese"],
+steps:[
+{t:"Boil pasta until al dente",time:10,temp:"212°F"},
+{t:"Melt butter on low heat",time:2,temp:"Low"},
+{t:"Add garlic slowly to avoid burning",time:2,temp:"Low"}
+]
+},
+{
+name:"Beef Stir Fry",
+ingredients:["Ground beef","Soy sauce","Onions","Bell peppers","Rice"],
+steps:[
+{t:"Brown beef fully",time:8,temp:"375°F"},
+{t:"Add vegetables and stir continuously",time:5,temp:"High"}
 ]
 }
 ];
 
-/* MATCH */
+/* SMART SCORING */
 function score(r){
-let match=r.ingredients.filter(i=>selected.includes(i)).length;
-let missing=r.ingredients.filter(i=>!selected.includes(i));
-return {...r,match,missing};
+let matchList = r.ingredients.filter(i=>selected.includes(i));
+let missingList = r.ingredients.filter(i=>!selected.includes(i));
+
+let bonus = matchList.length === r.ingredients.length ? 5 : 0;
+
+return {
+...r,
+match: matchList.length + bonus,
+matchList,
+missing: missingList
+};
 }
 
+/* TOP 3 */
 function showMatches(){
-let top=recipes.map(score).sort((a,b)=>b.match-a.match);
-let html=`<div class="header">🍳 Recipes</div>`;
+
+let top = recipes.map(score)
+.sort((a,b)=>b.match-a.match)
+.slice(0,3);
+
+let html=`<div class="header">🍳 AI Top 3 Recipes</div>`;
+
 top.forEach(r=>{
-html+=`<div class="card" onclick="openRecipe('${r.name}')">${r.name}</div>`;
+html+=`
+<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b><br>
+✔ Pantry Match: ${r.matchList.length}/${r.ingredients.length}<br>
+❌ Missing: ${r.missing.join(", ") || "None"}
+</div>`;
 });
+
 document.getElementById("results").innerHTML=html;
 show("results");
 }
@@ -324,53 +268,88 @@ show("results");
 /* PANTRY */
 function openPantry(){
 let html=`<div class="header">🧺 Pantry</div>`;
+
 ingredientItems.forEach(i=>{
-let on=selected.includes(i);
+let on = selected.includes(i);
 html+=`<div class="item ${on?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
 });
+
 html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
 document.getElementById("pantry").innerHTML=html;
 show("pantry");
 }
 
 function toggle(i){
-selected=selected.includes(i)
-?selected.filter(x=>x!==i)
-:[...selected,i];
+selected = selected.includes(i)
+? selected.filter(x=>x!==i)
+: [...selected,i];
 
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* RECIPE */
+/* RECIPE ENGINE */
 let current=null;
 let stepIndex=0;
 
 function openRecipe(name){
-current=recipes.find(r=>r.name===name);
+current = recipes.find(r=>r.name===name);
 stepIndex=0;
 render();
 show("recipe");
 }
 
 function render(){
-let step=current.steps[stepIndex];
+
+let step = current.steps[stepIndex];
+
+let shop="";
+
+current.ingredients.forEach(i=>{
+let q = encodeURIComponent(i);
+
+shop+=`
+<div class="card">
+<b>${i}</b><br>
+
+<a class="shopBtn instacartBtn" target="_blank"
+href="https://www.instacart.com/store/search?search=${q}">
+Instacart
+</a>
+
+<a class="shopBtn walmartBtn" target="_blank"
+href="https://www.walmart.com/search?q=${q}">
+Walmart
+</a>
+</div>`;
+});
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
 
 <div class="card">
-Step: ${step.t}<br>
-Time: ${step.time} min<br>
-Temp: ${step.temp}
+<b>Step ${stepIndex+1}</b><br><br>
+
+🔥 ACTION: ${step.t}<br>
+⏱ Time: ${step.time} minutes<br>
+🌡 Temperature: ${step.temp}<br><br>
+
+🧠 AI COOKING MODE:<br>
+- Start with ingredients you already have<br>
+- Build flavor before adding missing items<br>
+- Keep heat steady to avoid burning<br>
+- Taste and adjust as you go<br>
+- Finish with missing ingredients if needed
 </div>
 
 <div class="btn" onclick="goHome()">Home</div>
+
+${shop}
 `;
 }
 
 /* HOME */
-function goHome(){show("home");}
+function goHome(){ show("home"); }
 
 show("home");
 
