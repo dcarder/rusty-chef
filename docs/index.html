@@ -106,8 +106,15 @@ z-index:-2;
 width:100%;
 height:100%;
 object-fit:cover;
+animation:zoomIn 2s ease;
 }
 
+@keyframes zoomIn{
+from{transform:scale(1.08); opacity:0;}
+to{transform:scale(1); opacity:1;}
+}
+
+/* TITLE */
 #introLogo{
 position:fixed;
 top:50%;
@@ -206,32 +213,44 @@ steps:[
 name:"Garlic Pasta",
 ingredients:["Pasta","Garlic","Butter","Salt","Pepper","Cheese"],
 steps:[
-{t:"Boil pasta until tender",time:10,temp:"212°F"},
-{t:"Melt butter slowly",time:2,temp:"Low"},
-{t:"Add garlic gently without burning",time:2,temp:"Low"}
+{t:"Boil pasta until al dente",time:10,temp:"212°F"},
+{t:"Melt butter on low heat",time:2,temp:"Low"},
+{t:"Add garlic slowly to avoid burning",time:2,temp:"Low"}
+]
+},
+{
+name:"Beef Stir Fry",
+ingredients:["Ground beef","Soy sauce","Onions","Bell peppers","Rice"],
+steps:[
+{t:"Brown beef fully",time:8,temp:"375°F"},
+{t:"Add vegetables and stir continuously",time:5,temp:"High"}
 ]
 }
 ];
 
-/* MATCH */
+/* SMART SCORING */
 function score(r){
 let matchList = r.ingredients.filter(i=>selected.includes(i));
 let missingList = r.ingredients.filter(i=>!selected.includes(i));
+
+let bonus = matchList.length === r.ingredients.length ? 5 : 0;
+
 return {
 ...r,
-match: matchList.length,
+match: matchList.length + bonus,
 matchList,
 missing: missingList
 };
 }
 
+/* TOP 3 */
 function showMatches(){
 
 let top = recipes.map(score)
 .sort((a,b)=>b.match-a.match)
 .slice(0,3);
 
-let html=`<div class="header">🍳 Top 3 AI Recipes</div>`;
+let html=`<div class="header">🍳 AI Top 3 Recipes</div>`;
 
 top.forEach(r=>{
 html+=`
@@ -285,6 +304,7 @@ function render(){
 let step = current.steps[stepIndex];
 
 let shop="";
+
 current.ingredients.forEach(i=>{
 let q = encodeURIComponent(i);
 
@@ -308,26 +328,18 @@ document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
 
 <div class="card">
+<b>Step ${stepIndex+1}</b><br><br>
 
-<b>STEP:</b> ${step.t}<br><br>
-
-🔥 COOKING INSTRUCTIONS (DETAILED):<br><br>
-
-• Start by preparing ALL ingredients before heat is applied  
-• Preheat pan or pot to ${step.temp} before cooking  
-• Add oil/butter first, wait until it is fully heated  
-• Cook main protein first until fully done inside  
-• Add vegetables after protein for texture control  
-• Stir continuously to prevent burning or sticking  
-• Add sauces or seasoning near the end of cooking  
-• Adjust heat if food is browning too fast or too slow  
-• Let food rest 1–2 minutes before serving  
-
-<br>
-
+🔥 ACTION: ${step.t}<br>
 ⏱ Time: ${step.time} minutes<br>
-🌡 Temperature: ${step.temp}
+🌡 Temperature: ${step.temp}<br><br>
 
+🧠 AI COOKING MODE:<br>
+- Start with ingredients you already have<br>
+- Build flavor before adding missing items<br>
+- Keep heat steady to avoid burning<br>
+- Taste and adjust as you go<br>
+- Finish with missing ingredients if needed
 </div>
 
 <div class="btn" onclick="goHome()">Home</div>
