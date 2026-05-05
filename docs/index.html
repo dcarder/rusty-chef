@@ -17,7 +17,7 @@ overflow:hidden;
 }
 
 /* =========================
-INSTANT SNAP SYSTEM
+SNAP PAGE SYSTEM (FIXED)
 ========================= */
 
 .page{
@@ -29,6 +29,10 @@ height:100%;
 opacity:0;
 pointer-events:none;
 transition:none;
+
+/* FIX: restore proper scrolling */
+overflow-y:auto;
+-webkit-overflow-scrolling:touch;
 }
 
 .page.active{
@@ -37,14 +41,14 @@ pointer-events:auto;
 }
 
 /* =========================
-LAYOUT
+UI
 ========================= */
 
 .header{
 text-align:center;
 font-size:22px;
 font-weight:700;
-margin-bottom:10px;
+margin:10px 0;
 padding-top:20px;
 }
 
@@ -54,12 +58,11 @@ border-radius:14px;
 padding:14px;
 margin:10px;
 border:1px solid rgba(255,255,255,0.15);
-white-space:pre-wrap;
 }
 
 .item{
 padding:10px;
-margin:6px;
+margin:6px 10px;
 border-radius:10px;
 border:1px solid rgba(255,255,255,0.2);
 cursor:pointer;
@@ -82,7 +85,7 @@ cursor:pointer;
 }
 
 /* =========================
-HOME BACKGROUND (BULLETPROOF)
+HOME BACKGROUND
 ========================= */
 
 #homeBg{
@@ -100,7 +103,7 @@ display:block;
 }
 
 /* =========================
-DOCK
+BOTTOM BUTTON DOCK
 ========================= */
 
 .bottomDock{
@@ -125,6 +128,7 @@ font-size:20px;
 margin-top:10px;
 }
 
+/* SHOP BUTTONS */
 .shopBtn{
 display:inline-block;
 margin-top:8px;
@@ -153,7 +157,7 @@ color:white;
     <img id="homeImg" src="./copilot_image_1777179019874.jpeg"/>
   </div>
 
-  <div class="header" style="position:relative; z-index:2;">
+  <div class="header" style="position:relative;z-index:2;">
     🍳 Smart Kitchen OS
   </div>
 
@@ -178,16 +182,13 @@ color:white;
 <script>
 
 /* =========================
-PAGE ROUTER (NO FLICKER)
+ROUTER (NO FLICKER)
 ========================= */
 
 function show(id){
-const pages = ["home","pantry","results","recipe"];
-
-pages.forEach(p=>{
-document.getElementById(p).classList.remove("active");
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active");
 });
-
 document.getElementById(id).classList.add("active");
 }
 
@@ -211,7 +212,7 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-RECIPES (SAMPLE KEPT)
+RECIPES
 ========================= */
 
 const recipes = [
@@ -228,17 +229,28 @@ steps:[
 ];
 
 /* =========================
-NAV FUNCTIONS
+PANTRY FIXED (NO SHRINK)
 ========================= */
 
 function openPantry(){
-let html=`<div class="header">🧺 Pantry</div>`;
+
+let html = `
+<div class="header">🧺 Pantry</div>
+<div style="padding-bottom:120px;">
+`;
+
 ingredientItems.forEach(i=>{
-let on=selected.includes(i);
-html+=`<div class="item ${on?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
+let on = selected.includes(i);
+html += `<div class="item ${on?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
 });
-html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
-document.getElementById("pantry").innerHTML=html;
+
+html += `</div>
+
+<div class="bottomDock">
+  <div class="btn" onclick="showMatches()">🍳 Find Recipes</div>
+</div>`;
+
+document.getElementById("pantry").innerHTML = html;
 show("pantry");
 }
 
@@ -251,6 +263,10 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
+/* =========================
+RECIPES MATCH
+========================= */
+
 function showMatches(){
 let html=`<div class="header">🍳 Recipes</div>`;
 
@@ -261,7 +277,7 @@ html+=`
 </div>`;
 });
 
-document.getElementById("results").innerHTML=html;
+document.getElementById("results").innerHTML = html;
 show("results");
 }
 
@@ -274,14 +290,13 @@ let stepIndex=0;
 
 function openRecipe(name){
 current = recipes.find(r=>r.name===name);
-stepIndex=0;
+stepIndex = 0;
 renderRecipe();
 show("recipe");
 }
 
 function renderRecipe(){
-
-document.getElementById("recipe").innerHTML=`
+document.getElementById("recipe").innerHTML = `
 <div class="header">${current.name}</div>
 
 <div class="card">
@@ -295,17 +310,14 @@ Temp: ${current.steps[stepIndex].temp}
 }
 
 /* =========================
-HOME SNAP FIX
+HOME SNAP
 ========================= */
 
 function goHome(){
 show("home");
 }
 
-/* =========================
-INIT (FORCE HOME SNAP)
-========================= */
-
+/* INIT */
 show("home");
 
 </script>
