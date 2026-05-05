@@ -64,7 +64,7 @@ font-size:20px;
 margin-top:10px;
 }
 
-/* 🛒 SHOP BUTTONS */
+/* 🛒 SHOP BUTTONS (ONLY ADDITION) */
 .shopBtn{
 display:inline-block;
 margin-top:8px;
@@ -155,7 +155,9 @@ width:160px;
 
 <div id="app">
 
+<!-- 🏠 HOME -->
 <div id="home" class="page active">
+
   <div id="homeBg">
     <img src="copilot_image_1777179019874.jpeg" />
   </div>
@@ -166,20 +168,185 @@ width:160px;
     <div class="btn" onclick="openPantry()">🧺 Pantry</div>
     <div class="btn" onclick="showMatches()">🍳 Recipes</div>
   </div>
+
 </div>
 
+<!-- 🧺 PANTRY -->
 <div id="pantry" class="page"></div>
+
+<!-- 🍳 RESULTS -->
 <div id="results" class="page"></div>
+
+<!-- 📖 RECIPE -->
 <div id="recipe" class="page"></div>
 
 </div>
 
 <script>
 
-const ingredientItems = [/* unchanged */];
+/* =========================
+100 INGREDIENTS (UNCHANGED)
+========================= */
+
+const ingredientItems = [
+"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
+"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
+"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
+"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
+"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
+"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
+"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
+"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
+"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
+"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
+];
+
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-const recipes = [/* unchanged */];
+/* =========================
+25 RECIPES (UNCHANGED)
+========================= */
+
+const recipes = [
+{
+name:"Chicken Fried Rice",
+ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
+steps:[
+{t:"Prep ingredients",time:5,temp:"Room"},
+{t:"Cook chicken",time:8,temp:"375°F"},
+{t:"Stir-fry vegetables",time:5,temp:"350°F"},
+{t:"Add rice + soy sauce",time:7,temp:"400°F"}
+]
+},
+{
+name:"Garlic Pasta",
+ingredients:["Pasta","Garlic","Butter","Salt","Pepper","Parmesan"],
+steps:[
+{t:"Boil pasta",time:10,temp:"212°F"},
+{t:"Melt butter",time:2,temp:"325°F"},
+{t:"Cook garlic",time:2,temp:"300°F"}
+]
+},
+{
+name:"Beef Stir Fry",
+ingredients:["Ground beef","Soy sauce","Onions","Bell peppers","Rice"],
+steps:[{t:"Cook beef",time:8,temp:"375°F"}]
+},
+{
+name:"Chicken Tacos",
+ingredients:["Chicken breast","Tortilla","Cheese","Tomatoes","Onions"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Shrimp Pasta",
+ingredients:["Shrimp","Pasta","Garlic","Butter"],
+steps:[{t:"Cook shrimp",time:6,temp:"350°F"}]
+},
+{
+name:"Omelette",
+ingredients:["Eggs","Cheese","Butter"],
+steps:[{t:"Cook eggs",time:5,temp:"325°F"}]
+},
+{
+name:"Grilled Cheese",
+ingredients:["Bread","Cheddar","Butter"],
+steps:[{t:"Grill sandwich",time:4,temp:"325°F"}]
+},
+{
+name:"Chicken Soup",
+ingredients:["Chicken breast","Chicken broth","Carrots","Onions"],
+steps:[{t:"Simmer soup",time:12,temp:"212°F"}]
+},
+{
+name:"BBQ Chicken Bowl",
+ingredients:["Chicken breast","BBQ sauce","Rice"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Veggie Stir Fry",
+ingredients:["Broccoli","Carrots","Bell peppers","Soy sauce"],
+steps:[{t:"Stir fry",time:8,temp:"400°F"}]
+},
+{
+name:"Teriyaki Chicken",
+ingredients:["Chicken breast","Teriyaki sauce","Rice"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Tuna Salad",
+ingredients:["Tuna","Mayonnaise","Onions"],
+steps:[{t:"Mix",time:5,temp:"No heat"}]
+},
+{
+name:"Chicken Wrap",
+ingredients:["Chicken breast","Tortilla","Lettuce"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Garlic Rice",
+ingredients:["Rice","Garlic","Butter"],
+steps:[{t:"Cook rice",time:12,temp:"212°F"}]
+},
+{
+name:"Sweet Potato Bowl",
+ingredients:["Sweet potato","Butter"],
+steps:[{t:"Bake",time:25,temp:"400°F"}]
+},
+{
+name:"Egg Fried Noodles",
+ingredients:["Ramen noodles","Eggs","Soy sauce"],
+steps:[{t:"Cook noodles",time:5,temp:"212°F"}]
+},
+{
+name:"Cheesy Rice",
+ingredients:["Rice","Cheese"],
+steps:[{t:"Cook rice",time:12,temp:"212°F"}]
+},
+{
+name:"Chicken Quesadilla",
+ingredients:["Chicken breast","Tortilla","Cheese"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Cream Pasta",
+ingredients:["Pasta","Cream","Butter"],
+steps:[{t:"Cook pasta",time:10,temp:"212°F"}]
+},
+{
+name:"Garlic Shrimp",
+ingredients:["Shrimp","Garlic"],
+steps:[{t:"Cook shrimp",time:6,temp:"350°F"}]
+},
+{
+name:"Pork Fried Rice",
+ingredients:["Pork chops","Rice","Eggs"],
+steps:[{t:"Cook pork",time:8,temp:"375°F"}]
+},
+{
+name:"Veg Omelette",
+ingredients:["Eggs","Spinach","Cheese"],
+steps:[{t:"Cook eggs",time:6,temp:"325°F"}]
+},
+{
+name:"Chicken Bowl",
+ingredients:["Chicken breast","Broccoli","Rice"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+},
+{
+name:"Simple Pasta",
+ingredients:["Pasta","Tomatoes","Garlic"],
+steps:[{t:"Boil pasta",time:10,temp:"212°F"}]
+},
+{
+name:"Chicken Sandwich",
+ingredients:["Chicken breast","Bread","Cheese"],
+steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
+}
+];
+
+/* =========================
+MATCH ENGINE
+========================= */
 
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
@@ -193,6 +360,10 @@ return recipes.map(score)
 .slice(0,3);
 }
 
+/* =========================
+SHOP LINKS → BUTTONS ONLY CHANGE
+========================= */
+
 function buildStoreLinks(recipe){
 let missing = recipe.ingredients.filter(i => !selected.includes(i));
 return missing.map(i => {
@@ -204,6 +375,10 @@ walmart:`https://www.walmart.com/search?q=${q}`
 };
 });
 }
+
+/* =========================
+COOKING ENGINE
+========================= */
 
 let current=null;
 let stepIndex=0;
@@ -218,6 +393,7 @@ show("recipe");
 }
 
 function renderStep(){
+
 let step=current.steps[stepIndex];
 let links=buildStoreLinks(current);
 
@@ -262,6 +438,10 @@ ${instruction}
 ${shopHTML}
 `;
 }
+
+/* =========================
+REST UNCHANGED
+========================= */
 
 function startTimer(){
 clearInterval(timer);
