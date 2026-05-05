@@ -44,7 +44,7 @@ pointer-events:auto;
 z-index:2;
 }
 
-/* UI */
+/* UI (UNCHANGED) */
 .header{
 text-align:center;
 font-size:22px;
@@ -100,7 +100,7 @@ color:white;
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
-/* HOME */
+/* HOME BACKGROUND */
 #homeBg{
 position:fixed;
 inset:0;
@@ -114,7 +114,7 @@ object-fit:cover;
 }
 
 /* =========================
-TITLE + FLAME FIX 🔥
+TITLE
 ========================= */
 
 #introLogo{
@@ -122,12 +122,11 @@ position:fixed;
 top:12px;
 right:12px;
 
-font-size:16px;
-font-weight:800;
-letter-spacing:2px;
+font-size:28px;
+font-weight:900;
+letter-spacing:3px;
 
 color:white;
-
 z-index:10;
 
 opacity:0;
@@ -139,13 +138,72 @@ animation:logoIn 1.2s ease forwards;
 100%{opacity:1; transform:translateY(0);}
 }
 
-/* 🔥 FLAME COLOR FIX */
+/* =========================
+🔥 REALISTIC FLICKERING FLAMES
+========================= */
+
 .flame{
+font-size:34px;
+display:inline-block;
+
+/* base fire color */
 color:#ffb300;
+
+/* layered glow */
 text-shadow:
 0 0 6px #ffb300,
 0 0 12px #ff6a00,
+0 0 20px #ff3b00;
+
+animation: flicker 0.18s infinite alternate;
+}
+
+/* 🔥 flicker animation */
+@keyframes flicker {
+0% {
+opacity:1;
+transform:scale(1);
+text-shadow:
+0 0 4px #ffb300,
+0 0 10px #ff6a00,
 0 0 18px #ff3b00;
+}
+
+25% {
+opacity:0.85;
+transform:scale(1.05);
+text-shadow:
+0 0 6px #ffcc33,
+0 0 14px #ff6a00,
+0 0 22px #ff3b00;
+}
+
+50% {
+opacity:1;
+transform:scale(0.98);
+text-shadow:
+0 0 8px #ffb300,
+0 0 16px #ff7a00,
+0 0 26px #ff2a00;
+}
+
+75% {
+opacity:0.9;
+transform:scale(1.08);
+text-shadow:
+0 0 5px #ffd24a,
+0 0 12px #ff6a00,
+0 0 20px #ff3b00;
+}
+
+100% {
+opacity:1;
+transform:scale(1);
+text-shadow:
+0 0 7px #ffb300,
+0 0 15px #ff6a00,
+0 0 24px #ff3b00;
+}
 }
 
 /* HOME BUTTONS */
@@ -163,6 +221,7 @@ z-index:5;
 .bottomDock .btn{
 width:160px;
 }
+
 </style>
 </head>
 
@@ -177,9 +236,10 @@ width:160px;
     <img src="copilot_image_1777179019874.jpeg"/>
   </div>
 
-  <!-- 🔥 UPDATED FLAMES -->
   <div id="introLogo">
-    <span class="flame">🔥</span> THE RUSTY CHEF <span class="flame">🔥</span>
+    <span class="flame">🔥</span>
+    THE RUSTY CHEF
+    <span class="flame">🔥</span>
   </div>
 
   <div class="bottomDock">
