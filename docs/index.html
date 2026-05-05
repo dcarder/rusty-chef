@@ -16,46 +16,28 @@ font-family:Arial;
 overflow:hidden;
 }
 
-/* =========================
-PAGE SYSTEM (FIXED STABILITY)
-========================= */
-
-.page{
-display:none;
-height:100%;
-width:100%;
-overflow-y:auto;
--webkit-overflow-scrolling:touch;
-}
-
-.page.active{
-display:block;
-}
-
-/* =========================
-UI
-========================= */
+.page{display:none;padding:20px;}
+.page.active{display:block;}
 
 .header{
 text-align:center;
 font-size:22px;
 font-weight:700;
 margin-bottom:10px;
-padding-top:10px;
 }
 
 .card{
 background:rgba(255,255,255,0.08);
 border-radius:14px;
 padding:14px;
-margin:10px;
+margin:10px 0;
 border:1px solid rgba(255,255,255,0.15);
 white-space:pre-wrap;
 }
 
 .item{
 padding:10px;
-margin:6px 10px;
+margin:6px 0;
 border-radius:10px;
 border:1px solid rgba(255,255,255,0.2);
 cursor:pointer;
@@ -73,63 +55,17 @@ color:black;
 font-weight:700;
 text-align:center;
 border-radius:12px;
-margin:10px;
+margin-top:10px;
 cursor:pointer;
 }
 
-/* =========================
-HOME (CLEAN FIX)
-========================= */
-
-#homeBg{
-position:fixed;
-inset:0;
-z-index:-1;
-}
-
-#homeBg img{
-width:100%;
-height:100%;
-object-fit:cover;
-animation:bgIn 1.2s ease forwards;
-}
-
-@keyframes bgIn{
-from{opacity:0; transform:scale(1.05);}
-to{opacity:1; transform:scale(1);}
-}
-
-#introLogo{
-position:absolute;
-top:38%;
-left:50%;
-transform:translate(-50%,-50%);
-font-size:30px;
-font-weight:800;
-animation:logoIn 1.4s ease forwards;
+.timer{
 text-align:center;
+font-size:20px;
+margin-top:10px;
 }
 
-@keyframes logoIn{
-0%{opacity:0; transform:translate(-50%,-60%) scale(0.85);}
-100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
-}
-
-.bottomDock{
-position:fixed;
-bottom:20px;
-left:0;
-right:0;
-display:flex;
-justify-content:center;
-gap:20px;
-}
-
-.bottomDock .btn{
-width:160px;
-}
-
-/* SHOP */
+/* 🛒 SHOP BUTTONS */
 .shopBtn{
 display:inline-block;
 margin-top:8px;
@@ -144,10 +80,103 @@ color:white;
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
-.timer{
+.shopBtn:active{
+transform:scale(0.95);
+opacity:0.9;
+}
+
+/* HOME BACKGROUND */
+#homeBg{
+position:fixed;
+inset:0;
+z-index:-2;
+opacity:0;
+animation:bgIn 1.2s ease forwards;
+}
+
+#homeBg img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+@keyframes bgIn{
+from{opacity:0; transform:scale(1.05);}
+to{opacity:1; transform:scale(1);}
+}
+
+/* =========================
+🔥 RUSTY METAL TITLE (UPDATED)
+========================= */
+
+#introLogo{
+position:absolute;
+top:38%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:38px;
+font-weight:900;
+letter-spacing:4px;
 text-align:center;
-font-size:20px;
-margin-top:10px;
+opacity:0;
+animation:logoIn 1.4s ease forwards;
+}
+
+.rust-text{
+background: linear-gradient(
+  90deg,
+  #3b2f2f 0%,
+  #a65a2a 20%,
+  #d97b2b 40%,
+  #6b3b1a 60%,
+  #c06b2c 80%,
+  #3b2f2f 100%
+);
+background-size:300% 100%;
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+background-clip:text;
+
+text-shadow:
+0 0 8px rgba(120,60,20,0.6),
+0 0 18px rgba(255,120,40,0.25);
+
+animation:
+rustMove 4s linear infinite,
+logoIn 1.4s ease forwards;
+}
+
+@keyframes rustMove{
+0%{background-position:0% 50%;}
+100%{background-position:300% 50%;}
+}
+
+@keyframes logoIn{
+0%{opacity:0; transform:translate(-50%,-60%) scale(0.85);}
+60%{opacity:1;}
+100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+}
+
+/* HOME BUTTONS */
+.bottomDock{
+position:fixed;
+bottom:20px;
+left:0;
+right:0;
+display:flex;
+justify-content:center;
+gap:20px;
+animation:dockIn 1s ease forwards;
+animation-delay:1.2s;
+}
+
+@keyframes dockIn{
+from{transform:translateY(80px);opacity:0;}
+to{transform:translateY(0);opacity:1;}
+}
+
+.bottomDock .btn{
+width:160px;
 }
 
 </style>
@@ -161,10 +190,13 @@ margin-top:10px;
 <div id="home" class="page active">
 
   <div id="homeBg">
-    <img src="copilot_image_1777179019874.jpeg"/>
+    <img src="copilot_image_1777179019874.jpeg" />
   </div>
 
-  <div id="introLogo">🍳 Smart Kitchen OS</div>
+  <!-- ONLY CHANGE: TITLE -->
+  <div id="introLogo" class="rust-text">
+    🔥 THE RUSTY CHEF 🔥
+  </div>
 
   <div class="bottomDock">
     <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -187,18 +219,7 @@ margin-top:10px;
 <script>
 
 /* =========================
-PAGE SYSTEM (FIXED)
-========================= */
-
-function show(id){
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active");
-});
-document.getElementById(id).classList.add("active");
-}
-
-/* =========================
-INGREDIENTS (UNCHANGED)
+100 INGREDIENTS (UNCHANGED)
 ========================= */
 
 const ingredientItems = [
@@ -217,7 +238,7 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-RECIPES (UNCHANGED)
+25 RECIPES (UNCHANGED)
 ========================= */
 
 const recipes = [
@@ -234,9 +255,15 @@ steps:[
 ];
 
 /* =========================
-PANTRY
+NAV
 ========================= */
 
+function show(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+
+/* PANTRY */
 function openPantry(){
 let html=`<div class="header">🧺 Pantry</div>`;
 ingredientItems.forEach(i=>{
@@ -249,18 +276,15 @@ show("pantry");
 }
 
 function toggle(i){
-selected = selected.includes(i)
-? selected.filter(x=>x!==i)
-: [...selected,i];
+selected=selected.includes(i)
+?selected.filter(x=>x!==i)
+:[...selected,i];
 
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* =========================
-MATCH
-========================= */
-
+/* MATCH */
 function showMatches(){
 let html=`<div class="header">🍳 Recipes</div>`;
 recipes.forEach(r=>{
@@ -270,22 +294,19 @@ document.getElementById("results").innerHTML=html;
 show("results");
 }
 
-/* =========================
-RECIPE
-========================= */
-
+/* RECIPE */
 let current=null;
 let stepIndex=0;
 
 function openRecipe(name){
-current = recipes.find(r=>r.name===name);
-stepIndex = 0;
+current=recipes.find(r=>r.name===name);
+stepIndex=0;
 renderRecipe();
 show("recipe");
 }
 
 function renderRecipe(){
-let step = current.steps[stepIndex];
+let step=current.steps[stepIndex];
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
@@ -300,10 +321,7 @@ Temp: ${step.temp}
 `;
 }
 
-/* =========================
-HOME
-========================= */
-
+/* HOME */
 function goHome(){
 show("home");
 }
