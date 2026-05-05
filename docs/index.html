@@ -64,7 +64,7 @@ font-size:20px;
 margin-top:10px;
 }
 
-/* 🛒 SHOP BUTTONS */
+/* SHOP BUTTONS */
 .shopBtn{
 display:inline-block;
 margin-top:8px;
@@ -76,38 +76,27 @@ text-decoration:none;
 color:white;
 }
 
-.instacartBtn{
-background:#43b02a;
-}
-
-.walmartBtn{
-background:#0071ce;
-}
+.instacartBtn{background:#43b02a;}
+.walmartBtn{background:#0071ce;}
 
 .shopBtn:active{
 transform:scale(0.95);
 opacity:0.9;
 }
 
-/* HOME ANIMATION */
+/* HOME */
 #homeBg{
 position:fixed;
 inset:0;
 z-index:-2;
-opacity:0;
-animation:bgIn 1.2s ease forwards;
+background:black;
 }
 
-/* ✅ FIXED IMAGE PATH ONLY */
-#homeBg img{
+#homeImg{
 width:100%;
 height:100%;
 object-fit:cover;
-}
-
-@keyframes bgIn{
-from{opacity:0; transform:scale(1.05);}
-to{opacity:1; transform:scale(1);}
+display:none;
 }
 
 #introLogo{
@@ -117,16 +106,7 @@ left:50%;
 transform:translate(-50%,-50%);
 font-size:30px;
 font-weight:800;
-opacity:0;
-animation:logoIn 1.4s ease forwards;
-animation-delay:0.3s;
 text-align:center;
-}
-
-@keyframes logoIn{
-0%{opacity:0; transform:translate(-50%,-60%) scale(0.85);}
-60%{opacity:1;}
-100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
 }
 
 .bottomDock{
@@ -137,13 +117,6 @@ right:0;
 display:flex;
 justify-content:center;
 gap:20px;
-animation:dockIn 1s ease forwards;
-animation-delay:1.2s;
-}
-
-@keyframes dockIn{
-from{transform:translateY(80px);opacity:0;}
-to{transform:translateY(0);opacity:1;}
 }
 
 .bottomDock .btn{
@@ -160,8 +133,7 @@ width:160px;
 <div id="home" class="page active">
 
   <div id="homeBg">
-    <!-- ✅ ONLY CHANGE MADE HERE -->
-    <img src="./copilot_image_1777179019874.jpeg" />
+    <img id="homeImg" />
   </div>
 
   <div id="introLogo">🍳 Smart Kitchen OS</div>
@@ -185,6 +157,41 @@ width:160px;
 </div>
 
 <script>
+
+/* =========================
+🔥 BULLETPROOF IMAGE LOADER
+========================= */
+
+const imagePaths = [
+"./copilot_image_1777179019874.jpeg",
+"copilot_image_1777179019874.jpeg",
+"docs/copilot_image_1777179019874.jpeg"
+];
+
+function loadHomeImage(index = 0){
+const img = document.getElementById("homeImg");
+
+if(index >= imagePaths.length){
+document.getElementById("homeBg").style.background = "black";
+img.style.display = "none";
+return;
+}
+
+const test = new Image();
+
+test.onload = () => {
+img.src = imagePaths[index];
+img.style.display = "block";
+};
+
+test.onerror = () => {
+loadHomeImage(index + 1);
+};
+
+test.src = imagePaths[index];
+}
+
+loadHomeImage();
 
 /* =========================
 100 INGREDIENTS
@@ -347,7 +354,7 @@ steps:[{t:"Cook chicken",time:10,temp:"375°F"}]
 ];
 
 /* =========================
-REST OF APP (UNCHANGED)
+APP LOGIC (UNCHANGED)
 ========================= */
 
 function score(r){
