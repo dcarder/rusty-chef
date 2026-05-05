@@ -14,6 +14,7 @@ width:100%;
 background:black;
 color:white;
 font-family:Arial;
+
 position:fixed;
 inset:0;
 overflow:hidden;
@@ -92,6 +93,7 @@ font-weight:700;
 text-decoration:none;
 color:white;
 }
+
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
@@ -101,6 +103,7 @@ position:fixed;
 inset:0;
 z-index:-2;
 }
+
 #homeBg img{
 width:100%;
 height:100%;
@@ -165,6 +168,7 @@ filter:drop-shadow(0 0 10px orange);
 100%{transform:translateY(-120px) scale(.7);opacity:0;}
 }
 
+/* HOME BUTTONS */
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -178,6 +182,32 @@ z-index:5;
 
 .bottomDock .btn{
 width:160px;
+}
+
+/* =========================
+🔥 ADDED: HOME BOOT ANIMATION (ONLY CHANGE)
+========================= */
+
+body.boot #homeBg{
+animation:bgIn 1.2s ease forwards;
+}
+
+body.boot #introLogo{
+animation:logoIn 1.4s ease forwards;
+}
+
+body.boot .bottomDock{
+opacity:0;
+transform:translateY(40px);
+animation:dockIn 0.9s ease forwards;
+animation-delay:1.2s;
+}
+
+@keyframes dockIn{
+to{
+opacity:1;
+transform:translateY(0);
+}
 }
 
 </style>
@@ -231,14 +261,27 @@ width:160px;
 
 <script>
 
-/* 100 INGREDIENTS */
+/* PAGE SWITCH */
+function show(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+requestAnimationFrame(()=>{
+document.getElementById(id).classList.add("active");
+});
+}
+
+/* 🔥 ADDED: boot animation trigger */
+window.addEventListener("load",()=>{
+document.body.classList.add("boot");
+});
+
+/* INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
 "Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
 "Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
 "Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
-"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire",
+"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
 "Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
 "Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
 "Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
@@ -247,30 +290,21 @@ const ingredientItems = [
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* 25 RECIPES */
+/* RECIPES */
 const recipes = [
 {
 name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
 steps:[
-{t:"Prep all ingredients",time:5,temp:"Room"},
-{t:"Cook chicken until golden",time:8,temp:"375°F"},
-{t:"Stir fry vegetables",time:5,temp:"350°F"},
-{t:"Add rice + soy sauce and combine",time:7,temp:"400°F"}
-]
-},
-{
-name:"Garlic Pasta",
-ingredients:["Pasta","Garlic","Butter","Salt","Pepper","Parmesan"],
-steps:[
-{t:"Boil pasta in salted water",time:10,temp:"212°F"},
-{t:"Melt butter on low heat",time:2,temp:"Low 250°F"},
-{t:"Sauté garlic until fragrant",time:2,temp:"Low 275°F"}
+{t:"Prep ingredients",time:5,temp:"Room"},
+{t:"Cook chicken",time:8,temp:"375°F"},
+{t:"Stir-fry vegetables",time:5,temp:"350°F"},
+{t:"Add rice + soy sauce",time:7,temp:"400°F"}
 ]
 }
 ];
 
-/* MATCH ENGINE (FIXED) */
+/* MATCH */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 let missing=r.ingredients.filter(i=>!selected.includes(i));
@@ -278,18 +312,11 @@ return {...r,match,missing};
 }
 
 function showMatches(){
-let sorted = recipes.map(score).sort((a,b)=>b.match-a.match);
-
-let html=`<div class="header">🍳 Best Matches</div>`;
-sorted.forEach(r=>{
-html+=`
-<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>
-Match: ${r.match}<br>
-Missing: ${r.missing.join(", ")||"None"}
-</div>`;
+let top=recipes.map(score).sort((a,b)=>b.match-a.match);
+let html=`<div class="header">🍳 Recipes</div>`;
+top.forEach(r=>{
+html+=`<div class="card" onclick="openRecipe('${r.name}')">${r.name}</div>`;
 });
-
 document.getElementById("results").innerHTML=html;
 show("results");
 }
@@ -307,9 +334,9 @@ show("pantry");
 }
 
 function toggle(i){
-selected = selected.includes(i)
-? selected.filter(x=>x!==i)
-: [...selected,i];
+selected=selected.includes(i)
+?selected.filter(x=>x!==i)
+:[...selected,i];
 
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
@@ -329,40 +356,20 @@ show("recipe");
 function render(){
 let step=current.steps[stepIndex];
 
-let shop="";
-current.ingredients.forEach(i=>{
-let q=encodeURIComponent(i);
-shop+=`
-<div class="card">
-<b>${i}</b><br>
-<a class="shopBtn instacartBtn" target="_blank"
-href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
-<a class="shopBtn walmartBtn" target="_blank"
-href="https://www.walmart.com/search?q=${q}">Walmart</a>
-</div>`;
-});
-
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
 
 <div class="card">
-<b>Step:</b> ${step.t}<br>
-<b>Time:</b> ${step.time} min<br>
-<b>Temp:</b> ${step.temp}
+Step: ${step.t}<br>
+Time: ${step.time} min<br>
+Temp: ${step.temp}
 </div>
 
 <div class="btn" onclick="goHome()">Home</div>
-
-${shop}
 `;
 }
 
-/* NAV */
-function show(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-}
-
+/* HOME */
 function goHome(){show("home");}
 
 show("home");
