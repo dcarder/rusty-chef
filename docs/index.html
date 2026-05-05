@@ -16,53 +16,40 @@ font-family:Arial;
 overflow:hidden;
 }
 
-/* =========================
-SNAP PAGE SYSTEM (FIXED)
-========================= */
-
+/* PAGES */
 .page{
-position:absolute;
-top:0;
-left:0;
-width:100%;
+display:none;
 height:100%;
-opacity:0;
-pointer-events:none;
-transition:none;
-
-/* FIX: restore proper scrolling */
 overflow-y:auto;
--webkit-overflow-scrolling:touch;
+padding:20px;
 }
 
 .page.active{
-opacity:1;
-pointer-events:auto;
+display:block;
 }
 
-/* =========================
-UI
-========================= */
-
+/* HEADER */
 .header{
 text-align:center;
 font-size:22px;
 font-weight:700;
-margin:10px 0;
-padding-top:20px;
+margin-bottom:10px;
 }
 
+/* CARD */
 .card{
 background:rgba(255,255,255,0.08);
 border-radius:14px;
 padding:14px;
-margin:10px;
+margin:10px 0;
 border:1px solid rgba(255,255,255,0.15);
+white-space:pre-wrap;
 }
 
+/* INGREDIENT ITEM */
 .item{
 padding:10px;
-margin:6px 10px;
+margin:6px 0;
 border-radius:10px;
 border:1px solid rgba(255,255,255,0.2);
 cursor:pointer;
@@ -73,6 +60,7 @@ background:rgba(79,172,254,0.25);
 border:1px solid rgba(79,172,254,0.6);
 }
 
+/* BUTTON */
 .btn{
 padding:14px;
 background:#4facfe;
@@ -80,45 +68,8 @@ color:black;
 font-weight:700;
 text-align:center;
 border-radius:12px;
-margin:10px;
+margin-top:10px;
 cursor:pointer;
-}
-
-/* =========================
-HOME BACKGROUND
-========================= */
-
-#homeBg{
-position:fixed;
-inset:0;
-z-index:-10;
-background:black;
-}
-
-#homeImg{
-width:100%;
-height:100%;
-object-fit:cover;
-display:block;
-}
-
-/* =========================
-BOTTOM BUTTON DOCK
-========================= */
-
-.bottomDock{
-position:fixed;
-bottom:20px;
-left:0;
-right:0;
-display:flex;
-justify-content:center;
-gap:20px;
-z-index:5;
-}
-
-.bottomDock .btn{
-width:160px;
 }
 
 /* TIMER */
@@ -143,6 +94,33 @@ color:white;
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
+/* HOME IMAGE */
+#homeBg{
+position:fixed;
+inset:0;
+z-index:-1;
+}
+
+#homeBg img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.bottomDock{
+position:fixed;
+bottom:20px;
+left:0;
+right:0;
+display:flex;
+justify-content:center;
+gap:20px;
+}
+
+.bottomDock .btn{
+width:160px;
+}
+
 </style>
 </head>
 
@@ -150,16 +128,14 @@ color:white;
 
 <div id="app">
 
-<!-- 🏠 HOME -->
+<!-- HOME -->
 <div id="home" class="page active">
 
   <div id="homeBg">
-    <img id="homeImg" src="./copilot_image_1777179019874.jpeg"/>
+    <img src="./copilot_image_1777179019874.jpeg"/>
   </div>
 
-  <div class="header" style="position:relative;z-index:2;">
-    🍳 Smart Kitchen OS
-  </div>
+  <div class="header">🍳 Smart Kitchen OS</div>
 
   <div class="bottomDock">
     <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -168,13 +144,13 @@ color:white;
 
 </div>
 
-<!-- 🧺 PANTRY -->
+<!-- PANTRY -->
 <div id="pantry" class="page"></div>
 
-<!-- 🍳 RESULTS -->
+<!-- RESULTS -->
 <div id="results" class="page"></div>
 
-<!-- 📖 RECIPE -->
+<!-- RECIPE -->
 <div id="recipe" class="page"></div>
 
 </div>
@@ -182,18 +158,7 @@ color:white;
 <script>
 
 /* =========================
-ROUTER (NO FLICKER)
-========================= */
-
-function show(id){
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active");
-});
-document.getElementById(id).classList.add("active");
-}
-
-/* =========================
-INGREDIENTS
+INGREDIENTS (UNCHANGED)
 ========================= */
 
 const ingredientItems = [
@@ -212,7 +177,7 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-RECIPES
+RECIPES (FULL STRUCTURE RESTORED)
 ========================= */
 
 const recipes = [
@@ -225,30 +190,36 @@ steps:[
 {t:"Stir-fry vegetables",time:5,temp:"350°F"},
 {t:"Add rice + soy sauce",time:7,temp:"400°F"}
 ]
+},
+{
+name:"Garlic Pasta",
+ingredients:["Pasta","Garlic","Butter","Salt","Pepper","Parmesan"],
+steps:[{t:"Boil pasta",time:10,temp:"212°F"}]
 }
 ];
 
 /* =========================
-PANTRY FIXED (NO SHRINK)
+NAV
+========================= */
+
+function show(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+
+/* =========================
+PANTRY FIXED
 ========================= */
 
 function openPantry(){
-
-let html = `
-<div class="header">🧺 Pantry</div>
-<div style="padding-bottom:120px;">
-`;
+let html=`<div class="header">🧺 Pantry</div>`;
 
 ingredientItems.forEach(i=>{
 let on = selected.includes(i);
 html += `<div class="item ${on?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
 });
 
-html += `</div>
-
-<div class="bottomDock">
-  <div class="btn" onclick="showMatches()">🍳 Find Recipes</div>
-</div>`;
+html += `<div class="btn" onclick="showMatches()">🍳 Find Recipes</div>`;
 
 document.getElementById("pantry").innerHTML = html;
 show("pantry");
@@ -264,17 +235,14 @@ openPantry();
 }
 
 /* =========================
-RECIPES MATCH
+MATCH
 ========================= */
 
 function showMatches(){
 let html=`<div class="header">🍳 Recipes</div>`;
 
 recipes.forEach(r=>{
-html+=`
-<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b>
-</div>`;
+html += `<div class="card" onclick="openRecipe('${r.name}')">${r.name}</div>`;
 });
 
 document.getElementById("results").innerHTML = html;
@@ -282,7 +250,7 @@ show("results");
 }
 
 /* =========================
-RECIPE VIEW
+RECIPE ENGINE
 ========================= */
 
 let current=null;
@@ -296,13 +264,15 @@ show("recipe");
 }
 
 function renderRecipe(){
+let step = current.steps[stepIndex];
+
 document.getElementById("recipe").innerHTML = `
 <div class="header">${current.name}</div>
 
 <div class="card">
-Step: ${current.steps[stepIndex].t}<br>
-Time: ${current.steps[stepIndex].time} min<br>
-Temp: ${current.steps[stepIndex].temp}
+Step: ${step.t}<br>
+Time: ${step.time} min<br>
+Temp: ${step.temp}
 </div>
 
 <div class="btn" onclick="goHome()">Home</div>
@@ -310,7 +280,7 @@ Temp: ${current.steps[stepIndex].temp}
 }
 
 /* =========================
-HOME SNAP
+HOME
 ========================= */
 
 function goHome(){
