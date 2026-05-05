@@ -14,42 +14,25 @@ width:100%;
 background:black;
 color:white;
 font-family:Arial;
-
-/* ✅ FIX: prevents mobile viewport jump */
-position:fixed;
-inset:0;
 overflow:hidden;
 }
 
 /* =========================
-PAGE SYSTEM (SMOOTH FIX)
+PAGE SYSTEM
 ========================= */
 
 .page{
-position:absolute;
-inset:0;
-width:100%;
+display:none;
 height:100%;
-
-opacity:0;
-transform:translateY(12px) scale(0.99);
-pointer-events:none;
-
-transition:opacity 0.25s ease, transform 0.25s ease;
-
 overflow-y:auto;
--webkit-overflow-scrolling:touch;
 }
 
 .page.active{
-opacity:1;
-transform:translateY(0) scale(1);
-pointer-events:auto;
-z-index:2;
+display:block;
 }
 
 /* =========================
-UI (UNCHANGED)
+UI
 ========================= */
 
 .header{
@@ -113,13 +96,14 @@ color:white;
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
-/* HOME */
+/* =========================
+HOME BACKGROUND
+========================= */
+
 #homeBg{
 position:fixed;
 inset:0;
 z-index:-2;
-opacity:0;
-animation:bgIn 1.2s ease forwards;
 }
 
 #homeBg img{
@@ -128,57 +112,30 @@ height:100%;
 object-fit:cover;
 }
 
-@keyframes bgIn{
-from{opacity:0; transform:scale(1.05);}
-to{opacity:1; transform:scale(1);}
-}
+/* =========================
+🔥 TOP RIGHT TITLE (UPDATED)
+========================= */
 
-/* RUST TEXT (UNCHANGED) */
 #introLogo{
-position:absolute;
-top:38%;
-left:50%;
-transform:translate(-50%,-50%);
-font-size:38px;
-font-weight:900;
-letter-spacing:4px;
-text-align:center;
+position:fixed;
+top:12px;
+right:12px;
+left:auto;
+
+font-size:16px;
+font-weight:800;
+letter-spacing:2px;
+color:white;
+
+z-index:10;
+
 opacity:0;
-animation:logoIn 1.4s ease forwards;
-}
-
-.rust-text{
-background: linear-gradient(
-  90deg,
-  #3b2f2f 0%,
-  #a65a2a 20%,
-  #d97b2b 40%,
-  #6b3b1a 60%,
-  #c06b2c 80%,
-  #3b2f2f 100%
-);
-background-size:300% 100%;
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-background-clip:text;
-
-text-shadow:
-0 0 8px rgba(120,60,20,0.6),
-0 0 18px rgba(255,120,40,0.25);
-
-animation:
-rustMove 4s linear infinite,
-logoIn 1.4s ease forwards;
-}
-
-@keyframes rustMove{
-0%{background-position:0% 50%;}
-100%{background-position:300% 50%;}
+animation:logoIn 1.2s ease forwards;
 }
 
 @keyframes logoIn{
-0%{opacity:0; transform:translate(-50%,-60%) scale(0.85);}
-100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+0%{opacity:0; transform:translateY(-8px);}
+100%{opacity:1; transform:translateY(0);}
 }
 
 /* HOME BUTTONS */
@@ -190,7 +147,6 @@ right:0;
 display:flex;
 justify-content:center;
 gap:20px;
-z-index:5;
 }
 
 .bottomDock .btn{
@@ -211,9 +167,8 @@ width:160px;
     <img src="copilot_image_1777179019874.jpeg"/>
   </div>
 
-  <div id="introLogo" class="rust-text">
-    🔥 THE RUSTY CHEF 🔥
-  </div>
+  <!-- TOP RIGHT TITLE -->
+  <div id="introLogo">THE RUSTY CHEF</div>
 
   <div class="bottomDock">
     <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -236,21 +191,16 @@ width:160px;
 <script>
 
 /* =========================
-PAGE SWITCH (SMOOTH FIX)
+PAGE SWITCH
 ========================= */
 
 function show(id){
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active");
-});
-
-requestAnimationFrame(()=>{
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 document.getElementById(id).classList.add("active");
-});
 }
 
 /* =========================
-INGREDIENTS (UNCHANGED)
+INGREDIENTS
 ========================= */
 
 const ingredientItems = [
@@ -269,7 +219,7 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-RECIPES (UNCHANGED)
+RECIPES
 ========================= */
 
 const recipes = [
@@ -298,9 +248,9 @@ show("pantry");
 }
 
 function toggle(i){
-selected=selected.includes(i)
-?selected.filter(x=>x!==i)
-:[...selected,i];
+selected = selected.includes(i)
+? selected.filter(x=>x!==i)
+: [...selected,i];
 
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
