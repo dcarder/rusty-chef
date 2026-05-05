@@ -20,7 +20,10 @@ inset:0;
 overflow:hidden;
 }
 
-/* PAGE SYSTEM */
+/* =========================
+PAGE SYSTEM (SMOOTH)
+========================= */
+
 .page{
 position:absolute;
 inset:0;
@@ -28,7 +31,7 @@ width:100%;
 height:100%;
 
 opacity:0;
-transform:translateY(12px) scale(0.99);
+transform:translateY(10px) scale(0.99);
 pointer-events:none;
 
 transition:opacity 0.25s ease, transform 0.25s ease;
@@ -44,7 +47,10 @@ pointer-events:auto;
 z-index:2;
 }
 
-/* UI */
+/* =========================
+UI
+========================= */
+
 .header{
 text-align:center;
 font-size:22px;
@@ -58,7 +64,6 @@ border-radius:14px;
 padding:14px;
 margin:10px 0;
 border:1px solid rgba(255,255,255,0.15);
-white-space:pre-wrap;
 }
 
 .item{
@@ -100,7 +105,10 @@ color:white;
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
-/* HOME */
+/* =========================
+HOME BACKGROUND
+========================= */
+
 #homeBg{
 position:fixed;
 inset:0;
@@ -113,18 +121,58 @@ height:100%;
 object-fit:cover;
 }
 
+/* =========================
+🔥 RUSTY CHEF HEADER RESTORED
+========================= */
+
 #introLogo{
 position:absolute;
 top:38%;
 left:50%;
 transform:translate(-50%,-50%);
-font-size:38px;
-font-weight:900;
-letter-spacing:4px;
+font-size:52px;
+font-weight:1000;
+letter-spacing:6px;
 text-align:center;
+z-index:3;
 }
 
-/* DOCK */
+.rust-text{
+background: linear-gradient(
+  90deg,
+  #2b1d16 0%,
+  #c46a2a 20%,
+  #ff9a3c 40%,
+  #7a3b18 60%,
+  #ffb347 80%,
+  #2b1d16 100%
+);
+
+background-size:300% 100%;
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+text-shadow:
+0 0 10px rgba(255,120,40,0.35),
+0 0 25px rgba(255,160,60,0.25);
+
+animation:rustFlow 5s linear infinite, logoIn 1.4s ease forwards;
+}
+
+@keyframes rustFlow{
+0%{background-position:0% 50%;}
+100%{background-position:300% 50%;}
+}
+
+@keyframes logoIn{
+0%{opacity:0; transform:translate(-50%,-60%) scale(0.85);}
+100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+}
+
+/* =========================
+BOTTOM MENU
+========================= */
+
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -133,7 +181,9 @@ right:0;
 display:flex;
 justify-content:center;
 gap:20px;
+z-index:5;
 }
+
 .bottomDock .btn{
 width:160px;
 }
@@ -151,11 +201,14 @@ width:160px;
     <img src="copilot_image_1777179019874.jpeg"/>
   </div>
 
-  <div id="introLogo">🔥 THE RUSTY CHEF 🔥</div>
+  <div id="introLogo" class="rust-text">
+🔥 THE RUSTY CHEF 🔥
+  </div>
 
   <div class="bottomDock">
     <div class="btn" onclick="openPantry()">🧺 Pantry</div>
     <div class="btn" onclick="showMatches()">🍳 Recipes</div>
+    <div class="btn" onclick="aiChef()">🧠 AI Chef</div>
   </div>
 
 </div>
@@ -193,7 +246,7 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-RECIPES (sample full system)
+RECIPES
 ========================= */
 
 const recipes = [
@@ -218,39 +271,35 @@ steps:[
 ];
 
 /* =========================
-MATCH ENGINE (FIXED)
+AI CHEF
 ========================= */
 
-function score(r){
-let match=0;
-let penalty=0;
+function aiChef(){
+
+let results = recipes.map(r=>{
+let have=0;
+let missing=[];
 
 r.ingredients.forEach(i=>{
-if(selected.includes(i)) match++;
-else penalty++;
+if(selected.includes(i)) have++;
+else missing.push(i);
 });
 
 return {
 ...r,
-match,
-scoreValue:(match*10)-(penalty*2),
-missing:r.ingredients.filter(i=>!selected.includes(i))
+percent: Math.round((have/r.ingredients.length)*100),
+have,
+missing
 };
-}
+}).sort((a,b)=>b.percent-a.percent);
 
-function showMatches(){
+let html=`<div class="header">🧠 AI Chef</div>`;
 
-let ranked = recipes.map(score)
-.sort((a,b)=>b.scoreValue-a.scoreValue)
-.slice(0,3);
-
-let html=`<div class="header">🍳 Best Matches</div>`;
-
-ranked.forEach(r=>{
+results.forEach(r=>{
 html+=`
-<div class="card" onclick="openRecipe('${r.name}')">
+<div class="card">
 <b>${r.name}</b><br>
-Match: ${r.match}/${r.ingredients.length}<br>
+Match: ${r.percent}%<br>
 Missing: ${r.missing.join(", ")||"None"}
 </div>`;
 });
@@ -260,7 +309,20 @@ show("results");
 }
 
 /* =========================
-RECIPE + TEMP INTELLIGENCE
+MATCH
+========================= */
+
+function showMatches(){
+let html=`<div class="header">🍳 Recipes</div>`;
+recipes.forEach(r=>{
+html+=`<div class="card" onclick="openRecipe('${r.name}')">${r.name}</div>`;
+});
+document.getElementById("results").innerHTML=html;
+show("results");
+}
+
+/* =========================
+RECIPE + TEMP GUIDE
 ========================= */
 
 let current=null;
@@ -278,50 +340,22 @@ function renderRecipe(){
 let step=current.steps[stepIndex];
 
 let heat="";
-
-if(step.temp.includes("212")) heat="Boiling water → rolling bubbles + steam";
-else if(step.temp.includes("375")) heat="Strong sizzle → browning starts fast";
-else if(step.temp.includes("400")) heat="High heat → fast sear, watch closely";
-else if(step.temp.includes("325")) heat="Medium heat → steady controlled cook";
-else heat="Adjust heat until steady cooking action";
-
-let guide=`
-🌡 Temp: ${step.temp}
-🔥 What to look for: ${heat}
-
-👨‍🍳 Instructions:
-- Preheat surface before adding food
-- Maintain stable heat level
-- Watch visual cues (sizzle, steam, browning)
-- Flip only when food releases naturally
-- Do not rush temperature control
-`;
-
-let shop="";
-current.ingredients.forEach(i=>{
-let q=encodeURIComponent(i);
-shop+=`
-<div class="card">
-<b>${i}</b><br>
-<a class="shopBtn instacartBtn" target="_blank"
-href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
-<a class="shopBtn walmartBtn" target="_blank"
-href="https://www.walmart.com/search?q=${q}">Walmart</a>
-</div>`;
-});
+if(step.temp.includes("212")) heat="Boiling - active bubbles + steam";
+else if(step.temp.includes("375")) heat="Strong sizzle + browning";
+else if(step.temp.includes("400")) heat="High heat sear - fast cooking";
+else heat="Controlled steady heat";
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
 
 <div class="card">
 Step: ${step.t}<br>
-Time: ${step.time} min<br><br>
-${guide}
+Time: ${step.time} min<br>
+Temp: ${step.temp}<br><br>
+🔥 ${heat}
 </div>
 
 <div class="btn" onclick="goHome()">Home</div>
-
-${shop}
 `;
 }
 
