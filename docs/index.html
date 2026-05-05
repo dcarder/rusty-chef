@@ -85,21 +85,6 @@ margin-top:10px;
 cursor:pointer;
 }
 
-/* SHOP */
-.shopBtn{
-display:inline-block;
-margin-top:8px;
-margin-right:8px;
-padding:10px 14px;
-border-radius:10px;
-font-weight:700;
-text-decoration:none;
-color:white;
-}
-
-.instacartBtn{background:#43b02a;}
-.walmartBtn{background:#0071ce;}
-
 /* HOME BACKGROUND */
 #homeBg{
 position:fixed;
@@ -114,96 +99,76 @@ object-fit:cover;
 }
 
 /* =========================
-TITLE
+🔥 CENTER STACKED TITLE
 ========================= */
 
 #introLogo{
 position:fixed;
-top:12px;
-right:12px;
-
-font-size:28px;
-font-weight:900;
-letter-spacing:3px;
-
-color:white;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
 z-index:10;
-
 opacity:0;
 animation:logoIn 1.2s ease forwards;
 }
 
-@keyframes logoIn{
-0%{opacity:0; transform:translateY(-8px);}
-100%{opacity:1; transform:translateY(0);}
+/* flame sides container */
+.titleRow{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:14px;
 }
 
-/* =========================
-🔥 REALISTIC FLICKERING FLAMES
-========================= */
-
+/* flame animation */
 .flame{
 font-size:34px;
-display:inline-block;
-
-/* base fire color */
 color:#ffb300;
-
-/* layered glow */
 text-shadow:
 0 0 6px #ffb300,
-0 0 12px #ff6a00,
-0 0 20px #ff3b00;
-
-animation: flicker 0.18s infinite alternate;
-}
-
-/* 🔥 flicker animation */
-@keyframes flicker {
-0% {
-opacity:1;
-transform:scale(1);
-text-shadow:
-0 0 4px #ffb300,
-0 0 10px #ff6a00,
-0 0 18px #ff3b00;
-}
-
-25% {
-opacity:0.85;
-transform:scale(1.05);
-text-shadow:
-0 0 6px #ffcc33,
 0 0 14px #ff6a00,
-0 0 22px #ff3b00;
-}
-
-50% {
-opacity:1;
-transform:scale(0.98);
-text-shadow:
-0 0 8px #ffb300,
-0 0 16px #ff7a00,
-0 0 26px #ff2a00;
-}
-
-75% {
-opacity:0.9;
-transform:scale(1.08);
-text-shadow:
-0 0 5px #ffd24a,
-0 0 12px #ff6a00,
-0 0 20px #ff3b00;
-}
-
-100% {
-opacity:1;
-transform:scale(1);
-text-shadow:
-0 0 7px #ffb300,
-0 0 15px #ff6a00,
 0 0 24px #ff3b00;
+animation:flicker 0.18s infinite alternate;
 }
+
+/* flicker */
+@keyframes flicker{
+0%{opacity:1; transform:scale(1);}
+50%{opacity:0.85; transform:scale(1.1);}
+100%{opacity:1; transform:scale(0.95);}
+}
+
+/* stacked words */
+.titleText{
+display:flex;
+flex-direction:column;
+line-height:0.9;
+}
+
+.titleText div{
+font-weight:900;
+letter-spacing:4px;
+color:white;
+}
+
+.titleText .the{
+font-size:34px;
+opacity:0.9;
+}
+
+.titleText .rusty{
+font-size:48px;
+}
+
+.titleText .chef{
+font-size:44px;
+}
+
+/* entrance */
+@keyframes logoIn{
+0%{opacity:0; transform:translate(-50%,-60%) scale(0.85);}
+100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
 }
 
 /* HOME BUTTONS */
@@ -236,10 +201,21 @@ width:160px;
     <img src="copilot_image_1777179019874.jpeg"/>
   </div>
 
+  <!-- 🔥 NEW STACKED TITLE -->
   <div id="introLogo">
-    <span class="flame">🔥</span>
-    THE RUSTY CHEF
-    <span class="flame">🔥</span>
+
+    <div class="titleRow">
+      <span class="flame">🔥</span>
+
+      <div class="titleText">
+        <div class="the">THE</div>
+        <div class="rusty">RUSTY</div>
+        <div class="chef">CHEF</div>
+      </div>
+
+      <span class="flame">🔥</span>
+    </div>
+
   </div>
 
   <div class="bottomDock">
