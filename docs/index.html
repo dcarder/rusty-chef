@@ -15,16 +15,12 @@ background:black;
 color:white;
 font-family:Arial;
 
-/* ✅ FIX: prevents mobile viewport jump */
 position:fixed;
 inset:0;
 overflow:hidden;
 }
 
-/* =========================
-PAGE SYSTEM (SMOOTH FIX)
-========================= */
-
+/* PAGE SYSTEM */
 .page{
 position:absolute;
 inset:0;
@@ -48,10 +44,7 @@ pointer-events:auto;
 z-index:2;
 }
 
-/* =========================
-UI (UNCHANGED)
-========================= */
-
+/* UI */
 .header{
 text-align:center;
 font-size:22px;
@@ -92,12 +85,6 @@ margin-top:10px;
 cursor:pointer;
 }
 
-.timer{
-text-align:center;
-font-size:20px;
-margin-top:10px;
-}
-
 /* SHOP */
 .shopBtn{
 display:inline-block;
@@ -118,8 +105,6 @@ color:white;
 position:fixed;
 inset:0;
 z-index:-2;
-opacity:0;
-animation:bgIn 1.2s ease forwards;
 }
 
 #homeBg img{
@@ -128,57 +113,39 @@ height:100%;
 object-fit:cover;
 }
 
-@keyframes bgIn{
-from{opacity:0; transform:scale(1.05);}
-to{opacity:1; transform:scale(1);}
-}
+/* =========================
+TITLE + FLAME FIX 🔥
+========================= */
 
-/* RUST TEXT (UNCHANGED) */
 #introLogo{
-position:absolute;
-top:38%;
-left:50%;
-transform:translate(-50%,-50%);
-font-size:38px;
-font-weight:900;
-letter-spacing:4px;
-text-align:center;
+position:fixed;
+top:12px;
+right:12px;
+
+font-size:16px;
+font-weight:800;
+letter-spacing:2px;
+
+color:white;
+
+z-index:10;
+
 opacity:0;
-animation:logoIn 1.4s ease forwards;
-}
-
-.rust-text{
-background: linear-gradient(
-  90deg,
-  #3b2f2f 0%,
-  #a65a2a 20%,
-  #d97b2b 40%,
-  #6b3b1a 60%,
-  #c06b2c 80%,
-  #3b2f2f 100%
-);
-background-size:300% 100%;
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-background-clip:text;
-
-text-shadow:
-0 0 8px rgba(120,60,20,0.6),
-0 0 18px rgba(255,120,40,0.25);
-
-animation:
-rustMove 4s linear infinite,
-logoIn 1.4s ease forwards;
-}
-
-@keyframes rustMove{
-0%{background-position:0% 50%;}
-100%{background-position:300% 50%;}
+animation:logoIn 1.2s ease forwards;
 }
 
 @keyframes logoIn{
-0%{opacity:0; transform:translate(-50%,-60%) scale(0.85);}
-100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+0%{opacity:0; transform:translateY(-8px);}
+100%{opacity:1; transform:translateY(0);}
+}
+
+/* 🔥 FLAME COLOR FIX */
+.flame{
+color:#ffb300;
+text-shadow:
+0 0 6px #ffb300,
+0 0 12px #ff6a00,
+0 0 18px #ff3b00;
 }
 
 /* HOME BUTTONS */
@@ -196,7 +163,6 @@ z-index:5;
 .bottomDock .btn{
 width:160px;
 }
-
 </style>
 </head>
 
@@ -204,15 +170,16 @@ width:160px;
 
 <div id="app">
 
-<!-- 🏠 HOME -->
+<!-- HOME -->
 <div id="home" class="page active">
 
   <div id="homeBg">
     <img src="copilot_image_1777179019874.jpeg"/>
   </div>
 
-  <div id="introLogo" class="rust-text">
-    🔥 THE RUSTY CHEF 🔥
+  <!-- 🔥 UPDATED FLAMES -->
+  <div id="introLogo">
+    <span class="flame">🔥</span> THE RUSTY CHEF <span class="flame">🔥</span>
   </div>
 
   <div class="bottomDock">
@@ -222,37 +189,30 @@ width:160px;
 
 </div>
 
-<!-- 🧺 PANTRY -->
+<!-- PANTRY -->
 <div id="pantry" class="page"></div>
 
-<!-- 🍳 RESULTS -->
+<!-- RESULTS -->
 <div id="results" class="page"></div>
 
-<!-- 📖 RECIPE -->
+<!-- RECIPE -->
 <div id="recipe" class="page"></div>
 
 </div>
 
 <script>
 
-/* =========================
-PAGE SWITCH (SMOOTH FIX)
-========================= */
-
+/* PAGE SWITCH */
 function show(id){
 document.querySelectorAll(".page").forEach(p=>{
 p.classList.remove("active");
 });
-
 requestAnimationFrame(()=>{
 document.getElementById(id).classList.add("active");
 });
 }
 
-/* =========================
-INGREDIENTS (UNCHANGED)
-========================= */
-
+/* INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
@@ -268,10 +228,7 @@ const ingredientItems = [
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* =========================
-RECIPES (UNCHANGED)
-========================= */
-
+/* RECIPES */
 const recipes = [
 {
 name:"Chicken Fried Rice",
@@ -298,9 +255,9 @@ show("pantry");
 }
 
 function toggle(i){
-selected=selected.includes(i)
-?selected.filter(x=>x!==i)
-:[...selected,i];
+selected = selected.includes(i)
+? selected.filter(x=>x!==i)
+: [...selected,i];
 
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
