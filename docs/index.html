@@ -47,7 +47,7 @@ pointer-events:auto;
 #homeBg{position:fixed;inset:0;z-index:-1;}
 #homeBg img{width:100%;height:100%;object-fit:cover;}
 
-/* RUSTY CHEF (UNCHANGED) */
+/* RUSTY CHEF */
 #introLogo{
 position:fixed;
 top:50%;
@@ -130,7 +130,7 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* INGREDIENTS */
+/* 100 INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
@@ -194,6 +194,7 @@ steps:[
 }))
 ];
 
+/* MATCH */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 return {...r,match};
@@ -212,16 +213,48 @@ document.getElementById("results").innerHTML=html;
 show("results");
 }
 
+/* PANTRY WITH SEARCH */
 function openPantry(){
-let html=`<div class="header">🧺 Pantry</div>`;
+
+let html=`<div class="header">🧺 Pantry</div>
+
+<div class="card">
+<input 
+id="searchBox"
+placeholder="Search ingredients..."
+style="width:100%;padding:12px;border-radius:10px;border:none;outline:none;"
+oninput="filterIngredients()"
+/>
+</div>
+
+<div id="ingredientList">`;
+
 ingredientItems.forEach(i=>{
 html+=`<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
 });
-html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
+
+html+=`</div>
+
+<div class="btn" onclick="showMatches()">Find Recipes</div>`;
+
 document.getElementById("pantry").innerHTML=html;
 show("pantry");
 }
 
+function filterIngredients(){
+let q=document.getElementById("searchBox").value.toLowerCase();
+let list=document.getElementById("ingredientList");
+
+let filtered=ingredientItems.filter(i=>i.toLowerCase().includes(q));
+
+list.innerHTML=filtered.map(i=>`
+<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">
+${i}
+</div>
+`).join("");
+}
+
+/* TOGGLE */
 function toggle(i){
 selected = selected.includes(i)
 ? selected.filter(x=>x!==i)
@@ -231,6 +264,7 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
+/* RECIPE */
 let current=null;
 
 function openRecipe(name){
@@ -239,7 +273,6 @@ render();
 show("recipe");
 }
 
-/* UPDATED RENDER (YOUR REQUEST) */
 function render(){
 
 let missing=current.ingredients.filter(i=>!selected.includes(i));
@@ -254,21 +287,11 @@ ${current.ingredients.map(i=>`- ${i}`).join("<br>")}
 let stepsHTML=current.steps.map((s,i)=>`
 <div class="card">
 <b>${i+1}. ${s.t}</b><br><br>
-
-🍴 Amount Needed:<br>
-${s.amount}<br><br>
-
-⏱ Cook Time:<br>
-${s.time} minutes<br><br>
-
-🌡 Temperature:<br>
-${s.temp}<br><br>
-
-👀 What To Look For:<br>
-The food should look properly cooked and evenly heated.<br><br>
-
-✋ Texture Guide:<br>
-Texture should feel firm, hot, and fully cooked.
+🍴 Amount Needed:<br>${s.amount}<br><br>
+⏱ Cook Time:<br>${s.time} minutes<br><br>
+🌡 Temperature:<br>${s.temp}<br><br>
+👀 What To Look For:<br>Cook until properly done and evenly heated.<br><br>
+✋ Texture Guide:<br>Should feel firm and fully cooked.
 </div>
 `).join("");
 
@@ -291,11 +314,9 @@ ${ingredientsHTML}
 ${stepsHTML}
 ${shopHTML}
 
-<div class="btn" onclick="goHome()">Home</div>
+<div class="btn" onclick="show('home')">Home</div>
 `;
 }
-
-function goHome(){show("home");}
 
 show("home");
 
