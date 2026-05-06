@@ -227,17 +227,19 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* ======================
-25 REAL COOKBOOK RECIPES
+25 FULL COOKBOOK RECIPES
 ====================== */
 const recipes = [
+
 {
 name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
 steps:[
 {t:"Cook rice until fluffy and slightly dry.",a:"1 cup rice"},
-{t:"Cook chicken until firm and no longer pink.",a:"1 chicken breast"},
+{t:"Dice chicken and cook until firm and no longer pink.",a:"1 chicken breast"},
 {t:"Scramble eggs into soft curds.",a:"2 eggs"},
-{t:"Combine and stir until aromatic and hot.",a:"final mix"}
+{t:"Sauté onions and carrots until lightly softened.",a:"1/2 cup each"},
+{t:"Combine everything and stir‑fry with soy sauce until aromatic.",a:"2 tbsp soy sauce"}
 ]
 },
 
@@ -246,9 +248,10 @@ name:"Spaghetti Bolognese",
 ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
 steps:[
 {t:"Boil pasta until tender but firm.",a:"1 box pasta"},
-{t:"Cook onions and garlic until fragrant.",a:"1 onion"},
-{t:"Brown beef completely.",a:"1 lb beef"},
-{t:"Simmer sauce until thick and rich.",a:"tomato sauce"}
+{t:"Cook onions and garlic until fragrant.",a:"1 onion + 2 cloves garlic"},
+{t:"Brown beef completely and break into small pieces.",a:"1 lb beef"},
+{t:"Add tomatoes and simmer until thick and rich.",a:"1 can crushed tomatoes"},
+{t:"Toss with pasta or serve on top.",a:"final"}
 ]
 },
 
@@ -257,22 +260,259 @@ name:"Chicken Tacos",
 ingredients:["Chicken breast","Tortilla","Cheese","Onions","Lime"],
 steps:[
 {t:"Cook chicken until golden and juicy.",a:"1 lb chicken"},
-{t:"Shred after resting for tenderness.",a:"rest 5 min"},
-{t:"Warm tortillas until soft.",a:"8 tortillas"},
-{t:"Assemble while hot and melty.",a:"final"}
+{t:"Let rest 5 minutes, then shred.",a:"rest + shred"},
+{t:"Warm tortillas until soft and flexible.",a:"8 tortillas"},
+{t:"Top with cheese and onions.",a:"1 cup cheese"},
+{t:"Finish with a squeeze of lime.",a:"1 lime"}
 ]
 },
 
-/* (remaining 22 recipes included exactly like this full format) */
-...Array.from({length:22},(_,i)=>({
-name:`Global Dish ${i+4}`,
-ingredients:["Chicken breast","Rice","Soy sauce"],
+{
+name:"Creamy Tomato Basil Soup",
+ingredients:["Tomatoes","Onions","Garlic","Cream","Basil"],
 steps:[
-{t:"Cook protein until fully done.",a:"base protein"},
-{t:"Mix with starch and sauce.",a:"combine"},
-{t:"Finish when hot and aromatic.",a:"final"}
+{t:"Sauté onions and garlic until soft.",a:"1 onion + 2 cloves garlic"},
+{t:"Add tomatoes and simmer until flavors deepen.",a:"1 can crushed tomatoes"},
+{t:"Blend until smooth and velvety.",a:"immersion blender"},
+{t:"Stir in cream and basil.",a:"1/2 cup cream + basil"},
+{t:"Simmer gently and season to taste.",a:"salt + pepper"}
 ]
-}))
+},
+
+{
+name:"Easy Quesadillas",
+ingredients:["Tortilla","Cheese","Butter"],
+steps:[
+{t:"Warm a skillet over medium heat.",a:"preheat"},
+{t:"Butter one tortilla lightly.",a:"1 tsp butter"},
+{t:"Add cheese and top with second tortilla.",a:"1 cup cheese"},
+{t:"Cook until golden, then flip.",a:"2–3 min each side"},
+{t:"Slice and serve warm.",a:"final"}
+]
+},
+
+{
+name:"Buttered Noodles",
+ingredients:["Pasta","Butter","Salt"],
+steps:[
+{t:"Boil noodles until tender.",a:"8 oz noodles"},
+{t:"Drain and return to pot.",a:"drain"},
+{t:"Add butter and stir until glossy.",a:"2 tbsp butter"},
+{t:"Season with salt and pepper.",a:"to taste"}
+]
+},
+
+{
+name:"Avocado Toast",
+ingredients:["Bread","Avocado","Salt","Pepper"],
+steps:[
+{t:"Toast bread until crisp.",a:"1 slice"},
+{t:"Mash avocado until smooth.",a:"1/2 avocado"},
+{t:"Spread evenly on toast.",a:"layer"},
+{t:"Season with salt and pepper.",a:"to taste"}
+]
+},
+
+{
+name:"Baked Potato",
+ingredients:["Potatoes","Olive oil","Salt"],
+steps:[
+{t:"Rub potato with oil and salt.",a:"1 tbsp oil"},
+{t:"Bake at 400°F until soft.",a:"50–60 minutes"},
+{t:"Split open and fluff interior.",a:"fork"},
+{t:"Add toppings as desired.",a:"optional"}
+]
+},
+
+{
+name:"Simple Garlic Pasta",
+ingredients:["Pasta","Olive oil","Garlic","Salt"],
+steps:[
+{t:"Boil pasta until tender.",a:"8 oz pasta"},
+{t:"Sauté garlic in oil until fragrant.",a:"3 cloves garlic"},
+{t:"Toss pasta with garlic oil.",a:"coat evenly"},
+{t:"Season and serve warm.",a:"salt + pepper"}
+]
+},
+
+{
+name:"Scrambled Eggs",
+ingredients:["Eggs","Milk","Butter","Salt"],
+steps:[
+{t:"Whisk eggs with milk and salt.",a:"3 eggs + 1 tbsp milk"},
+{t:"Melt butter in a pan over low heat.",a:"1 tbsp butter"},
+{t:"Cook eggs slowly, folding gently.",a:"soft curds"},
+{t:"Remove while still slightly glossy.",a:"carryover heat"}
+]
+},
+
+{
+name:"Sheet‑Pan Chicken & Veggies",
+ingredients:["Chicken breast","Carrots","Broccoli","Olive oil","Salt"],
+steps:[
+{t:"Chop vegetables into even pieces.",a:"2 cups mixed veg"},
+{t:"Toss chicken and veggies with oil and seasoning.",a:"2 tbsp oil"},
+{t:"Spread evenly on a sheet pan.",a:"single layer"},
+{t:"Bake at 425°F until cooked through.",a:"25–30 minutes"}
+]
+},
+
+{
+name:"Simple Chili",
+ingredients:["Ground beef","Tomatoes","Beans","Onions","Chili powder"],
+steps:[
+{t:"Brown beef in a pot.",a:"1 lb beef"},
+{t:"Add onions and cook until soft.",a:"1 onion"},
+{t:"Stir in tomatoes and beans.",a:"1 can each"},
+{t:"Season with chili powder.",a:"1 tbsp"},
+{t:"Simmer until thick.",a:"20 minutes"}
+]
+},
+
+{
+name:"Fried Rice (Vegetarian)",
+ingredients:["Rice","Eggs","Carrots","Peas","Soy sauce"],
+steps:[
+{t:"Cook rice and let cool.",a:"2 cups rice"},
+{t:"Scramble eggs and set aside.",a:"2 eggs"},
+{t:"Sauté carrots and peas.",a:"1 cup veg"},
+{t:"Add rice and soy sauce.",a:"2 tbsp soy"},
+{t:"Stir‑fry until hot.",a:"final"}
+]
+},
+
+{
+name:"Chicken & Rice Skillet",
+ingredients:["Chicken breast","Rice","Chicken broth","Onions"],
+steps:[
+{t:"Brown chicken pieces.",a:"1 lb chicken"},
+{t:"Add onions and cook until soft.",a:"1 onion"},
+{t:"Add rice and broth.",a:"1 cup rice + 2 cups broth"},
+{t:"Cover and simmer until rice is tender.",a:"20 minutes"}
+]
+},
+
+{
+name:"Peanut Butter Fudge",
+ingredients:["Peanut butter","Sugar","Butter"],
+steps:[
+{t:"Melt butter and sugar together.",a:"1/2 cup butter + 1 cup sugar"},
+{t:"Stir in peanut butter until smooth.",a:"1 cup PB"},
+{t:"Pour into dish and chill.",a:"1 hour"},
+{t:"Cut into squares.",a:"final"}
+]
+},
+
+{
+name:"Italian Beef Skillet",
+ingredients:["Ground beef","Tomatoes","Italian seasoning","Onions"],
+steps:[
+{t:"Brown beef and drain.",a:"1 lb beef"},
+{t:"Add onions and cook until soft.",a:"1 onion"},
+{t:"Stir in tomatoes and seasoning.",a:"1 can tomatoes"},
+{t:"Simmer until thick.",a:"10 minutes"}
+]
+},
+
+{
+name:"Yellow Curry Meatballs",
+ingredients:["Meatballs","Coconut milk","Curry powder"],
+steps:[
+{t:"Brown meatballs in a skillet.",a:"1 lb meatballs"},
+{t:"Add curry powder and stir.",a:"1 tbsp"},
+{t:"Pour in coconut milk.",a:"1 can"},
+{t:"Simmer until sauce thickens.",a:"10 minutes"}
+]
+},
+
+{
+name:"Simple Pancakes",
+ingredients:["Flour","Milk","Eggs","Sugar","Baking powder"],
+steps:[
+{t:"Mix dry ingredients together.",a:"1 cup flour mix"},
+{t:"Add milk and eggs.",a:"3/4 cup milk + 1 egg"},
+{t:"Stir until just combined.",a:"lumpy batter"},
+{t:"Cook on greased skillet.",a:"flip when bubbly"}
+]
+},
+
+{
+name:"Basic Omelette",
+ingredients:["Eggs","Cheese","Butter"],
+steps:[
+{t:"Whisk eggs until smooth.",a:"2 eggs"},
+{t:"Melt butter in pan.",a:"1 tbsp"},
+{t:"Pour eggs and cook gently.",a:"low heat"},
+{t:"Add cheese and fold.",a:"1/2 cup cheese"}
+]
+},
+
+{
+name:"Simple Stir‑Fry",
+ingredients:["Chicken breast","Broccoli","Soy sauce","Garlic"],
+steps:[
+{t:"Cook chicken until browned.",a:"1 lb chicken"},
+{t:"Add garlic and cook briefly.",a:"2 cloves"},
+{t:"Add broccoli and soy sauce.",a:"2 cups + 2 tbsp"},
+{t:"Cook until crisp‑tender.",a:"5 minutes"}
+]
+},
+
+{
+name:"Grilled Cheese",
+ingredients:["Bread","Cheese","Butter"],
+steps:[
+{t:"Butter bread slices.",a:"2 slices"},
+{t:"Add cheese between slices.",a:"2 slices cheese"},
+{t:"Cook until golden on both sides.",a:"2–3 min each"},
+{t:"Serve warm.",a:"final"}
+]
+},
+
+{
+name:"Hard‑Boiled Eggs",
+ingredients:["Eggs","Water"],
+steps:[
+{t:"Place eggs in pot and cover with water.",a:"6 eggs"},
+{t:"Bring to boil, then turn off heat.",a:"rest 10–12 min"},
+{t:"Cool in cold water.",a:"ice bath"},
+{t:"Peel and serve.",a:"final"}
+]
+},
+
+{
+name:"Simple Vegetable Soup",
+ingredients:["Carrots","Onions","Celery","Broth"],
+steps:[
+{t:"Chop vegetables evenly.",a:"2 cups veg"},
+{t:"Sauté until softened.",a:"5 minutes"},
+{t:"Add broth and simmer.",a:"4 cups broth"},
+{t:"Cook until vegetables are tender.",a:"20 minutes"}
+]
+},
+
+{
+name:"Easy Meatball Subs",
+ingredients:["Meatballs","Marinara","Bread","Cheese"],
+steps:[
+{t:"Heat meatballs in marinara.",a:"1 jar sauce"},
+{t:"Spoon into sub rolls.",a:"2 rolls"},
+{t:"Top with cheese.",a:"1 cup"},
+{t:"Broil until melted.",a:"2 minutes"}
+]
+},
+
+{
+name:"Simple Fried Rice",
+ingredients:["Rice","Eggs","Soy sauce","Mixed vegetables"],
+steps:[
+{t:"Scramble eggs and set aside.",a:"2 eggs"},
+{t:"Sauté vegetables until soft.",a:"1 cup veg"},
+{t:"Add rice and soy sauce.",a:"2 cups rice + 2 tbsp soy"},
+{t:"Stir‑fry until hot.",a:"final"}
+]
+}
+
 ];
 
 /* ======================
@@ -298,7 +538,7 @@ show("results");
 }
 
 /* ======================
-PANTRY (FIXED + SEARCH ALWAYS WORKS)
+PANTRY
 ====================== */
 function openPantry(){
 
@@ -331,72 +571,4 @@ show("pantry");
 }
 
 function filterIngredients(){
-let q=document.getElementById("searchBox").value.toLowerCase();
-let list=document.getElementById("ingredientList");
-
-let filtered=ingredientItems.filter(i=>i.toLowerCase().includes(q));
-
-list.innerHTML=filtered.map(i=>`
-<div class="item ${selected.includes(i)?'selected':''}"
-onclick="toggle('${i}')">
-${i}
-</div>
-`).join("");
-}
-
-/* TOGGLE */
-function toggle(i){
-selected = selected.includes(i)
-? selected.filter(x=>x!==i)
-: [...selected,i];
-
-localStorage.setItem("ingredients",JSON.stringify(selected));
-openPantry();
-}
-
-/* RECIPE */
-let current=null;
-
-function openRecipe(name){
-current=recipes.find(r=>r.name===name);
-render();
-show("recipe");
-}
-
-function render(){
-
-let missing=current.ingredients.filter(i=>!selected.includes(i));
-
-let stepsHTML=current.steps.map((s,i)=>`
-<div class="card">
-<b>${i+1}. ${s.t}</b><br><br>
-🍴 ${s.a}
-</div>
-`).join("");
-
-let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
-
-missing.forEach(item=>{
-let q=encodeURIComponent(item);
-shopHTML+=`
-<div class="card">
-<b>${item}</b><br>
-<a class="shopBtn instacartBtn" target="_blank" href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
-<a class="shopBtn walmartBtn" target="_blank" href="https://www.walmart.com/search?q=${q}">Walmart</a>
-</div>`;
-});
-
-document.getElementById("recipe").innerHTML=`
-<div class="header">${current.name}</div>
-${stepsHTML}
-${shopHTML}
-<div class="btn" onclick="show('home')">Home</div>
-`;
-}
-
-show("home");
-
-</script>
-
-</body>
-</html>
+let q=document.getElementById("search
