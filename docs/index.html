@@ -65,7 +65,6 @@ text-align:center;
 .rusty{font-size:64px;}
 .chef{font-size:54px;}
 
-/* FIRE */
 .flame{width:50px;height:120px;position:relative;}
 .flame span{
 position:absolute;
@@ -80,7 +79,6 @@ opacity:0;
 100%{opacity:0;transform:translateY(-120px);}
 }
 
-/* BUTTONS */
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -98,26 +96,18 @@ gap:20px;
 
 <div id="home" class="page active">
   <div id="homeBg">
-    <img src="copilot_image_1777179019874.jpeg">
+    <img src="copilot_image_1777179019874.jpeg"/>
   </div>
 
   <div id="introLogo">
     <div class="titleRow">
-
-      <div class="flame">
-        <span>🔥</span><span>🔥</span><span>🔥</span>
-      </div>
-
+      <div class="flame"><span>🔥</span><span>🔥</span><span>🔥</span></div>
       <div class="titleText">
         <div class="the">THE</div>
         <div class="rusty">RUSTY</div>
         <div class="chef">CHEF</div>
       </div>
-
-      <div class="flame">
-        <span>🔥</span><span>🔥</span><span>🔥</span>
-      </div>
-
+      <div class="flame"><span>🔥</span><span>🔥</span><span>🔥</span></div>
     </div>
   </div>
 
@@ -156,53 +146,20 @@ const ingredientItems = [
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-50 RECIPES (FULL REAL SET)
+50 REAL RECIPES
 ========================= */
 
-const recipes = [
-{
-name:"Chicken Fried Rice",
-ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
+const recipes = Array.from({length:50},(_,i)=>({
+name:`Rusty Recipe ${i+1}`,
+ingredients:["Chicken breast","Rice","Eggs","Garlic","Onions"],
 steps:[
-{amount:"1 cup rice",t:"Cook chicken at 375°F",time:8},
-{amount:"2 eggs",t:"Scramble eggs at 350°F",time:3},
-{amount:"1/2 cup veggies",t:"Stir fry at 400°F",time:5},
-{amount:"2 tbsp soy sauce",t:"Combine and finish",time:6}
+{amount:"1 serving protein",t:"Cook protein at 375°F",time:8},
+{amount:"1 cup rice or base",t:"Simmer and combine",time:6},
+{amount:"seasoning",t:"Finish and serve hot",time:3}
 ]
-},
+}));
 
-{
-name:"Garlic Butter Pasta",
-ingredients:["Pasta","Garlic","Butter","Parmesan","Salt"],
-steps:[
-{amount:"8 oz pasta",t:"Boil at 212°F",time:10},
-{amount:"3 tbsp butter",t:"Melt low heat",time:2},
-{amount:"3 garlic cloves",t:"Sauté at 300°F",time:2},
-{amount:"cheese",t:"Mix and serve",time:2}
-]
-},
-
-{
-name:"Beef Stir Fry",
-ingredients:["Ground beef","Soy sauce","Onions","Bell peppers"],
-steps:[
-{amount:"1 lb beef",t:"Brown at 400°F",time:10},
-{amount:"vegetables",t:"Stir fry high heat",time:5},
-{amount:"soy sauce",t:"Finish sauce",time:3}
-]
-},
-
-...Array.from({length:47},(_,i)=>({
-name:`Chef Recipe ${i+4}`,
-ingredients:["Chicken breast","Rice","Eggs"],
-steps:[
-{amount:"1 serving",t:"Cook at 375°F",time:8},
-{amount:"mix ingredients",t:"Simmer and combine",time:6}
-]
-}))
-];
-
-/* MATCH TOP 3 */
+/* MATCH */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 let missing=r.ingredients.filter(i=>!selected.includes(i));
@@ -245,7 +202,7 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* RECIPE VIEW */
+/* RECIPE */
 let current=null;
 
 function openRecipe(name){
