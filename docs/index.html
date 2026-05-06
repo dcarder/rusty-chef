@@ -14,7 +14,6 @@ width:100%;
 background:black;
 color:white;
 font-family:Arial;
-
 position:fixed;
 inset:0;
 overflow:hidden;
@@ -24,148 +23,60 @@ overflow:hidden;
 .page{
 position:absolute;
 inset:0;
-width:100%;
-height:100%;
 opacity:0;
 transform:translateY(10px) scale(0.99);
 pointer-events:none;
-transition:opacity .25s ease, transform .25s ease;
+transition:.25s ease;
 overflow-y:auto;
--webkit-overflow-scrolling:touch;
 }
-
 .page.active{
 opacity:1;
 transform:translateY(0) scale(1);
 pointer-events:auto;
-z-index:2;
 }
 
 /* UI */
-.header{
-text-align:center;
-font-size:22px;
-font-weight:700;
-margin-bottom:10px;
-}
-
-.card{
-background:rgba(255,255,255,0.08);
-border-radius:14px;
-padding:14px;
-margin:10px 0;
-border:1px solid rgba(255,255,255,0.15);
-white-space:pre-wrap;
-}
-
-.item{
-padding:10px;
-margin:6px 0;
-border-radius:10px;
-border:1px solid rgba(255,255,255,0.2);
-cursor:pointer;
-}
-
-.item.selected{
-background:rgba(79,172,254,0.25);
-border:1px solid rgba(79,172,254,0.6);
-}
-
-.btn{
-padding:14px;
-background:#4facfe;
-color:black;
-font-weight:700;
-text-align:center;
-border-radius:12px;
-margin-top:10px;
-cursor:pointer;
-}
+.header{text-align:center;font-size:22px;font-weight:700;margin-bottom:10px;}
+.card{background:rgba(255,255,255,.08);border-radius:14px;padding:14px;margin:10px 0;border:1px solid rgba(255,255,255,.15);}
+.item{padding:10px;margin:6px 0;border-radius:10px;border:1px solid rgba(255,255,255,.2);cursor:pointer;}
+.item.selected{background:rgba(79,172,254,.25);}
+.btn{padding:14px;background:#4facfe;color:black;font-weight:700;text-align:center;border-radius:12px;margin-top:10px;cursor:pointer;}
 
 /* SHOP */
-.shopBtn{
-display:inline-block;
-margin-top:8px;
-margin-right:8px;
-padding:10px 14px;
-border-radius:10px;
-font-weight:700;
-text-decoration:none;
-color:white;
-}
-
+.shopBtn{display:inline-block;margin-top:8px;margin-right:8px;padding:10px 14px;border-radius:10px;font-weight:700;text-decoration:none;color:white;}
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
 /* HOME */
-#homeBg{
-position:fixed;
-inset:0;
-z-index:-2;
-}
+#homeBg{position:fixed;inset:0;z-index:-1;}
+#homeBg img{width:100%;height:100%;object-fit:cover;}
 
-#homeBg img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-/* RUSTY CHEF (LOCKED) */
+/* 🔥 RUSTY CHEF (FIXED) */
 #introLogo{
 position:fixed;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
-z-index:10;
 }
-
-.titleRow{
-display:flex;
-align-items:center;
-justify-content:center;
-gap:16px;
-}
-
-.titleText{
-display:flex;
-flex-direction:column;
-font-weight:900;
-line-height:0.9;
-text-align:center;
-}
-
+.titleRow{display:flex;align-items:center;gap:16px;}
+.titleText{display:flex;flex-direction:column;font-weight:900;line-height:.9;}
 .the{font-size:36px;}
 .rusty{font-size:64px;}
 .chef{font-size:54px;}
 
-.flame{
-width:50px;
-height:120px;
-position:relative;
-overflow:hidden;
-}
-
+.flame{width:50px;height:120px;position:relative;}
 .flame span{
 position:absolute;
 bottom:0;
 font-size:22px;
+animation:rise 1.2s infinite;
 opacity:0;
-animation:fireRise 1.2s infinite ease-in-out;
-filter:drop-shadow(0 0 10px #ffb300);
 }
-
-.flame span:nth-child(1){left:50%;animation-delay:0s;}
-.flame span:nth-child(2){left:40%;animation-delay:.2s;}
-.flame span:nth-child(3){left:60%;animation-delay:.4s;}
-.flame span:nth-child(4){left:45%;animation-delay:.6s;}
-.flame span:nth-child(5){left:55%;animation-delay:.8s;}
-
-@keyframes fireRise{
-0%{opacity:0; transform:translateY(0) scale(.6);}
-20%{opacity:1;}
-60%{transform:translateY(-60px) scale(1.2);}
-100%{opacity:0; transform:translateY(-120px) scale(.7);}
+@keyframes rise{
+0%{opacity:0;transform:translateY(0);}
+30%{opacity:1;}
+100%{opacity:0;transform:translateY(-120px);}
 }
 
 /* HOME BUTTONS */
@@ -177,12 +88,8 @@ right:0;
 display:flex;
 justify-content:center;
 gap:20px;
-z-index:5;
 }
-
-.bottomDock .btn{
-width:160px;
-}
+.bottomDock .btn{width:160px;}
 </style>
 </head>
 
@@ -190,38 +97,33 @@ width:160px;
 
 <div id="app">
 
-<!-- HOME -->
 <div id="home" class="page active">
+<div id="homeBg"><img src="copilot_image_1777179019874.jpeg"></div>
 
-  <div id="homeBg">
-    <img src="copilot_image_1777179019874.jpeg"/>
-  </div>
+<div id="introLogo">
+<div class="titleRow">
 
-  <div id="introLogo">
-    <div class="titleRow">
+<div class="flame">
+<span>🔥</span><span>🔥</span><span>🔥</span>
+</div>
 
-      <div class="flame">
-        <span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span>
-      </div>
+<div class="titleText">
+<div class="the">THE</div>
+<div class="rusty">RUSTY</div>
+<div class="chef">CHEF</div>
+</div>
 
-      <div class="titleText">
-        <div class="the">THE</div>
-        <div class="rusty">RUSTY</div>
-        <div class="chef">CHEF</div>
-      </div>
+<div class="flame">
+<span>🔥</span><span>🔥</span><span>🔥</span>
+</div>
 
-      <div class="flame">
-        <span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span>
-      </div>
+</div>
+</div>
 
-    </div>
-  </div>
-
-  <div class="bottomDock">
-    <div class="btn" onclick="openPantry()">🧺 Pantry</div>
-    <div class="btn" onclick="showMatches()">🍳 Recipes</div>
-  </div>
-
+<div class="bottomDock">
+<div class="btn" onclick="openPantry()">🧺 Pantry</div>
+<div class="btn" onclick="showMatches()">🍳 Recipes</div>
+</div>
 </div>
 
 <div id="pantry" class="page"></div>
@@ -232,75 +134,83 @@ width:160px;
 
 <script>
 
+/* NAV */
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* 100 INGREDIENTS RESTORED */
+/* 100 INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Turkey","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce",
-"Lemon","Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla",
-"Bread","Parmesan","Cheddar","Mozzarella","Avocado","Chicken broth","Beef broth","Hot sauce","BBQ sauce","Teriyaki sauce"
+"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
+"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
+"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
+"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
+"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
+"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
+"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
+"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* 25 RECIPES RESTORED */
+/* RECIPES */
 const recipes = [
 {
 name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
 steps:[
-{t:"Prep ingredients",time:5,temp:"Room"},
-{t:"Cook chicken fully",time:8,temp:"375°F"},
-{t:"Stir-fry vegetables until soft",time:5,temp:"350°F"},
-{t:"Combine rice + sauce evenly",time:7,temp:"400°F"}
-]
-},
-{
-name:"Turkey Chili",
-ingredients:["Turkey","Tomatoes","Onions","Beans"],
-steps:[
-{t:"Brown turkey",time:8,temp:"Medium"},
-{t:"Simmer all ingredients",time:25,temp:"Low heat"}
+"Heat pan to 375°F. Add oil.",
+"Cook diced chicken 6–8 mins until internal temp 165°F.",
+"Add vegetables and cook 5 mins.",
+"Add rice and soy sauce. Stir constantly at high heat.",
+"Cook 5–7 mins until hot and slightly crispy."
 ]
 },
 {
 name:"Garlic Pasta",
-ingredients:["Pasta","Garlic","Butter","Cheese"],
+ingredients:["Pasta","Garlic","Butter","Salt","Parmesan"],
 steps:[
-{t:"Boil pasta",time:10,temp:"212°F"},
-{t:"Sauté garlic in butter",time:3,temp:"Low"},
-{t:"Mix everything together",time:4,temp:"Low"}
+"Boil water to 212°F and cook pasta 10 mins.",
+"Melt butter at low heat (250°F).",
+"Add minced garlic and cook 2 mins.",
+"Combine pasta and stir.",
+"Top with parmesan and serve."
+]
+},
+{
+name:"Beef Stir Fry",
+ingredients:["Ground beef","Soy sauce","Onions","Bell peppers","Rice"],
+steps:[
+"Heat pan to 400°F.",
+"Cook beef until browned (8 mins).",
+"Add vegetables and stir fry 5 mins.",
+"Add soy sauce and cook 2 mins."
 ]
 }
 ];
 
-/* SAFE SCORING */
+/* MATCH TOP 3 */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 let missing=r.ingredients.filter(i=>!selected.includes(i));
 return {...r,match,missing};
 }
 
-/* TOP 3 MATCHES */
 function showMatches(){
-let top=recipes.map(score)
-.sort((a,b)=>b.match-a.match)
-.slice(0,3);
+let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
 
-let html=`<div class="header">🍳 Top Recipes</div>`;
-
+let html=`<div class="header">🍳 Top Matches</div>`;
 top.forEach(r=>{
-html+=`<div class="card" onclick="openRecipe('${r.name}')">
+html+=`
+<div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>
-Match: ${r.match}/${r.ingredients.length}
+Match: ${r.match}<br>
+Missing: ${r.missing.join(", ")||"None"}
 </div>`;
 });
-
 document.getElementById("results").innerHTML=html;
 show("results");
 }
@@ -309,8 +219,7 @@ show("results");
 function openPantry(){
 let html=`<div class="header">🧺 Pantry</div>`;
 ingredientItems.forEach(i=>{
-let on=selected.includes(i);
-html+=`<div class="item ${on?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
+html+=`<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
 });
 html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
 document.getElementById("pantry").innerHTML=html;
@@ -318,59 +227,41 @@ show("pantry");
 }
 
 function toggle(i){
-selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
+selected = selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* RECIPE */
+/* RECIPE VIEW */
 let current=null;
 
 function openRecipe(name){
 current=recipes.find(r=>r.name===name);
-if(!current) return;
 render();
 show("recipe");
 }
 
 function render(){
 
-let step=current.steps?.[0] || {t:"No step",time:"-",temp:"-"};
-
 let missing=current.ingredients.filter(i=>!selected.includes(i));
 
-let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
+let stepsHTML=current.steps.map((s,i)=>`<div class="card"><b>Step ${i+1}</b><br>${s}</div>`).join("");
 
+let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
 missing.forEach(item=>{
 let q=encodeURIComponent(item);
-
 shopHTML+=`
 <div class="card">
 <b>${item}</b><br>
-
-<a class="shopBtn instacartBtn"
-href="https://www.instacart.com/store/search?search=${q}" target="_blank">
-Instacart
-</a>
-
-<a class="shopBtn walmartBtn"
-href="https://www.walmart.com/search?q=${q}" target="_blank">
-Walmart
-</a>
+<a class="shopBtn instacartBtn" target="_blank" href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
+<a class="shopBtn walmartBtn" target="_blank" href="https://www.walmart.com/search?q=${q}">Walmart</a>
 </div>`;
 });
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
-
-<div class="card">
-Step: ${step.t}<br>
-Time: ${step.time}<br>
-Temp: ${step.temp}
-</div>
-
+${stepsHTML}
 ${shopHTML}
-
 <div class="btn" onclick="goHome()">Home</div>
 `;
 }
@@ -383,3 +274,4 @@ show("home");
 
 </body>
 </html>
+
