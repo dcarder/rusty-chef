@@ -168,7 +168,6 @@ filter:drop-shadow(0 0 10px orange);
 100%{transform:translateY(-120px) scale(.7);opacity:0;}
 }
 
-/* HOME BUTTONS */
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -182,32 +181,6 @@ z-index:5;
 
 .bottomDock .btn{
 width:160px;
-}
-
-/* =========================
-🔥 ADDED: HOME BOOT ANIMATION (ONLY CHANGE)
-========================= */
-
-body.boot #homeBg{
-animation:bgIn 1.2s ease forwards;
-}
-
-body.boot #introLogo{
-animation:logoIn 1.4s ease forwards;
-}
-
-body.boot .bottomDock{
-opacity:0;
-transform:translateY(40px);
-animation:dockIn 0.9s ease forwards;
-animation-delay:1.2s;
-}
-
-@keyframes dockIn{
-to{
-opacity:1;
-transform:translateY(0);
-}
 }
 
 </style>
@@ -225,7 +198,6 @@ transform:translateY(0);
   </div>
 
   <div id="introLogo">
-
     <div class="titleRow">
 
       <div class="flame">
@@ -243,7 +215,6 @@ transform:translateY(0);
       </div>
 
     </div>
-
   </div>
 
   <div class="bottomDock">
@@ -253,6 +224,7 @@ transform:translateY(0);
 
 </div>
 
+<!-- PANTRY -->
 <div id="pantry" class="page"></div>
 <div id="results" class="page"></div>
 <div id="recipe" class="page"></div>
@@ -261,31 +233,15 @@ transform:translateY(0);
 
 <script>
 
-/* PAGE SWITCH */
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-requestAnimationFrame(()=>{
-document.getElementById(id).classList.add("active");
-});
+requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
-
-/* 🔥 ADDED: boot animation trigger */
-window.addEventListener("load",()=>{
-document.body.classList.add("boot");
-});
 
 /* INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
-"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
-"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
-"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
-"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
-"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
-"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
-"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
-"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
+"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
@@ -297,26 +253,55 @@ name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
 steps:[
 {t:"Prep ingredients",time:5,temp:"Room"},
-{t:"Cook chicken",time:8,temp:"375°F"},
-{t:"Stir-fry vegetables",time:5,temp:"350°F"},
-{t:"Add rice + soy sauce",time:7,temp:"400°F"}
+{t:"Cook chicken at 375°F until golden brown and fully cooked",time:8,temp:"375°F"},
+{t:"Stir-fry vegetables at 350°F until slightly tender but crisp",time:5,temp:"350°F"},
+{t:"Add rice + soy sauce and cook at 400°F while stirring constantly",time:7,temp:"400°F"}
 ]
 }
 ];
 
-/* MATCH */
+/* SCORE */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 let missing=r.ingredients.filter(i=>!selected.includes(i));
 return {...r,match,missing};
 }
 
+/* 🔥 NEW: ONE CLICK ORDER LINKS */
+function buildOrderLinks(missing){
+let items = missing.map(i=>encodeURIComponent(i)).join("%2C%20");
+
+return {
+instacart:`https://www.instacart.com/store/search?search=${items}`,
+walmart:`https://www.walmart.com/search?q=${items}`
+};
+}
+
+/* MATCH */
 function showMatches(){
-let top=recipes.map(score).sort((a,b)=>b.match-a.match);
-let html=`<div class="header">🍳 Recipes</div>`;
-top.forEach(r=>{
-html+=`<div class="card" onclick="openRecipe('${r.name}')">${r.name}</div>`;
+let ranked = recipes.map(score).sort((a,b)=>b.match-a.match);
+
+let html=`<div class="header">🍳 Top Recipes</div>`;
+
+ranked.forEach(r=>{
+let links = buildOrderLinks(r.missing);
+
+html+=`
+<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b><br>
+Match: ${r.match}<br>
+Missing: ${r.missing.join(", ") || "None"}<br>
+
+<a class="shopBtn instacartBtn" target="_blank" href="${links.instacart}">
+Order Missing (Instacart)
+</a>
+
+<a class="shopBtn walmartBtn" target="_blank" href="${links.walmart}">
+Order Missing (Walmart)
+</a>
+</div>`;
 });
+
 document.getElementById("results").innerHTML=html;
 show("results");
 }
@@ -334,9 +319,9 @@ show("pantry");
 }
 
 function toggle(i){
-selected=selected.includes(i)
-?selected.filter(x=>x!==i)
-:[...selected,i];
+selected = selected.includes(i)
+? selected.filter(x=>x!==i)
+: [...selected,i];
 
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
@@ -369,7 +354,6 @@ Temp: ${step.temp}
 `;
 }
 
-/* HOME */
 function goHome(){show("home");}
 
 show("home");
