@@ -57,6 +57,7 @@ text-align:center;
 
 .titleText{font-size:48px;font-weight:900;}
 
+/* FIRE */
 .fireGlow{
 text-shadow:0 0 10px orange,0 0 20px red;
 }
@@ -87,61 +88,55 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* =========================
-RECIPES (UNCHANGED)
-========================= */
+/* PANTRY */
+const ingredientItems=[
+"Chicken breast","Ground beef","Rice","Eggs","Pasta","Cheese","Garlic","Onions","Tomatoes","Soy sauce"
+];
+
+let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
+
+/* RECIPES */
 const recipes=[
 {
 name:"Chicken Fried Rice",
 ingredients:["Chicken breast","Rice","Eggs","Soy sauce","Onions"],
 steps:[
 {
-text:"Place a pan on the stove. Turn heat to HIGH. Wait until hot.",
+text:"Place a pan on the stove. Turn heat to HIGH. Wait until you feel strong heat when holding your hand 6 inches above pan.",
 item:"Chicken breast",
 amount:"1 pound diced",
 time:8,
 temp:375,
-detail:"Cook until no pink remains."
+detail:"Pour oil. Add chicken. Listen for loud sizzling. Stir every 30 seconds. Cook until no pink remains. It should feel firm when pressed."
 },
 {
-text:"Add rice into the pan.",
+text:"Add rice into the same pan.",
 item:"Rice",
 amount:"2 cups cooked",
 time:6,
 temp:400,
-detail:"Stir until hot."
+detail:"Break rice apart with spatula. You should hear dry crackling sound. Stir constantly until rice is hot and slightly toasted."
 },
 {
-text:"Add eggs slowly.",
+text:"Add eggs slowly into pan.",
 item:"Eggs",
 amount:"2 beaten",
 time:3,
 temp:350,
-detail:"Cook until solid."
+detail:"Eggs should spread and turn solid yellow. Keep stirring until no liquid remains."
 }
 ]
 }
 ];
 
-/* =========================
-🔥 FIX: PANTRY AUTO MATCH
-========================= */
-const ingredientItems = [...new Set(recipes.flatMap(r => r.ingredients))];
-
-/* =========================
-STATE
-========================= */
-let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
-
-/* =========================
-MATCH SYSTEM
-========================= */
+/* MATCH */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 let missing=r.ingredients.filter(i=>!selected.includes(i));
 return {...r,match,missing};
 }
 
+/* RECIPES */
 function showMatches(){
 let top=recipes.map(score).sort((a,b)=>b.match-a.match);
 
@@ -157,9 +152,7 @@ Missing: ${r.missing.join(", ")||"None"}
 show("results");
 }
 
-/* =========================
-PANTRY UI (UNCHANGED)
-========================= */
+/* PANTRY */
 function openPantry(){
 document.getElementById("pantry").innerHTML=
 `<div class="header">🧺 Pantry</div>`+
@@ -177,9 +170,7 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* =========================
-RECIPE VIEW (UNCHANGED)
-========================= */
+/* RECIPE */
 let current=null;
 
 function openRecipe(name){
@@ -197,9 +188,9 @@ let steps=current.steps.map((s,i)=>`
 
 <b>Step ${i+1}: ${s.item}</b><br><br>
 
-📝 ${s.text}<br><br>
+📝 Instruction:<br>${s.text}<br><br>
 
-⚙️ ${s.detail}<br><br>
+⚙️ What to do:<br>${s.detail}<br><br>
 
 📦 Amount: ${s.amount}<br>
 ⏱ Time: ${s.time} min<br>
