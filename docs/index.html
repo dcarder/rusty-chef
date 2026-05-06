@@ -19,7 +19,6 @@ inset:0;
 overflow:hidden;
 }
 
-/* PAGE SYSTEM */
 .page{
 position:absolute;
 inset:0;
@@ -40,7 +39,6 @@ pointer-events:auto;
 z-index:2;
 }
 
-/* UI */
 .header{
 text-align:center;
 font-size:22px;
@@ -54,7 +52,6 @@ border-radius:14px;
 padding:14px;
 margin:10px 0;
 border:1px solid rgba(255,255,255,0.15);
-white-space:pre-wrap;
 }
 
 .item{
@@ -167,7 +164,6 @@ filter:drop-shadow(0 0 10px orange);
 100%{transform:translateY(-120px) scale(.7);opacity:0;}
 }
 
-/* BUTTONS */
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -223,7 +219,6 @@ width:160px;
 
 </div>
 
-<!-- PANTRY -->
 <div id="pantry" class="page"></div>
 <div id="results" class="page"></div>
 <div id="recipe" class="page"></div>
@@ -232,89 +227,71 @@ width:160px;
 
 <script>
 
-/* NAV */
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* ✅ FULL 100 INGREDIENT PANTRY RESTORED */
+/* INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
-"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
-"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
-"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
-"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
-"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
-"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
-"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
-"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
+"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* 🍳 FULL RECIPES RESTORED (25+) */
+/* RECIPES */
 const recipes = [
 {
 name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
 steps:[
-{t:"Prep ingredients thoroughly and cut everything evenly for even cooking",time:5,temp:"Room"},
-{t:"Cook chicken at 375°F until golden and internal temp reaches 165°F",time:8,temp:"375°F"},
-{t:"Stir-fry vegetables at 350°F until slightly tender but still crisp",time:5,temp:"350°F"},
-{t:"Add rice + soy sauce at 400°F and stir constantly for flavor absorption",time:7,temp:"400°F"}
-]
-},
-{
-name:"Garlic Pasta",
-ingredients:["Pasta","Garlic","Butter","Salt","Pepper","Cheese"],
-steps:[
-{t:"Boil pasta at 212°F until al dente (firm but cooked)",time:10,temp:"212°F"},
-{t:"Melt butter on low heat until fully liquid",time:2,temp:"Low"},
-{t:"Sauté garlic gently to avoid burning",time:2,temp:"Low"},
-{t:"Combine pasta with butter and seasoning thoroughly",time:3,temp:"Low"}
+{t:"Prep ingredients carefully and cut evenly for fast cooking",time:5,temp:"Room"},
+{t:"Cook chicken at 375°F until golden and safe internal temp (165°F)",time:8,temp:"375°F"},
+{t:"Stir-fry vegetables at 350°F until crisp-tender",time:5,temp:"350°F"},
+{t:"Combine rice + soy sauce at 400°F, stir continuously",time:7,temp:"400°F"}
 ]
 }
 ];
 
-/* 🔥 SMART MATCHING */
+/* SCORE */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 let missing=r.ingredients.filter(i=>!selected.includes(i));
 return {...r,match,missing};
 }
 
-/* 🛒 ONE CLICK ORDER LINKS */
-function orderLinks(missing){
-let list = missing.map(i=>encodeURIComponent(i)).join("%2C%20");
+/* 🛒 PER RECIPE SHOP LINKS */
+function shopLinks(missing){
+let q = missing.map(i=>encodeURIComponent(i)).join("%2C%20");
 return {
-instacart:`https://www.instacart.com/store/search?search=${list}`,
-walmart:`https://www.walmart.com/search?q=${list}`
+instacart:`https://www.instacart.com/store/search?search=${q}`,
+walmart:`https://www.walmart.com/search?q=${q}`
 };
 }
 
-/* 🍳 TOP 3 RECIPES + AI PRIORITY MATCH */
+/* 🍳 TOP RECIPES WITH BUTTONS */
 function showMatches(){
-let ranked = recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
 
-let html=`<div class="header">🍳 Top AI Recipes</div>`;
+let ranked = recipes.map(score).sort((a,b)=>b.match-a.match);
+
+let html=`<div class="header">🍳 Top Recipes</div>`;
 
 ranked.forEach(r=>{
-let links = orderLinks(r.missing);
+let links = shopLinks(r.missing);
 
 html+=`
 <div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>
-Match Score: ${r.match}<br>
+Match: ${r.match}<br>
 Missing: ${r.missing.join(", ") || "None"}<br>
 
 <a class="shopBtn instacartBtn" target="_blank" href="${links.instacart}">
-Order Missing (Instacart)
+Instacart (Missing)
 </a>
 
 <a class="shopBtn walmartBtn" target="_blank" href="${links.walmart}">
-Order Missing (Walmart)
+Walmart (Missing)
 </a>
 </div>`;
 });
@@ -344,7 +321,7 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* RECIPE VIEW (DETAILED COOKING) */
+/* RECIPE VIEW */
 let current=null;
 
 function openRecipe(name){
@@ -357,8 +334,8 @@ function render(){
 let steps = current.steps.map(s=>`
 <div class="card">
 🔥 ${s.t}<br>
-⏱ Time: ${s.time} min<br>
-🌡 Temp: ${s.temp}
+⏱ ${s.time} min<br>
+🌡 ${s.temp}
 </div>
 `).join("");
 
