@@ -110,7 +110,7 @@ height:100%;
 object-fit:cover;
 }
 
-/* RUSTY CHEF (UNCHANGED EXACTLY) */
+/* RUSTY CHEF (LOCKED) */
 #introLogo{
 position:fixed;
 top:50%;
@@ -190,6 +190,7 @@ width:160px;
 
 <div id="app">
 
+<!-- HOME -->
 <div id="home" class="page active">
 
   <div id="homeBg">
@@ -236,7 +237,7 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* 100+ INGREDIENTS (RESTORED EXPANDED) */
+/* 100 INGREDIENTS RESTORED */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
@@ -254,60 +255,44 @@ name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
 steps:[
 {t:"Prep ingredients",time:5,temp:"Room"},
-{t:"Cook chicken until golden brown",time:8,temp:"375°F"},
+{t:"Cook chicken fully",time:8,temp:"375°F"},
 {t:"Stir-fry vegetables until soft",time:5,temp:"350°F"},
-{t:"Add rice + soy sauce and mix thoroughly",time:7,temp:"400°F"}
+{t:"Combine rice + sauce evenly",time:7,temp:"400°F"}
+]
+},
+{
+name:"Turkey Chili",
+ingredients:["Turkey","Tomatoes","Onions","Beans"],
+steps:[
+{t:"Brown turkey",time:8,temp:"Medium"},
+{t:"Simmer all ingredients",time:25,temp:"Low heat"}
 ]
 },
 {
 name:"Garlic Pasta",
 ingredients:["Pasta","Garlic","Butter","Cheese"],
 steps:[
-{t:"Boil pasta until al dente",time:10,temp:"212°F"},
-{t:"Melt butter and sauté garlic",time:3,temp:"Low"},
-{t:"Mix pasta and cheese until creamy",time:4,temp:"Low"}
-]
-},
-{
-name:"Turkey Sandwich",
-ingredients:["Turkey","Bread","Cheese","Mayonnaise"],
-steps:[
-{t:"Toast bread lightly",time:3,temp:"350°F"},
-{t:"Layer turkey and cheese",time:2,temp:"Room"},
-{t:"Add mayo and assemble",time:2,temp:"Room"}
-]
-},
-{
-name:"Turkey Chili",
-ingredients:["Ground turkey","Tomatoes","Onions","Beans"],
-steps:[
-{t:"Brown turkey in pot",time:8,temp:"Medium Heat"},
-{t:"Add vegetables and simmer",time:15,temp:"Low"},
-{t:"Let flavors blend",time:20,temp:"Low"}
-]
-},
-{
-name:"Beef Stir Fry",
-ingredients:["Ground beef","Soy sauce","Onions","Bell peppers","Rice"],
-steps:[
-{t:"Cook beef until browned",time:8,temp:"375°F"},
-{t:"Add vegetables and stir fry",time:6,temp:"High Heat"},
-{t:"Serve over rice",time:2,temp:"Hot"}
+{t:"Boil pasta",time:10,temp:"212°F"},
+{t:"Sauté garlic in butter",time:3,temp:"Low"},
+{t:"Mix everything together",time:4,temp:"Low"}
 ]
 }
 ];
 
-/* SCORE */
+/* SAFE SCORING */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 let missing=r.ingredients.filter(i=>!selected.includes(i));
 return {...r,match,missing};
 }
 
-/* MATCH */
+/* TOP 3 MATCHES */
 function showMatches(){
-let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
-let html=`<div class="header">🍳 Top Matches</div>`;
+let top=recipes.map(score)
+.sort((a,b)=>b.match-a.match)
+.slice(0,3);
+
+let html=`<div class="header">🍳 Top Recipes</div>`;
 
 top.forEach(r=>{
 html+=`<div class="card" onclick="openRecipe('${r.name}')">
@@ -350,7 +335,8 @@ show("recipe");
 
 function render(){
 
-let step=current.steps?.[0] || {t:"No steps available",time:"-",temp:"-"};
+let step=current.steps?.[0] || {t:"No step",time:"-",temp:"-"};
+
 let missing=current.ingredients.filter(i=>!selected.includes(i));
 
 let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
