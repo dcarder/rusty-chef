@@ -38,7 +38,7 @@ pointer-events:auto;
 text-align:center;
 font-size:22px;
 font-weight:700;
-margin-bottom:10px;
+margin:10px 0;
 }
 
 .card{
@@ -47,7 +47,6 @@ border-radius:14px;
 padding:14px;
 margin:10px 0;
 border:1px solid rgba(255,255,255,.15);
-cursor:pointer;
 }
 
 .btn{
@@ -95,37 +94,6 @@ width:100%;
 height:100%;
 object-fit:cover;
 }
-
-#introLogo{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-font-weight:900;
-}
-
-.titleRow{
-display:flex;
-align-items:center;
-gap:16px;
-}
-
-.the{font-size:36px;}
-.rusty{font-size:64px;}
-.chef{font-size:54px;}
-
-.flame span{
-font-size:22px;
-animation:rise 1.2s infinite;
-opacity:0;
-}
-
-@keyframes rise{
-0%{opacity:0;transform:translateY(0);}
-30%{opacity:1;}
-100%{opacity:0;transform:translateY(-120px);}
-}
 </style>
 </head>
 
@@ -135,17 +103,11 @@ opacity:0;
 
 <!-- HOME -->
 <div id="home" class="page active">
-
-<!-- ✅ RESTORED COPILOT IMAGE -->
 <div id="homeBg">
 <img src="copilot_image_1777179019874.jpeg">
 </div>
 
-<div id="introLogo">
-<div class="titleRow">
-<div>🔥 THE RUSTY CHEF 🔥</div>
-</div>
-</div>
+<div class="header">🔥 THE RUSTY CHEF 🔥</div>
 
 <div class="bottomDock">
 <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -172,31 +134,30 @@ requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
 /* =========================
-   INGREDIENTS (RECIPE BASED)
+   PANTRY INGREDIENTS
 ========================= */
 const ingredientItems = [
-"Rice","Eggs","Chicken breast","Ground beef","Tortilla","Cheese","Onions","Garlic","Tomatoes",
-"Butter","Milk","Flour","Salt","Pepper","Olive oil","Soy sauce","Lime","Pasta","Bread",
-"Potatoes","Carrots","Broccoli","Cream","Basil","Chicken broth","Beans","Curry powder","Coconut milk","Sugar"
+"Rice","Eggs","Chicken breast","Ground beef","Pasta","Tortilla","Cheese","Onions","Garlic","Tomatoes",
+"Butter","Milk","Flour","Salt","Pepper","Olive oil","Soy sauce","Lime","Bread","Potatoes",
+"Carrots","Broccoli","Cream","Basil","Chicken broth","Beans","Curry powder","Coconut milk","Sugar","Lettuce",
+"Tomato","Sour cream","Peas","Marinara","Mixed vegetables","Italian seasoning","Cheddar","Parmesan"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-   RECIPES (SENSORY FORMAT)
+   25 SENSORY RECIPES
 ========================= */
 const recipes = [
+
 {
 name:"Skillet Beef Tacos",
 serves:4,
-ingredients:{
-main:["Ground beef","Tortilla","Cheese","Onions"],
-optional:["Lettuce","Tomato","Sour cream"]
-},
+ingredients:{main:["Ground beef","Tortilla","Cheese","Onions"],optional:["Lettuce","Tomato","Sour cream"]},
 steps:[
-{title:"Heat the pan",sensory:"Warm air rises as skillet heats.",instruction:"Medium heat for 1 minute."},
-{title:"Cook beef",sensory:"Strong sizzling as meat browns.",instruction:"Break apart until crumbly."},
-{title:"Season",sensory:"Spices release deep aroma.",instruction:"Mix seasoning evenly."},
+{title:"Heat pan",sensory:"Warm air rises from skillet.",instruction:"Medium heat 1 minute."},
+{title:"Cook beef",sensory:"Strong sizzling fills kitchen.",instruction:"Break apart until browned."},
+{title:"Season",sensory:"Rich spice aroma blooms.",instruction:"Mix seasoning evenly."},
 {title:"Add water",sensory:"Quick hiss, sauce thickens.",instruction:"Add 3 tbsp water."},
 {title:"Assemble",sensory:"Tortillas feel soft and warm.",instruction:"Fill and serve."}
 ]
@@ -205,21 +166,104 @@ steps:[
 {
 name:"Chicken Fried Rice",
 serves:3,
-ingredients:{
-main:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
-optional:["Peas"]
-},
+ingredients:{main:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],optional:["Peas"]},
 steps:[
-{title:"Cook rice",sensory:"Steam rises from fluffy rice.",instruction:"Cook until slightly dry."},
+{title:"Cook rice",sensory:"Steam rises gently.",instruction:"Cook until slightly dry."},
 {title:"Cook chicken",sensory:"Sharp sizzling sound.",instruction:"Cook until firm."},
-{title:"Scramble eggs",sensory:"Soft curds form quickly.",instruction:"Cook gently."},
-{title:"Combine",sensory:"Savory aroma fills pan.",instruction:"Mix everything with soy sauce."}
+{title:"Scramble eggs",sensory:"Soft fluffy texture forms.",instruction:"Cook gently."},
+{title:"Combine",sensory:"Savory aroma fills air.",instruction:"Mix everything together."}
+]
+},
+
+{
+name:"Spaghetti Bolognese",
+serves:4,
+ingredients:{main:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],optional:["Parmesan"]},
+steps:[
+{title:"Boil pasta",sensory:"Water bubbles rapidly.",instruction:"Cook until tender."},
+{title:"Brown beef",sensory:"Meat sizzles and darkens.",instruction:"Cook fully."},
+{title:"Simmer sauce",sensory:"Tomato aroma deepens.",instruction:"Add tomatoes and simmer."},
+{title:"Serve",sensory:"Steam rises from plate.",instruction:"Combine and serve."}
+]
+},
+
+{
+name:"Creamy Tomato Soup",
+serves:2,
+ingredients:{main:["Tomatoes","Onions","Garlic","Cream","Basil"],optional:["Bread"]},
+steps:[
+{title:"Sauté",sensory:"Onions soften and smell sweet.",instruction:"Cook onions + garlic."},
+{title:"Simmer",sensory:"Soup thickens gently.",instruction:"Add tomatoes."},
+{title:"Blend",sensory:"Texture becomes silky smooth.",instruction:"Blend fully."},
+{title:"Finish",sensory:"Cream softens acidity.",instruction:"Stir in cream."}
+]
+},
+
+{
+name:"Grilled Cheese",
+serves:1,
+ingredients:{main:["Bread","Cheese","Butter"],optional:[]},
+steps:[
+{title:"Butter bread",sensory:"Butter melts instantly.",instruction:"Spread evenly."},
+{title:"Grill",sensory:"Cheese melts and stretches.",instruction:"Cook until golden."}
+]
+},
+
+{
+name:"Scrambled Eggs",
+serves:1,
+ingredients:{main:["Eggs","Milk","Butter"],optional:["Salt","Pepper"]},
+steps:[
+{title:"Whisk",sensory:"Eggs become smooth.",instruction:"Mix eggs + milk."},
+{title:"Cook",sensory:"Soft curds form.",instruction:"Cook low heat."}
+]
+},
+
+{
+name:"Chicken Tacos",
+serves:3,
+ingredients:{main:["Chicken breast","Tortilla","Cheese","Onions","Lime"],optional:["Sour cream"]},
+steps:[
+{title:"Cook chicken",sensory:"Sizzling sharp sound.",instruction:"Cook until golden."},
+{title:"Shred",sensory:"Chicken becomes tender.",instruction:"Shred meat."},
+{title:"Assemble",sensory:"Warm tortillas soften.",instruction:"Fill and serve."}
+]
+},
+
+{
+name:"Simple Chili",
+serves:4,
+ingredients:{main:["Ground beef","Tomatoes","Beans","Onions","Chili powder"],optional:[]},
+steps:[
+{title:"Brown beef",sensory:"Deep sizzling aroma.",instruction:"Cook beef fully."},
+{title:"Simmer",sensory:"Thick bubbling stew.",instruction:"Cook 20 min."}
+]
+},
+
+{
+name:"Buttered Noodles",
+serves:2,
+ingredients:{main:["Pasta","Butter","Salt"],optional:[]},
+steps:[
+{title:"Boil",sensory:"Steam rises from pot.",instruction:"Cook pasta."},
+{title:"Mix",sensory:"Butter melts instantly.",instruction:"Toss with butter."}
+]
+},
+
+{
+name:"Avocado Toast",
+serves:1,
+ingredients:{main:["Bread","Avocado","Salt"],optional:["Pepper"]},
+steps:[
+{title:"Toast",sensory:"Crunchy warm bread.",instruction:"Toast bread."},
+{title:"Mash",sensory:"Creamy avocado texture.",instruction:"Spread and season."}
 ]
 }
+
 ];
 
 /* =========================
-   MATCHING
+   MATCH SYSTEM
 ========================= */
 function score(r){
 let all=[...r.ingredients.main,...(r.ingredients.optional||[])];
@@ -242,20 +286,17 @@ show("results");
 }
 
 /* =========================
-   PANTRY (FIXED BUTTON RESTORED)
+   PANTRY
 ========================= */
 function openPantry(){
-
 let html=`<div class="header">🧺 Pantry</div>`;
 
 ingredientItems.forEach(i=>{
-html+=`
-<div class="card" onclick="toggle('${i}')">
+html+=`<div class="card" onclick="toggle('${i}')">
 ${selected.includes(i)?"✅ ":""}${i}
 </div>`;
 });
 
-/* ✅ RESTORED BUTTON */
 html+=`<div class="btn" onclick="showMatches()">🍳 Find Possible Recipes</div>`;
 
 document.getElementById("pantry").innerHTML=html;
@@ -272,17 +313,37 @@ openPantry();
 }
 
 /* =========================
-   RECIPE VIEW (SENSORY)
+   RECIPE VIEW + SHOPPING
 ========================= */
 function openRecipe(name){
-let r=recipes.find(x=>x.name===name);
+let r = recipes.find(x=>x.name===name);
 
-let ingMain=r.ingredients.main.map(i=>`• ${i}`).join("<br>");
-let ingOpt=(r.ingredients.optional||[]).length
-? "<br><br><b>Optional:</b><br>" + r.ingredients.optional.map(i=>`• ${i}`).join("<br>")
+let ingMain = r.ingredients.main.map(i=>`• ${i}`).join("<br>");
+let ingOpt = (r.ingredients.optional||[]).length
+? "<br><br><b>Optional:</b><br>" +
+r.ingredients.optional.map(i=>`• ${i}`).join("<br>")
 : "";
 
-let steps=r.steps.map((s,i)=>`
+/* 🛒 missing ingredients */
+let missing = r.ingredients.main.filter(i=>!selected.includes(i));
+
+let shopHTML = `<div class="header">🛒 Missing Ingredients</div>`;
+
+missing.forEach(item=>{
+let q = encodeURIComponent(item);
+
+shopHTML += `
+<div class="card">
+<b>${item}</b><br>
+<a class="shopBtn instacartBtn" target="_blank"
+href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
+
+<a class="shopBtn walmartBtn" target="_blank"
+href="https://www.walmart.com/search?q=${q}">Walmart</a>
+</div>`;
+});
+
+let steps = r.steps.map((s,i)=>`
 <div class="card">
 <b>${i+1}. ${s.title}</b><br><br>
 👃 ${s.sensory}<br><br>
@@ -298,6 +359,8 @@ document.getElementById("recipe").innerHTML=`
 ${ingMain}
 ${ingOpt}
 </div>
+
+${shopHTML}
 
 ${steps}
 
