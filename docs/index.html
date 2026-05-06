@@ -29,6 +29,7 @@ pointer-events:none;
 transition:.25s ease;
 overflow-y:auto;
 }
+
 .page.active{
 opacity:1;
 transform:translateY(0) scale(1);
@@ -51,7 +52,7 @@ pointer-events:auto;
 #homeBg{position:fixed;inset:0;z-index:-1;}
 #homeBg img{width:100%;height:100%;object-fit:cover;}
 
-/* 🔥 RUSTY CHEF (FIXED) */
+/* RUSTY CHEF */
 #introLogo{
 position:fixed;
 top:50%;
@@ -59,6 +60,7 @@ left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
 }
+
 .titleRow{display:flex;align-items:center;gap:16px;}
 .titleText{display:flex;flex-direction:column;font-weight:900;line-height:.9;}
 .the{font-size:36px;}
@@ -97,6 +99,7 @@ gap:20px;
 
 <div id="app">
 
+<!-- HOME -->
 <div id="home" class="page active">
 <div id="homeBg"><img src="copilot_image_1777179019874.jpeg"></div>
 
@@ -134,7 +137,6 @@ gap:20px;
 
 <script>
 
-/* NAV */
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
@@ -161,48 +163,44 @@ const recipes = [
 {
 name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
-steps:[
-"Heat pan to 375°F. Add oil.",
-"Cook diced chicken 6–8 mins until internal temp 165°F.",
-"Add vegetables and cook 5 mins.",
-"Add rice and soy sauce. Stir constantly at high heat.",
-"Cook 5–7 mins until hot and slightly crispy."
-]
+steps:["Heat pan to 375°F with oil","Cook chicken to 165°F internal","Add vegetables and stir fry","Add rice + soy sauce","Cook until slightly crispy"]
 },
 {
 name:"Garlic Pasta",
 ingredients:["Pasta","Garlic","Butter","Salt","Parmesan"],
-steps:[
-"Boil water to 212°F and cook pasta 10 mins.",
-"Melt butter at low heat (250°F).",
-"Add minced garlic and cook 2 mins.",
-"Combine pasta and stir.",
-"Top with parmesan and serve."
-]
+steps:["Boil water to 212°F","Cook pasta 10 minutes","Melt butter low heat","Add garlic and cook 2 min","Mix and serve with cheese"]
 },
 {
 name:"Beef Stir Fry",
 ingredients:["Ground beef","Soy sauce","Onions","Bell peppers","Rice"],
-steps:[
-"Heat pan to 400°F.",
-"Cook beef until browned (8 mins).",
-"Add vegetables and stir fry 5 mins.",
-"Add soy sauce and cook 2 mins."
-]
+steps:["Heat pan to 400°F","Brown beef fully","Add vegetables","Stir fry 5 min","Add soy sauce and finish"]
 }
 ];
 
-/* MATCH TOP 3 */
+/* 🔥 SMART AI SCORING */
 function score(r){
-let match=r.ingredients.filter(i=>selected.includes(i)).length;
-let missing=r.ingredients.filter(i=>!selected.includes(i));
-return {...r,match,missing};
+let matchCount = r.ingredients.filter(i=>selected.includes(i)).length;
+let missing = r.ingredients.filter(i=>!selected.includes(i));
+let total = r.ingredients.length;
+
+let percent = matchCount / total;
+let boost = matchCount * 0.15;
+let penalty = missing.length * 0.05;
+
+let score = percent + boost - penalty;
+
+return {...r, match:matchCount, missing, score};
 }
 
+/* TOP 3 MATCH */
 function showMatches(){
-let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
+let top = recipes
+.map(score)
+.sort((a,b)=>b.score-a.score)
+.slice(0,3);
 
 let html=`<div class="header">🍳 Top Matches</div>`;
+
 top.forEach(r=>{
 html+=`
 <div class="card" onclick="openRecipe('${r.name}')">
@@ -211,6 +209,7 @@ Match: ${r.match}<br>
 Missing: ${r.missing.join(", ")||"None"}
 </div>`;
 });
+
 document.getElementById("results").innerHTML=html;
 show("results");
 }
@@ -227,7 +226,10 @@ show("pantry");
 }
 
 function toggle(i){
-selected = selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
+selected = selected.includes(i)
+? selected.filter(x=>x!==i)
+: [...selected,i];
+
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
@@ -245,16 +247,22 @@ function render(){
 
 let missing=current.ingredients.filter(i=>!selected.includes(i));
 
-let stepsHTML=current.steps.map((s,i)=>`<div class="card"><b>Step ${i+1}</b><br>${s}</div>`).join("");
+let stepsHTML=current.steps.map((s,i)=>`
+<div class="card"><b>Step ${i+1}</b><br>${s}</div>
+`).join("");
 
 let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
+
 missing.forEach(item=>{
 let q=encodeURIComponent(item);
 shopHTML+=`
 <div class="card">
 <b>${item}</b><br>
-<a class="shopBtn instacartBtn" target="_blank" href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
-<a class="shopBtn walmartBtn" target="_blank" href="https://www.walmart.com/search?q=${q}">Walmart</a>
+<a class="shopBtn instacartBtn" target="_blank"
+href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
+
+<a class="shopBtn walmartBtn" target="_blank"
+href="https://www.walmart.com/search?q=${q}">Walmart</a>
 </div>`;
 });
 
@@ -274,4 +282,3 @@ show("home");
 
 </body>
 </html>
-
