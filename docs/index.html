@@ -44,6 +44,38 @@ pointer-events:auto;
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
+#homeBg{position:fixed;inset:0;z-index:-1;}
+#homeBg img{width:100%;height:100%;object-fit:cover;}
+
+/* RUSTY CHEF */
+#introLogo{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+}
+
+.titleRow{display:flex;align-items:center;gap:16px;}
+.titleText{display:flex;flex-direction:column;font-weight:900;line-height:.9;}
+.the{font-size:36px;}
+.rusty{font-size:64px;}
+.chef{font-size:54px;}
+
+.flame{width:50px;height:120px;position:relative;}
+.flame span{
+position:absolute;
+bottom:0;
+font-size:22px;
+animation:rise 1.2s infinite;
+opacity:0;
+}
+@keyframes rise{
+0%{opacity:0;transform:translateY(0);}
+30%{opacity:1;}
+100%{opacity:0;transform:translateY(-120px);}
+}
+
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -63,6 +95,21 @@ gap:20px;
 
 <!-- HOME -->
 <div id="home" class="page active">
+<div id="homeBg"><img src="copilot_image_1777179019874.jpeg"></div>
+
+<div id="introLogo">
+<div class="titleRow">
+<div class="flame"><span>🔥</span><span>🔥</span><span>🔥</span></div>
+
+<div class="titleText">
+<div class="the">THE</div>
+<div class="rusty">RUSTY</div>
+<div class="chef">CHEF</div>
+</div>
+
+<div class="flame"><span>🔥</span><span>🔥</span><span>🔥</span></div>
+</div>
+</div>
 
 <div class="bottomDock">
 <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -83,9 +130,7 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* =======================
-FULL 100 INGREDIENT LIST RESTORED
-======================= */
+/* 100 INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
@@ -101,79 +146,55 @@ const ingredientItems = [
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* =======================
-50 REAL RECIPES (COOKBOOK STYLE)
-======================= */
+/* RECIPES */
 const recipes = [
-
 {
 name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
 steps:[
-{amount:"Cook rice",t:"Rice should be fluffy and slightly dry so it fries well.",time:8,temp:"375°F"},
-{amount:"Cook chicken",t:"Chicken should lose pink color and feel firm when pressed.",time:8,temp:"375°F"},
-{amount:"Add eggs",t:"Eggs turn soft and creamy, forming gentle curds.",time:3,temp:"350°F"},
-{amount:"Combine",t:"Everything should smell toasted and slightly smoky.",time:5,temp:"High heat"}
+{amount:"1 cup rice",t:"Cook chicken until 165°F internal",time:8,temp:"375°F"},
+{amount:"2 eggs",t:"Scramble eggs in pan",time:3,temp:"350°F"},
+{amount:"1/2 cup vegetables",t:"Stir fry onions + carrots",time:5,temp:"400°F"},
+{amount:"2 tbsp soy sauce",t:"Combine everything and fry",time:6,temp:"High heat"}
 ]
 },
-
 {
-name:"Garlic Butter Pasta",
+name:"Turkey Skillet Bowl",
+ingredients:["Turkey","Rice","Garlic","Onions","Butter"],
+steps:[
+{amount:"1 lb turkey",t:"Cook turkey fully",time:10,temp:"375°F"},
+{amount:"1 tbsp butter",t:"Add garlic and onions",time:4,temp:"325°F"},
+{amount:"1 cup rice",t:"Mix and simmer",time:8,temp:"300°F"}
+]
+},
+{
+name:"Garlic Pasta",
 ingredients:["Pasta","Garlic","Butter","Parmesan"],
 steps:[
-{amount:"Boil pasta",t:"Water should boil rapidly with constant bubbles.",time:10,temp:"212°F"},
-{amount:"Melt butter",t:"Butter foams lightly and smells nutty.",time:3,temp:"Low"},
-{amount:"Add garlic",t:"Garlic becomes fragrant but not brown.",time:2,temp:"Low"},
-{amount:"Mix pasta",t:"Pasta becomes glossy and coated evenly.",time:4,temp:"Medium"}
+{amount:"8 oz pasta",t:"Boil pasta",time:10,temp:"212°F"},
+{amount:"2 tbsp butter",t:"Melt butter",time:2,temp:"Low heat"},
+{amount:"3 cloves garlic",t:"Sauté garlic",time:2,temp:"300°F"}
 ]
 },
-
 {
-name:"Beef Tacos",
-ingredients:["Ground beef","Tortilla","Cheese","Onions"],
+name:"Beef Stir Fry",
+ingredients:["Ground beef","Soy sauce","Onions","Bell peppers"],
 steps:[
-{amount:"Cook beef",t:"Beef starts soft then turns browned and crumbly.",time:8,temp:"Medium"},
-{amount:"Season",t:"Spices bloom with strong aroma.",time:2,temp:"Medium"},
-{amount:"Warm tortillas",t:"They become soft and flexible.",time:2,temp:"Low"},
-{amount:"Assemble",t:"Cheese melts slightly from heat.",time:2,temp:"Low"}
+{amount:"1 lb beef",t:"Brown beef",time:8,temp:"400°F"},
+{amount:"1 cup vegetables",t:"Stir fry vegetables",time:5,temp:"High heat"}
 ]
 },
-
-{
-name:"Scrambled Eggs",
-ingredients:["Eggs","Butter","Salt"],
+...Array.from({length:46},(_,i)=>({
+name:`AI Recipe ${i+5}`,
+ingredients:["Rice","Eggs","Chicken breast"],
 steps:[
-{amount:"Beat eggs",t:"Mixture should be smooth and fully blended.",time:1,temp:"Low"},
-{amount:"Cook slowly",t:"Eggs form soft creamy curds, not dry.",time:3,temp:"Low"},
-{amount:"Finish",t:"Eggs should look glossy and tender.",time:1,temp:"Low"}
-]
-},
-
-{
-name:"Grilled Cheese",
-ingredients:["Bread","Cheddar","Butter"],
-steps:[
-{amount:"Butter bread",t:"Surface should shine evenly.",time:2,temp:"Low"},
-{amount:"Grill",t:"Bread becomes golden and crisp.",time:5,temp:"Medium"},
-{amount:"Melt cheese",t:"Cheese stretches when pulled apart.",time:3,temp:"Medium"}
-]
-},
-
-/* filler to reach 50 real structured recipes (no placeholders in UI, but real cookbook style templates) */
-...Array.from({length:45},(_,i)=>({
-name:`Classic Dish ${i+6}`,
-ingredients:["Eggs","Rice","Chicken breast"],
-steps:[
-{amount:"Prep base",t:"Ingredients should release aroma as heat builds.",time:5,temp:"Medium"},
-{amount:"Cook through",t:"Food firms and color deepens slightly.",time:6,temp:"Medium"},
-{amount:"Finish",t:"Texture should be fully cooked and hot throughout.",time:4,temp:"Medium"}
+{amount:"1 serving base",t:"Cook base ingredients",time:5,temp:"350°F"},
+{amount:"adjust portion",t:"Simmer and mix flavors",time:7,temp:"375°F"}
 ]
 }))
 ];
 
-/* =======================
-MATCH SYSTEM
-======================= */
+/* MATCH */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 return {...r,match};
@@ -192,17 +213,18 @@ document.getElementById("results").innerHTML=html;
 show("results");
 }
 
-/* =======================
-PANTRY (FULL RESTORED + SEARCH)
-======================= */
+/* PANTRY WITH SEARCH */
 function openPantry(){
 
 let html=`<div class="header">🧺 Pantry</div>
 
 <div class="card">
-<input id="searchBox" placeholder="Search ingredients..."
+<input 
+id="searchBox"
+placeholder="Search ingredients..."
 style="width:100%;padding:12px;border-radius:10px;border:none;outline:none;"
-oninput="filterIngredients()"/>
+oninput="filterIngredients()"
+/>
 </div>
 
 <div id="ingredientList">`;
@@ -212,6 +234,7 @@ html+=`<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('
 });
 
 html+=`</div>
+
 <div class="btn" onclick="showMatches()">Find Recipes</div>`;
 
 document.getElementById("pantry").innerHTML=html;
@@ -231,6 +254,7 @@ ${i}
 `).join("");
 }
 
+/* TOGGLE */
 function toggle(i){
 selected = selected.includes(i)
 ? selected.filter(x=>x!==i)
@@ -240,9 +264,7 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* =======================
-RECIPE VIEW (COOKBOOK STYLE)
-======================= */
+/* RECIPE */
 let current=null;
 
 function openRecipe(name){
@@ -253,6 +275,8 @@ show("recipe");
 
 function render(){
 
+let missing=current.ingredients.filter(i=>!selected.includes(i));
+
 let ingredientsHTML = `
 <div class="card">
 <b>Ingredients</b><br><br>
@@ -262,14 +286,14 @@ ${current.ingredients.map(i=>`- ${i}`).join("<br>")}
 
 let stepsHTML=current.steps.map((s,i)=>`
 <div class="card">
-<b>${i+1}. ${s.amount}</b><br><br>
-🔥 ${s.t}<br>
-⏱ ${s.time} min<br>
-🌡 ${s.temp}
+<b>${i+1}. ${s.t}</b><br><br>
+🍴 Amount Needed:<br>${s.amount}<br><br>
+⏱ Cook Time:<br>${s.time} minutes<br><br>
+🌡 Temperature:<br>${s.temp}<br><br>
+👀 What To Look For:<br>Cook until properly done and evenly heated.<br><br>
+✋ Texture Guide:<br>Should feel firm and fully cooked.
 </div>
 `).join("");
-
-let missing=current.ingredients.filter(i=>!selected.includes(i));
 
 let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
 
