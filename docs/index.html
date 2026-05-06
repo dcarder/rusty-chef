@@ -125,15 +125,12 @@ gap:20px;
 
 <script>
 
-/* NAV */
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* =========================
-100 INGREDIENTS (FULL RESTORED)
-========================= */
+/* INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
@@ -149,10 +146,7 @@ const ingredientItems = [
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* =========================
-50 RECIPES (FULL LIBRARY RESTORED)
-Each recipe includes: amount + time + temp
-========================= */
+/* RECIPES */
 const recipes = [
 {
 name:"Chicken Fried Rice",
@@ -190,8 +184,6 @@ steps:[
 {amount:"1 cup vegetables",t:"Stir fry vegetables",time:5,temp:"High heat"}
 ]
 },
-
-/* --- 46 MORE RECIPES (FULL LIBRARY) --- */
 ...Array.from({length:46},(_,i)=>({
 name:`AI Recipe ${i+5}`,
 ingredients:["Rice","Eggs","Chicken breast"],
@@ -202,7 +194,6 @@ steps:[
 }))
 ];
 
-/* SMART MATCH */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 return {...r,match};
@@ -221,7 +212,6 @@ document.getElementById("results").innerHTML=html;
 show("results");
 }
 
-/* PANTRY */
 function openPantry(){
 let html=`<div class="header">🧺 Pantry</div>`;
 ingredientItems.forEach(i=>{
@@ -241,7 +231,6 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* RECIPE ENGINE */
 let current=null;
 
 function openRecipe(name){
@@ -250,17 +239,36 @@ render();
 show("recipe");
 }
 
+/* UPDATED RENDER (YOUR REQUEST) */
 function render(){
 
 let missing=current.ingredients.filter(i=>!selected.includes(i));
 
+let ingredientsHTML = `
+<div class="card">
+<b>Ingredients</b><br><br>
+${current.ingredients.map(i=>`- ${i}`).join("<br>")}
+</div>
+`;
+
 let stepsHTML=current.steps.map((s,i)=>`
 <div class="card">
-<b>Step ${i+1}</b><br>
-🍴 Amount: ${s.amount}<br>
-🔥 ${s.t}<br>
-⏱ Time: ${s.time} min<br>
-🌡 Temp: ${s.temp}
+<b>${i+1}. ${s.t}</b><br><br>
+
+🍴 Amount Needed:<br>
+${s.amount}<br><br>
+
+⏱ Cook Time:<br>
+${s.time} minutes<br><br>
+
+🌡 Temperature:<br>
+${s.temp}<br><br>
+
+👀 What To Look For:<br>
+The food should look properly cooked and evenly heated.<br><br>
+
+✋ Texture Guide:<br>
+Texture should feel firm, hot, and fully cooked.
 </div>
 `).join("");
 
@@ -278,8 +286,11 @@ shopHTML+=`
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
+
+${ingredientsHTML}
 ${stepsHTML}
 ${shopHTML}
+
 <div class="btn" onclick="goHome()">Home</div>
 `;
 }
