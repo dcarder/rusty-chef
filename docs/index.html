@@ -125,29 +125,39 @@ const ingredientItems=[
 
 let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* 50 REAL RECIPES */
-const recipes=[
-"Chicken Fried Rice","Garlic Pasta","Beef Tacos","Chicken Alfredo","BBQ Chicken",
-"Grilled Cheese","Omelet","Spaghetti Bolognese","Chicken Stir Fry","Turkey Rice Bowl",
-"Chicken Soup","Beef Stew","Shrimp Pasta","Chicken Wrap","Steak Dinner",
-"Chicken Quesadilla","Veggie Stir Fry","Egg Fried Rice","Chicken Parmesan","Tuna Sandwich",
-"Breakfast Scramble","Chicken Curry","Pancakes","French Toast","Chicken Burrito",
-"Garlic Shrimp","Rice Pilaf","Honey Chicken","Loaded Nachos","Coconut Rice",
-"BBQ Pork Chops","Veggie Omelet","Lemon Chicken","Chicken Sandwich","Beef Stir Fry",
-"Shrimp Tacos","Chicken Fried Sandwich","Garlic Rice","Teriyaki Chicken","Cheese Pasta",
-"Steak Tacos","Chicken Salad","Veggie Soup","Bacon Eggs","Chicken Skillet",
-"Rice Bowl Deluxe","Garlic Butter Shrimp","Chicken Rice Soup","Oven Roasted Chicken","Simple Fried Rice"
-].map(n=>({
-name:n,
+/* 50 RECIPES */
+const recipes = Array.from({length:50},(_,i)=>({
+name:`Recipe ${i+1}`,
 ingredients:["Chicken breast","Rice","Eggs","Garlic","Onions","Soy sauce","Butter","Cheese"],
 steps:[
-{amount:"1 serving",t:"Cook safely at 375°F internal temps where needed",time:8,temp:375},
-{amount:"mix base",t:"Combine ingredients evenly",time:6,temp:350},
-{amount:"finish",t:"Serve hot",time:4,temp:300}
+{
+amount:"1 serving base",
+t:"Heat pan to 375°F. Add main protein and cook evenly.",
+time:8,
+temp:375,
+mix:"Stir every 2 minutes",
+done:"Internal temp 165°F or fully cooked center"
+},
+{
+amount:"vegetables + seasoning",
+t:"Add vegetables and seasoning, mix thoroughly.",
+time:6,
+temp:350,
+mix:"Stir continuously",
+done:"Vegetables softened but not mushy"
+},
+{
+amount:"final blend",
+t:"Combine everything and finish cooking.",
+time:4,
+temp:325,
+mix:"Constant stirring",
+done:"Even texture, light browning"
+}
 ]
 }));
 
-/* SMART MATCH */
+/* MATCH */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 let missing=r.ingredients.filter(i=>!selected.includes(i));
@@ -198,17 +208,21 @@ show("recipe");
 }
 
 function render(){
+
 let missing=current.ingredients.filter(i=>!selected.includes(i));
 
-let steps=current.steps.map((s,i)=>
-`<div class="card">
-<b>Step ${i+1}</b><br>
-${s.t}<br>
-Time: ${s.time} min<br>
-Temp: ${s.temp}°F<br>
-Amount: ${s.amount}
-</div>`
-).join("");
+let stepsHTML=current.steps.map((s,i)=>`
+<div class="card">
+<b>Step ${i+1}</b><br><br>
+
+<b>Amount:</b> ${s.amount}<br>
+<b>Instruction:</b> ${s.t}<br>
+<b>Time:</b> ${s.time} min<br>
+<b>Temp:</b> ${s.temp}°F<br>
+<b>Mix/Stir:</b> ${s.mix}<br>
+<b>Done When:</b> ${s.done}
+</div>
+`).join("");
 
 let shop="";
 missing.forEach(item=>{
@@ -223,7 +237,7 @@ shop+=`
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
-${steps}
+${stepsHTML}
 <div class="header">🛒 Missing Ingredients</div>
 ${shop}
 <div class="btn" onclick="show('home')">Home</div>
