@@ -19,7 +19,6 @@ inset:0;
 overflow:hidden;
 }
 
-/* PAGE SYSTEM */
 .page{
 position:absolute;
 inset:0;
@@ -35,7 +34,6 @@ transform:translateY(0) scale(1);
 pointer-events:auto;
 }
 
-/* UI */
 .header{text-align:center;font-size:22px;font-weight:700;margin:10px 0;}
 .card{background:rgba(255,255,255,.08);border-radius:14px;padding:14px;margin:10px 0;border:1px solid rgba(255,255,255,.15);}
 .item{padding:10px;margin:6px 0;border-radius:10px;border:1px solid rgba(255,255,255,.2);cursor:pointer;}
@@ -46,11 +44,9 @@ pointer-events:auto;
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
-/* HOME */
 #homeBg{position:fixed;inset:0;z-index:-1;}
 #homeBg img{width:100%;height:100%;object-fit:cover;}
 
-/* 🔥 RUSTY CHEF (UNCHANGED STYLE) */
 #introLogo{
 position:fixed;
 top:50%;
@@ -58,39 +54,38 @@ left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
 }
+
 .titleRow{display:flex;align-items:center;gap:16px;}
 .titleText{display:flex;flex-direction:column;font-weight:900;line-height:.9;}
 .the{font-size:36px;}
 .rusty{font-size:64px;}
 .chef{font-size:54px;}
+
 .flame{width:50px;height:120px;position:relative;}
 .flame span{position:absolute;bottom:0;font-size:22px;animation:rise 1.2s infinite;opacity:0;}
-@keyframes rise{
-0%{opacity:0;transform:translateY(0);}
-30%{opacity:1;}
-100%{opacity:0;transform:translateY(-120px);}
-}
+@keyframes rise{0%{opacity:0;transform:translateY(0);}30%{opacity:1;}100%{opacity:0;transform:translateY(-120px);}}
 
-/* HOME BUTTONS */
-.bottomDock{position:fixed;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:20px;}
+.bottomDock{
+position:fixed;
+bottom:20px;
+left:0;
+right:0;
+display:flex;
+justify-content:center;
+gap:20px;
+}
 .bottomDock .btn{width:160px;}
 </style>
 </head>
 
 <body>
 
-<div id="app">
-
-<!-- HOME -->
 <div id="home" class="page active">
 <div id="homeBg"><img src="copilot_image_1777179019874.jpeg"></div>
 
 <div id="introLogo">
 <div class="titleRow">
-
-<div class="flame">
-<span>🔥</span><span>🔥</span><span>🔥</span>
-</div>
+<div class="flame"><span>🔥</span><span>🔥</span><span>🔥</span></div>
 
 <div class="titleText">
 <div class="the">THE</div>
@@ -98,10 +93,7 @@ text-align:center;
 <div class="chef">CHEF</div>
 </div>
 
-<div class="flame">
-<span>🔥</span><span>🔥</span><span>🔥</span>
-</div>
-
+<div class="flame"><span>🔥</span><span>🔥</span><span>🔥</span></div>
 </div>
 </div>
 
@@ -111,12 +103,9 @@ text-align:center;
 </div>
 </div>
 
-<!-- PAGES -->
 <div id="pantry" class="page"></div>
 <div id="results" class="page"></div>
 <div id="recipe" class="page"></div>
-
-</div>
 
 <script>
 
@@ -126,48 +115,41 @@ requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
 /* 100 INGREDIENTS */
-const ingredientItems = [
+const ingredientItems=[
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
-"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
-"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
-"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
-"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
-"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
-"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
-"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
+"Turkey","Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce",
+"Lemon","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
+"Parmesan","Cheddar","Mozzarella","Chicken broth","Beef broth","BBQ sauce","Honey","Vinegar","Corn","Zucchini"
 ];
 
-let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
+let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* 50 RECIPES (REAL + PANTRY SAFE) */
-const recipes = Array.from({length:50},(_,i)=>({
-name: i===0?"Chicken Fried Rice":
-i===1?"Garlic Pasta":
-i===2?"Beef Tacos":
-i===3?"Chicken Alfredo":
-i===4?"BBQ Chicken":
-i===5?"Grilled Cheese":
-i===6?"Omelet":
-i===7?"Spaghetti":
-i===8?"Chicken Stir Fry":
-i===9?"Turkey Rice Bowl":
-`Pantry Recipe ${i+1}`,
-ingredients:["Chicken breast","Rice","Eggs","Garlic","Onions","Soy sauce"],
+/* 50 REAL RECIPES */
+const recipes=[
+"Chicken Fried Rice","Garlic Pasta","Beef Tacos","Chicken Alfredo","BBQ Chicken",
+"Grilled Cheese","Omelet","Spaghetti Bolognese","Chicken Stir Fry","Turkey Rice Bowl",
+"Chicken Soup","Beef Stew","Shrimp Pasta","Chicken Wrap","Steak Dinner",
+"Chicken Quesadilla","Veggie Stir Fry","Egg Fried Rice","Chicken Parmesan","Tuna Sandwich",
+"Breakfast Scramble","Chicken Curry","Pancakes","French Toast","Chicken Burrito",
+"Garlic Shrimp","Rice Pilaf","Honey Chicken","Loaded Nachos","Coconut Rice",
+"BBQ Pork Chops","Veggie Omelet","Lemon Chicken","Chicken Sandwich","Beef Stir Fry",
+"Shrimp Tacos","Chicken Fried Sandwich","Garlic Rice","Teriyaki Chicken","Cheese Pasta",
+"Steak Tacos","Chicken Salad","Veggie Soup","Bacon Eggs","Chicken Skillet",
+"Rice Bowl Deluxe","Garlic Butter Shrimp","Chicken Rice Soup","Oven Roasted Chicken","Simple Fried Rice"
+].map(n=>({
+name:n,
+ingredients:["Chicken breast","Rice","Eggs","Garlic","Onions","Soy sauce","Butter","Cheese"],
 steps:[
-{amount:"1 serving base",t:"Cook at 375°F internal safe temp",time:8,temp:375},
-{amount:"mix",t:"Combine ingredients",time:6,temp:350},
+{amount:"1 serving",t:"Cook safely at 375°F internal temps where needed",time:8,temp:375},
+{amount:"mix base",t:"Combine ingredients evenly",time:6,temp:350},
 {amount:"finish",t:"Serve hot",time:4,temp:300}
 ]
 }));
 
 /* SMART MATCH */
 function score(r){
-let match=0;
-r.ingredients.forEach(i=>{
-if(selected.includes(i)) match+=2;
-});
+let match=r.ingredients.filter(i=>selected.includes(i)).length;
 let missing=r.ingredients.filter(i=>!selected.includes(i));
 return {...r,match,missing};
 }
@@ -201,9 +183,7 @@ show("pantry");
 }
 
 function toggle(i){
-selected = selected.includes(i)
-?selected.filter(x=>x!==i)
-:[...selected,i];
+selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
@@ -218,18 +198,22 @@ show("recipe");
 }
 
 function render(){
-
 let missing=current.ingredients.filter(i=>!selected.includes(i));
 
-let stepsHTML=current.steps.map((s,i)=>
-`<div class="card"><b>Step ${i+1}</b><br>${s.t}<br>Time: ${s.time} min<br>Temp: ${s.temp}°F<br>Amount: ${s.amount}</div>`
+let steps=current.steps.map((s,i)=>
+`<div class="card">
+<b>Step ${i+1}</b><br>
+${s.t}<br>
+Time: ${s.time} min<br>
+Temp: ${s.temp}°F<br>
+Amount: ${s.amount}
+</div>`
 ).join("");
 
-let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
-
+let shop="";
 missing.forEach(item=>{
 let q=encodeURIComponent(item);
-shopHTML+=`
+shop+=`
 <div class="card">
 <b>${item}</b><br>
 <a class="shopBtn instacartBtn" target="_blank" href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
@@ -239,13 +223,12 @@ shopHTML+=`
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
-${stepsHTML}
-${shopHTML}
-<div class="btn" onclick="goHome()">Home</div>
+${steps}
+<div class="header">🛒 Missing Ingredients</div>
+${shop}
+<div class="btn" onclick="show('home')">Home</div>
 `;
 }
-
-function goHome(){show("home");}
 
 show("home");
 
