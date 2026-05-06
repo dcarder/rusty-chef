@@ -47,16 +47,12 @@ pointer-events:auto;
 #homeBg{position:fixed;inset:0;z-index:-1;}
 #homeBg img{width:100%;height:100%;object-fit:cover;}
 
-/* =========================
-🔥 TITLE WITH FIRE RESTORED
-========================= */
-
+/* FIRE TITLE */
 #introLogo{
 position:fixed;
 top:45%;
 left:50%;
 transform:translate(-50%,-50%);
-text-align:center;
 display:flex;
 align-items:center;
 gap:20px;
@@ -66,30 +62,25 @@ gap:20px;
 font-size:48px;
 font-weight:900;
 display:flex;
+gap:15px;
 align-items:center;
-gap:20px;
 }
 
-/* FIRE ANIMATION */
 .flame{
 font-size:32px;
-animation:fire 0.8s infinite alternate ease-in-out;
-filter:drop-shadow(0 0 10px orange);
+animation:fire 0.8s infinite alternate;
 }
 
 @keyframes fire{
-0%{transform:translateY(0) scale(1);opacity:.6;}
-100%{transform:translateY(-5px) scale(1.2);opacity:1;}
+0%{transform:translateY(0);opacity:.6;}
+100%{transform:translateY(-6px);opacity:1;}
 }
 
 .fireGlow{
 text-shadow:0 0 10px orange,0 0 20px red;
 }
 
-/* =========================
-BOTTOM BUTTONS FIX
-========================= */
-
+/* BOTTOM BUTTONS */
 .bottomButtons{
 position:fixed;
 bottom:20px;
@@ -98,7 +89,6 @@ right:0;
 display:flex;
 justify-content:center;
 gap:15px;
-z-index:10;
 }
 
 .bottomButtons .btn{
@@ -113,16 +103,12 @@ width:160px;
 <div id="homeBg"><img src="copilot_image_1777179019874.jpeg"></div>
 
 <div id="introLogo">
-
 <span class="flame">🔥</span>
-
 <div class="titleText">
 <span class="fireGlow">RUSTY</span>
 <span class="fireGlow">CHEF</span>
 </div>
-
 <span class="flame">🔥</span>
-
 </div>
 
 <div class="bottomButtons">
@@ -142,29 +128,61 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* PANTRY (UNCHANGED LOGIC SHOULD GO HERE) */
+/* =========================
+🔥 100 INGREDIENT PANTRY RESTORED
+========================= */
+const ingredientItems = [
+"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
+"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
+"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
+"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
+"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
+"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire",
+"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
+"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
+"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
+"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
+];
+
+let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
+
+/* =========================
+RECIPES (FULL DETAIL RESTORED STYLE)
+========================= */
 const recipes=[
 {
 name:"Chicken Fried Rice",
 ingredients:["Chicken breast","Rice","Eggs","Soy sauce","Onions"],
 steps:[
 {
-text:"Cook chicken.",
 item:"Chicken breast",
-amount:"1 lb",
+text:"Heat pan to high heat until very hot.",
+amount:"1 lb diced",
 time:8,
 temp:375,
-detail:"Stir until done."
+detail:"Cook until no pink remains and edges brown slightly."
+},
+{
+item:"Rice",
+text:"Add cooked rice and break apart.",
+amount:"2 cups",
+time:6,
+temp:400,
+detail:"Stir constantly until slightly crispy."
+},
+{
+item:"Eggs",
+text:"Push rice aside and scramble eggs.",
+amount:"2 eggs beaten",
+time:3,
+temp:350,
+detail:"Cook until fully solid and mixed in."
 }
 ]
 }
 ];
 
-/* AUTO PANTRY (SAFE FIX) */
-const ingredientItems=[...new Set(recipes.flatMap(r=>r.ingredients))];
-
-let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
-
+/* MATCH */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 let missing=r.ingredients.filter(i=>!selected.includes(i));
@@ -186,6 +204,7 @@ Missing: ${r.missing.join(", ")||"None"}
 show("results");
 }
 
+/* PANTRY */
 function openPantry(){
 document.getElementById("pantry").innerHTML=
 `<div class="header">🧺 Pantry</div>`+
@@ -203,6 +222,7 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
+/* RECIPE */
 let current=null;
 
 function openRecipe(name){
@@ -218,17 +238,30 @@ let missing=current.ingredients.filter(i=>!selected.includes(i));
 let steps=current.steps.map((s,i)=>`
 <div class="card">
 <b>Step ${i+1}: ${s.item}</b><br><br>
-${s.text}<br><br>
-${s.detail}<br><br>
-📦 ${s.amount}<br>
-⏱ ${s.time}<br>
-🌡 ${s.temp}
+📝 ${s.text}<br><br>
+📦 Amount: ${s.amount}<br>
+⏱ Time: ${s.time} min<br>
+🌡 Temp: ${s.temp}°F<br><br>
+⚙️ ${s.detail}
 </div>
 `).join("");
 
 document.getElementById("recipe").innerHTML=
 `<div class="header">${current.name}</div>
+
 ${steps}
+
+<div class="header">🛒 Missing Ingredients</div>
+${missing.map(i=>{
+let q=encodeURIComponent(i);
+return `
+<div class="card">
+<b>${i}</b><br>
+<a class="shopBtn instacartBtn" target="_blank" href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
+<a class="shopBtn walmartBtn" target="_blank" href="https://www.walmart.com/search?q=${q}">Walmart</a>
+</div>`;
+}).join("")}
+
 <div class="btn" onclick="show('home')">Home</div>`;
 }
 
