@@ -29,7 +29,6 @@ pointer-events:none;
 transition:.25s ease;
 overflow-y:auto;
 }
-
 .page.active{
 opacity:1;
 transform:translateY(0) scale(1);
@@ -52,7 +51,7 @@ pointer-events:auto;
 #homeBg{position:fixed;inset:0;z-index:-1;}
 #homeBg img{width:100%;height:100%;object-fit:cover;}
 
-/* RUSTY CHEF */
+/* TITLE */
 #introLogo{
 position:fixed;
 top:50%;
@@ -60,7 +59,6 @@ left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
 }
-
 .titleRow{display:flex;align-items:center;gap:16px;}
 .titleText{display:flex;flex-direction:column;font-weight:900;line-height:.9;}
 .the{font-size:36px;}
@@ -101,7 +99,9 @@ gap:20px;
 
 <!-- HOME -->
 <div id="home" class="page active">
-<div id="homeBg"><img src="copilot_image_1777179019874.jpeg"></div>
+<div id="homeBg">
+<img src="copilot_image_1777179019874.jpeg">
+</div>
 
 <div id="introLogo">
 <div class="titleRow">
@@ -137,79 +137,108 @@ gap:20px;
 
 <script>
 
+/* NAV */
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* 100 INGREDIENTS */
-const ingredientItems = [
-"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
-"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
-"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla","Bread",
-"Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth","Beef broth",
-"Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce","Worcestershire sauce",
-"Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
-"Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar",
-"Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage","Parsley",
-"Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Turkey","Corn"
-];
+/* =========================
+🔥 ADAPTIVE AI ENGINE
+========================= */
+
+let servings = 2; // default
+
+function setServings(n){
+servings = n;
+if(current) render();
+}
+
+/* scaling logic */
+function scaleAmount(val){
+let base = current.baseServings || 2;
+return +(val * (servings/base)).toFixed(2);
+}
+
+/* non-linear cooking time scaling */
+function scaleTime(t){
+let base = current.baseServings || 2;
+let factor = 1 + ((servings/base) - 1) * 0.35;
+return Math.max(1, Math.round(t * factor));
+}
+
+/* heat adjustment */
+function adjustHeat(temp){
+if(servings >= 4) return "Medium (avoid overcrowding)";
+if(servings >= 2) return temp;
+return temp;
+}
+
+/* pan recommendation */
+function panSize(){
+if(servings >= 6) return "Large stock pot / extra large skillet";
+if(servings >= 4) return "Large skillet (12–14 inch)";
+if(servings >= 2) return "Medium skillet";
+return "Small pan";
+}
+
+/* batch logic */
+function batchWarning(){
+if(servings >= 4){
+return "⚠ Large batch detected: cook in 2 batches for best texture.";
+}
+return "";
+}
+
+/* =========================
+INGREDIENTS
+========================= */
+
+const ingredientItems = ["Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic"];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* RECIPES */
+/* =========================
+RECIPES
+========================= */
+
 const recipes = [
 {
 name:"Chicken Fried Rice",
-ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
-steps:["Heat pan to 375°F with oil","Cook chicken to 165°F internal","Add vegetables and stir fry","Add rice + soy sauce","Cook until slightly crispy"]
-},
-{
-name:"Garlic Pasta",
-ingredients:["Pasta","Garlic","Butter","Salt","Parmesan"],
-steps:["Boil water to 212°F","Cook pasta 10 minutes","Melt butter low heat","Add garlic and cook 2 min","Mix and serve with cheese"]
-},
-{
-name:"Beef Stir Fry",
-ingredients:["Ground beef","Soy sauce","Onions","Bell peppers","Rice"],
-steps:["Heat pan to 400°F","Brown beef fully","Add vegetables","Stir fry 5 min","Add soy sauce and finish"]
+baseServings:2,
+ingredients:[
+{item:"Rice",amount:2},
+{item:"Chicken breast",amount:1},
+{item:"Eggs",amount:2},
+{item:"Soy sauce",amount:2},
+{item:"Onions",amount:1}
+],
+steps:[
+{t:"Prep ingredients",time:5,temp:"Room"},
+{t:"Cook chicken",time:8,temp:"375°F"},
+{t:"Fry rice mix",time:7,temp:"400°F"}
+]
 }
 ];
 
-/* 🔥 SMART AI SCORING */
+/* MATCH */
 function score(r){
-let matchCount = r.ingredients.filter(i=>selected.includes(i)).length;
-let missing = r.ingredients.filter(i=>!selected.includes(i));
-let total = r.ingredients.length;
-
-let percent = matchCount / total;
-let boost = matchCount * 0.15;
-let penalty = missing.length * 0.05;
-
-let score = percent + boost - penalty;
-
-return {...r, match:matchCount, missing, score};
+let match=r.ingredients.filter(i=>selected.includes(i.item)).length;
+let missing=r.ingredients.filter(i=>!selected.includes(i.item));
+return {...r,match,missing};
 }
 
-/* TOP 3 MATCH */
 function showMatches(){
-let top = recipes
-.map(score)
-.sort((a,b)=>b.score-a.score)
-.slice(0,3);
+let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
 
-let html=`<div class="header">🍳 Top Matches</div>`;
-
+let html=`<div class="header">🍳 Top AI Matches</div>`;
 top.forEach(r=>{
 html+=`
 <div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>
-Match: ${r.match}<br>
-Missing: ${r.missing.join(", ")||"None"}
+Match: ${r.match}
 </div>`;
 });
-
 document.getElementById("results").innerHTML=html;
 show("results");
 }
@@ -220,21 +249,23 @@ let html=`<div class="header">🧺 Pantry</div>`;
 ingredientItems.forEach(i=>{
 html+=`<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
 });
-html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
+html+=`
+<div class="btn" onclick="setServings(1)">1 Person</div>
+<div class="btn" onclick="setServings(2)">2 People</div>
+<div class="btn" onclick="setServings(4)">Family</div>
+<div class="btn" onclick="showMatches()">Find Recipes</div>
+`;
 document.getElementById("pantry").innerHTML=html;
 show("pantry");
 }
 
 function toggle(i){
-selected = selected.includes(i)
-? selected.filter(x=>x!==i)
-: [...selected,i];
-
+selected = selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
 localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* RECIPE VIEW */
+/* RECIPE */
 let current=null;
 
 function openRecipe(name){
@@ -245,22 +276,25 @@ show("recipe");
 
 function render(){
 
-let missing=current.ingredients.filter(i=>!selected.includes(i));
+let missing=current.ingredients.filter(i=>!selected.includes(i.item));
 
 let stepsHTML=current.steps.map((s,i)=>`
-<div class="card"><b>Step ${i+1}</b><br>${s}</div>
+<div class="card">
+<b>Step ${i+1}</b><br>
+${s.t}<br>
+⏱ ${scaleTime(s.time)} min<br>
+🔥 Heat: ${adjustHeat(s.temp)}
+</div>
 `).join("");
 
 let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
-
-missing.forEach(item=>{
-let q=encodeURIComponent(item);
+missing.forEach(i=>{
+let q=encodeURIComponent(i.item);
 shopHTML+=`
 <div class="card">
-<b>${item}</b><br>
+<b>${i.item}</b> (${scaleAmount(i.amount)} units)<br>
 <a class="shopBtn instacartBtn" target="_blank"
 href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
-
 <a class="shopBtn walmartBtn" target="_blank"
 href="https://www.walmart.com/search?q=${q}">Walmart</a>
 </div>`;
@@ -268,13 +302,18 @@ href="https://www.walmart.com/search?q=${q}">Walmart</a>
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
+
+<div class="card">
+🍳 Pan: ${panSize()}<br>
+${batchWarning()}
+</div>
+
 ${stepsHTML}
 ${shopHTML}
-<div class="btn" onclick="goHome()">Home</div>
+
+<div class="btn" onclick="show('home')">Home</div>
 `;
 }
-
-function goHome(){show("home");}
 
 show("home");
 
