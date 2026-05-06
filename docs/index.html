@@ -47,6 +47,7 @@ border-radius:14px;
 padding:14px;
 margin:10px 0;
 border:1px solid rgba(255,255,255,.15);
+cursor:pointer;
 }
 
 .btn{
@@ -70,6 +71,61 @@ justify-content:center;
 gap:20px;
 }
 .bottomDock .btn{width:160px;}
+
+.shopBtn{
+display:inline-block;
+margin-top:8px;
+margin-right:8px;
+padding:10px 14px;
+border-radius:10px;
+font-weight:700;
+text-decoration:none;
+color:white;
+}
+.instacartBtn{background:#43b02a;}
+.walmartBtn{background:#0071ce;}
+
+#homeBg{
+position:fixed;
+inset:0;
+z-index:-1;
+}
+#homeBg img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+#introLogo{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+font-weight:900;
+}
+
+.titleRow{
+display:flex;
+align-items:center;
+gap:16px;
+}
+
+.the{font-size:36px;}
+.rusty{font-size:64px;}
+.chef{font-size:54px;}
+
+.flame span{
+font-size:22px;
+animation:rise 1.2s infinite;
+opacity:0;
+}
+
+@keyframes rise{
+0%{opacity:0;transform:translateY(0);}
+30%{opacity:1;}
+100%{opacity:0;transform:translateY(-120px);}
+}
 </style>
 </head>
 
@@ -79,7 +135,17 @@ gap:20px;
 
 <!-- HOME -->
 <div id="home" class="page active">
-<div class="header">🔥 THE RUSTY CHEF 🔥</div>
+
+<!-- ✅ RESTORED COPILOT IMAGE -->
+<div id="homeBg">
+<img src="copilot_image_1777179019874.jpeg">
+</div>
+
+<div id="introLogo">
+<div class="titleRow">
+<div>🔥 THE RUSTY CHEF 🔥</div>
+</div>
+</div>
 
 <div class="bottomDock">
 <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -106,18 +172,18 @@ requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
 /* =========================
-   PANTRY INGREDIENTS
+   INGREDIENTS (RECIPE BASED)
 ========================= */
 const ingredientItems = [
-"Rice","Eggs","Chicken breast","Ground beef","Tortilla","Cheese","Onions","Garlic","Tomatoes","Butter",
-"Milk","Flour","Salt","Pepper","Olive oil","Soy sauce","Lemon","Lime","Pasta","Bread",
+"Rice","Eggs","Chicken breast","Ground beef","Tortilla","Cheese","Onions","Garlic","Tomatoes",
+"Butter","Milk","Flour","Salt","Pepper","Olive oil","Soy sauce","Lime","Pasta","Bread",
 "Potatoes","Carrots","Broccoli","Cream","Basil","Chicken broth","Beans","Curry powder","Coconut milk","Sugar"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-   SENSORIAL RECIPES (25)
+   RECIPES (SENSORY FORMAT)
 ========================= */
 const recipes = [
 {
@@ -128,31 +194,11 @@ main:["Ground beef","Tortilla","Cheese","Onions"],
 optional:["Lettuce","Tomato","Sour cream"]
 },
 steps:[
-{
-title:"Heat the pan",
-sensory:"Warm air rises as the skillet heats.",
-instruction:"Set skillet to medium heat for 1 minute."
-},
-{
-title:"Cook the beef",
-sensory:"You hear a steady sizzling as meat browns.",
-instruction:"Add ground beef and break it apart until crumbly."
-},
-{
-title:"Season",
-sensory:"Smell deepens as spices bloom.",
-instruction:"Add seasoning and stir evenly."
-},
-{
-title:"Add water",
-sensory:"A quick hiss, then thick sauce forms.",
-instruction:"Add 3 tbsp water and mix until coated."
-},
-{
-title:"Assemble",
-sensory:"Warm tortillas become soft and flexible.",
-instruction:"Fill tortillas with beef and toppings."
-}
+{title:"Heat the pan",sensory:"Warm air rises as skillet heats.",instruction:"Medium heat for 1 minute."},
+{title:"Cook beef",sensory:"Strong sizzling as meat browns.",instruction:"Break apart until crumbly."},
+{title:"Season",sensory:"Spices release deep aroma.",instruction:"Mix seasoning evenly."},
+{title:"Add water",sensory:"Quick hiss, sauce thickens.",instruction:"Add 3 tbsp water."},
+{title:"Assemble",sensory:"Tortillas feel soft and warm.",instruction:"Fill and serve."}
 ]
 },
 
@@ -164,133 +210,12 @@ main:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
 optional:["Peas"]
 },
 steps:[
-{
-title:"Cook rice",
-sensory:"Steam rises softly from fluffy grains.",
-instruction:"Cook rice until slightly dry."
-},
-{
-title:"Cook chicken",
-sensory:"Sizzle becomes sharp as it browns.",
-instruction:"Cook diced chicken until firm."
-},
-{
-title:"Scramble eggs",
-sensory:"Eggs turn soft and fluffy.",
-instruction:"Scramble in pan and break apart."
-},
-{
-title:"Combine",
-sensory:"A savory aroma fills the pan.",
-instruction:"Add everything and stir with soy sauce."
-}
-]
-},
-
-{
-name:"Spaghetti Bolognese",
-serves:4,
-ingredients:{
-main:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
-optional:["Parmesan"]
-},
-steps:[
-{
-title:"Boil pasta",
-sensory:"Water bubbles rapidly around noodles.",
-instruction:"Cook until tender."
-},
-{
-title:"Cook beef",
-sensory:"Meat browns with strong sizzling sound.",
-instruction:"Brown ground beef."
-},
-{
-title:"Build sauce",
-sensory:"Tomato aroma becomes rich and thick.",
-instruction:"Add tomatoes and simmer."
-},
-{
-title:"Serve",
-sensory:"Steam rises from plated pasta.",
-instruction:"Combine sauce with pasta."
-}
-]
-},
-
-{
-name:"Creamy Tomato Soup",
-serves:2,
-ingredients:{
-main:["Tomatoes","Onions","Garlic","Cream","Basil"],
-optional:["Bread"]
-},
-steps:[
-{
-title:"Sauté base",
-sensory:"Onions soften and smell sweet.",
-instruction:"Cook onions and garlic."
-},
-{
-title:"Simmer",
-sensory:"Soup thickens and bubbles gently.",
-instruction:"Add tomatoes and simmer."
-},
-{
-title:"Blend",
-sensory:"Texture becomes smooth and velvety.",
-instruction:"Blend until smooth."
-},
-{
-title:"Finish",
-sensory:"Cream softens acidity.",
-instruction:"Stir in cream and basil."
-}
-]
-},
-
-{
-name:"Grilled Cheese",
-serves:1,
-ingredients:{
-main:["Bread","Cheese","Butter"],
-optional:[]
-},
-steps:[
-{
-title:"Butter bread",
-sensory:"Butter melts instantly on warm pan.",
-instruction:"Spread butter on bread."
-},
-{
-title:"Melt cheese",
-sensory:"Cheese begins stretching and bubbling.",
-instruction:"Cook until golden on both sides."
-}
-]
-},
-
-{
-name:"Scrambled Eggs",
-serves:1,
-ingredients:{
-main:["Eggs","Milk","Butter"],
-optional:["Salt","Pepper"]
-},
-steps:[
-{
-title:"Whisk eggs",
-sensory:"Mixture becomes smooth and pale.",
-instruction:"Whisk eggs with milk."
-},
-{
-title:"Cook gently",
-sensory:"Eggs slowly form soft curds.",
-instruction:"Cook on low heat."
-}
+{title:"Cook rice",sensory:"Steam rises from fluffy rice.",instruction:"Cook until slightly dry."},
+{title:"Cook chicken",sensory:"Sharp sizzling sound.",instruction:"Cook until firm."},
+{title:"Scramble eggs",sensory:"Soft curds form quickly.",instruction:"Cook gently."},
+{title:"Combine",sensory:"Savory aroma fills pan.",instruction:"Mix everything with soy sauce."}
 ]
 }
-
 ];
 
 /* =========================
@@ -307,8 +232,7 @@ let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
 
 let html=`<div class="header">🍳 Top Matches</div>`;
 top.forEach(r=>{
-html+=`
-<div class="card" onclick="openRecipe('${r.name}')">
+html+=`<div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>Match Score: ${r.match}
 </div>`;
 });
@@ -318,9 +242,10 @@ show("results");
 }
 
 /* =========================
-   PANTRY
+   PANTRY (FIXED BUTTON RESTORED)
 ========================= */
 function openPantry(){
+
 let html=`<div class="header">🧺 Pantry</div>`;
 
 ingredientItems.forEach(i=>{
@@ -329,6 +254,9 @@ html+=`
 ${selected.includes(i)?"✅ ":""}${i}
 </div>`;
 });
+
+/* ✅ RESTORED BUTTON */
+html+=`<div class="btn" onclick="showMatches()">🍳 Find Possible Recipes</div>`;
 
 document.getElementById("pantry").innerHTML=html;
 show("pantry");
