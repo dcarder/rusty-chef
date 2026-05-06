@@ -19,22 +19,39 @@ inset:0;
 overflow:hidden;
 }
 
-.page{position:absolute;inset:0;opacity:0;transform:translateY(10px) scale(.99);pointer-events:none;transition:.25s;}
-.page.active{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+/* PAGE SYSTEM */
+.page{
+position:absolute;
+inset:0;
+opacity:0;
+transform:translateY(10px) scale(0.99);
+pointer-events:none;
+transition:.25s ease;
+overflow-y:auto;
+}
+.page.active{
+opacity:1;
+transform:translateY(0) scale(1);
+pointer-events:auto;
+}
 
-.header{text-align:center;font-size:22px;font-weight:700;margin:10px 0;}
+/* UI */
+.header{text-align:center;font-size:22px;font-weight:700;margin-bottom:10px;}
 .card{background:rgba(255,255,255,.08);border-radius:14px;padding:14px;margin:10px 0;border:1px solid rgba(255,255,255,.15);}
 .item{padding:10px;margin:6px 0;border-radius:10px;border:1px solid rgba(255,255,255,.2);cursor:pointer;}
 .item.selected{background:rgba(79,172,254,.25);}
 .btn{padding:14px;background:#4facfe;color:black;font-weight:700;text-align:center;border-radius:12px;margin-top:10px;cursor:pointer;}
 
+/* SHOP */
 .shopBtn{display:inline-block;margin-top:8px;margin-right:8px;padding:10px 14px;border-radius:10px;font-weight:700;text-decoration:none;color:white;}
 .instacartBtn{background:#43b02a;}
 .walmartBtn{background:#0071ce;}
 
+/* HOME */
 #homeBg{position:fixed;inset:0;z-index:-1;}
 #homeBg img{width:100%;height:100%;object-fit:cover;}
 
+/* 🔥 TITLE */
 #introLogo{
 position:fixed;
 top:50%;
@@ -43,10 +60,67 @@ transform:translate(-50%,-50%);
 text-align:center;
 }
 
-.titleText{font-weight:900;font-size:48px;}
+.titleRow{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:18px;
+}
 
+.titleText{
+display:flex;
+flex-direction:column;
+font-weight:900;
+line-height:.9;
+text-align:center;
+}
+
+.the{font-size:36px;}
+.rusty{font-size:64px;}
+.chef{font-size:54px;}
+
+/* 🔥 FIRE ON SIDES OF RUSTY */
+.flameSide{
+width:60px;
+height:120px;
+position:relative;
+overflow:hidden;
+}
+
+.flameSide span{
+position:absolute;
+bottom:0;
+font-size:18px;
+animation:fireSide 1.2s infinite ease-in-out;
+opacity:0;
+filter:drop-shadow(0 0 10px orange);
+}
+
+.flameSide span:nth-child(1){left:50%;animation-delay:0s;}
+.flameSide span:nth-child(2){left:40%;animation-delay:.2s;}
+.flameSide span:nth-child(3){left:60%;animation-delay:.4s;}
+.flameSide span:nth-child(4){left:45%;animation-delay:.6s;}
+.flameSide span:nth-child(5){left:55%;animation-delay:.8s;}
+
+@keyframes fireSide{
+0%{transform:translateY(20px) scale(.6);opacity:0;}
+25%{opacity:1;}
+100%{transform:translateY(-40px) scale(1.2);opacity:0;}
+}
+
+.fireGlow{
+text-shadow:0 0 10px orange,0 0 20px red,0 0 30px yellow;
+}
+
+/* HOME BUTTONS */
 .bottomDock{
-position:fixed;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:20px;
+position:fixed;
+bottom:20px;
+left:0;
+right:0;
+display:flex;
+justify-content:center;
+gap:20px;
 }
 .bottomDock .btn{width:160px;}
 </style>
@@ -57,7 +131,30 @@ position:fixed;bottom:20px;left:0;right:0;display:flex;justify-content:center;ga
 <div id="home" class="page active">
 <div id="homeBg"><img src="copilot_image_1777179019874.jpeg"></div>
 
-<div id="introLogo"><div class="titleText">THE RUSTY CHEF</div></div>
+<div id="introLogo">
+
+  <div class="titleRow">
+
+    <!-- LEFT FIRE -->
+    <div class="flameSide">
+      <span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span>
+    </div>
+
+    <!-- TEXT -->
+    <div class="titleText">
+      <div class="the">THE</div>
+      <div class="rusty"><span class="fireGlow">RUSTY</span></div>
+      <div class="chef">CHEF</div>
+    </div>
+
+    <!-- RIGHT FIRE -->
+    <div class="flameSide">
+      <span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span>
+    </div>
+
+  </div>
+
+</div>
 
 <div class="bottomDock">
 <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -71,51 +168,39 @@ position:fixed;bottom:20px;left:0;right:0;display:flex;justify-content:center;ga
 
 <script>
 
+/* NAV */
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
 /* PANTRY */
-const pantry=[
+const ingredientItems=[
 "Chicken breast","Ground beef","Rice","Eggs","Pasta","Cheese","Garlic","Onions","Tomatoes","Soy sauce"
 ];
 
-let owned=JSON.parse(localStorage.getItem("ingredients")||"[]");
+let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
 
-/* 50 RECIPES (ORDER AWARE) */
+/* RECIPES */
 const recipes=[
 {
 name:"Chicken Fried Rice",
 ingredients:["Chicken breast","Rice","Eggs","Soy sauce","Onions"],
-steps:[
-{item:"Chicken breast",amount:"1 lb",time:8,temp:375},
-{item:"Rice",amount:"2 cups cooked",time:6,temp:400},
-{item:"Eggs",amount:"2 eggs",time:3,temp:350}
-]
-},
-{
-name:"Garlic Pasta",
-ingredients:["Pasta","Garlic","Butter","Cheese"],
-steps:[
-{item:"Pasta",amount:"2 cups",time:10,temp:212},
-{item:"Garlic",amount:"3 cloves",time:2,temp:300}
-]
+steps:[{item:"Chicken",amount:"1 lb",time:8,temp:375}]
 }
 ];
 
-/* SMART MATCH */
 function score(r){
-let match=r.ingredients.filter(i=>owned.includes(i)).length;
-let missing=r.ingredients.filter(i=>!owned.includes(i));
+let match=r.ingredients.filter(i=>selected.includes(i)).length;
+let missing=r.ingredients.filter(i=>!selected.includes(i));
 return {...r,match,missing};
 }
 
 function showMatches(){
-let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
+let top=recipes.map(score).sort((a,b)=>b.match-a.match);
 
 document.getElementById("results").innerHTML=
-`<div class="header">🍳 Top Matches</div>`+
+`<div class="header">🍳 Recipes</div>`+
 top.map(r=>`
 <div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>
@@ -126,12 +211,11 @@ Missing: ${r.missing.join(", ")||"None"}
 show("results");
 }
 
-/* PANTRY */
 function openPantry(){
 document.getElementById("pantry").innerHTML=
 `<div class="header">🧺 Pantry</div>`+
-pantry.map(i=>
-`<div class="item ${owned.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>`
+ingredientItems.map(i=>
+`<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>`
 ).join("")+
 `<div class="btn" onclick="showMatches()">Find Recipes</div>`;
 
@@ -139,12 +223,11 @@ show("pantry");
 }
 
 function toggle(i){
-owned=owned.includes(i)?owned.filter(x=>x!==i):[...owned,i];
-localStorage.setItem("ingredients",JSON.stringify(owned));
+selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
+localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* RECIPE VIEW */
 let current=null;
 
 function openRecipe(name){
@@ -155,37 +238,14 @@ show("recipe");
 
 function render(){
 
-let missing=current.ingredients.filter(i=>!owned.includes(i));
-
-let steps=current.steps.map((s,i)=>{
-
-let status=owned.includes(s.item)?"🟢 IN PANTRY":"🛒 NEEDS ORDER";
-
-return `<div class="card">
-<b>Step ${i+1} - ${s.item} (${status})</b><br><br>
-
-<b>Ingredient:</b> ${s.item}<br>
-<b>Amount:</b> ${s.amount}<br>
-<b>Time:</b> ${s.time} min<br>
-<b>Temp:</b> ${s.temp}°F<br>
-</div>`;
-}).join("");
-
-let shop=missing.map(i=>{
-let q=encodeURIComponent(i);
-return `<div class="card">
-<b>${i}</b><br>
-<a class="shopBtn instacartBtn" target="_blank" href="https://www.instacart.com/store/search?search=${q}">Order Instacart</a>
-<a class="shopBtn walmartBtn" target="_blank" href="https://www.walmart.com/search?q=${q}">Order Walmart</a>
-</div>`;
-}).join("");
-
 document.getElementById("recipe").innerHTML=
 `<div class="header">${current.name}</div>
-${steps}
 
-<div class="header">🛒 Missing Ingredients</div>
-${shop}
+<div class="card">
+Step: ${current.steps[0].item}<br>
+Time: ${current.steps[0].time} min<br>
+Temp: ${current.steps[0].temp}°F
+</div>
 
 <div class="btn" onclick="show('home')">Home</div>`;
 }
