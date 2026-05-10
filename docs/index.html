@@ -18,30 +18,26 @@ position:fixed;
 inset:0;
 overflow:hidden;
 }
-
 .page{
 position:absolute;
 inset:0;
 opacity:0;
-transform:translateY(10px);
+transform:translateY(10px) scale(0.99);
 pointer-events:none;
 transition:.25s ease;
 overflow-y:auto;
-padding:12px;
 }
 .page.active{
 opacity:1;
-transform:translateY(0);
+transform:translateY(0) scale(1);
 pointer-events:auto;
 }
-
 .header{
 text-align:center;
 font-size:22px;
 font-weight:700;
 margin-bottom:10px;
 }
-
 .card{
 background:rgba(255,255,255,.08);
 border-radius:14px;
@@ -49,7 +45,6 @@ padding:14px;
 margin:10px 0;
 border:1px solid rgba(255,255,255,.15);
 }
-
 .item{
 padding:10px;
 margin:6px 0;
@@ -58,7 +53,6 @@ border:1px solid rgba(255,255,255,.2);
 cursor:pointer;
 }
 .item.selected{background:rgba(79,172,254,.25);}
-
 .btn{
 padding:14px;
 background:#4facfe;
@@ -69,7 +63,6 @@ border-radius:12px;
 margin-top:10px;
 cursor:pointer;
 }
-
 .shopBtn{
 display:inline-block;
 margin-top:8px;
@@ -79,7 +72,63 @@ border-radius:10px;
 font-weight:700;
 text-decoration:none;
 color:white;
-background:#0071ce;
+}
+.walmartBtn{background:#0071ce;}
+
+#homeBg{
+position:fixed;
+inset:0;
+z-index:-1;
+}
+#homeBg img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+#introLogo{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+}
+
+.titleRow{
+display:flex;
+align-items:center;
+gap:16px;
+}
+
+.titleText{
+display:flex;
+flex-direction:column;
+font-weight:900;
+line-height:.9;
+}
+
+.the{font-size:36px;}
+.rusty{font-size:64px;}
+.chef{font-size:54px;}
+
+.flame{
+width:50px;
+height:120px;
+position:relative;
+}
+
+.flame span{
+position:absolute;
+bottom:0;
+font-size:22px;
+animation:rise 1.2s infinite;
+opacity:0;
+}
+
+@keyframes rise{
+0%{opacity:0;transform:translateY(0);}
+30%{opacity:1;}
+100%{opacity:0;transform:translateY(-120px);}
 }
 
 .bottomDock{
@@ -92,34 +141,6 @@ justify-content:center;
 gap:20px;
 }
 .bottomDock .btn{width:160px;}
-
-#homeBg img{
-position:fixed;
-inset:0;
-width:100%;
-height:100%;
-object-fit:cover;
-z-index:-1;
-}
-
-#introLogo{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-}
-
-.titleRow{display:flex;align-items:center;gap:16px;}
-.the{font-size:30px;}
-.rusty{font-size:60px;}
-.chef{font-size:50px;}
-
-@keyframes rise{
-0%{transform:translateY(0);opacity:0;}
-30%{opacity:1;}
-100%{transform:translateY(-100px);opacity:0;}
-}
 </style>
 </head>
 
@@ -135,7 +156,13 @@ text-align:center;
 
 <div id="introLogo">
 <div class="titleRow">
-<div class="the">THE RUSTY CHEF</div>
+<div class="flame"><span>🔥</span><span>🔥</span><span>🔥</span></div>
+<div class="titleText">
+<div class="the">THE</div>
+<div class="rusty">RUSTY</div>
+<div class="chef">CHEF</div>
+</div>
+<div class="flame"><span>🔥</span><span>🔥</span><span>🔥</span></div>
 </div>
 </div>
 
@@ -158,62 +185,99 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* =========================
-   100+ INGREDIENT PANTRY
-========================= */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Turkey","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce",
-"Lemon","Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla",
-"Bread","Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth",
-"Beef broth","Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce",
-"Worcestershire sauce","Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup",
-"Brown sugar","Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise",
-"Vinegar","Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage",
-"Parsley","Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Corn"
+"Tuna","Steak","Pork chops","Turkey","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce"
 ];
 
-let selected = JSON.parse(localStorage.getItem("ing")||"[]");
+let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* =========================
-   25 FULL RECIPES RESTORED
+   FIXED + EXPANDED RECIPES (NO PLACEHOLDERS)
 ========================= */
 
 const recipes = [
+
 {
 name:"Beef Tacos",
-ingredients:["Ground beef","Tortilla","Cheese","Onions","Tomatoes","Lettuce"],
-steps:[
-{t:"Cook beef until browned.",a:"sizzle until firm"},
-{t:"Season meat.",a:"taco seasoning"},
-{t:"Warm tortillas.",a:"soft heat"},
-{t:"Assemble tacos.",a:"final"}
+ingredients:[
+"1 pound ground beef",
+"1 packet taco seasoning",
+"3 tablespoons water",
+"8 small tortillas",
+"1 cup shredded cheese",
+"Optional lettuce, tomato, sour cream"
+],
+simpleSteps:[
+{t:"Cook beef","a":"Heat pan until warm. Add beef and break apart until brown."},
+{t:"Season","a":"Add taco seasoning and stir."},
+{t:"Add water","a":"Mix until moist."},
+{t:"Warm tortillas","a":"Heat until soft."},
+{t:"Assemble","a":"Fill and serve."}
+],
+chefSteps:[
+{t:"Heat pan","a":"Feel rising warmth before adding meat."},
+{t:"Cook beef","a":"Listen for steady sizzling and break apart until crumbly."},
+{t:"Cook until firm","a":"Beef changes from soft to firm, no stickiness."},
+{t:"Season","a":"Smell becomes rich and savory as spices coat meat."},
+{t:"Add water","a":"Brief hiss, mixture becomes moist not wet."},
+{t:"Warm tortillas","a":"Should bend easily without cracking."},
+{t:"Assemble","a":"Heat melts cheese slightly for soft texture."}
 ]
 },
+
 {
 name:"Chicken Fried Rice",
-ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Carrots","Onions"],
-steps:[
-{t:"Cook chicken.",a:"sizzle until firm"},
-{t:"Add vegetables.",a:"soften"},
-{t:"Add rice.",a:"crackle heat"},
-{t:"Season.",a:"soy sauce mix"}
+ingredients:[
+"2 cups cooked rice",
+"2 eggs",
+"1 cup chicken breast",
+"Soy sauce",
+"Onions",
+"Carrots",
+"Oil"
+],
+simpleSteps:[
+{t:"Cook chicken","a":"Sizzle until firm."},
+{t:"Add vegetables","a":"Soften onions and carrots."},
+{t:"Add rice","a":"Break clumps."},
+{t:"Season","a":"Add soy sauce."}
+],
+chefSteps:[
+{t:"Heat pan","a":"Strong warmth above surface."},
+{t:"Cook chicken","a":"Loud sizzling until firm."},
+{t:"Add vegetables","a":"Onions soften, carrots tender."},
+{t:"Add rice","a":"Dry crackle sound as rice hits pan."},
+{t:"Season","a":"Stir until evenly brown and aromatic."}
 ]
 },
+
 {
 name:"Spaghetti Bolognese",
-ingredients:["Pasta","Ground beef","Tomatoes","Garlic","Onions"],
-steps:[
-{t:"Boil pasta.",a:"soft but firm"},
-{t:"Cook beef.",a:"brown fully"},
-{t:"Simmer sauce.",a:"thick aroma"},
-{t:"Combine.",a:"mix hot"}
+ingredients:[
+"Ground beef",
+"Spaghetti",
+"Tomatoes",
+"Onions",
+"Garlic"
+],
+simpleSteps:[
+{t:"Boil pasta","a":"Until soft."},
+{t:"Cook beef","a":"Brown fully."},
+{t:"Add sauce","a":"Simmer."},
+{t:"Combine","a":"Mix together."}
+],
+chefSteps:[
+{t:"Boil pasta","a":"Flexible but not mushy."},
+{t:"Cook beef","a":"Crumbly and firm."},
+{t:"Cook aromatics","a":"Onion and garlic become fragrant."},
+{t:"Simmer sauce","a":"Thick and rich aroma."},
+{t:"Combine","a":"Coats pasta evenly."}
 ]
 }
-];
 
-/* ========================= */
+];
 
 function score(r){
 let m=r.ingredients.filter(i=>selected.includes(i)).length;
@@ -224,33 +288,25 @@ function showMatches(){
 let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
 let html=`<div class="header">🍳 Top Matches</div>`;
 top.forEach(r=>{
-html+=`<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>Match: ${r.match}
-</div>`;
+html+=`<div class="card" onclick="openRecipe('${r.name}')">${r.name}<br>Match: ${r.match}</div>`;
 });
 document.getElementById("results").innerHTML=html;
 show("results");
 }
 
 function openPantry(){
-let html=`<div class="header">🧺 Pantry</div>
-<div class="btn" onclick="clearPantry()">Clear Pantry</div>`;
+let html=`<div class="header">🧺 Pantry</div>`;
 ingredientItems.forEach(i=>{
 html+=`<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
 });
+html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
 document.getElementById("pantry").innerHTML=html;
 show("pantry");
 }
 
-function clearPantry(){
-selected=[];
-localStorage.setItem("ing",JSON.stringify(selected));
-openPantry();
-}
-
 function toggle(i){
 selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
-localStorage.setItem("ing",JSON.stringify(selected));
+localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
@@ -258,29 +314,11 @@ let current=null;
 
 function openRecipe(name){
 current=recipes.find(r=>r.name===name);
-
-let missing=current.ingredients.filter(i=>!selected.includes(i));
-
 let html=`<div class="header">${current.name}</div>`;
-
-current.steps.forEach((s,i)=>{
+current.chefSteps.forEach((s,i)=>{
 html+=`<div class="card"><b>${i+1}. ${s.t}</b><br>${s.a}</div>`;
 });
-
-html+=`<div class="header">🛒 Missing Ingredients</div>`;
-
-missing.forEach(item=>{
-let q=encodeURIComponent(item);
-html+=`
-<div class="card">
-<b>${item}</b><br>
-<a class="shopBtn" target="_blank"
-href="https://www.walmart.com/search?q=${q}">Walmart</a>
-</div>`;
-});
-
 html+=`<div class="btn" onclick="show('home')">Home</div>`;
-
 document.getElementById("recipe").innerHTML=html;
 show("recipe");
 }
