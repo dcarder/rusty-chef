@@ -79,8 +79,64 @@ font-weight:700;
 text-decoration:none;
 color:white;
 }
-.instacartBtn{background:#43b02a;}
+
 .walmartBtn{background:#0071ce;}
+
+#homeBg{
+position:fixed;
+inset:0;
+z-index:-1;
+}
+#homeBg img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+#introLogo{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+}
+
+.titleRow{
+display:flex;
+align-items:center;
+gap:16px;
+}
+
+.titleText{
+display:flex;
+flex-direction:column;
+font-weight:900;
+line-height:.9;
+}
+
+.the{font-size:36px;}
+.rusty{font-size:64px;}
+.chef{font-size:54px;}
+
+.flame{
+width:50px;
+height:120px;
+position:relative;
+}
+
+.flame span{
+position:absolute;
+bottom:0;
+font-size:22px;
+animation:rise 1.2s infinite;
+opacity:0;
+}
+
+@keyframes rise{
+0%{opacity:0;transform:translateY(0);}
+30%{opacity:1;}
+100%{opacity:0;transform:translateY(-120px);}
+}
 
 .bottomDock{
 position:fixed;
@@ -99,7 +155,32 @@ gap:20px;
 
 <div id="app">
 
+<!-- HOME -->
 <div id="home" class="page active">
+
+<div id="homeBg">
+<img src="copilot_image_1777179019874.jpeg">
+</div>
+
+<div id="introLogo">
+<div class="titleRow">
+
+<div class="flame">
+<span>🔥</span><span>🔥</span><span>🔥</span>
+</div>
+
+<div class="titleText">
+<div class="the">THE</div>
+<div class="rusty">RUSTY</div>
+<div class="chef">CHEF</div>
+</div>
+
+<div class="flame">
+<span>🔥</span><span>🔥</span><span>🔥</span>
+</div>
+
+</div>
+</div>
 
 <div class="bottomDock">
 <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -108,6 +189,7 @@ gap:20px;
 
 </div>
 
+<!-- PANTRY -->
 <div id="pantry" class="page"></div>
 <div id="results" class="page"></div>
 <div id="recipe" class="page"></div>
@@ -121,84 +203,90 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* 🧺 100+ INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon","Lime","Coconut milk",
-"Curry powder","Paprika","Oregano","Basil","Rice noodles","Tortilla","Bread","Parmesan","Cheddar","Mozzarella",
-"Avocado","Chicken broth","Beef broth","Hot sauce","BBQ sauce","Peanut butter","Green beans","Cabbage","Corn","Honey"
+"Tuna","Steak","Pork chops","Turkey","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce",
+"Lemon","Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla",
+"Bread","Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth",
+"Beef broth","Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce",
+"Worcestershire sauce","Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup",
+"Brown sugar","Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise",
+"Vinegar","Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage",
+"Parsley","Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Corn"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
-let current=null;
-let mode="simple";
 
-/* 🍳 FULL 28 RECIPES */
 const recipes = [
 {
 name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
-simpleSteps:[{t:"Cook rice."},{t:"Cook chicken & eggs."},{t:"Stir fry."}],
-chefSteps:[{t:"Use cold rice for best texture."},{t:"Cook chicken fully."},{t:"High heat stir fry."}]
+steps:[
+{t:"Cook rice until fluffy and slightly dry.",a:"1 cup rice"},
+{t:"Cook chicken until firm and no longer pink.",a:"1 chicken breast"},
+{t:"Scramble eggs into soft curds.",a:"2 eggs"},
+{t:"Combine and stir until aromatic and hot.",a:"final mix"}
+],
+simpleSteps:[
+{t:"Cook rice until fluffy and slightly dry.",a:"1 cup rice"},
+{t:"Cook chicken until firm and no longer pink.",a:"1 chicken breast"},
+{t:"Scramble eggs into soft curds.",a:"2 eggs"},
+{t:"Combine and stir until aromatic and hot.",a:"final mix"}
+],
+chefSteps:[
+{t:"Rinse rice until water runs clear.",a:"1 cup rice"},
+{t:"Cook chicken until firm and fully done.",a:"1 chicken breast"},
+{t:"Scramble eggs softly.",a:"2 eggs"},
+{t:"Mix everything with soy sauce.",a:"final mix"}
+]
 },
 {
 name:"Spaghetti Bolognese",
 ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
-simpleSteps:[{t:"Boil pasta."},{t:"Cook beef sauce."},{t:"Combine."}],
-chefSteps:[{t:"Cook pasta al dente."},{t:"Brown beef deeply."},{t:"Slow simmer sauce."}]
+steps:[
+{t:"Boil pasta.",a:"pasta"},
+{t:"Cook onions and garlic.",a:"onion + garlic"},
+{t:"Brown beef.",a:"beef"},
+{t:"Simmer sauce.",a:"tomatoes"}
+],
+simpleSteps:[
+{t:"Boil pasta.",a:"pasta"},
+{t:"Cook onions and garlic.",a:"onion + garlic"},
+{t:"Brown beef.",a:"beef"},
+{t:"Simmer sauce.",a:"tomatoes"}
+],
+chefSteps:[
+{t:"Boil pasta until tender.",a:"pasta"},
+{t:"Cook onions and garlic until fragrant.",a:"onion + garlic"},
+{t:"Brown beef fully.",a:"beef"},
+{t:"Simmer until thick.",a:"tomatoes"}
+]
 },
 {
 name:"Chicken Tacos",
 ingredients:["Chicken breast","Tortilla","Cheese","Onions","Lime"],
-simpleSteps:[{t:"Cook chicken."},{t:"Warm tortillas."},{t:"Assemble."}],
-chefSteps:[{t:"Sear chicken."},{t:"Shred after resting."},{t:"Finish with lime."}]
-},
-{
-name:"Beef Stir Fry",
-ingredients:["Beef","Broccoli","Carrots","Soy sauce","Rice"],
-simpleSteps:[{t:"Cook beef."},{t:"Add veggies."},{t:"Serve."}],
-chefSteps:[{t:"High heat sear beef."},{t:"Stir fry vegetables."},{t:"Add soy glaze."}]
-},
-{
-name:"Garlic Butter Shrimp Pasta",
-ingredients:["Shrimp","Pasta","Butter","Garlic","Lemon"],
-simpleSteps:[{t:"Cook pasta."},{t:"Cook shrimp."},{t:"Combine."}],
-chefSteps:[{t:"Boil pasta."},{t:"Sauté shrimp."},{t:"Finish with lemon."}]
-},
-{
-name:"Chicken Alfredo",
-ingredients:["Chicken breast","Pasta","Cream","Parmesan","Garlic"],
-simpleSteps:[{t:"Cook pasta."},{t:"Cook chicken."},{t:"Add sauce."}],
-chefSteps:[{t:"Cook pasta al dente."},{t:"Pan sear chicken."},{t:"Creamy parmesan sauce."}]
-},
-{
-name:"Tuna Salad Sandwich",
-ingredients:["Tuna","Bread","Mayonnaise","Onions","Lettuce"],
-simpleSteps:[{t:"Mix tuna."},{t:"Add mayo."},{t:"Serve."}],
-chefSteps:[{t:"Drain tuna."},{t:"Mix creamy mayo."},{t:"Assemble sandwich."}]
-},
-{
-name:"Vegetable Omelette",
-ingredients:["Eggs","Bell peppers","Onions","Cheese","Spinach"],
-simpleSteps:[{t:"Cook eggs."},{t:"Add veg."},{t:"Fold."}],
-chefSteps:[{t:"Sauté vegetables."},{t:"Pour eggs."},{t:"Fold with cheese."}]
-},
-{
-name:"BBQ Chicken Sandwich",
-ingredients:["Chicken breast","BBQ sauce","Bread","Onions"],
-simpleSteps:[{t:"Cook chicken."},{t:"Add BBQ."},{t:"Assemble."}],
-chefSteps:[{t:"Shred chicken."},{t:"Mix BBQ sauce."},{t:"Toast bread."}]
-},
-{
-name:"Peanut Butter Fudge",
-ingredients:["Peanut butter","Sugar","Butter","Milk","Vanilla extract"],
-simpleSteps:[{t:"Melt ingredients."},{t:"Mix."},{t:"Chill."}],
-chefSteps:[{t:"Heat sugar + milk + butter."},{t:"Add peanut butter."},{t:"Cool to set."}]
+steps:[
+{t:"Cook chicken.",a:"chicken"},
+{t:"Shred.",a:"rest"},
+{t:"Warm tortillas.",a:"tortilla"},
+{t:"Assemble.",a:"final"}
+],
+simpleSteps:[
+{t:"Cook chicken.",a:"chicken"},
+{t:"Shred.",a:"rest"},
+{t:"Warm tortillas.",a:"tortilla"},
+{t:"Assemble.",a:"final"}
+],
+chefSteps:[
+{t:"Cook chicken until juicy.",a:"chicken"},
+{t:"Shred after resting.",a:"rest"},
+{t:"Warm tortillas.",a:"tortilla"},
+{t:"Add toppings.",a:"final"}
+]
 }
 ];
 
-/* 🔎 MATCH */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 return {...r,match};
@@ -207,32 +295,59 @@ return {...r,match};
 function showMatches(){
 let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
 
-let html=`<div class="header">🍳 Top Matches</div>`;
+let html=`<div class="header">🍳 Top 3 Matches</div>`;
 top.forEach(r=>{
 html+=`<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>Match: ${r.match}
+<b>${r.name}</b><br>Match Score: ${r.match}
 </div>`;
 });
-
 html+=`<div class="btn" onclick="show('home')">Home</div>`;
 document.getElementById("results").innerHTML=html;
 show("results");
 }
 
-/* 🧺 PANTRY */
 function openPantry(){
-let html=`<div class="header">🧺 Pantry</div>`;
+let html=`
+<div class="header">🧺 Pantry</div>
+
+<div class="card">
+<input id="searchBox"
+placeholder="Search ingredients..."
+style="width:100%;padding:12px;border-radius:10px;border:none;outline:none;"
+oninput="filterIngredients()"/>
+</div>
+
+<div id="ingredientList">
+`;
 
 ingredientItems.forEach(i=>{
-html+=`<div class="item ${selected.includes(i)?'selected':''}"
+html+=`
+<div class="item ${selected.includes(i)?'selected':''}"
 onclick="toggle('${i}')">${i}</div>`;
 });
 
-html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>
-<div class="btn" onclick="show('home')">Home</div>`;
+html+=`
+</div>
+
+<div class="btn" onclick="showMatches()">Find Recipes</div>
+<div class="btn" onclick="clearPantry()">Clear Pantry</div>
+<div class="btn" onclick="show('home')">Home</div>
+`;
 
 document.getElementById("pantry").innerHTML=html;
 show("pantry");
+}
+
+function filterIngredients(){
+let q=document.getElementById("searchBox").value.toLowerCase();
+let list=document.getElementById("ingredientList");
+
+let filtered=ingredientItems.filter(i=>i.toLowerCase().includes(q));
+
+list.innerHTML=filtered.map(i=>`
+<div class="item ${selected.includes(i)?'selected':''}"
+onclick="toggle('${i}')">${i}</div>
+`).join("");
 }
 
 function toggle(i){
@@ -244,7 +359,15 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* 🍳 RECIPE VIEW */
+function clearPantry(){
+selected=[];
+localStorage.removeItem("ingredients");
+openPantry();
+}
+
+let current=null;
+let mode="simple";
+
 function openRecipe(name){
 current=recipes.find(r=>r.name===name);
 mode="simple";
@@ -253,7 +376,7 @@ show("recipe");
 }
 
 function switchMode(){
-mode=mode==="simple"?"chef":"simple";
+mode = mode === "simple" ? "chef" : "simple";
 render();
 }
 
@@ -261,28 +384,38 @@ function render(){
 
 let missing=current.ingredients.filter(i=>!selected.includes(i));
 
-let steps = mode==="simple"
+let stepsArray = mode === "simple"
 ? current.simpleSteps
 : current.chefSteps;
 
-let stepsHTML = steps.map((s,i)=>`
-<div class="card"><b>${i+1}. ${s.t}</b></div>
+let stepsHTML=stepsArray.map((s,i)=>`
+<div class="card">
+<b>${i+1}. ${s.t}</b><br><br>
+🍴 ${s.a}
+</div>
 `).join("");
 
-let missingHTML=`<div class="header">Missing Ingredients</div>`;
-missing.forEach(i=>{
-missingHTML+=`<div class="card">${i}</div>`;
+let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
+
+missing.forEach(item=>{
+let q=encodeURIComponent(item);
+shopHTML+=`
+<div class="card">
+<b>${item}</b><br>
+<a class="shopBtn walmartBtn" target="_blank"
+href="https://www.walmart.com/search?q=${q}">Walmart</a>
+</div>`;
 });
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
 
 <div class="btn" onclick="switchMode()">
-Switch Mode
+${mode === "simple" ? "Switch to Chef Mode 🔥" : "Switch to Simple Mode 🍳"}
 </div>
 
 ${stepsHTML}
-${missingHTML}
+${shopHTML}
 
 <div class="btn" onclick="show('home')">Home</div>
 `;
