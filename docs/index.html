@@ -27,6 +27,7 @@ transform:translateY(10px) scale(0.99);
 pointer-events:none;
 transition:.25s ease;
 overflow-y:auto;
+padding-bottom:120px;
 }
 .page.active{
 opacity:1;
@@ -38,14 +39,14 @@ pointer-events:auto;
 text-align:center;
 font-size:22px;
 font-weight:700;
-margin-bottom:10px;
+margin:10px 0;
 }
 
 .card{
 background:rgba(255,255,255,.08);
 border-radius:14px;
 padding:14px;
-margin:10px 0;
+margin:10px;
 border:1px solid rgba(255,255,255,.15);
 }
 
@@ -65,20 +66,41 @@ color:black;
 font-weight:700;
 text-align:center;
 border-radius:12px;
-margin-top:10px;
+margin:10px;
 cursor:pointer;
 }
 
 .bottomDock{
 position:fixed;
-bottom:20px;
+bottom:10px;
 left:0;
 right:0;
 display:flex;
 justify-content:center;
-gap:20px;
+gap:12px;
+z-index:10;
 }
-.bottomDock .btn{width:160px;}
+.bottomDock .btn{width:140px;}
+
+.filterBar{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:8px;
+margin:10px;
+}
+
+.filter{
+padding:8px 12px;
+border-radius:20px;
+border:1px solid white;
+cursor:pointer;
+font-size:12px;
+}
+.filter.active{
+background:white;
+color:black;
+}
 </style>
 </head>
 
@@ -86,6 +108,8 @@ gap:20px;
 
 <div id="home" class="page active">
 <div class="header">🔥 THE RUSTY CHEF 🔥</div>
+
+<div class="filterBar" id="filters"></div>
 
 <div class="bottomDock">
 <div class="btn" onclick="openPantry()">🧺 Pantry</div>
@@ -115,129 +139,115 @@ let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 /* ================= RECIPES ================= */
 
-const recipeCategories={
-"🍳 Breakfast":[
-{
-name:"Pancakes",
-ingredients:["Flour","Milk","Eggs"],
+const recipes=[
+
+/* 🍳 BREAKFAST */
+{name:"Pancakes",category:"Breakfast",ingredients:["Flour","Milk","Eggs"],
 simpleSteps:[{t:"Mix batter.",a:"mix"},{t:"Cook.",a:"pan"}],
-chefSteps:[{t:"Smooth batter, slightly thick.",a:"mix"},{t:"Flip when bubbles form.",a:"pan"}]
-},
-{
-name:"Breakfast Burrito",
-ingredients:["Eggs","Tortilla","Cheese"],
+chefSteps:[{t:"Batter smooth, slightly thick.",a:"mix"},{t:"Flip when bubbles form.",a:"pan"}]},
+
+{name:"Breakfast Burrito",category:"Breakfast",ingredients:["Eggs","Tortilla","Cheese"],
 simpleSteps:[{t:"Cook eggs.",a:"3 eggs"},{t:"Wrap.",a:"final"}],
-chefSteps:[{t:"Eggs soft and fluffy.",a:"3 eggs"},{t:"Wrap warm tortilla tightly.",a:"final"}]
-},
-{
-name:"Avocado Toast",
-ingredients:["Bread","Avocado"],
+chefSteps:[{t:"Eggs soft and fluffy.",a:"3 eggs"},{t:"Wrap warm and tight.",a:"final"}]},
+
+{name:"Avocado Toast",category:"Breakfast",ingredients:["Bread","Avocado"],
 simpleSteps:[{t:"Toast bread.",a:"2 slices"},{t:"Add avocado.",a:"final"}],
-chefSteps:[{t:"Bread crisp golden.",a:"2 slices"},{t:"Avocado creamy smooth.",a:"final"}]
-}
-],
+chefSteps:[{t:"Bread crisp golden.",a:"2 slices"},{t:"Avocado creamy smooth.",a:"final"}]},
 
-"🍝 Dinner":[
-{
-name:"Spaghetti Bolognese",
-ingredients:["Pasta","Ground beef","Tomatoes"],
+/* 🍝 DINNER */
+{name:"Spaghetti Bolognese",category:"Dinner",ingredients:["Pasta","Ground beef","Tomatoes"],
 simpleSteps:[{t:"Boil pasta.",a:"1 box"},{t:"Cook beef.",a:"1 lb"},{t:"Sauce.",a:"final"}],
-chefSteps:[{t:"Pasta firm but tender.",a:"1 box"},{t:"Beef fully browned.",a:"1 lb"},{t:"Sauce thick rich aroma.",a:"final"}]
-},
-{
-name:"Chicken Curry",
-ingredients:["Chicken breast","Curry powder","Coconut milk"],
+chefSteps:[{t:"Pasta firm but tender.",a:"1 box"},{t:"Beef fully browned.",a:"1 lb"},{t:"Sauce rich aroma.",a:"final"}]},
+
+{name:"Chicken Curry",category:"Dinner",ingredients:["Chicken breast","Curry powder","Coconut milk"],
 simpleSteps:[{t:"Cook chicken.",a:"1 lb"},{t:"Add curry.",a:"spices"}],
-chefSteps:[{t:"Chicken lightly browned.",a:"1 lb"},{t:"Spices fragrant bloom.",a:"spices"}]
-},
-{
-name:"Lasagna",
-ingredients:["Pasta","Cheese","Ground beef"],
+chefSteps:[{t:"Chicken lightly browned.",a:"1 lb"},{t:"Spices bloom fragrance.",a:"spices"}]},
+
+{name:"Lasagna",category:"Dinner",ingredients:["Pasta","Cheese","Ground beef"],
 simpleSteps:[{t:"Layer.",a:"all"},{t:"Bake.",a:"oven"}],
-chefSteps:[{t:"Layers structured firm.",a:"all"},{t:"Top bubbling golden.",a:"oven"}]
-},
-{
-name:"Chicken Alfredo",
-ingredients:["Pasta","Chicken breast","Milk","Cheese"],
+chefSteps:[{t:"Layers hold shape.",a:"all"},{t:"Top bubbling golden.",a:"oven"}]},
+
+{name:"Chicken Alfredo",category:"Dinner",ingredients:["Pasta","Chicken breast","Milk","Cheese"],
 simpleSteps:[{t:"Cook chicken.",a:"1 lb"},{t:"Make sauce.",a:"milk"}],
-chefSteps:[{t:"Chicken juicy golden.",a:"1 lb"},{t:"Sauce creamy thick.",a:"milk"}]
-},
-{
-name:"Steak & Potatoes",
-ingredients:["Steak","Potatoes"],
+chefSteps:[{t:"Chicken juicy golden.",a:"1 lb"},{t:"Sauce creamy thick.",a:"milk"}]},
+
+{name:"Steak & Potatoes",category:"Dinner",ingredients:["Steak","Potatoes"],
 simpleSteps:[{t:"Cook steak.",a:"1 lb"},{t:"Cook potatoes.",a:"final"}],
-chefSteps:[{t:"Steak seared crust.",a:"1 lb"},{t:"Potatoes crisp soft.",a:"final"}]
-}
-],
+chefSteps:[{t:"Steak seared crust.",a:"1 lb"},{t:"Potatoes crisp soft.",a:"final"}]},
 
-"🍔 Lunch / Snacks":[
-{
-name:"Grilled Cheese",
-ingredients:["Bread","Cheese","Butter"],
+{name:"Chicken Fried Rice",category:"Dinner",ingredients:["Rice","Eggs","Chicken breast","Soy sauce"],
+simpleSteps:[{t:"Cook rice.",a:"1 cup"},{t:"Mix.",a:"final"}],
+chefSteps:[{t:"Rice dry separated.",a:"1 cup"},{t:"Hot aromatic stir fry.",a:"final"}]},
+
+{name:"Beef Stir Fry",category:"Dinner",ingredients:["Beef","Broccoli","Soy sauce"],
+simpleSteps:[{t:"Cook beef.",a:"1 lb"},{t:"Mix.",a:"final"}],
+chefSteps:[{t:"Beef browned deep.",a:"1 lb"},{t:"Veggies crisp.",a:"final"}]},
+
+/* 🍔 LUNCH */
+{name:"Grilled Cheese",category:"Lunch",ingredients:["Bread","Cheese","Butter"],
 simpleSteps:[{t:"Butter bread.",a:"2 slices"},{t:"Grill.",a:"pan"}],
-chefSteps:[{t:"Golden crisp toast.",a:"2 slices"},{t:"Cheese fully melted.",a:"pan"}]
-},
-{
-name:"Quesadilla",
-ingredients:["Tortilla","Cheese"],
+chefSteps:[{t:"Golden crisp toast.",a:"2 slices"},{t:"Cheese melted fully.",a:"pan"}]},
+
+{name:"Quesadilla",category:"Lunch",ingredients:["Tortilla","Cheese"],
 simpleSteps:[{t:"Fill.",a:"cheese"},{t:"Cook.",a:"pan"}],
-chefSteps:[{t:"Cheese melts fully.",a:"cheese"},{t:"Crisp outside.",a:"pan"}]
-},
-{
-name:"Burger",
-ingredients:["Ground beef","Bread","Cheese"],
+chefSteps:[{t:"Cheese melts inside.",a:"cheese"},{t:"Crisp outside.",a:"pan"}]},
+
+{name:"Burger",category:"Lunch",ingredients:["Ground beef","Bread","Cheese"],
 simpleSteps:[{t:"Cook patty.",a:"1 lb"},{t:"Assemble.",a:"final"}],
-chefSteps:[{t:"Juicy seared patty.",a:"1 lb"},{t:"Cheese melts over heat.",a:"final"}]
-}
-],
+chefSteps:[{t:"Juicy seared patty.",a:"1 lb"},{t:"Cheese melts over heat.",a:"final"}]},
 
-"🍲 Comfort / Soups":[
-{
-name:"Chili",
-ingredients:["Ground beef","Tomatoes","Onions"],
+/* 🍲 COMFORT */
+{name:"Chili",category:"Comfort",ingredients:["Ground beef","Tomatoes","Onions"],
 simpleSteps:[{t:"Cook beef.",a:"1 lb"},{t:"Simmer.",a:"final"}],
-chefSteps:[{t:"Deep browned beef.",a:"1 lb"},{t:"Thick rich simmer.",a:"final"}]
-},
-{
-name:"Tomato Soup",
-ingredients:["Tomatoes","Onions"],
+chefSteps:[{t:"Deep browned beef.",a:"1 lb"},{t:"Thick rich simmer.",a:"final"}]},
+
+{name:"Tomato Soup",category:"Comfort",ingredients:["Tomatoes","Onions"],
 simpleSteps:[{t:"Cook.",a:"pot"},{t:"Blend.",a:"final"}],
-chefSteps:[{t:"Sweet aroma develops.",a:"pot"},{t:"Smooth warm texture.",a:"final"}]
-},
-{
-name:"Ramen Bowl",
-ingredients:["Ramen noodles","Eggs"],
+chefSteps:[{t:"Sweet aroma builds.",a:"pot"},{t:"Smooth warm texture.",a:"final"}]},
+
+{name:"Ramen Bowl",category:"Comfort",ingredients:["Ramen noodles","Eggs"],
 simpleSteps:[{t:"Cook noodles.",a:"pack"},{t:"Add egg.",a:"final"}],
-chefSteps:[{t:"Springy noodles.",a:"pack"},{t:"Soft egg yolk.",a:"final"}]
-},
-{
-name:"Shepherd's Pie",
-ingredients:["Ground beef","Potatoes"],
+chefSteps:[{t:"Springy noodles.",a:"pack"},{t:"Soft yolk center.",a:"final"}]},
+
+{name:"Shepherd's Pie",category:"Comfort",ingredients:["Ground beef","Potatoes"],
 simpleSteps:[{t:"Layer.",a:"all"},{t:"Bake.",a:"oven"}],
-chefSteps:[{t:"Golden crust top.",a:"all"},{t:"Hot thick center.",a:"oven"}]
-}
-],
+chefSteps:[{t:"Golden crust top.",a:"all"},{t:"Hot thick center.",a:"oven"}]},
 
-"🍤 Seafood":[
-{
-name:"Garlic Butter Shrimp Pasta",
-ingredients:["Shrimp","Pasta","Garlic"],
+/* 🍤 SEAFOOD */
+{name:"Garlic Butter Shrimp Pasta",category:"Seafood",ingredients:["Shrimp","Pasta","Garlic"],
 simpleSteps:[{t:"Cook shrimp.",a:"1/2 lb"},{t:"Mix.",a:"final"}],
-chefSteps:[{t:"Shrimp pink curls.",a:"1/2 lb"},{t:"Garlic aromatic rich.",a:"final"}]
-},
-{
-name:"Salmon Rice Bowl",
-ingredients:["Rice","Salmon"],
+chefSteps:[{t:"Shrimp pink curls.",a:"1/2 lb"},{t:"Garlic rich aroma.",a:"final"}]},
+
+{name:"Salmon Rice Bowl",category:"Seafood",ingredients:["Rice","Salmon"],
 simpleSteps:[{t:"Cook salmon.",a:"1 fillet"},{t:"Serve.",a:"final"}],
-chefSteps:[{t:"Salmon flakes easily.",a:"1 fillet"},{t:"Rice fluffy warm.",a:"final"}]
+chefSteps:[{t:"Salmon flakes easily.",a:"1 fillet"},{t:"Rice fluffy warm.",a:"final"}]}
+
+];
+
+/* ================= CATEGORY FILTERS ================= */
+
+const categories=["All","Breakfast","Dinner","Lunch","Comfort","Seafood"];
+let activeCat="All";
+
+function renderFilters(){
+document.getElementById("filters").innerHTML=
+categories.map(c=>`
+<div class="filter ${activeCat===c?'active':''}" onclick="setCat('${c}')">${c}</div>
+`).join("");
 }
-]
-};
 
-/* ================= HELPERS ================= */
+function setCat(c){
+activeCat=c;
+renderFilters();
+showMatches();
+}
 
-function getAllRecipes(){
-return Object.values(recipeCategories).flat();
+/* ================= CORE ================= */
+
+function getFiltered(){
+return activeCat==="All"
+? recipes
+: recipes.filter(r=>r.category===activeCat);
 }
 
 function score(r){
@@ -245,12 +255,10 @@ let match=r.ingredients.filter(i=>selected.includes(i)).length;
 return {...r,match};
 }
 
-/* ================= UI ================= */
-
 function showMatches(){
-let top=getAllRecipes().map(score).sort((a,b)=>b.match-a.match).slice(0,3);
+let top=getFiltered().map(score).sort((a,b)=>b.match-a.match).slice(0,3);
 
-let html=`<div class="header">🍳 Top Matches</div>`;
+let html=`<div class="header">🍳 Top Matches (${activeCat})</div>`;
 top.forEach(r=>{
 html+=`<div class="card" onclick="openRecipe('${r.name}')">
 <b>${r.name}</b><br>Match: ${r.match}
@@ -260,6 +268,8 @@ html+=`<div class="card" onclick="openRecipe('${r.name}')">
 document.getElementById("results").innerHTML=html;
 show("results");
 }
+
+/* ================= PANTRY ================= */
 
 function openPantry(){
 let html=`<div class="header">🧺 Pantry</div>`;
@@ -278,11 +288,13 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
+/* ================= RECIPE VIEW ================= */
+
 let current=null;
 let mode="simple";
 
 function openRecipe(name){
-current=getAllRecipes().find(r=>r.name===name);
+current=recipes.find(r=>r.name===name);
 mode="simple";
 render();
 show("recipe");
@@ -312,6 +324,9 @@ ${html}
 `;
 }
 
+/* ================= START ================= */
+
+renderFilters();
 show("home");
 
 </script>
