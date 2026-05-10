@@ -35,14 +35,12 @@ transform:translateY(0) scale(1);
 pointer-events:auto;
 }
 
-/* ================= HOME ================= */
-
+/* HOME */
 #homeBg{
 position:fixed;
 inset:0;
 z-index:-2;
 }
-
 #homeBg img{
 width:100%;
 height:100%;
@@ -58,13 +56,6 @@ transform:translate(-50%,-50%);
 text-align:center;
 }
 
-.titleRow{
-display:flex;
-align-items:center;
-gap:18px;
-justify-content:center;
-}
-
 .titleText{
 display:flex;
 flex-direction:column;
@@ -72,27 +63,11 @@ font-weight:900;
 line-height:.85;
 text-shadow:0 0 20px rgba(255,80,0,0.6);
 }
-
 .the{font-size:32px;}
-.rusty{font-size:64px; color:#ffb347;}
-.chef{font-size:54px; color:#ff6a00;}
+.rusty{font-size:64px;color:#ffb347;}
+.chef{font-size:54px;color:#ff6a00;}
 
-.flame span{
-position:absolute;
-bottom:0;
-font-size:22px;
-animation:rise 1.2s infinite;
-opacity:0;
-}
-
-@keyframes rise{
-0%{opacity:0;transform:translateY(0);}
-30%{opacity:1;}
-100%{opacity:0;transform:translateY(-120px);}
-}
-
-/* ================= UI ================= */
-
+/* UI */
 .header{
 text-align:center;
 font-size:22px;
@@ -138,26 +113,6 @@ justify-content:center;
 gap:12px;
 }
 .bottomDock .btn{width:150px;}
-
-.filterBar{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:8px;
-margin:10px;
-}
-
-.filter{
-padding:8px 12px;
-border-radius:20px;
-border:1px solid white;
-cursor:pointer;
-font-size:12px;
-}
-.filter.active{
-background:white;
-color:black;
-}
 </style>
 </head>
 
@@ -165,7 +120,7 @@ color:black;
 
 <div id="app">
 
-<!-- ================= HOME ================= -->
+<!-- HOME -->
 <div id="home" class="page active">
 
 <div id="homeBg">
@@ -173,21 +128,10 @@ color:black;
 </div>
 
 <div id="introLogo">
-<div class="titleRow">
-<div style="position:relative;width:50px;height:120px;">
-<span>🔥</span><span>🔥</span><span>🔥</span>
-</div>
-
 <div class="titleText">
 <div class="the">THE</div>
 <div class="rusty">RUSTY</div>
 <div class="chef">CHEF</div>
-</div>
-
-<div style="position:relative;width:50px;height:120px;">
-<span>🔥</span><span>🔥</span><span>🔥</span>
-</div>
-
 </div>
 </div>
 
@@ -232,106 +176,109 @@ let selected=JSON.parse(localStorage.getItem("ingredients")||"[]");
 
 const recipes=[
 
+/* BREAKFAST */
 {name:"Pancakes",category:"Breakfast",
-ingredients:["Flour","Milk","Eggs","Sugar"],
-simpleSteps:[{t:"Mix.",a:"mix"},{t:"Cook.",a:"pan"}],
-chefSteps:[{t:"Smooth batter.",a:"mix"},{t:"Flip when bubbling.",a:"pan"}]},
+ingredients:["Flour","Milk","Eggs"],
+simpleSteps:[{t:"Mix batter.",a:"mix"},{t:"Cook.",a:"pan"}],
+chefSteps:[{t:"Smooth batter consistency.",a:"mix",visual:"thick pourable batter",smell:"slight vanilla",feel:"silky"}]},
 
 {name:"Breakfast Burrito",category:"Breakfast",
 ingredients:["Eggs","Tortilla","Cheese"],
 simpleSteps:[{t:"Cook eggs.",a:"3 eggs"},{t:"Wrap.",a:"final"}],
-chefSteps:[{t:"Soft fluffy eggs.",a:"3 eggs"},{t:"Wrap warm tortilla.",a:"final"}]},
+chefSteps:[{t:"Scramble eggs soft.",a:"3 eggs",visual:"fluffy yellow eggs",smell:"buttery",feel:"soft"}]},
 
 {name:"Avocado Toast",category:"Breakfast",
 ingredients:["Bread","Avocado"],
 simpleSteps:[{t:"Toast.",a:"2 slices"},{t:"Add avocado.",a:"final"}],
-chefSteps:[{t:"Crisp bread.",a:"2 slices"},{t:"Creamy avocado.",a:"final"}]},
+chefSteps:[{t:"Mash avocado smooth.",a:"2 slices",visual:"green creamy spread",smell:"fresh grass notes",feel:"buttery"}]},
 
+{name:"French Toast",category:"Breakfast",
+ingredients:["Bread","Eggs","Milk"],
+simpleSteps:[{t:"Dip bread.",a:"mix"},{t:"Cook.",a:"pan"}],
+chefSteps:[{t:"Soak evenly.",a:"mix",visual:"golden crust",smell:"sweet cinnamon",feel:"soft inside"}]},
+
+/* DINNER */
 {name:"Spaghetti Bolognese",category:"Dinner",
 ingredients:["Pasta","Ground beef","Tomatoes"],
-simpleSteps:[{t:"Boil.",a:"box"},{t:"Cook sauce.",a:"final"}],
-chefSteps:[{t:"Al dente pasta.",a:"box"},{t:"Rich sauce.",a:"final"}]},
+simpleSteps:[{t:"Boil pasta.",a:"box"},{t:"Cook sauce.",a:"final"}],
+chefSteps:[{t:"Pasta al dente.",a:"box",visual:"firm noodles",smell:"tomato richness",feel:"slight bite"}]},
 
 {name:"Chicken Curry",category:"Dinner",
 ingredients:["Chicken breast","Curry powder","Coconut milk"],
 simpleSteps:[{t:"Cook chicken.",a:"1 lb"},{t:"Simmer.",a:"final"}],
-chefSteps:[{t:"Golden chicken.",a:"1 lb"},{t:"Fragrant curry.",a:"final"}]},
+chefSteps:[{t:"Spices bloom.",a:"1 lb",visual:"golden sauce",smell:"deep curry aroma",feel:"thick sauce"}]},
 
 {name:"Lasagna",category:"Dinner",
 ingredients:["Pasta","Cheese","Ground beef"],
 simpleSteps:[{t:"Layer.",a:"all"},{t:"Bake.",a:"oven"}],
-chefSteps:[{t:"Stacked layers.",a:"all"},{t:"Golden top.",a:"oven"}]},
-
-{name:"Chicken Alfredo",category:"Dinner",
-ingredients:["Pasta","Chicken breast","Milk","Cheese"],
-simpleSteps:[{t:"Cook chicken.",a:"1 lb"},{t:"Make sauce.",a:"milk"}],
-chefSteps:[{t:"Juicy chicken.",a:"1 lb"},{t:"Creamy sauce.",a:"milk"}]},
-
-{name:"Steak & Potatoes",category:"Dinner",
-ingredients:["Steak","Potatoes"],
-simpleSteps:[{t:"Cook steak.",a:"1 lb"},{t:"Cook potatoes.",a:"final"}],
-chefSteps:[{t:"Seared steak.",a:"1 lb"},{t:"Soft potatoes.",a:"final"}]},
+chefSteps:[{t:"Stack layers tight.",a:"all",visual:"melting cheese top",smell:"baked richness",feel:"soft layers"}]},
 
 {name:"Chicken Fried Rice",category:"Dinner",
-ingredients:["Rice","Eggs","Chicken breast","Soy sauce"],
+ingredients:["Rice","Eggs","Chicken breast"],
 simpleSteps:[{t:"Cook rice.",a:"1 cup"},{t:"Mix.",a:"final"}],
-chefSteps:[{t:"Dry rice.",a:"1 cup"},{t:"Hot stir fry.",a:"final"}]},
+chefSteps:[{t:"Separate grains.",a:"1 cup",visual:"dry rice",smell:"soy aroma",feel:"light texture"}]},
 
 {name:"Beef Stir Fry",category:"Dinner",
 ingredients:["Beef","Broccoli","Soy sauce"],
 simpleSteps:[{t:"Cook beef.",a:"1 lb"},{t:"Mix.",a:"final"}],
-chefSteps:[{t:"Brown beef.",a:"1 lb"},{t:"Crisp veggies.",a:"final"}]},
+chefSteps:[{t:"High heat sear.",a:"1 lb",visual:"brown crust",smell:"smoky soy",feel:"tender bite"}]},
 
+{name:"Fried Chicken",category:"Dinner",
+ingredients:["Chicken breast","Flour","Oil"],
+simpleSteps:[{t:"Coat.",a:"flour"},{t:"Fry.",a:"oil"}],
+chefSteps:[{t:"Crunch coating.",a:"flour",visual:"golden crust",smell:"fried aroma",feel:"crispy outside"}]},
+
+/* LUNCH */
 {name:"Grilled Cheese",category:"Lunch",
 ingredients:["Bread","Cheese","Butter"],
 simpleSteps:[{t:"Butter.",a:"2 slices"},{t:"Grill.",a:"pan"}],
-chefSteps:[{t:"Golden toast.",a:"2 slices"},{t:"Melted cheese.",a:"pan"}]},
+chefSteps:[{t:"Golden toast.",a:"2 slices",visual:"crispy brown",smell:"buttery",feel:"crunch outside"}]},
 
 {name:"Quesadilla",category:"Lunch",
 ingredients:["Tortilla","Cheese"],
 simpleSteps:[{t:"Fill.",a:"cheese"},{t:"Cook.",a:"pan"}],
-chefSteps:[{t:"Melted center.",a:"cheese"},{t:"Crisp shell.",a:"pan"}]},
+chefSteps:[{t:"Melt center.",a:"cheese",visual:"oozing cheese",smell:"toasted tortilla",feel:"crispy shell"}]},
 
 {name:"Burger",category:"Lunch",
 ingredients:["Ground beef","Bread","Cheese"],
 simpleSteps:[{t:"Cook patty.",a:"1 lb"},{t:"Assemble.",a:"final"}],
-chefSteps:[{t:"Juicy patty.",a:"1 lb"},{t:"Melt cheese.",a:"final"}]},
+chefSteps:[{t:"Juicy sear.",a:"1 lb",visual:"char marks",smell:"grill smoke",feel:"juicy bite"}]},
 
+/* COMFORT */
 {name:"Chili",category:"Comfort",
-ingredients:["Ground beef","Tomatoes","Onions"],
+ingredients:["Ground beef","Tomatoes"],
 simpleSteps:[{t:"Cook.",a:"1 lb"},{t:"Simmer.",a:"final"}],
-chefSteps:[{t:"Deep flavor.",a:"1 lb"},{t:"Thick stew.",a:"final"}]},
+chefSteps:[{t:"Thick stew.",a:"1 lb",visual:"deep red",smell:"spicy warmth",feel:"heavy texture"}]},
 
 {name:"Tomato Soup",category:"Comfort",
 ingredients:["Tomatoes","Onions"],
 simpleSteps:[{t:"Cook.",a:"pot"},{t:"Blend.",a:"final"}],
-chefSteps:[{t:"Sweet aroma.",a:"pot"},{t:"Smooth soup.",a:"final"}]},
+chefSteps:[{t:"Blend smooth.",a:"pot",visual:"bright red",smell:"sweet tomato",feel:"silky"}]},
 
 {name:"Ramen Bowl",category:"Comfort",
 ingredients:["Ramen noodles","Eggs"],
 simpleSteps:[{t:"Cook noodles.",a:"pack"},{t:"Add egg.",a:"final"}],
-chefSteps:[{t:"Springy noodles.",a:"pack"},{t:"Soft yolk.",a:"final"}]},
+chefSteps:[{t:"Soft egg yolk.",a:"pack",visual:"broth steam",smell:"savory broth",feel:"slurp texture"}]},
 
 {name:"Shepherd's Pie",category:"Comfort",
 ingredients:["Ground beef","Potatoes"],
 simpleSteps:[{t:"Layer.",a:"all"},{t:"Bake.",a:"oven"}],
-chefSteps:[{t:"Golden top.",a:"all"},{t:"Hot center.",a:"oven"}]},
+chefSteps:[{t:"Golden crust.",a:"all",visual:"baked top",smell:"roasted meat",feel:"soft inside"}]},
 
+/* SEAFOOD */
 {name:"Garlic Shrimp Pasta",category:"Seafood",
 ingredients:["Shrimp","Pasta","Garlic"],
 simpleSteps:[{t:"Cook shrimp.",a:"1/2 lb"},{t:"Mix.",a:"final"}],
-chefSteps:[{t:"Pink shrimp.",a:"1/2 lb"},{t:"Garlic aroma.",a:"final"}]},
+chefSteps:[{t:"Pink curl shrimp.",a:"1/2 lb",visual:"glossy garlic oil",smell:"garlic butter",feel:"tender bite"}]},
 
 {name:"Salmon Rice Bowl",category:"Seafood",
 ingredients:["Rice","Salmon"],
 simpleSteps:[{t:"Cook salmon.",a:"1 fillet"},{t:"Serve.",a:"final"}],
-chefSteps:[{t:"Flaky salmon.",a:"1 fillet"},{t:"Soft rice.",a:"final"}]}
+chefSteps:[{t:"Flake salmon.",a:"1 fillet",visual:"pink flakes",smell:"ocean richness",feel:"soft fish"}]}
 
 ];
 
 /* ================= SYSTEM ================= */
-
-function getAllRecipes(){return recipes;}
 
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
@@ -339,7 +286,7 @@ return {...r,match};
 }
 
 function showMatches(){
-let top=getAllRecipes().map(score).sort((a,b)=>b.match-a.match).slice(0,3);
+let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
 
 let html=`<div class="header">🍳 Top Matches</div>`;
 top.forEach(r=>{
@@ -369,6 +316,8 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
+/* ================= RECIPE ================= */
+
 let current=null;
 let mode="simple";
 
@@ -385,19 +334,42 @@ render();
 }
 
 function render(){
+
 let steps=current[mode==="simple"?"simpleSteps":"chefSteps"];
 
-let html=steps.map((s,i)=>`
+let html=steps.map((s,i)=>{
+
+let extra = mode==="chef"
+? `<br><i>👁 ${s.visual||""}</i><br><i>👃 ${s.smell||""}</i><br><i>✋ ${s.feel||""}</i>`
+:"";
+
+return `
 <div class="card">
 <b>${i+1}. ${s.t}</b><br><br>
 🍴 ${s.a}
-</div>
-`).join("");
+${extra}
+</div>`;
+}).join("");
+
+/* Walmart */
+let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
+current.ingredients.filter(i=>!selected.includes(i)).forEach(item=>{
+shopHTML+=`
+<div class="card">
+<b>${item}</b><br>
+<a class="btn" target="_blank"
+style="display:inline-block;margin-top:8px;background:#0071ce;color:white;"
+href="https://www.walmart.com/search?q=${encodeURIComponent(item)}">
+🛒 Walmart
+</a>
+</div>`;
+});
 
 document.getElementById("recipe").innerHTML=`
-<div class="header">${current.name}</div>
+<div class="header">${current.name} (${mode.toUpperCase()})</div>
 <div class="btn" onclick="switchMode()">Switch Mode</div>
 ${html}
+${shopHTML}
 <div class="btn" onclick="show('home')">Home</div>
 `;
 }
