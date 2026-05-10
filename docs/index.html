@@ -73,7 +73,6 @@ cursor:pointer;
 .shopBtn{
 display:inline-block;
 margin-top:8px;
-margin-right:8px;
 padding:10px 14px;
 border-radius:10px;
 font-weight:700;
@@ -92,15 +91,6 @@ justify-content:center;
 gap:20px;
 }
 .bottomDock .btn{width:160px;}
-
-#homeBg img{
-position:fixed;
-inset:0;
-width:100%;
-height:100%;
-object-fit:cover;
-z-index:-1;
-}
 </style>
 </head>
 
@@ -108,16 +98,13 @@ z-index:-1;
 
 <div id="app">
 
-<!-- HOME -->
 <div id="home" class="page active">
-<div id="homeBg">
-<img src="copilot_image_1777179019874.jpeg">
-</div>
 
 <div class="bottomDock">
 <div class="btn" onclick="openPantry()">🧺 Pantry</div>
-<div class="btn" onclick="showMatches()">🍳 Recipes</div>
+<div class="btn" onclick="showMatches()">🍳 Find Recipes</div>
 </div>
+
 </div>
 
 <div id="pantry" class="page"></div>
@@ -139,73 +126,67 @@ requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 const ingredientItems=[
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
-"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Tortilla","Bread","Parmesan",
-"Cheddar","Mozzarella","Avocado","Strawberries","Bananas","Chicken broth","Beef broth","BBQ sauce","Teriyaki sauce",
-"Peanut butter","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar","Oats","Honey","Corn",
-"Chocolate","Coffee","Tea","Cornstarch","Lettuce","Cucumber","Zucchini","Eggplant","Chili powder","Fish sauce"
+"Tuna","Steak","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon","Tortilla",
+"Bread","Parmesan","Cheddar","Mozzarella","Avocado","Chicken broth","Beef broth","Coconut milk","Curry powder"
 ];
 
 let selected=JSON.parse(localStorage.getItem("ing")||"[]");
 
 /* =========================
-   25 REAL RECIPES
+   25 FULL REAL RECIPES
 ========================= */
 const recipes=[
-{
-name:"Beef Tacos",
-ingredients:["Ground beef","Tortilla","Cheese","Onions","Tomatoes"],
-steps:[
-{t:"Heat pan until warm and slightly smoking.","a":"pan heat"},
-{t:"Add ground beef and listen for a strong sizzle.","a":"beef"},
-{t:"Break meat until crumbly and no pink remains.","a":"cook 5-7 min"},
-{t:"Add seasoning and stir until coated.","a":"taco seasoning"},
-{t:"Warm tortillas until soft and flexible.","a":"tortillas"},
-{t:"Assemble with toppings and serve hot.","a":"final"}
-]
-},
-{
-name:"Chicken Fried Rice",
-ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Carrots","Onions"],
-steps:[
-{t:"Cook rice and let it cool slightly.","a":"rice"},
-{t:"Cook chicken until firm and fully done.","a":"chicken"},
-{t:"Scramble eggs until soft curds form.","a":"eggs"},
-{t:"Stir fry vegetables until slightly tender.","a":"veg"},
-{t:"Add rice and soy sauce and mix well.","a":"final"}
-]
-},
-{
-name:"Spaghetti Bolognese",
-ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
-steps:[
-{t:"Boil pasta until firm but tender.","a":"pasta"},
-{t:"Cook beef until browned completely.","a":"beef"},
-{t:"Add onions and garlic until fragrant.","a":"aroma"},
-{t:"Simmer tomatoes until thick sauce forms.","a":"sauce"},
-{t:"Combine with pasta and serve.","a":"final"}
-]
-},
-{
-name:"Grilled Cheese",
-ingredients:["Bread","Cheese","Butter"],
-steps:[
-{t:"Butter both slices of bread evenly.","a":"bread"},
-{t:"Place cheese between slices.","a":"assemble"},
-{t:"Cook in pan until golden brown.","a":"heat"},
-{t:"Flip and repeat until melted.","a":"final"}
-]
-},
-{
-name:"Chicken Curry",
-ingredients:["Chicken breast","Curry powder","Coconut milk","Rice"],
-steps:[
-{t:"Cook chicken until lightly browned.","a":"chicken"},
-{t:"Add curry powder and stir until fragrant.","a":"spices"},
-{t:"Pour coconut milk and simmer.","a":"simmer"},
-{t:"Serve over rice.","a":"final"}
-]
-}
+
+{ name:"Beef Tacos", ingredients:["Ground beef","Tortilla","Cheese","Onions","Tomatoes"], steps:[{t:"Cook beef","a":"brown"},{t:"Season","a":"taco mix"},{t:"Warm tortillas","a":"soft"},{t:"Assemble","a":"final"}] },
+
+{ name:"Chicken Fried Rice", ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Carrots","Onions"], steps:[{t:"Cook rice","a":"cool"},{t:"Cook chicken","a":"firm"},{t:"Scramble eggs","a":"soft"},{t:"Stir fry","a":"final"}] },
+
+{ name:"Spaghetti Bolognese", ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"], steps:[{t:"Boil pasta","a":"firm"},{t:"Cook beef","a":"brown"},{t:"Simmer sauce","a":"thick"},{t:"Combine","a":"final"}] },
+
+{ name:"Grilled Cheese", ingredients:["Bread","Cheese","Butter"], steps:[{t:"Butter bread","a":"coat"},{t:"Grill","a":"golden"},{t:"Melt cheese","a":"gooey"},{t:"Serve","a":"final"}] },
+
+{ name:"Chicken Curry", ingredients:["Chicken breast","Curry powder","Coconut milk","Rice"], steps:[{t:"Cook chicken","a":"brown"},{t:"Add curry","a":"spices"},{t:"Simmer","a":"sauce"},{t:"Serve","a":"final"}] },
+
+{ name:"Beef Stir Fry", ingredients:["Ground beef","Broccoli","Soy sauce","Carrots"], steps:[{t:"Cook beef","a":"hot pan"},{t:"Add veg","a":"tender crisp"},{t:"Add sauce","a":"soy"},{t:"Serve","a":"final"}] },
+
+{ name:"Chicken Sandwich", ingredients:["Chicken breast","Bread","Lettuce"], steps:[{t:"Cook chicken","a":"firm"},{t:"Toast bread","a":"light"},{t:"Assemble","a":"final"}] },
+
+{ name:"Omelette", ingredients:["Eggs","Cheese","Milk"], steps:[{t:"Whisk eggs","a":"smooth"},{t:"Cook","a":"soft"},{t:"Add cheese","a":"melt"},{t:"Fold","a":"final"}] },
+
+{ name:"Pancakes", ingredients:["Flour","Milk","Eggs"], steps:[{t:"Mix","a":"batter"},{t:"Cook","a":"golden"},{t:"Flip","a":"light"},{t:"Serve","a":"final"}] },
+
+{ name:"Mac and Cheese", ingredients:["Pasta","Cheese","Milk"], steps:[{t:"Boil pasta","a":"soft"},{t:"Make sauce","a":"creamy"},{t:"Mix","a":"smooth"},{t:"Serve","a":"final"}] },
+
+{ name:"Chicken Alfredo", ingredients:["Chicken breast","Pasta","Cream","Cheese"], steps:[{t:"Cook chicken","a":"firm"},{t:"Boil pasta","a":"soft"},{t:"Make sauce","a":"creamy"},{t:"Combine","a":"final"}] },
+
+{ name:"Tuna Sandwich", ingredients:["Tuna","Bread","Mayonnaise"], steps:[{t:"Mix tuna","a":"creamy"},{t:"Toast bread","a":"light"},{t:"Assemble","a":"final"}] },
+
+{ name:"BLT", ingredients:["Bacon","Bread","Lettuce","Tomatoes"], steps:[{t:"Cook bacon","a":"crispy"},{t:"Toast bread","a":"gold"},{t:"Assemble","a":"final"}] },
+
+{ name:"Quesadilla", ingredients:["Tortilla","Cheese"], steps:[{t:"Heat tortilla","a":"soft"},{t:"Add cheese","a":"melt"},{t:"Fold","a":"final"}] },
+
+{ name:"Fried Chicken", ingredients:["Chicken breast","Flour","Oil"], steps:[{t:"Coat chicken","a":"flour"},{t:"Fry","a":"crispy"},{t:"Drain","a":"final"}] },
+
+{ name:"Salmon", ingredients:["Salmon","Lemon","Butter"], steps:[{t:"Cook salmon","a":"tender"},{t:"Add lemon","a":"fresh"},{t:"Serve","a":"final"}] },
+
+{ name:"Shrimp Pasta", ingredients:["Shrimp","Pasta","Garlic","Butter"], steps:[{t:"Cook shrimp","a":"pink"},{t:"Boil pasta","a":"soft"},{t:"Mix","a":"garlic butter"},{t:"Serve","a":"final"}] },
+
+{ name:"Chili", ingredients:["Ground beef","Tomatoes","Beans"], steps:[{t:"Cook beef","a":"brown"},{t:"Add tomatoes","a":"simmer"},{t:"Add beans","a":"thick"},{t:"Serve","a":"final"}] },
+
+{ name:"Breakfast Burrito", ingredients:["Eggs","Tortilla","Cheese"], steps:[{t:"Cook eggs","a":"soft"},{t:"Warm tortilla","a":"flex"},{t:"Wrap","a":"final"}] },
+
+{ name:"French Toast", ingredients:["Bread","Eggs","Milk"], steps:[{t:"Dip bread","a":"coat"},{t:"Cook","a":"golden"},{t:"Flip","a":"light"},{t:"Serve","a":"final"}] },
+
+{ name:"Veggie Stir Fry", ingredients:["Broccoli","Carrots","Soy sauce"], steps:[{t:"Cook veg","a":"tender crisp"},{t:"Add sauce","a":"soy"},{t:"Serve","a":"final"}] },
+
+{ name:"Chicken Soup", ingredients:["Chicken breast","Chicken broth","Carrots"], steps:[{t:"Boil broth","a":"hot"},{t:"Add chicken","a":"cook"},{t:"Add veg","a":"soft"},{t:"Serve","a":"final"}] },
+
+{ name:"Rice Bowl", ingredients:["Rice","Chicken breast","Soy sauce"], steps:[{t:"Cook rice","a":"fluffy"},{t:"Cook chicken","a":"firm"},{t:"Add sauce","a":"final"}] },
+
+{ name:"Toast & Eggs", ingredients:["Eggs","Bread","Butter"], steps:[{t:"Cook eggs","a":"soft"},{t:"Toast bread","a":"gold"},{t:"Serve","a":"final"}] },
+
+{ name:"Garlic Bread", ingredients:["Bread","Butter","Garlic"], steps:[{t:"Spread butter","a":"coat"},{t:"Add garlic","a":"aroma"},{t:"Bake","a":"crispy"}] }
+
 ];
 
 /* ========================= */
@@ -220,9 +201,8 @@ let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
 
 let html=`<div class="header">🍳 Top Recipes</div>`;
 top.forEach(r=>{
-html+=`
-<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>Match Score: ${r.match}
+html+=`<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b><br>Match: ${r.match}
 </div>`;
 });
 
@@ -231,37 +211,13 @@ show("results");
 }
 
 function openPantry(){
-let html=`
-<div class="header">🧺 Pantry</div>
-<input id="search" placeholder="Search ingredients..."
-style="width:100%;padding:10px;border-radius:10px;border:none;margin-bottom:10px"
-oninput="filterPantry()"/>
-<div class="btn" onclick="clearPantry()">Clear Pantry</div>
-<div id="list">`;
-
+let html=`<div class="header">🧺 Pantry</div>`;
 ingredientItems.forEach(i=>{
 html+=`<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
 });
-
-html+=`</div>`;
+html+=`<div class="btn" onclick="showMatches()">🍳 Find Recipes</div>`;
 document.getElementById("pantry").innerHTML=html;
 show("pantry");
-}
-
-function filterPantry(){
-let q=document.getElementById("search").value.toLowerCase();
-let list=document.getElementById("list");
-list.innerHTML=ingredientItems
-.filter(i=>i.toLowerCase().includes(q))
-.map(i=>`
-<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>
-`).join("");
-}
-
-function clearPantry(){
-selected=[];
-localStorage.setItem("ing",JSON.stringify(selected));
-openPantry();
 }
 
 function toggle(i){
