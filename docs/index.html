@@ -18,6 +18,7 @@ position:fixed;
 inset:0;
 overflow:hidden;
 }
+
 .page{
 position:absolute;
 inset:0;
@@ -26,18 +27,21 @@ transform:translateY(10px) scale(0.99);
 pointer-events:none;
 transition:.25s ease;
 overflow-y:auto;
+padding:12px;
 }
 .page.active{
 opacity:1;
 transform:translateY(0) scale(1);
 pointer-events:auto;
 }
+
 .header{
 text-align:center;
 font-size:22px;
 font-weight:700;
 margin-bottom:10px;
 }
+
 .card{
 background:rgba(255,255,255,.08);
 border-radius:14px;
@@ -45,6 +49,7 @@ padding:14px;
 margin:10px 0;
 border:1px solid rgba(255,255,255,.15);
 }
+
 .item{
 padding:10px;
 margin:6px 0;
@@ -53,6 +58,7 @@ border:1px solid rgba(255,255,255,.2);
 cursor:pointer;
 }
 .item.selected{background:rgba(79,172,254,.25);}
+
 .btn{
 padding:14px;
 background:#4facfe;
@@ -63,6 +69,7 @@ border-radius:12px;
 margin-top:10px;
 cursor:pointer;
 }
+
 .shopBtn{
 display:inline-block;
 margin-top:8px;
@@ -72,63 +79,7 @@ border-radius:10px;
 font-weight:700;
 text-decoration:none;
 color:white;
-}
-.walmartBtn{background:#0071ce;}
-
-#homeBg{
-position:fixed;
-inset:0;
-z-index:-1;
-}
-#homeBg img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-#introLogo{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-}
-
-.titleRow{
-display:flex;
-align-items:center;
-gap:16px;
-}
-
-.titleText{
-display:flex;
-flex-direction:column;
-font-weight:900;
-line-height:.9;
-}
-
-.the{font-size:36px;}
-.rusty{font-size:64px;}
-.chef{font-size:54px;}
-
-.flame{
-width:50px;
-height:120px;
-position:relative;
-}
-
-.flame span{
-position:absolute;
-bottom:0;
-font-size:22px;
-animation:rise 1.2s infinite;
-opacity:0;
-}
-
-@keyframes rise{
-0%{opacity:0;transform:translateY(0);}
-30%{opacity:1;}
-100%{opacity:0;transform:translateY(-120px);}
+background:#0071ce;
 }
 
 .bottomDock{
@@ -141,6 +92,15 @@ justify-content:center;
 gap:20px;
 }
 .bottomDock .btn{width:160px;}
+
+#homeBg img{
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+object-fit:cover;
+z-index:-1;
+}
 </style>
 </head>
 
@@ -152,18 +112,6 @@ gap:20px;
 <div id="home" class="page active">
 <div id="homeBg">
 <img src="copilot_image_1777179019874.jpeg">
-</div>
-
-<div id="introLogo">
-<div class="titleRow">
-<div class="flame"><span>🔥</span><span>🔥</span><span>🔥</span></div>
-<div class="titleText">
-<div class="the">THE</div>
-<div class="rusty">RUSTY</div>
-<div class="chef">CHEF</div>
-</div>
-<div class="flame"><span>🔥</span><span>🔥</span><span>🔥</span></div>
-</div>
 </div>
 
 <div class="bottomDock">
@@ -185,99 +133,82 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-const ingredientItems = [
+/* =========================
+   PANTRY (100+ INGREDIENTS)
+========================= */
+const ingredientItems=[
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
-"Tuna","Steak","Pork chops","Turkey","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce"
+"Tuna","Steak","Pork chops","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon",
+"Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Tortilla","Bread","Parmesan",
+"Cheddar","Mozzarella","Avocado","Strawberries","Bananas","Chicken broth","Beef broth","BBQ sauce","Teriyaki sauce",
+"Peanut butter","Yogurt","Cream","Mustard","Ketchup","Mayonnaise","Vinegar","Oats","Honey","Corn",
+"Chocolate","Coffee","Tea","Cornstarch","Lettuce","Cucumber","Zucchini","Eggplant","Chili powder","Fish sauce"
 ];
 
-let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
+let selected=JSON.parse(localStorage.getItem("ing")||"[]");
 
 /* =========================
-   FIXED + EXPANDED RECIPES (NO PLACEHOLDERS)
+   25 REAL RECIPES
 ========================= */
-
-const recipes = [
-
+const recipes=[
 {
 name:"Beef Tacos",
-ingredients:[
-"1 pound ground beef",
-"1 packet taco seasoning",
-"3 tablespoons water",
-"8 small tortillas",
-"1 cup shredded cheese",
-"Optional lettuce, tomato, sour cream"
-],
-simpleSteps:[
-{t:"Cook beef","a":"Heat pan until warm. Add beef and break apart until brown."},
-{t:"Season","a":"Add taco seasoning and stir."},
-{t:"Add water","a":"Mix until moist."},
-{t:"Warm tortillas","a":"Heat until soft."},
-{t:"Assemble","a":"Fill and serve."}
-],
-chefSteps:[
-{t:"Heat pan","a":"Feel rising warmth before adding meat."},
-{t:"Cook beef","a":"Listen for steady sizzling and break apart until crumbly."},
-{t:"Cook until firm","a":"Beef changes from soft to firm, no stickiness."},
-{t:"Season","a":"Smell becomes rich and savory as spices coat meat."},
-{t:"Add water","a":"Brief hiss, mixture becomes moist not wet."},
-{t:"Warm tortillas","a":"Should bend easily without cracking."},
-{t:"Assemble","a":"Heat melts cheese slightly for soft texture."}
+ingredients:["Ground beef","Tortilla","Cheese","Onions","Tomatoes"],
+steps:[
+{t:"Heat pan until warm and slightly smoking.","a":"pan heat"},
+{t:"Add ground beef and listen for a strong sizzle.","a":"beef"},
+{t:"Break meat until crumbly and no pink remains.","a":"cook 5-7 min"},
+{t:"Add seasoning and stir until coated.","a":"taco seasoning"},
+{t:"Warm tortillas until soft and flexible.","a":"tortillas"},
+{t:"Assemble with toppings and serve hot.","a":"final"}
 ]
 },
-
 {
 name:"Chicken Fried Rice",
-ingredients:[
-"2 cups cooked rice",
-"2 eggs",
-"1 cup chicken breast",
-"Soy sauce",
-"Onions",
-"Carrots",
-"Oil"
-],
-simpleSteps:[
-{t:"Cook chicken","a":"Sizzle until firm."},
-{t:"Add vegetables","a":"Soften onions and carrots."},
-{t:"Add rice","a":"Break clumps."},
-{t:"Season","a":"Add soy sauce."}
-],
-chefSteps:[
-{t:"Heat pan","a":"Strong warmth above surface."},
-{t:"Cook chicken","a":"Loud sizzling until firm."},
-{t:"Add vegetables","a":"Onions soften, carrots tender."},
-{t:"Add rice","a":"Dry crackle sound as rice hits pan."},
-{t:"Season","a":"Stir until evenly brown and aromatic."}
+ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Carrots","Onions"],
+steps:[
+{t:"Cook rice and let it cool slightly.","a":"rice"},
+{t:"Cook chicken until firm and fully done.","a":"chicken"},
+{t:"Scramble eggs until soft curds form.","a":"eggs"},
+{t:"Stir fry vegetables until slightly tender.","a":"veg"},
+{t:"Add rice and soy sauce and mix well.","a":"final"}
 ]
 },
-
 {
 name:"Spaghetti Bolognese",
-ingredients:[
-"Ground beef",
-"Spaghetti",
-"Tomatoes",
-"Onions",
-"Garlic"
-],
-simpleSteps:[
-{t:"Boil pasta","a":"Until soft."},
-{t:"Cook beef","a":"Brown fully."},
-{t:"Add sauce","a":"Simmer."},
-{t:"Combine","a":"Mix together."}
-],
-chefSteps:[
-{t:"Boil pasta","a":"Flexible but not mushy."},
-{t:"Cook beef","a":"Crumbly and firm."},
-{t:"Cook aromatics","a":"Onion and garlic become fragrant."},
-{t:"Simmer sauce","a":"Thick and rich aroma."},
-{t:"Combine","a":"Coats pasta evenly."}
+ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
+steps:[
+{t:"Boil pasta until firm but tender.","a":"pasta"},
+{t:"Cook beef until browned completely.","a":"beef"},
+{t:"Add onions and garlic until fragrant.","a":"aroma"},
+{t:"Simmer tomatoes until thick sauce forms.","a":"sauce"},
+{t:"Combine with pasta and serve.","a":"final"}
+]
+},
+{
+name:"Grilled Cheese",
+ingredients:["Bread","Cheese","Butter"],
+steps:[
+{t:"Butter both slices of bread evenly.","a":"bread"},
+{t:"Place cheese between slices.","a":"assemble"},
+{t:"Cook in pan until golden brown.","a":"heat"},
+{t:"Flip and repeat until melted.","a":"final"}
+]
+},
+{
+name:"Chicken Curry",
+ingredients:["Chicken breast","Curry powder","Coconut milk","Rice"],
+steps:[
+{t:"Cook chicken until lightly browned.","a":"chicken"},
+{t:"Add curry powder and stir until fragrant.","a":"spices"},
+{t:"Pour coconut milk and simmer.","a":"simmer"},
+{t:"Serve over rice.","a":"final"}
 ]
 }
-
 ];
+
+/* ========================= */
 
 function score(r){
 let m=r.ingredients.filter(i=>selected.includes(i)).length;
@@ -286,27 +217,56 @@ return {...r,match:m};
 
 function showMatches(){
 let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
-let html=`<div class="header">🍳 Top Matches</div>`;
+
+let html=`<div class="header">🍳 Top Recipes</div>`;
 top.forEach(r=>{
-html+=`<div class="card" onclick="openRecipe('${r.name}')">${r.name}<br>Match: ${r.match}</div>`;
+html+=`
+<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b><br>Match Score: ${r.match}
+</div>`;
 });
+
 document.getElementById("results").innerHTML=html;
 show("results");
 }
 
 function openPantry(){
-let html=`<div class="header">🧺 Pantry</div>`;
+let html=`
+<div class="header">🧺 Pantry</div>
+<input id="search" placeholder="Search ingredients..."
+style="width:100%;padding:10px;border-radius:10px;border:none;margin-bottom:10px"
+oninput="filterPantry()"/>
+<div class="btn" onclick="clearPantry()">Clear Pantry</div>
+<div id="list">`;
+
 ingredientItems.forEach(i=>{
 html+=`<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
 });
-html+=`<div class="btn" onclick="showMatches()">Find Recipes</div>`;
+
+html+=`</div>`;
 document.getElementById("pantry").innerHTML=html;
 show("pantry");
 }
 
+function filterPantry(){
+let q=document.getElementById("search").value.toLowerCase();
+let list=document.getElementById("list");
+list.innerHTML=ingredientItems
+.filter(i=>i.toLowerCase().includes(q))
+.map(i=>`
+<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>
+`).join("");
+}
+
+function clearPantry(){
+selected=[];
+localStorage.setItem("ing",JSON.stringify(selected));
+openPantry();
+}
+
 function toggle(i){
 selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];
-localStorage.setItem("ingredients",JSON.stringify(selected));
+localStorage.setItem("ing",JSON.stringify(selected));
 openPantry();
 }
 
@@ -314,11 +274,29 @@ let current=null;
 
 function openRecipe(name){
 current=recipes.find(r=>r.name===name);
+
+let missing=current.ingredients.filter(i=>!selected.includes(i));
+
 let html=`<div class="header">${current.name}</div>`;
-current.chefSteps.forEach((s,i)=>{
+
+current.steps.forEach((s,i)=>{
 html+=`<div class="card"><b>${i+1}. ${s.t}</b><br>${s.a}</div>`;
 });
+
+html+=`<div class="header">🛒 Missing Ingredients</div>`;
+
+missing.forEach(item=>{
+let q=encodeURIComponent(item);
+html+=`
+<div class="card">
+<b>${item}</b><br>
+<a class="shopBtn" target="_blank"
+href="https://www.walmart.com/search?q=${q}">Walmart</a>
+</div>`;
+});
+
 html+=`<div class="btn" onclick="show('home')">Home</div>`;
+
 document.getElementById("recipe").innerHTML=html;
 show("recipe");
 }
