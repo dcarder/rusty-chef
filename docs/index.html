@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v16</title>
+<title>The Rusty Chef v15</title>
 
 <style>
 html,body{
@@ -27,7 +28,6 @@ transform:translateY(10px) scale(0.99);
 pointer-events:none;
 transition:.25s ease;
 overflow-y:auto;
-padding:10px;
 }
 .page.active{
 opacity:1;
@@ -39,7 +39,7 @@ pointer-events:auto;
 text-align:center;
 font-size:22px;
 font-weight:700;
-margin:10px 0;
+margin-bottom:10px;
 }
 
 .card{
@@ -70,6 +70,75 @@ margin-top:10px;
 cursor:pointer;
 }
 
+.shopBtn{
+display:inline-block;
+margin-top:8px;
+margin-right:8px;
+padding:10px 14px;
+border-radius:10px;
+font-weight:700;
+text-decoration:none;
+color:white;
+}
+.instacartBtn{background:#43b02a;}
+.walmartBtn{background:#0071ce;}
+
+#homeBg{
+position:fixed;
+inset:0;
+z-index:-1;
+}
+#homeBg img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+#introLogo{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+}
+
+.titleRow{
+display:flex;
+align-items:center;
+gap:16px;
+}
+
+.titleText{
+display:flex;
+flex-direction:column;
+font-weight:900;
+line-height:.9;
+}
+
+.the{font-size:36px;}
+.rusty{font-size:64px;}
+.chef{font-size:54px;}
+
+.flame{
+width:50px;
+height:120px;
+position:relative;
+}
+
+.flame span{
+position:absolute;
+bottom:0;
+font-size:22px;
+animation:rise 1.2s infinite;
+opacity:0;
+}
+
+@keyframes rise{
+0%{opacity:0;transform:translateY(0);}
+30%{opacity:1;}
+100%{opacity:0;transform:translateY(-120px);}
+}
+
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -87,21 +156,41 @@ gap:20px;
 
 <div id="app">
 
-<!-- HOME -->
 <div id="home" class="page active">
+
+<div id="homeBg">
+<img src="copilot_image_1777179019874.jpeg">
+</div>
+
+<div id="introLogo">
+<div class="titleRow">
+
+<div class="flame">
+<span>🔥</span><span>🔥</span><span>🔥</span>
+</div>
+
+<div class="titleText">
+<div class="the">THE</div>
+<div class="rusty">RUSTY</div>
+<div class="chef">CHEF</div>
+</div>
+
+<div class="flame">
+<span>🔥</span><span>🔥</span><span>🔥</span>
+</div>
+
+</div>
+</div>
+
 <div class="bottomDock">
 <div class="btn" onclick="openPantry()">🧺 Pantry</div>
 <div class="btn" onclick="showMatches()">🍳 Recipes</div>
 </div>
+
 </div>
 
-<!-- PANTRY -->
 <div id="pantry" class="page"></div>
-
-<!-- RESULTS -->
 <div id="results" class="page"></div>
-
-<!-- RECIPE -->
 <div id="recipe" class="page"></div>
 
 </div>
@@ -113,165 +202,354 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* PANTRY ITEMS */
 const ingredientItems = [
-"Chicken breast","Ground beef","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
-"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Shrimp","Salmon",
-"Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce","Lemon","Tortilla","Bread",
-"Parmesan","Cheddar","Coconut milk","Curry powder","BBQ sauce","Peanut butter","Chicken broth",
-"Beef broth","Yogurt","Oats","Corn","Lettuce"
+"Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
+"Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Mushrooms","Shrimp","Salmon",
+"Tuna","Steak","Pork chops","Turkey","Flour","Sugar","Salt","Pepper","Olive oil","Soy sauce",
+"Lemon","Lime","Coconut milk","Curry powder","Paprika","Oregano","Basil","Thyme","Rice noodles","Tortilla",
+"Bread","Parmesan","Cheddar","Mozzarella","Avocado","Apples","Bananas","Strawberries","Blueberries","Chicken broth",
+"Beef broth","Hot sauce","BBQ sauce","Teriyaki sauce","Sesame oil","Peanut butter","Jam","Walnuts","Almonds","Fish sauce",
+"Worcestershire sauce","Green beans","Sweet potato","Pumpkin","Ramen noodles","Cornstarch","Chocolate","Coffee","Tea","Maple syrup",
+"Brown sugar","Tofu","Quinoa","Lentils","Chickpeas","Yogurt","Cream","Mustard","Ketchup","Mayonnaise",
+"Vinegar","Crackers","Granola","Marshmallows","Pineapple","Cucumber","Zucchini","Eggplant","Cauliflower","Cabbage",
+"Parsley","Chives","Oats","Cinnamon","Nutmeg","Honey","Coconut","Croutons","Sausage","Corn"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
-let current=null;
-let mode="simple";
-
-/* =======================
-25 REAL RECIPES
-======================= */
 
 const recipes = [
 {
 name:"Chicken Fried Rice",
 ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
-simpleSteps:[{t:"Cook rice"},{t:"Cook chicken"},{t:"Stir fry"}],
-chefSteps:[{t:"Use cold rice"},{t:"Sear chicken"},{t:"High heat fry"}]
+steps:[
+{t:"Cook rice until fluffy and slightly dry.",a:"1 cup rice"},
+{t:"Cook chicken until firm and no longer pink.",a:"1 chicken breast"},
+{t:"Scramble eggs into soft curds.",a:"2 eggs"},
+{t:"Combine and stir until aromatic and hot.",a:"final mix"}
+],
+simpleSteps:[
+{t:"Cook rice until fluffy and slightly dry.",a:"1 cup rice"},
+{t:"Cook chicken until firm and no longer pink.",a:"1 chicken breast"},
+{t:"Scramble eggs into soft curds.",a:"2 eggs"},
+{t:"Combine and stir until aromatic and hot.",a:"final mix"}
+],
+chefSteps:[
+{t:"Rinse the rice under cool water, rubbing the grains gently between your fingertips until the water runs mostly clear. Cook until the steam smells nutty and the grains feel firm but not wet. Spread to cool so the surface becomes slightly dry.",a:"1 cup rice"},
+{t:"Cook chicken in a hot pan until it sizzles loudly. Flip when the bottom feels firm. Cook until the thickest part feels springy and no longer releases cool juices.",a:"1 chicken breast"},
+{t:"Whisk eggs until smooth. Pour into a warm pan — listen for a soft sizzle. Stir until curds feel soft and moist, not runny.",a:"2 eggs"},
+{t:"Sauté onions and carrots until onions feel soft and carrots give slightly. Add rice — listen for a deeper sizzle. Add soy sauce and stir until everything feels hot and evenly coated.",a:"final mix"}
+]
 },
 {
 name:"Spaghetti Bolognese",
 ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
-simpleSteps:[{t:"Boil pasta"},{t:"Cook beef sauce"},{t:"Mix"}],
-chefSteps:[{t:"Al dente pasta"},{t:"Brown beef"},{t:"Simmer sauce"}]
+steps:[
+{t:"Boil pasta until tender but firm.",a:"1 box pasta"},
+{t:"Cook onions and garlic until fragrant.",a:"1 onion"},
+{t:"Brown beef completely.",a:"1 lb beef"},
+{t:"Simmer sauce until thick and rich.",a:"tomato sauce"}
+],
+simpleSteps:[
+{t:"Boil pasta until tender but firm.",a:"1 box pasta"},
+{t:"Cook onions and garlic until fragrant.",a:"1 onion"},
+{t:"Brown beef completely.",a:"1 lb beef"},
+{t:"Simmer sauce until thick and rich.",a:"tomato sauce"}
+],
+chefSteps:[
+{t:"Boil pasta until it softens and bends easily. Drain when noodles feel tender but not mushy.",a:"1 box pasta"},
+{t:"Cook onions until soft and sweet-smelling. Add garlic — it becomes fragrant within 20–30 seconds.",a:"1 onion"},
+{t:"Add beef — it should sizzle loudly. Break apart until crumbly and firm.",a:"1 lb beef"},
+{t:"Add tomatoes and simmer until the sauce thickens and smells rich and savory.",a:"tomato sauce"}
+]
 },
 {
 name:"Chicken Tacos",
 ingredients:["Chicken breast","Tortilla","Cheese","Onions","Lime"],
-simpleSteps:[{t:"Cook chicken"},{t:"Warm tortilla"},{t:"Assemble"}],
-chefSteps:[{t:"Sear chicken"},{t:"Rest shred"},{t:"Finish lime"}]
+steps:[
+{t:"Cook chicken until golden and juicy.",a:"1 lb chicken"},
+{t:"Shred after resting for tenderness.",a:"rest 5 min"},
+{t:"Warm tortillas until soft.",a:"8 tortillas"},
+{t:"Assemble while hot and melty.",a:"final"}
+],
+simpleSteps:[
+{t:"Cook chicken until golden and juicy.",a:"1 lb chicken"},
+{t:"Shred after resting for tenderness.",a:"rest 5 min"},
+{t:"Warm tortillas until soft.",a:"8 tortillas"},
+{t:"Assemble while hot and melty.",a:"final"}
+],
+chefSteps:[
+{t:"Cook chicken until it sizzles loudly and the bottom feels firm. Flip and cook until the thickest part feels springy.",a:"1 lb chicken"},
+{t:"Let rest 5 minutes — chicken should shred easily and feel moist.",a:"rest 5 min"},
+{t:"Warm tortillas until soft and flexible.",a:"8 tortillas"},
+{t:"Assemble with cheese and onions; finish with lime for a bright aroma.",a:"final"}
+]
 },
 {
-name:"Peanut Butter Fudge",
-ingredients:["Peanut butter","Sugar","Butter","Milk"],
-simpleSteps:[{t:"Melt"},{t:"Mix"},{t:"Chill"}],
-chefSteps:[{t:"Heat mix"},{t:"Smooth blend"},{t:"Set cool"}]
-},
-{
-name:"Grilled Cheese",
-ingredients:["Bread","Cheese","Butter"],
-simpleSteps:[{t:"Butter bread"},{t:"Melt cheese"},{t:"Grill"}],
-chefSteps:[{t:"Low toast"},{t:"Melt slow"},{t:"Crisp flip"}]
-},
-{
-name:"Pancakes",
-ingredients:["Flour","Milk","Eggs","Sugar","Butter"],
-simpleSteps:[{t:"Mix"},{t:"Cook"},{t:"Flip"}],
-chefSteps:[{t:"Whisk batter"},{t:"Heat pan"},{t:"Golden flip"}]
-},
-{
-name:"Chicken Curry",
-ingredients:["Chicken breast","Curry powder","Coconut milk","Onions","Rice"],
-simpleSteps:[{t:"Cook chicken"},{t:"Add curry"},{t:"Serve"}],
-chefSteps:[{t:"Sauté onions"},{t:"Bloom spices"},{t:"Simmer coconut milk"}]
+name:"Garlic Butter Shrimp Pasta",
+ingredients:["Shrimp","Pasta","Butter","Garlic","Lemon"],
+steps:[
+{t:"Boil pasta until tender.",a:"8 oz pasta"},
+{t:"Cook garlic in butter until fragrant.",a:"3 cloves garlic"},
+{t:"Cook shrimp until pink and firm.",a:"1/2 lb shrimp"},
+{t:"Combine with pasta and lemon.",a:"1 lemon"}
+],
+simpleSteps:[
+{t:"Boil pasta until tender.",a:"8 oz pasta"},
+{t:"Cook garlic in butter until fragrant.",a:"3 cloves garlic"},
+{t:"Cook shrimp until pink and firm.",a:"1/2 lb shrimp"},
+{t:"Combine with pasta and lemon.",a:"1 lemon"}
+],
+chefSteps:[
+{t:"Boil pasta until it softens and bends easily.",a:"8 oz pasta"},
+{t:"Melt butter until it smells rich. Add garlic — it becomes fragrant quickly.",a:"3 cloves garlic"},
+{t:"Add shrimp — they sizzle and turn firm and springy when done.",a:"1/2 lb shrimp"},
+{t:"Add pasta and lemon; everything should feel slick and hot.",a:"1 lemon"}
+]
 },
 {
 name:"Beef Stir Fry",
-ingredients:["Ground beef","Broccoli","Carrots","Soy sauce","Rice"],
-simpleSteps:[{t:"Cook beef"},{t:"Add veg"},{t:"Serve"}],
-chefSteps:[{t:"High heat beef"},{t:"Toss veg"},{t:"Glaze sauce"}]
+ingredients:["Beef","Broccoli","Carrots","Soy sauce","Beef broth","Rice"],
+steps:[
+{t:"Cook beef until browned.",a:"1 lb beef"},
+{t:"Add vegetables and cook until tender-crisp.",a:"broccoli + carrots"},
+{t:"Add broth and soy sauce.",a:"1/2 cup broth"},
+{t:"Serve over rice.",a:"2 cups rice"}
+],
+simpleSteps:[
+{t:"Cook beef until browned.",a:"1 lb beef"},
+{t:"Add vegetables and cook until tender-crisp.",a:"broccoli + carrots"},
+{t:"Add broth and soy sauce.",a:"1/2 cup broth"},
+{t:"Serve over rice.",a:"2 cups rice"}
+],
+chefSteps:[
+{t:"Cook beef in a hot pan until it sizzles loudly and feels firm.",a:"1 lb beef"},
+{t:"Add vegetables — broccoli brightens, carrots soften slightly.",a:"broccoli + carrots"},
+{t:"Add broth — listen for bubbling. Add soy sauce and smell the savory aroma.",a:"1/2 cup broth"},
+{t:"Serve over warm, fluffy rice.",a:"2 cups rice"}
+]
 },
 {
-name:"Mac and Cheese",
-ingredients:["Pasta","Cheddar","Milk","Butter"],
-simpleSteps:[{t:"Boil pasta"},{t:"Make sauce"},{t:"Mix"}],
-chefSteps:[{t:"Cook pasta"},{t:"Cheese melt"},{t:"Creamy mix"}]
-},
-{
-name:"Chicken Alfredo",
-ingredients:["Chicken breast","Pasta","Cream","Parmesan","Garlic"],
-simpleSteps:[{t:"Cook pasta"},{t:"Cook chicken"},{t:"Add sauce"}],
-chefSteps:[{t:"Boil pasta"},{t:"Sear chicken"},{t:"Cream sauce"}]
-},
-{
-name:"Omelette",
-ingredients:["Eggs","Cheese","Onions","Bell peppers"],
-simpleSteps:[{t:"Whisk eggs"},{t:"Cook"},{t:"Fold"}],
-chefSteps:[{t:"Sauté veg"},{t:"Soft eggs"},{t:"Fold cheese"}]
-},
-{
-name:"Tuna Sandwich",
-ingredients:["Tuna","Bread","Mayonnaise","Lettuce"],
-simpleSteps:[{t:"Mix tuna"},{t:"Spread"},{t:"Assemble"}],
-chefSteps:[{t:"Drain tuna"},{t:"Mix mayo"},{t:"Build sandwich"}]
+name:"Creamy Tomato Soup",
+ingredients:["Tomatoes","Cream","Onions","Garlic","Butter"],
+steps:[
+{t:"Cook onions and garlic until soft.",a:"1 onion"},
+{t:"Add tomatoes and simmer.",a:"4 tomatoes"},
+{t:"Blend until smooth.",a:"puree"},
+{t:"Stir in cream.",a:"1/2 cup cream"}
+],
+simpleSteps:[
+{t:"Cook onions and garlic until soft.",a:"1 onion"},
+{t:"Add tomatoes and simmer.",a:"4 tomatoes"},
+{t:"Blend until smooth.",a:"puree"},
+{t:"Stir in cream.",a:"1/2 cup cream"}
+],
+chefSteps:[
+{t:"Cook onions in butter until soft and sweet-smelling. Add garlic — it becomes fragrant quickly.",a:"1 onion"},
+{t:"Add tomatoes — they hiss lightly and soften.",a:"4 tomatoes"},
+{t:"Simmer until everything smells warm and rich.",a:"simmer"},
+{t:"Blend until velvety, then stir in cream until silky.",a:"1/2 cup cream"}
+]
 },
 {
 name:"BBQ Chicken Sandwich",
 ingredients:["Chicken breast","BBQ sauce","Bread","Onions"],
-simpleSteps:[{t:"Cook chicken"},{t:"Add BBQ"},{t:"Serve"}],
-chefSteps:[{t:"Shred chicken"},{t:"Mix sauce"},{t:"Toast bread"}]
+steps:[
+{t:"Cook chicken until done.",a:"2 breasts"},
+{t:"Shred and mix with BBQ sauce.",a:"1 cup sauce"},
+{t:"Toast bread.",a:"4 slices"},
+{t:"Assemble sandwiches.",a:"final"}
+],
+simpleSteps:[
+{t:"Cook chicken until done.",a:"2 breasts"},
+{t:"Shred and mix with BBQ sauce.",a:"1 cup sauce"},
+{t:"Toast bread.",a:"4 slices"},
+{t:"Assemble sandwiches.",a:"final"}
+],
+chefSteps:[
+{t:"Cook chicken until it sizzles loudly and feels firm and springy.",a:"2 breasts"},
+{t:"Shred — it should pull apart easily. Mix with BBQ sauce until sticky and aromatic.",a:"1 cup sauce"},
+{t:"Toast bread until lightly crisp.",a:"4 slices"},
+{t:"Assemble with onions for crunch.",a:"final"}
+]
 },
 {
-name:"Tomato Soup",
-ingredients:["Tomatoes","Cream","Onions","Garlic","Butter"],
-simpleSteps:[{t:"Cook"},{t:"Blend"},{t:"Add cream"}],
-chefSteps:[{t:"Simmer base"},{t:"Blend smooth"},{t:"Finish creamy"}]
+name:"Veggie Omelette",
+ingredients:["Eggs","Bell peppers","Onions","Cheese","Spinach"],
+steps:[
+{t:"Whisk eggs.",a:"3 eggs"},
+{t:"Cook vegetables until soft.",a:"1 cup veg"},
+{t:"Pour eggs and cook.",a:"low heat"},
+{t:"Add cheese and fold.",a:"1/4 cup cheese"}
+],
+simpleSteps:[
+{t:"Whisk eggs.",a:"3 eggs"},
+{t:"Cook vegetables until soft.",a:"1 cup veg"},
+{t:"Pour eggs and cook.",a:"low heat"},
+{t:"Add cheese and fold.",a:"1/4 cup cheese"}
+],
+chefSteps:[
+{t:"Cook vegetables until onions soften and peppers become tender.",a:"1 cup veg"},
+{t:"Whisk eggs until smooth and slightly thick.",a:"3 eggs"},
+{t:"Pour into pan — listen for a soft sizzle.",a:"pour"},
+{t:"Add cheese and fold when eggs feel soft and pillowy.",a:"1/4 cup cheese"}
+]
 },
 {
-name:"Fish Tacos",
-ingredients:["Fish","Tortilla","Lime","Cabbage"],
-simpleSteps:[{t:"Cook fish"},{t:"Warm tortilla"},{t:"Assemble"}],
-chefSteps:[{t:"Pan sear fish"},{t:"Crisp cabbage"},{t:"Finish lime"}]
+name:"Lemon Herb Salmon",
+ingredients:["Salmon","Lemon","Garlic","Olive oil","Parsley"],
+steps:[
+{t:"Season salmon.",a:"1 fillet"},
+{t:"Add lemon and garlic.",a:"1 lemon"},
+{t:"Cook until flaky.",a:"12–15 min"},
+{t:"Top with parsley.",a:"fresh parsley"}
+],
+simpleSteps:[
+{t:"Season salmon.",a:"1 fillet"},
+{t:"Add lemon and garlic.",a:"1 lemon"},
+{t:"Cook until flaky.",a:"12–15 min"},
+{t:"Top with parsley.",a:"fresh parsley"}
+],
+chefSteps:[
+{t:"Cook salmon skin-side down — listen for a crisp sizzle. Skin tightens as it cooks.",a:"1 fillet"},
+{t:"Add garlic — it becomes fragrant. Add lemon — smell bright citrus.",a:"1 lemon"},
+{t:"Cook until salmon flakes easily and feels soft but not mushy.",a:"cook"},
+{t:"Finish with parsley for a fresh aroma.",a:"fresh parsley"}
+]
 },
 {
-name:"Fried Chicken",
-ingredients:["Chicken breast","Flour","Eggs","Oil"],
-simpleSteps:[{t:"Coat"},{t:"Fry"},{t:"Serve"}],
-chefSteps:[{t:"Season coat"},{t:"Deep fry"},{t:"Rest crisp"}]
+name:"Chicken Alfredo",
+ingredients:["Chicken breast","Pasta","Cream","Parmesan","Garlic","Butter"],
+steps:[
+{t:"Cook pasta.",a:"8 oz pasta"},
+{t:"Cook chicken.",a:"1 breast"},
+{t:"Simmer cream, butter, garlic.",a:"1 cup cream"},
+{t:"Add parmesan and combine.",a:"1/2 cup parmesan"}
+],
+simpleSteps:[
+{t:"Cook pasta.",a:"8 oz pasta"},
+{t:"Cook chicken.",a:"1 breast"},
+{t:"Simmer cream, butter, garlic.",a:"1 cup cream"},
+{t:"Add parmesan and combine.",a:"1/2 cup parmesan"}
+],
+chefSteps:[
+{t:"Boil pasta until soft enough to bend easily.",a:"8 oz pasta"},
+{t:"Cook chicken until firm and springy.",a:"1 breast"},
+{t:"Simmer cream with butter and garlic until fragrant.",a:"1 cup cream"},
+{t:"Add parmesan until sauce feels silky.",a:"1/2 cup parmesan"}
+]
 },
 {
-name:"Teriyaki Bowl",
+name:"Beef Tacos",
+ingredients:["Ground beef","Tortilla","Cheese","Onions","Lime"],
+steps:[
+{t:"Brown beef.",a:"1 lb beef"},
+{t:"Warm tortillas.",a:"8 tortillas"},
+{t:"Add toppings.",a:"1 cup cheese"},
+{t:"Finish with lime.",a:"1 lime"}
+],
+simpleSteps:[
+{t:"Brown beef.",a:"1 lb beef"},
+{t:"Warm tortillas.",a:"8 tortillas"},
+{t:"Add toppings.",a:"1 cup cheese"},
+{t:"Finish with lime.",a:"1 lime"}
+],
+chefSteps:[
+{t:"Cook beef until it sizzles loudly and feels firm.",a:"1 lb beef"},
+{t:"Warm tortillas until soft and flexible.",a:"8 tortillas"},
+{t:"Add cheese — it should melt slightly.",a:"1 cup cheese"},
+{t:"Finish with lime for a bright aroma.",a:"1 lime"}
+]
+},
+{
+name:"Chicken Noodle Soup",
+ingredients:["Chicken broth","Chicken breast","Carrots","Onions","Noodles"],
+steps:[
+{t:"Simmer broth with vegetables.",a:"4 cups broth"},
+{t:"Add chicken and cook.",a:"1 breast"},
+{t:"Shred chicken.",a:"shred"},
+{t:"Add noodles.",a:"2 cups noodles"}
+],
+simpleSteps:[
+{t:"Simmer broth with vegetables.",a:"4 cups broth"},
+{t:"Add chicken and cook.",a:"1 breast"},
+{t:"Shred chicken.",a:"shred"},
+{t:"Add noodles.",a:"2 cups noodles"}
+],
+chefSteps:[
+{t:"Simmer broth until warm and fragrant.",a:"4 cups broth"},
+{t:"Add vegetables — carrots soften, onions turn translucent.",a:"veg"},
+{t:"Cook chicken until firm and springy.",a:"1 breast"},
+{t:"Add noodles — they soften and become flexible.",a:"2 cups noodles"}
+]
+},
+{
+name:"Teriyaki Chicken Bowl",
 ingredients:["Chicken breast","Rice","Teriyaki sauce","Broccoli"],
-simpleSteps:[{t:"Cook rice"},{t:"Cook chicken"},{t:"Add sauce"}],
-chefSteps:[{t:"Sear chicken"},{t:"Glaze sauce"},{t:"Steam broccoli"}]
+steps:[
+{t:"Cook rice.",a:"2 cups rice"},
+{t:"Cook chicken and glaze with teriyaki.",a:"1 cup sauce"},
+{t:"Steam broccoli.",a:"1 cup broccoli"},
+{t:"Assemble bowl.",a:"final"}
+],
+simpleSteps:[
+{t:"Cook rice.",a:"2 cups rice"},
+{t:"Cook chicken and glaze with teriyaki.",a:"1 cup sauce"},
+{t:"Steam broccoli.",a:"1 cup broccoli"},
+{t:"Assemble bowl.",a:"final"}
+],
+chefSteps:[
+{t:"Cook chicken until it sizzles loudly and feels firm.",a:"1 breast"},
+{t:"Add teriyaki — sauce bubbles and thickens.",a:"1 cup sauce"},
+{t:"Steam broccoli until bright and tender.",a:"1 cup broccoli"},
+{t:"Serve over warm, fluffy rice.",a:"2 cups rice"}
+]
 },
 {
-name:"Breakfast Burrito",
-ingredients:["Eggs","Tortilla","Cheese","Sausage","Potatoes"],
-simpleSteps:[{t:"Cook filling"},{t:"Wrap"},{t:"Serve"}],
-chefSteps:[{t:"Cook filling"},{t:"Toast burrito"},{t:"Crisp wrap"}]
+name:"Pancakes",
+ingredients:["Flour","Milk","Eggs","Butter","Sugar"],
+steps:[
+{t:"Mix dry ingredients.",a:"1 cup flour"},
+{t:"Add milk and eggs.",a:"1 cup milk"},
+{t:"Cook on buttered pan.",a:"2 tbsp butter"},
+{t:"Flip when bubbles form.",a:"finish"}
+],
+simpleSteps:[
+{t:"Mix dry ingredients.",a:"1 cup flour"},
+{t:"Add milk and eggs.",a:"1 cup milk"},
+{t:"Cook on buttered pan.",a:"2 tbsp butter"},
+{t:"Flip when bubbles form.",a:"finish"}
+],
+chefSteps:[
+{t:"Mix flour and sugar until light and powdery.",a:"dry mix"},
+{t:"Add milk and egg — batter should feel smooth and pourable.",a:"wet mix"},
+{t:"Heat pan — butter should melt and bubble softly.",a:"2 tbsp butter"},
+{t:"Pour batter — you’ll hear a faint sizzle and see edges set.",a:"cook"}
+]
 },
 {
-name:"Caesar Salad",
-ingredients:["Chicken breast","Lettuce","Parmesan"],
-simpleSteps:[{t:"Cook chicken"},{t:"Mix salad"},{t:"Serve"}],
-chefSteps:[{t:"Grill chicken"},{t:"Toss greens"},{t:"Add cheese"}]
-},
-{
-name:"Garlic Shrimp Pasta",
-ingredients:["Shrimp","Pasta","Butter","Garlic","Lemon"],
-simpleSteps:[{t:"Cook pasta"},{t:"Cook shrimp"},{t:"Mix"}],
-chefSteps:[{t:"Boil pasta"},{t:"Sauté shrimp"},{t:"Lemon finish"}]
-},
-{
-name:"Chicken Soup",
-ingredients:["Chicken broth","Chicken breast","Carrots","Onions"],
-simpleSteps:[{t:"Simmer broth"},{t:"Add chicken"},{t:"Serve"}],
-chefSteps:[{t:"Slow simmer"},{t:"Add veg"},{t:"Shred chicken"}]
-},
-{
-name:"Veggie Stir Fry",
-ingredients:["Broccoli","Carrots","Soy sauce","Garlic","Rice"],
-simpleSteps:[{t:"Cook veg"},{t:"Add sauce"},{t:"Serve"}],
-chefSteps:[{t:"High heat veg"},{t:"Add garlic soy"},{t:"Serve rice"}]
-},
-{
-name:"Quesadilla",
-ingredients:["Tortilla","Cheese","Chicken"],
-simpleSteps:[{t:"Fill"},{t:"Cook"},{t:"Cut"}],
-chefSteps:[{t:"Toast tortilla"},{t:"Melt cheese"},{t:"Slice crisp"}]
+name:"Simple Fried Rice",
+ingredients:["Rice","Eggs","Soy sauce","Onions","Peas"],
+steps:[
+{t:"Cook rice and let cool.",a:"2 cups rice"},
+{t:"Scramble eggs.",a:"2 eggs"},
+{t:"Sauté onions and peas.",a:"1 cup veg"},
+{t:"Stir fry with soy sauce.",a:"2 tbsp soy sauce"}
+],
+simpleSteps:[
+{t:"Cook rice and let cool.",a:"2 cups rice"},
+{t:"Scramble eggs.",a:"2 eggs"},
+{t:"Sauté onions and peas.",a:"1 cup veg"},
+{t:"Stir fry with soy sauce.",a:"2 tbsp soy sauce"}
+],
+chefSteps:[
+{t:"Cook rice until fluffy, then cool until the surface feels dry.",a:"2 cups rice"},
+{t:"Scramble eggs into soft curds.",a:"2 eggs"},
+{t:"Sauté onions and peas until onions soften and peas feel tender.",a:"1 cup veg"},
+{t:"Stir fry everything with soy sauce until hot and aromatic.",a:"2 tbsp soy sauce"}
+]
 }
 ];
 
-/* MATCHING */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 return {...r,match};
@@ -280,29 +558,39 @@ return {...r,match};
 function showMatches(){
 let top=recipes.map(score).sort((a,b)=>b.match-a.match).slice(0,3);
 
-let html=`<div class="header">🍳 Top Matches</div>`;
+let html=`<div class="header">🍳 Top 3 Matches</div>`;
 top.forEach(r=>{
-html+=`<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br>Match: ${r.match}
+html+=`
+<div class="card" onclick="openRecipe('${r.name}')">
+<b>${r.name}</b><br>Match Score: ${r.match}
 </div>`;
 });
-
-html+=`<div class="btn" onclick="show('home')">Home</div>`;
 document.getElementById("results").innerHTML=html;
 show("results");
 }
 
-/* PANTRY */
 function openPantry(){
-let html=`<div class="header">🧺 Pantry</div>`;
+let html=`
+<div class="header">🧺 Pantry</div>
+
+<div class="card">
+<input id="searchBox"
+placeholder="Search ingredients..."
+style="width:100%;padding:12px;border-radius:10px;border:none;outline:none;"
+oninput="filterIngredients()"/>
+</div>
+
+<div id="ingredientList">
+`;
 
 ingredientItems.forEach(i=>{
-html+=`<div class="item ${selected.includes(i)?'selected':''}"
-onclick="toggleItem(\`${i}\`)">${i}</div>`;
+html+=`
+<div class="item ${selected.includes(i)?'selected':''}"
+onclick="toggle('${i}')">${i}</div>`;
 });
 
 html+=`
-<div class="btn" onclick="show('home')">Home</div>
+</div>
 <div class="btn" onclick="showMatches()">Find Recipes</div>
 `;
 
@@ -310,7 +598,21 @@ document.getElementById("pantry").innerHTML=html;
 show("pantry");
 }
 
-function toggleItem(i){
+function filterIngredients(){
+let q=document.getElementById("searchBox").value.toLowerCase();
+let list=document.getElementById("ingredientList");
+
+let filtered=ingredientItems.filter(i=>i.toLowerCase().includes(q));
+
+list.innerHTML=filtered.map(i=>`
+<div class="item ${selected.includes(i)?'selected':''}"
+onclick="toggle('${i}')">
+${i}
+</div>
+`).join("");
+}
+
+function toggle(i){
 selected = selected.includes(i)
 ? selected.filter(x=>x!==i)
 : [...selected,i];
@@ -319,7 +621,9 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* RECIPE VIEW */
+let current=null;
+let mode="simple";
+
 function openRecipe(name){
 current=recipes.find(r=>r.name===name);
 mode="simple";
@@ -327,30 +631,44 @@ render();
 show("recipe");
 }
 
+function switchMode(){
+mode = mode === "simple" ? "chef" : "simple";
+render();
+}
+
 function render(){
 let missing=current.ingredients.filter(i=>!selected.includes(i));
 
-let steps = mode==="simple"?current.simpleSteps:current.chefSteps;
+let stepsArray = mode === "simple"
+? (current.simpleSteps || current.steps)
+: (current.chefSteps || current.steps);
 
-let stepsHTML=steps.map((s,i)=>`
-<div class="card"><b>${i+1}. ${s.t}</b></div>
+let stepsHTML=stepsArray.map((s,i)=>`
+<div class="card">
+<b>${i+1}. ${s.t}</b><br><br>
+🍴 ${s.a}
+</div>
 `).join("");
 
-let missingHTML=`<div class="header">Missing Ingredients</div>`;
-missing.forEach(i=>{
-missingHTML+=`<div class="card">${i}</div>`;
+let shopHTML=`<div class="header">🛒 Missing Ingredients</div>`;
+
+missing.forEach(item=>{
+let q=encodeURIComponent(item);
+shopHTML+=`
+<div class="card">
+<b>${item}</b><br>
+<a class="shopBtn instacartBtn" target="_blank" href="https://www.instacart.com/store/search?search=${q}">Instacart</a>
+<a class="shopBtn walmartBtn" target="_blank" href="https://www.walmart.com/search?q=${q}">Walmart</a>
+</div>`;
 });
 
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
-
-<div class="btn" onclick="mode=mode==='simple'?'chef':'simple';render()">
-Switch Mode
+<div class="btn" onclick="switchMode()">
+${mode === "simple" ? "Switch to Chef Mode 🔥" : "Switch to Simple Mode 🍳"}
 </div>
-
 ${stepsHTML}
-${missingHTML}
-
+${shopHTML}
 <div class="btn" onclick="show('home')">Home</div>
 `;
 }
@@ -360,4 +678,5 @@ show("home");
 </script>
 
 </body>
-</html>
+  </html>
+  
