@@ -72,14 +72,13 @@ cursor:pointer;
 
 .shopBtn{
 display:inline-block;
-margin-top:6px;
-padding:8px 12px;
+margin-top:8px;
+padding:10px 14px;
 border-radius:10px;
 font-weight:700;
 text-decoration:none;
 color:white;
 background:#0071ce;
-font-size:12px;
 }
 
 .bottomDock{
@@ -138,22 +137,25 @@ text-align:center;
 </div>
 </div>
 
+<!-- PANTRY -->
 <div id="pantry" class="page"></div>
+
+<!-- RESULTS -->
 <div id="results" class="page"></div>
+
+<!-- RECIPE -->
 <div id="recipe" class="page"></div>
 
 </div>
 
 <script>
 
-/* ================= CORE ================= */
-
 function show(id){
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
-/* ================= PANTRY DATA ================= */
+/* ================= INGREDIENTS ================= */
 
 const ingredientItems = [
 "Chicken breast","Ground beef","Bacon","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
@@ -197,8 +199,6 @@ chefSteps:[
 }
 ];
 
-/* (rest of your recipes remain untouched here) */
-
 /* ================= PANTRY ================= */
 
 function openPantry(){
@@ -208,19 +208,7 @@ ingredientItems.forEach(i=>{
 html += `
 <div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">
 ${i}
-`;
-
-if(!selected.includes(i)){
-let q = encodeURIComponent(i);
-html += `
-<br>
-<a class="shopBtn" target="_blank"
-href="https://www.walmart.com/search?q=${q}">
-Walmart
-</a>`;
-}
-
-html += `</div>`;
+</div>`;
 });
 
 html += `
@@ -265,8 +253,7 @@ show("results");
 /* ================= RECIPE ================= */
 
 function openRecipe(name){
-current = recipes.find(r=>r.name===name);
-
+current = recipes.find(x=>x.name===name);
 renderRecipe();
 show("recipe");
 }
@@ -292,6 +279,25 @@ ${s.a}
 </div>`;
 });
 
+/* 🛒 Missing ingredients (Walmart only here) */
+let missing = current.ingredients.filter(i=>!selected.includes(i));
+
+if(missing.length){
+html += `<div class="header">🛒 Missing Ingredients</div>`;
+
+missing.forEach(item=>{
+let q = encodeURIComponent(item);
+html += `
+<div class="card">
+<b>${item}</b><br>
+<a class="shopBtn" target="_blank"
+href="https://www.walmart.com/search?q=${q}">
+Buy on Walmart
+</a>
+</div>`;
+});
+}
+
 html += `
 <div class="btn" onclick="switchMode()">
 ${mode === "simple" ? "🔥 Switch to Chef Mode" : "🍳 Switch to Simple Mode"}
@@ -302,8 +308,6 @@ ${mode === "simple" ? "🔥 Switch to Chef Mode" : "🍳 Switch to Simple Mode"}
 
 document.getElementById("recipe").innerHTML = html;
 }
-
-/* ================= START ================= */
 
 show("home");
 
