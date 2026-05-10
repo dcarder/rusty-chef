@@ -69,17 +69,6 @@ margin-top:10px;
 cursor:pointer;
 }
 
-.shopBtn{
-display:inline-block;
-margin-top:8px;
-padding:10px 14px;
-border-radius:10px;
-font-weight:700;
-text-decoration:none;
-color:white;
-}
-.walmartBtn{background:#0071ce;}
-
 .bottomDock{
 position:fixed;
 bottom:20px;
@@ -117,6 +106,7 @@ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
 requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
 }
 
+/* 🧺 INGREDIENTS */
 const ingredientItems = [
 "Chicken breast","Ground beef","Eggs","Rice","Pasta","Cheese","Milk","Butter","Garlic",
 "Onions","Tomatoes","Potatoes","Carrots","Broccoli","Spinach","Bell peppers","Flour","Sugar",
@@ -129,10 +119,7 @@ let selected = JSON.parse(localStorage.getItem("ingredients")||"[]");
 let current=null;
 let mode="simple";
 
-/* =======================
-   25 REAL RECIPES
-======================= */
-
+/* 🍳 25 REAL RECIPES */
 const recipes = [
 
 {
@@ -146,14 +133,14 @@ chefSteps:[{t:"Use cold rice"},{t:"Sear chicken"},{t:"High heat stir fry"}]
 name:"Spaghetti Bolognese",
 ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
 simpleSteps:[{t:"Boil pasta"},{t:"Cook beef sauce"},{t:"Combine"}],
-chefSteps:[{t:"Cook al dente"},{t:"Brown beef deeply"},{t:"Simmer sauce"}]
+chefSteps:[{t:"Al dente pasta"},{t:"Brown beef deeply"},{t:"Simmer sauce"}]
 },
 
 {
 name:"Chicken Tacos",
 ingredients:["Chicken breast","Tortilla","Cheese","Onions","Lime"],
 simpleSteps:[{t:"Cook chicken"},{t:"Warm tortillas"},{t:"Assemble"}],
-chefSteps:[{t:"Sear chicken"},{t:"Shred after resting"},{t:"Finish with lime"}]
+chefSteps:[{t:"Sear chicken"},{t:"Shred after resting"},{t:"Finish lime"}]
 },
 
 {
@@ -167,35 +154,35 @@ chefSteps:[{t:"High heat beef"},{t:"Stir fry veg"},{t:"Soy glaze"}]
 name:"Garlic Shrimp Pasta",
 ingredients:["Shrimp","Pasta","Butter","Garlic","Lemon"],
 simpleSteps:[{t:"Cook pasta"},{t:"Cook shrimp"},{t:"Mix"}],
-chefSteps:[{t:"Boil pasta"},{t:"Sauté shrimp"},{t:"Lemon finish"}]
+chefSteps:[{t:"Sauté shrimp"},{t:"Garlic butter"},{t:"Lemon finish"}]
 },
 
 {
 name:"Chicken Alfredo",
 ingredients:["Chicken breast","Pasta","Cream","Parmesan","Garlic"],
 simpleSteps:[{t:"Cook pasta"},{t:"Cook chicken"},{t:"Add sauce"}],
-chefSteps:[{t:"Al dente pasta"},{t:"Sear chicken"},{t:"Cream sauce"}]
+chefSteps:[{t:"Cream sauce"},{t:"Sear chicken"},{t:"Mix pasta"}]
 },
 
 {
 name:"Grilled Cheese",
 ingredients:["Bread","Cheese","Butter"],
 simpleSteps:[{t:"Butter bread"},{t:"Melt cheese"},{t:"Grill"}],
-chefSteps:[{t:"Slow toast"},{t:"Melt fully"},{t:"Flip crisp"}]
+chefSteps:[{t:"Low heat toast"},{t:"Melt fully"},{t:"Crisp finish"}]
 },
 
 {
 name:"Chicken Curry",
 ingredients:["Chicken breast","Curry powder","Coconut milk","Onions","Rice"],
 simpleSteps:[{t:"Cook chicken"},{t:"Add curry"},{t:"Serve"}],
-chefSteps:[{t:"Cook onions"},{t:"Add spices"},{t:"Simmer coconut milk"}]
+chefSteps:[{t:"Cook onions"},{t:"Add spices"},{t:"Simmer sauce"}]
 },
 
 {
 name:"BBQ Chicken Sandwich",
 ingredients:["Chicken breast","BBQ sauce","Bread","Onions"],
 simpleSteps:[{t:"Cook chicken"},{t:"Add BBQ"},{t:"Assemble"}],
-chefSteps:[{t:"Shred chicken"},{t:"Mix BBQ"},{t:"Toast bread"}]
+chefSteps:[{t:"Shred chicken"},{t:"Mix sauce"},{t:"Toast bread"}]
 },
 
 {
@@ -216,14 +203,14 @@ chefSteps:[{t:"Drain tuna"},{t:"Mix mayo"},{t:"Assemble"}]
 name:"Pancakes",
 ingredients:["Flour","Milk","Eggs","Sugar","Butter"],
 simpleSteps:[{t:"Mix batter"},{t:"Cook"},{t:"Serve"}],
-chefSteps:[{t:"Whisk batter"},{t:"Cook bubbles"},{t:"Flip golden"}]
+chefSteps:[{t:"Whisk batter"},{t:"Cook bubbles"},{t:"Flip"}]
 },
 
 {
 name:"Mac and Cheese",
 ingredients:["Pasta","Cheddar","Milk","Butter","Flour"],
-simpleSteps:[{t:"Cook pasta"},{t:"Make sauce"},{t:"Mix"}],
-chefSteps:[{t:"Boil pasta"},{t:"Cheese sauce"},{t:"Combine"}]
+simpleSteps:[{t:"Cook pasta"},{t:"Cheese sauce"},{t:"Mix"}],
+chefSteps:[{t:"Boil pasta"},{t:"Make sauce"},{t:"Combine"}]
 },
 
 {
@@ -237,75 +224,75 @@ chefSteps:[{t:"Simmer base"},{t:"Add veg"},{t:"Cook noodles"}]
 name:"Teriyaki Bowl",
 ingredients:["Chicken breast","Rice","Teriyaki sauce","Broccoli"],
 simpleSteps:[{t:"Cook rice"},{t:"Cook chicken"},{t:"Add sauce"}],
-chefSteps:[{t:"Sear chicken"},{t:"Glaze sauce"},{t:"Serve bowl"}]
+chefSteps:[{t:"Sear chicken"},{t:"Glaze sauce"},{t:"Serve"}]
 },
 
 {
 name:"Meatballs",
 ingredients:["Ground beef","Eggs","Breadcrumbs","Tomatoes","Garlic"],
 simpleSteps:[{t:"Form meatballs"},{t:"Cook"},{t:"Add sauce"}],
-chefSteps:[{t:"Mix beef"},{t:"Brown meatballs"},{t:"Simmer sauce"}]
+chefSteps:[{t:"Mix beef"},{t:"Brown meatballs"},{t:"Simmer"}]
 },
 
 {
 name:"Fried Chicken",
 ingredients:["Chicken breast","Flour","Eggs","Oil","Salt"],
-simpleSteps:[{t:"Coat chicken"},{t:"Fry"},{t:"Serve"}],
-chefSteps:[{t:"Season coat"},{t:"Deep fry"},{t:"Rest crisp"}]
+simpleSteps:[{t:"Coat"},{t:"Fry"},{t:"Serve"}],
+chefSteps:[{t:"Bread chicken"},{t:"Deep fry"},{t:"Rest crispy"}]
 },
 
 {
 name:"Veggie Stir Fry",
 ingredients:["Broccoli","Carrots","Soy sauce","Garlic","Rice"],
 simpleSteps:[{t:"Cook veg"},{t:"Add sauce"},{t:"Serve"}],
-chefSteps:[{t:"High heat veg"},{t:"Add garlic soy"},{t:"Serve rice"}]
+chefSteps:[{t:"High heat veg"},{t:"Garlic soy"},{t:"Finish"}]
 },
 
 {
 name:"Breakfast Burrito",
 ingredients:["Eggs","Tortilla","Cheese","Sausage","Potatoes"],
 simpleSteps:[{t:"Cook filling"},{t:"Wrap"},{t:"Serve"}],
-chefSteps:[{t:"Cook filling"},{t:"Wrap tight"},{t:"Toast burrito"}]
+chefSteps:[{t:"Cook filling"},{t:"Wrap tight"},{t:"Toast"}]
 },
 
 {
 name:"Caesar Salad",
 ingredients:["Chicken breast","Lettuce","Parmesan","Croutons"],
 simpleSteps:[{t:"Cook chicken"},{t:"Mix salad"},{t:"Add dressing"}],
-chefSteps:[{t:"Grill chicken"},{t:"Toss greens"},{t:"Add cheese"}]
+chefSteps:[{t:"Grill chicken"},{t:"Toss greens"},{t:"Finish"}]
 },
 
 {
 name:"Tomato Soup",
 ingredients:["Tomatoes","Cream","Onions","Garlic","Butter"],
-simpleSteps:[{t:"Cook tomatoes"},{t:"Blend"},{t:"Add cream"}],
-chefSteps:[{t:"Simmer base"},{t:"Blend smooth"},{t:"Finish creamy"}]
+simpleSteps:[{t:"Cook"},{t:"Blend"},{t:"Add cream"}],
+chefSteps:[{t:"Simmer"},{t:"Blend smooth"},{t:"Finish creamy"}]
 },
 
 {
 name:"Fish and Chips",
 ingredients:["Fish","Potatoes","Flour","Oil","Salt"],
 simpleSteps:[{t:"Fry fish"},{t:"Fry potatoes"},{t:"Serve"}],
-chefSteps:[{t:"Batter fish"},{t:"Deep fry"},{t:"Crispy finish"}]
+chefSteps:[{t:"Batter fish"},{t:"Deep fry"},{t:"Crisp"}]
 },
 
 {
 name:"Quesadilla",
 ingredients:["Tortilla","Cheese","Chicken","Onions"],
-simpleSteps:[{t:"Fill tortilla"},{t:"Cook"},{t:"Slice"}],
-chefSteps:[{t:"Toast tortilla"},{t:"Melt cheese"},{t:"Cut serve"}]
+simpleSteps:[{t:"Fill"},{t:"Cook"},{t:"Slice"}],
+chefSteps:[{t:"Toast tortilla"},{t:"Melt cheese"},{t:"Serve"}]
 },
 
 {
 name:"Peanut Butter Fudge",
 ingredients:["Peanut butter","Sugar","Butter","Milk","Vanilla extract"],
 simpleSteps:[{t:"Melt"},{t:"Mix"},{t:"Chill"}],
-chefSteps:[{t:"Heat base"},{t:"Add peanut butter"},{t:"Set cool"}]
+chefSteps:[{t:"Heat base"},{t:"Add peanut butter"},{t:"Set"}]
 }
 
 ];
 
-/* MATCH SYSTEM */
+/* MATCH */
 function score(r){
 let match=r.ingredients.filter(i=>selected.includes(i)).length;
 return {...r,match};
@@ -348,7 +335,7 @@ localStorage.setItem("ingredients",JSON.stringify(selected));
 openPantry();
 }
 
-/* RECIPE VIEW */
+/* RECIPE */
 function openRecipe(name){
 current=recipes.find(r=>r.name===name);
 mode="simple";
@@ -357,7 +344,7 @@ show("recipe");
 }
 
 function switchMode(){
-mode = mode === "simple" ? "chef" : "simple";
+mode = mode==="simple"?"chef":"simple";
 render();
 }
 
@@ -367,7 +354,7 @@ let missing=current.ingredients.filter(i=>!selected.includes(i));
 
 let steps = mode==="simple"?current.simpleSteps:current.chefSteps;
 
-let stepsHTML=steps.map((s,i)=>`
+let stepsHTML = steps.map((s,i)=>`
 <div class="card">
 <b>${i+1}. ${s.t}</b>
 </div>
@@ -381,9 +368,7 @@ missingHTML+=`<div class="card">${i}</div>`;
 document.getElementById("recipe").innerHTML=`
 <div class="header">${current.name}</div>
 
-<div class="btn" onclick="switchMode()">
-Switch Mode
-</div>
+<div class="btn" onclick="switchMode()">Switch Mode</div>
 
 ${stepsHTML}
 ${missingHTML}
