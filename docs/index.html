@@ -31,6 +31,7 @@ padding:12px;
 box-sizing:border-box;
 padding-bottom:120px;
 }
+
 .page.active{
 opacity:1;
 transform:translateY(0);
@@ -251,7 +252,7 @@ document.getElementById(id).classList.add("active");
 });
 }
 
-/* ================= 100 INGREDIENTS ================= */
+/* ================= INGREDIENTS ================= */
 
 const ingredientItems = [
 
@@ -293,10 +294,10 @@ simpleSteps:[
 {t:"Mix everything",a:"hot pan"}
 ],
 chefSteps:[
-{t:"Rinse rice until water runs clear, cook until grains are separate and dry on surface.",a:"rice"},
-{t:"Cook chicken until firm, no pink remains, juices run clear.",a:"chicken"},
-{t:"Scramble eggs gently into soft curds.",a:"eggs"},
-{t:"Stir fry everything until aromatic and steaming hot.",a:"final"}
+{t:"Rinse rice until water runs clear.",a:"rice"},
+{t:"Cook chicken until fully done.",a:"chicken"},
+{t:"Scramble eggs gently.",a:"eggs"},
+{t:"Mix together in hot pan.",a:"final"}
 ]
 },
 
@@ -310,10 +311,10 @@ simpleSteps:[
 {t:"Combine",a:"mix"}
 ],
 chefSteps:[
-{t:"Boil pasta until flexible but not mushy.",a:"pasta"},
-{t:"Cook beef until deeply browned and crumbly.",a:"beef"},
-{t:"Simmer tomatoes until thick and rich.",a:"sauce"},
-{t:"Combine and let rest for flavor absorption.",a:"final"}
+{t:"Cook pasta until tender.",a:"pasta"},
+{t:"Brown beef deeply.",a:"beef"},
+{t:"Simmer tomato sauce.",a:"sauce"},
+{t:"Mix and rest briefly.",a:"final"}
 ]
 },
 
@@ -322,15 +323,13 @@ name:"Chicken Tacos",
 ingredients:["Chicken breast","Tortilla","Cheese","Onions","Lime"],
 simpleSteps:[
 {t:"Cook chicken",a:"done"},
-{t:"Shred",a:"rested"},
 {t:"Warm tortillas",a:"soft"},
-{t:"Assemble",a:"final"}
+{t:"Assemble tacos",a:"fresh"}
 ],
 chefSteps:[
-{t:"Cook chicken until firm and golden on surface.",a:"chicken"},
-{t:"Rest 5 minutes then shred by hand.",a:"rest"},
-{t:"Warm tortillas until flexible and soft.",a:"tortilla"},
-{t:"Assemble with cheese and lime finish.",a:"final"}
+{t:"Cook chicken until juicy.",a:"chicken"},
+{t:"Warm tortillas carefully.",a:"tortilla"},
+{t:"Add toppings and lime.",a:"final"}
 ]
 },
 
@@ -340,14 +339,12 @@ ingredients:["Shrimp","Pasta","Butter","Garlic","Lemon"],
 simpleSteps:[
 {t:"Boil pasta",a:"done"},
 {t:"Cook shrimp",a:"pink"},
-{t:"Add garlic butter",a:"sauce"},
-{t:"Mix",a:"final"}
+{t:"Add garlic butter",a:"sauce"}
 ],
 chefSteps:[
-{t:"Boil pasta until tender and flexible.",a:"pasta"},
-{t:"Cook shrimp until pink and springy.",a:"shrimp"},
-{t:"Melt butter and garlic until fragrant.",a:"butter"},
-{t:"Toss with lemon until glossy.",a:"final"}
+{t:"Boil pasta until flexible.",a:"pasta"},
+{t:"Cook shrimp until pink.",a:"shrimp"},
+{t:"Toss with garlic butter and lemon.",a:"final"}
 ]
 },
 
@@ -357,14 +354,12 @@ ingredients:["Ground beef","Broccoli","Soy sauce","Carrots","Rice"],
 simpleSteps:[
 {t:"Cook beef",a:"brown"},
 {t:"Add veggies",a:"soft"},
-{t:"Add sauce",a:"soy"},
-{t:"Serve",a:"rice"}
+{t:"Serve over rice",a:"hot"}
 ],
 chefSteps:[
-{t:"Cook beef until sizzling and firm.",a:"beef"},
-{t:"Add vegetables until tender crisp.",a:"veg"},
-{t:"Add soy sauce until aromatic.",a:"sauce"},
-{t:"Serve over rice.",a:"final"}
+{t:"Brown beef completely.",a:"beef"},
+{t:"Cook vegetables until tender crisp.",a:"veg"},
+{t:"Serve hot over rice.",a:"final"}
 ]
 },
 
@@ -377,9 +372,9 @@ simpleSteps:[
 {t:"Grill",a:"golden"}
 ],
 chefSteps:[
-{t:"Butter bread evenly edge to edge.",a:"bread"},
-{t:"Add cheese and press gently.",a:"cheese"},
-{t:"Grill until golden crisp outside and melted inside.",a:"final"}
+{t:"Butter bread edge to edge.",a:"bread"},
+{t:"Melt cheese evenly.",a:"cheese"},
+{t:"Cook until crispy outside.",a:"final"}
 ]
 },
 
@@ -389,12 +384,12 @@ ingredients:["Eggs","Tortilla","Cheese","Bacon"],
 simpleSteps:[
 {t:"Cook eggs",a:"soft"},
 {t:"Cook bacon",a:"crispy"},
-{t:"Wrap",a:"final"}
+{t:"Wrap burrito",a:"final"}
 ],
 chefSteps:[
-{t:"Scramble eggs until soft and fluffy.",a:"eggs"},
-{t:"Cook bacon until crisp and fragrant.",a:"bacon"},
-{t:"Wrap tightly in warm tortilla.",a:"final"}
+{t:"Scramble eggs fluffy.",a:"eggs"},
+{t:"Cook bacon crisp.",a:"bacon"},
+{t:"Wrap tightly in tortilla.",a:"final"}
 ]
 },
 
@@ -404,12 +399,12 @@ ingredients:["Chicken breast","Curry powder","Coconut milk","Onions"],
 simpleSteps:[
 {t:"Cook chicken",a:"done"},
 {t:"Add curry",a:"simmer"},
-{t:"Add coconut milk",a:"thick"}
+{t:"Add coconut milk",a:"rich"}
 ],
 chefSteps:[
-{t:"Cook chicken until firm and golden.",a:"chicken"},
-{t:"Add curry powder until fragrant.",a:"spices"},
-{t:"Simmer coconut milk until thick and rich.",a:"final"}
+{t:"Cook chicken thoroughly.",a:"chicken"},
+{t:"Toast curry powder lightly.",a:"spices"},
+{t:"Simmer until creamy.",a:"final"}
 ]
 },
 
@@ -419,12 +414,12 @@ ingredients:["Eggs","Bell peppers","Onions","Cheese"],
 simpleSteps:[
 {t:"Cook veggies",a:"soft"},
 {t:"Add eggs",a:"set"},
-{t:"Fold",a:"cheese"}
+{t:"Fold omelette",a:"cheesy"}
 ],
 chefSteps:[
-{t:"Cook vegetables until soft and aromatic.",a:"veg"},
-{t:"Pour eggs and let edges set.",a:"eggs"},
-{t:"Fold with melted cheese inside.",a:"final"}
+{t:"Cook vegetables until aromatic.",a:"veg"},
+{t:"Let eggs set gently.",a:"eggs"},
+{t:"Fold with cheese inside.",a:"final"}
 ]
 },
 
@@ -433,13 +428,13 @@ name:"BBQ Chicken Sandwich",
 ingredients:["Chicken breast","BBQ sauce","Bread","Onions"],
 simpleSteps:[
 {t:"Cook chicken",a:"done"},
-{t:"Add BBQ",a:"mix"},
-{t:"Assemble",a:"final"}
+{t:"Add BBQ sauce",a:"mixed"},
+{t:"Assemble sandwich",a:"final"}
 ],
 chefSteps:[
-{t:"Cook chicken until firm and juicy.",a:"chicken"},
-{t:"Shred and mix with BBQ sauce.",a:"sauce"},
-{t:"Assemble on toasted bread.",a:"final"}
+{t:"Cook chicken juicy.",a:"chicken"},
+{t:"Mix with BBQ sauce.",a:"sauce"},
+{t:"Serve on toasted bread.",a:"final"}
 ]
 },
 
@@ -451,8 +446,8 @@ simpleSteps:[
 {t:"Add lemon",a:"fresh"}
 ],
 chefSteps:[
-{t:"Cook salmon until flakes separate easily.",a:"salmon"},
-{t:"Add lemon and garlic for aroma.",a:"final"}
+{t:"Cook salmon until flaky.",a:"salmon"},
+{t:"Finish with lemon and garlic.",a:"final"}
 ]
 },
 
@@ -462,12 +457,12 @@ ingredients:["Chicken breast","Pasta","Cream","Parmesan"],
 simpleSteps:[
 {t:"Cook pasta",a:"soft"},
 {t:"Cook chicken",a:"done"},
-{t:"Add cream",a:"sauce"}
+{t:"Make sauce",a:"creamy"}
 ],
 chefSteps:[
-{t:"Boil pasta until tender.",a:"pasta"},
-{t:"Cook chicken until firm.",a:"chicken"},
-{t:"Simmer cream until thick and silky.",a:"final"}
+{t:"Boil pasta properly.",a:"pasta"},
+{t:"Cook chicken fully.",a:"chicken"},
+{t:"Simmer cream and parmesan.",a:"final"}
 ]
 },
 
@@ -476,11 +471,11 @@ name:"Tuna Sandwich",
 ingredients:["Tuna","Bread","Mayonnaise"],
 simpleSteps:[
 {t:"Mix tuna",a:"creamy"},
-{t:"Assemble",a:"bread"}
+{t:"Assemble sandwich",a:"ready"}
 ],
 chefSteps:[
-{t:"Mix tuna until smooth and creamy.",a:"tuna"},
-{t:"Spread and assemble sandwich.",a:"final"}
+{t:"Mix tuna smoothly.",a:"tuna"},
+{t:"Spread evenly on bread.",a:"final"}
 ]
 },
 
@@ -489,11 +484,11 @@ name:"Pancakes",
 ingredients:["Flour","Milk","Eggs","Sugar"],
 simpleSteps:[
 {t:"Mix batter",a:"smooth"},
-{t:"Cook pan",a:"golden"}
+{t:"Cook pancakes",a:"golden"}
 ],
 chefSteps:[
-{t:"Mix batter until smooth and pourable.",a:"batter"},
-{t:"Cook until bubbles form and edges set.",a:"final"}
+{t:"Whisk batter thoroughly.",a:"batter"},
+{t:"Cook until bubbles appear.",a:"final"}
 ]
 },
 
@@ -501,12 +496,12 @@ chefSteps:[
 name:"Fried Chicken",
 ingredients:["Chicken breast","Flour","Oil"],
 simpleSteps:[
-{t:"Coat chicken",a:"flour"},
-{t:"Fry",a:"crispy"}
+{t:"Coat chicken",a:"floured"},
+{t:"Fry chicken",a:"crispy"}
 ],
 chefSteps:[
-{t:"Coat chicken evenly in flour.",a:"chicken"},
-{t:"Fry until golden crisp and hot inside.",a:"final"}
+{t:"Coat chicken evenly.",a:"chicken"},
+{t:"Fry until golden brown.",a:"final"}
 ]
 },
 
@@ -514,14 +509,14 @@ chefSteps:[
 name:"Chicken Noodle Soup",
 ingredients:["Chicken broth","Chicken breast","Carrots","Noodles"],
 simpleSteps:[
-{t:"Simmer broth",a:"hot"},
+{t:"Heat broth",a:"hot"},
 {t:"Add chicken",a:"tender"},
-{t:"Add noodles",a:"soft"}
+{t:"Cook noodles",a:"soft"}
 ],
 chefSteps:[
-{t:"Simmer broth until warm and fragrant.",a:"broth"},
-{t:"Cook chicken until tender.",a:"chicken"},
-{t:"Add noodles until soft and flexible.",a:"final"}
+{t:"Simmer broth slowly.",a:"broth"},
+{t:"Cook chicken tender.",a:"chicken"},
+{t:"Add noodles last.",a:"final"}
 ]
 },
 
@@ -530,11 +525,11 @@ name:"Simple Chili",
 ingredients:["Ground beef","Tomatoes","Beans"],
 simpleSteps:[
 {t:"Cook beef",a:"brown"},
-{t:"Simmer",a:"thick"}
+{t:"Simmer chili",a:"thick"}
 ],
 chefSteps:[
-{t:"Cook beef until deeply browned.",a:"beef"},
-{t:"Simmer tomatoes and beans until thick.",a:"final"}
+{t:"Brown beef deeply.",a:"beef"},
+{t:"Simmer tomatoes and beans.",a:"final"}
 ]
 },
 
@@ -544,12 +539,12 @@ ingredients:["Pasta","Cheddar","Milk","Butter"],
 simpleSteps:[
 {t:"Boil pasta",a:"soft"},
 {t:"Make cheese sauce",a:"creamy"},
-{t:"Mix together",a:"smooth"}
+{t:"Combine",a:"smooth"}
 ],
 chefSteps:[
-{t:"Cook pasta until tender with slight bite.",a:"pasta"},
-{t:"Melt butter, add milk and cheddar until silky.",a:"sauce"},
-{t:"Fold pasta into sauce until fully coated.",a:"final"}
+{t:"Cook pasta tender.",a:"pasta"},
+{t:"Melt cheddar into milk.",a:"sauce"},
+{t:"Mix until creamy.",a:"final"}
 ]
 },
 
@@ -562,9 +557,9 @@ simpleSteps:[
 {t:"Serve",a:"hot"}
 ],
 chefSteps:[
-{t:"Sear steak until browned outside and juicy inside.",a:"steak"},
-{t:"Cook potatoes until crisp outside and fluffy inside.",a:"potatoes"},
-{t:"Finish with garlic butter.",a:"final"}
+{t:"Sear steak evenly.",a:"steak"},
+{t:"Cook potatoes crispy.",a:"potatoes"},
+{t:"Add garlic butter finish.",a:"final"}
 ]
 },
 
@@ -577,9 +572,9 @@ simpleSteps:[
 {t:"Assemble tacos",a:"fresh"}
 ],
 chefSteps:[
-{t:"Cook shrimp until pink and lightly firm.",a:"shrimp"},
-{t:"Warm tortillas until flexible.",a:"tortilla"},
-{t:"Assemble with cheese and lime.",a:"final"}
+{t:"Cook shrimp fully.",a:"shrimp"},
+{t:"Warm tortillas gently.",a:"tortilla"},
+{t:"Finish with lime.",a:"final"}
 ]
 },
 
@@ -592,9 +587,9 @@ simpleSteps:[
 {t:"Add toppings",a:"melted"}
 ],
 chefSteps:[
-{t:"Bake potatoes until fork tender.",a:"potato"},
-{t:"Cook bacon until crisp.",a:"bacon"},
-{t:"Top with butter and cheddar until melted.",a:"final"}
+{t:"Bake until fork tender.",a:"potato"},
+{t:"Cook bacon crisp.",a:"bacon"},
+{t:"Top with cheddar and butter.",a:"final"}
 ]
 },
 
@@ -603,13 +598,13 @@ name:"Teriyaki Chicken",
 ingredients:["Chicken breast","Teriyaki sauce","Rice","Broccoli"],
 simpleSteps:[
 {t:"Cook chicken",a:"done"},
-{t:"Add teriyaki sauce",a:"glazed"},
+{t:"Add teriyaki sauce",a:"sticky"},
 {t:"Serve with rice",a:"hot"}
 ],
 chefSteps:[
-{t:"Cook chicken until golden and fully cooked.",a:"chicken"},
-{t:"Reduce teriyaki sauce until glossy.",a:"sauce"},
-{t:"Serve over rice with broccoli.",a:"final"}
+{t:"Cook chicken golden.",a:"chicken"},
+{t:"Reduce teriyaki glaze.",a:"sauce"},
+{t:"Serve over rice.",a:"final"}
 ]
 },
 
@@ -619,12 +614,12 @@ ingredients:["Bread","Eggs","Milk","Butter"],
 simpleSteps:[
 {t:"Mix eggs and milk",a:"smooth"},
 {t:"Dip bread",a:"coated"},
-{t:"Cook",a:"golden"}
+{t:"Cook toast",a:"golden"}
 ],
 chefSteps:[
-{t:"Whisk eggs and milk until fully blended.",a:"mix"},
-{t:"Soak bread lightly without tearing.",a:"bread"},
-{t:"Cook until golden brown both sides.",a:"final"}
+{t:"Whisk egg mixture.",a:"mix"},
+{t:"Soak bread lightly.",a:"bread"},
+{t:"Cook both sides golden.",a:"final"}
 ]
 },
 
@@ -634,12 +629,12 @@ ingredients:["Pasta","Mushrooms","Cream","Garlic"],
 simpleSteps:[
 {t:"Cook pasta",a:"soft"},
 {t:"Cook mushrooms",a:"tender"},
-{t:"Add cream",a:"thick"}
+{t:"Add cream",a:"rich"}
 ],
 chefSteps:[
-{t:"Boil pasta until tender.",a:"pasta"},
-{t:"Cook mushrooms until browned and fragrant.",a:"mushrooms"},
-{t:"Simmer cream and garlic until silky.",a:"final"}
+{t:"Boil pasta properly.",a:"pasta"},
+{t:"Brown mushrooms nicely.",a:"mushrooms"},
+{t:"Simmer cream sauce.",a:"final"}
 ]
 },
 
@@ -652,9 +647,24 @@ simpleSteps:[
 {t:"Cook quesadilla",a:"crispy"}
 ],
 chefSteps:[
-{t:"Cook chicken until juicy and fully cooked.",a:"chicken"},
-{t:"Fill tortilla evenly with cheese and chicken.",a:"fill"},
-{t:"Cook until crisp outside and melted inside.",a:"final"}
+{t:"Cook chicken juicy.",a:"chicken"},
+{t:"Fill tortilla evenly.",a:"fill"},
+{t:"Cook until crispy outside.",a:"final"}
+]
+},
+
+{
+name:"Honey Garlic Chicken",
+ingredients:["Chicken breast","Honey","Garlic","Soy sauce","Rice"],
+simpleSteps:[
+{t:"Cook chicken",a:"golden"},
+{t:"Make sauce",a:"sticky"},
+{t:"Serve over rice",a:"hot"}
+],
+chefSteps:[
+{t:"Cook chicken until golden.",a:"chicken"},
+{t:"Simmer honey garlic sauce.",a:"sauce"},
+{t:"Serve coated chicken over rice.",a:"final"}
 ]
 }
 
@@ -668,7 +678,7 @@ let html = `
 <div class="header">🧺 Pantry</div>
 
 <div class="card">
-<input 
+<input
 id="searchBox"
 class="searchInput"
 placeholder="Search ingredients..."
@@ -837,8 +847,6 @@ ${s.a}
 
 });
 
-/* ================= INGREDIENTS ================= */
-
 html += `
 <div class="header">🧂 Ingredients</div>
 `;
@@ -854,8 +862,6 @@ ${has ? "✅" : "❌"} ${i}
 `;
 
 });
-
-/* ================= MISSING ================= */
 
 let missing = current.ingredients.filter(i=>
 !selected.includes(i)
