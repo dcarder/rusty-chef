@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v15</title>
+<title>The Rusty Chef v16</title>
 
 <style>
 html,body{
@@ -53,12 +53,69 @@ margin:10px 0;
 border:1px solid rgba(255,255,255,.15);
 }
 
+/* Chef mode cards get a warm amber tint */
+.chef-card {
+background: rgba(255, 145, 77, 0.12);
+border-radius: 14px;
+padding: 16px;
+margin: 10px 0;
+border: 1px solid rgba(255, 145, 77, 0.35);
+}
+
+.chef-card .step-title {
+font-size: 15px;
+font-weight: 700;
+color: #ff914d;
+margin-bottom: 8px;
+}
+
+.chef-card .step-body {
+font-size: 14px;
+line-height: 1.65;
+color: rgba(255,255,255,0.88);
+}
+
+.chef-card .step-tip {
+margin-top: 10px;
+font-size: 12px;
+color: rgba(255, 200, 130, 0.8);
+font-style: italic;
+border-top: 1px solid rgba(255,145,77,0.2);
+padding-top: 8px;
+}
+
+.step-number {
+display: inline-block;
+background: #ff914d;
+color: black;
+font-weight: 900;
+font-size: 12px;
+border-radius: 50%;
+width: 22px;
+height: 22px;
+line-height: 22px;
+text-align: center;
+margin-right: 8px;
+flex-shrink: 0;
+}
+
+.step-header {
+display: flex;
+align-items: center;
+margin-bottom: 8px;
+}
+
 .item{
 padding:10px;
 margin:6px 0;
 border-radius:10px;
 border:1px solid rgba(255,255,255,.2);
 cursor:pointer;
+transition:.2s;
+}
+
+.item:hover{
+background:rgba(255,255,255,.08);
 }
 
 .item.selected{
@@ -75,6 +132,28 @@ text-align:center;
 border-radius:12px;
 margin-top:10px;
 cursor:pointer;
+transition:.2s;
+user-select:none;
+}
+
+.btn:hover{
+transform:scale(1.02);
+}
+
+.btn-chef {
+background: linear-gradient(135deg, #ff6a00, #ff914d);
+color: black;
+}
+
+.shopBtn{
+display:inline-block;
+margin-top:8px;
+padding:10px 14px;
+border-radius:10px;
+font-weight:700;
+text-decoration:none;
+color:white;
+background:#0071ce;
 }
 
 .bottomDock{
@@ -85,9 +164,80 @@ right:0;
 display:flex;
 justify-content:center;
 gap:20px;
+z-index:5;
 }
 
-.bottomDock .btn{width:160px;}
+.bottomDock .btn{
+width:160px;
+margin-top:0;
+}
+
+#homeBg img{
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+object-fit:cover;
+z-index:-2;
+}
+
+#homeBg::after{
+content:"";
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+z-index:-1;
+}
+
+#introLogo{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+width:100%;
+}
+
+.the{
+font-size:34px;
+letter-spacing:4px;
+}
+
+.rusty{
+font-size:64px;
+font-weight:900;
+color:#ff914d;
+text-shadow:
+0 0 10px #ff6600,
+0 0 20px #ff3300,
+0 0 40px #ff0000;
+animation:flicker 2s infinite alternate;
+}
+
+.chef{
+font-size:52px;
+font-weight:800;
+}
+
+.fire{
+font-size:40px;
+animation:fireFloat 1.5s infinite alternate ease-in-out;
+display:inline-block;
+margin:0 10px;
+}
+
+@keyframes flicker{
+0%{opacity:1;}
+25%{opacity:.85;}
+50%{opacity:1;}
+75%{opacity:.9;}
+100%{opacity:1;}
+}
+
+@keyframes fireFloat{
+from{transform:translateY(0px);}
+to{transform:translateY(-8px);}
+}
 
 .recipeTitle{
 font-size:24px;
@@ -98,8 +248,39 @@ margin-bottom:10px;
 
 .modeBadge{
 text-align:center;
+margin-bottom:12px;
 opacity:.8;
-margin-bottom:10px;
+}
+
+.searchInput{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:none;
+outline:none;
+font-size:16px;
+box-sizing:border-box;
+}
+
+/* Chef mode banner */
+.chef-banner {
+background: linear-gradient(135deg, rgba(255,106,0,0.25), rgba(255,60,0,0.15));
+border: 1px solid rgba(255,145,77,0.5);
+border-radius: 14px;
+padding: 14px;
+text-align: center;
+margin-bottom: 14px;
+}
+.chef-banner .chef-banner-title {
+font-size: 18px;
+font-weight: 900;
+color: #ff914d;
+letter-spacing: 2px;
+}
+.chef-banner .chef-banner-sub {
+font-size: 12px;
+color: rgba(255,200,130,0.8);
+margin-top: 4px;
 }
 </style>
 </head>
@@ -107,11 +288,28 @@ margin-bottom:10px;
 <body>
 
 <div id="home" class="page active">
-<div class="recipeTitle">🔥 THE RUSTY CHEF 🔥</div>
+
+<div id="homeBg">
+<img src="copilot_image_1777179019874.jpeg">
+</div>
+
+<div id="introLogo">
+<div class="the">THE</div>
+
+<div>
+<span class="fire">🔥</span>
+<span class="rusty">RUSTY</span>
+<span class="fire">🔥</span>
+</div>
+
+<div class="chef">CHEF</div>
+</div>
+
 <div class="bottomDock">
 <div class="btn" onclick="openPantry()">🧺 Pantry</div>
 <div class="btn" onclick="showMatches()">🍳 Recipes</div>
 </div>
+
 </div>
 
 <div id="pantry" class="page"></div>
@@ -120,406 +318,885 @@ margin-bottom:10px;
 
 <script>
 
+/* ================= NAV ================= */
 function show(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-requestAnimationFrame(()=>document.getElementById(id).classList.add("active"));
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  requestAnimationFrame(() => document.getElementById(id).classList.add("active"));
 }
 
-/* INGREDIENTS */
+/* ================= INGREDIENTS ================= */
 const ingredientItems = [
-"Chicken breast","Ground beef","Bacon","Eggs","Milk","Butter","Cheese","Flour","Sugar","Salt","Pepper",
-"Rice","Pasta","Bread","Tortilla","Olive oil","Garlic","Onions","Tomatoes","Potatoes","Carrots","Broccoli",
-"Spinach","Bell peppers","Mushrooms","Cucumber","Lettuce","Avocado","Lemon","Lime","Chicken broth","Beef broth",
-"Soy sauce","Hot sauce","BBQ sauce","Teriyaki sauce","Ketchup","Mustard","Mayonnaise","Vinegar","Honey","Jam",
-"Peanut butter","Oats","Yogurt","Cream","Parmesan","Mozzarella","Cheddar","Shrimp","Salmon","Tuna",
-"Steak","Pork chops","Turkey","Sausage","Rice noodles","Ramen noodles","Corn","Peas","Green beans","Zucchini",
-"Eggplant","Cabbage","Cauliflower","Sweet potato","Pumpkin","Coconut milk","Curry powder","Paprika","Oregano","Basil",
-"Thyme","Parsley","Chives","Cinnamon","Nutmeg","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
-"Almonds","Walnuts","Crackers","Granola","Marshmallows","Pineapple","Strawberries","Blueberries","Bananas","Apples",
-"Fish sauce","Worcestershire sauce","Sesame oil","Cornstarch","Quinoa","Lentils","Chickpeas","Tofu","Beans","Noodles","Oil"
+  "Chicken breast","Ground beef","Bacon","Eggs","Milk","Butter","Cheese","Flour","Sugar","Salt","Pepper",
+  "Rice","Pasta","Bread","Tortilla","Olive oil","Garlic","Onions","Tomatoes","Potatoes","Carrots","Broccoli",
+  "Spinach","Bell peppers","Mushrooms","Cucumber","Lettuce","Avocado","Lemon","Lime","Chicken broth","Beef broth",
+  "Soy sauce","Hot sauce","BBQ sauce","Teriyaki sauce","Ketchup","Mustard","Mayonnaise","Vinegar","Honey","Jam",
+  "Peanut butter","Oats","Yogurt","Cream","Parmesan","Mozzarella","Cheddar","Shrimp","Salmon","Tuna",
+  "Steak","Pork chops","Turkey","Sausage","Rice noodles","Ramen noodles","Corn","Peas","Green beans","Zucchini",
+  "Eggplant","Cabbage","Cauliflower","Sweet potato","Pumpkin","Coconut milk","Curry powder","Paprika","Oregano","Basil",
+  "Thyme","Parsley","Chives","Cinnamon","Nutmeg","Chocolate","Coffee","Tea","Maple syrup","Brown sugar",
+  "Almonds","Walnuts","Crackers","Granola","Marshmallows","Pineapple","Strawberries","Blueberries","Bananas","Apples",
+  "Fish sauce","Worcestershire sauce","Sesame oil","Cornstarch","Quinoa","Lentils","Chickpeas","Tofu",
+  "Beans","Noodles","Oil"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
 
-function toggle(i){
-selected = selected.includes(i)
-? selected.filter(x=>x!==i)
-: [...selected,i];
-localStorage.setItem("ingredients",JSON.stringify(selected));
-openPantry();
-}
-
 function clearPantry(){
-selected=[];
-localStorage.setItem("ingredients",JSON.stringify(selected));
-openPantry();
+  selected = [];
+  localStorage.setItem("ingredients", JSON.stringify(selected));
+  openPantry();
 }
 
-function openPantry(){
-let html = `<div class="header">🧺 Pantry</div>`;
-ingredientItems.forEach(i=>{
-html += `<div class="item ${selected.includes(i)?'selected':''}" onclick="toggle('${i}')">${i}</div>`;
-});
-html += `
-<div class="btn" onclick="showMatches()">🍳 Find Recipes</div>
-<div class="btn" onclick="clearPantry()">🗑 Clear</div>
-<div class="btn" onclick="show('home')">🏠 Home</div>
-`;
-document.getElementById("pantry").innerHTML = html;
-show("pantry");
-}
-
-/* RECIPES (ALL 26 FIXED + FULL CHEF MODE) */
+/* ================= RECIPES ================= */
 const recipes = [
 
 {
-name:"Chicken Fried Rice",
-ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
-simpleSteps:[
-{t:"Cook rice",a:"fluffy"},
-{t:"Cook chicken",a:"done"},
-{t:"Scramble eggs",a:"soft"},
-{t:"Mix",a:"hot pan"}
-],
-chefSteps:[
-{t:"Rice",a:"1 cup rice + 2 cups water, simmer 15 min at 200°F (93°C), rest 10 min"},
-{t:"Chicken",a:"250g chicken breast, cook 7 min at 375°F until 165°F internal"},
-{t:"Eggs",a:"2 eggs in butter, 2–3 min medium heat"},
-{t:"Fry",a:"stir-fry at 400°F for 5 min"}
-]
+  name:"Chicken Fried Rice",
+  ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
+  simpleSteps:[
+    {t:"Cook rice", a:"fluffy"},
+    {t:"Cook chicken", a:"done"},
+    {t:"Scramble eggs", a:"soft"},
+    {t:"Mix everything", a:"hot pan"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep and cook the rice",
+      a:"Rinse the rice under cold water 2–3 times until the water runs mostly clear — this removes excess starch and prevents a gummy texture. Cook using a 1:1.5 rice-to-water ratio. Once done, spread the rice on a tray or plate and refrigerate for at least 30 minutes (overnight is even better). Cold, dry rice fries instead of steams, giving you those distinct separated grains.",
+      tip:"Day-old leftover rice is ideal. Never use freshly cooked rice — it'll clump and turn mushy."
+    },
+    {
+      t:"Season and cook the chicken",
+      a:"Dice the chicken breast into small, even ½-inch cubes so they cook quickly and evenly. Season generously with salt and pepper. Heat a wok or large skillet over high heat until it just begins to smoke. Add a thin layer of neutral oil and cook the chicken in a single layer without stirring for 90 seconds to develop a golden sear, then toss and finish cooking through. Remove from pan and set aside.",
+      tip:"High heat is non-negotiable. A hot wok creates 'wok hei' — that smoky, slightly charred flavor you can't get at low temperatures."
+    },
+    {
+      t:"Scramble the eggs separately",
+      a:"Push everything to the side of the wok or use a clean pan. Add a touch of butter and crack in the eggs. Scramble them low and slow — stir gently and pull off heat while still slightly underdone and glossy. They'll finish cooking from residual heat. Soft, custardy eggs fold into the rice beautifully rather than becoming rubbery chunks.",
+      tip:"Salt your eggs just before scrambling, not ahead of time — pre-salting draws out moisture and makes them watery."
+    },
+    {
+      t:"Fry the rice and combine everything",
+      a:"Add the cold rice to the hot wok and press it flat. Let it sit undisturbed for 60–90 seconds so the bottom layer starts to crisp. Then toss and repeat once more. Add the soy sauce in a ring around the outer edge of the wok (not directly on the rice) so it hits the hot metal first and caramelizes slightly before mixing in. Return the chicken and eggs, then add diced onions and carrots. Toss everything together over high heat for 2 minutes. Taste and adjust salt.",
+      tip:"Add a few drops of sesame oil right at the end, off the heat, for aromatic depth. It burns easily if cooked too long."
+    }
+  ]
 },
 
 {
-name:"Spaghetti Bolognese",
-ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
-simpleSteps:[{t:"Boil pasta",a:"soft"},{t:"Cook beef",a:"brown"},{t:"Add sauce",a:"mix"}],
-chefSteps:[
-{t:"Pasta",a:"200g boil 10–11 min salted water"},
-{t:"Beef",a:"250g cook 8 min at 400°F"},
-{t:"Sauce",a:"simmer 20 min low heat"},
-{t:"Finish",a:"rest 2 min"}
-]
+  name:"Spaghetti Bolognese",
+  ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
+  simpleSteps:[
+    {t:"Boil pasta", a:"soft"},
+    {t:"Cook beef", a:"brown"},
+    {t:"Add sauce", a:"tomato"},
+    {t:"Combine", a:"mix"}
+  ],
+  chefSteps:[
+    {
+      t:"Build your soffritto base",
+      a:"Finely dice the onions and mince the garlic. Cook them in olive oil over medium-low heat for 10–12 minutes, stirring occasionally, until completely softened and lightly golden — not browned. This slow cook transforms them from sharp and pungent into sweet and deeply savory. This is the flavor foundation that separates a good bolognese from a great one.",
+      tip:"Patience here pays dividends. Rushing the soffritto leaves a raw, one-dimensional base."
+    },
+    {
+      t:"Brown the beef deeply",
+      a:"Raise heat to medium-high and add the ground beef in a single layer if possible. Do not stir for the first 3–4 minutes — you want a real sear, not a gray steam. Once a crust develops on the bottom, break it apart and continue browning. Season with salt and pepper. The goal is deeply caramelized, not just gray and cooked. Drain any excess fat if needed, but leave a little for richness.",
+      tip:"Use 80/20 ground beef for best flavor. Leaner beef dries out and lacks richness."
+    },
+    {
+      t:"Build and simmer the sauce",
+      a:"Add the crushed or diced tomatoes and stir to combine. Bring to a gentle bubble, then reduce to a low simmer. Cook uncovered for at least 25–30 minutes, stirring every few minutes. The sauce should reduce and thicken until it clings to a spoon rather than sliding off watery. Add a small pinch of sugar if the tomatoes taste sharp. Taste and adjust salt.",
+      tip:"A splash of whole milk or cream added in the last 5 minutes of simmering mellows acidity and adds silkiness — a classic Italian trick."
+    },
+    {
+      t:"Cook and combine the pasta",
+      a:"Boil pasta in heavily salted water (it should taste like mild sea water) until just shy of al dente — about 1 minute less than the package says. Reserve a large mug of pasta water before draining. Add the pasta directly into the sauce and toss over medium heat for 1–2 minutes, adding splashes of pasta water to loosen and emulsify. The starchy water helps the sauce coat every strand.",
+      tip:"Never rinse your pasta. The surface starch is what makes sauce stick."
+    }
+  ]
 },
 
 {
-name:"Chicken Tacos",
-ingredients:["Chicken breast","Tortilla","Cheese","Onions","Lime"],
-simpleSteps:[{t:"Cook",a:"done"},{t:"Warm",a:"soft"},{t:"Assemble",a:"fresh"}],
-chefSteps:[
-{t:"Chicken",a:"250g 7 min at 375°F"},
-{t:"Tortilla",a:"30 sec per side medium heat"},
-{t:"Assemble",a:"serve immediately"}
-]
+  name:"Chicken Tacos",
+  ingredients:["Chicken breast","Tortilla","Cheese","Onions","Lime"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"done"},
+    {t:"Warm tortillas", a:"soft"},
+    {t:"Assemble tacos", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Season and cook the chicken",
+      a:"Flatten the chicken breasts to an even thickness by pounding with a pan or rolling pin — this ensures they cook evenly without drying out. Season both sides generously with salt, pepper, cumin, and a pinch of paprika. Heat a cast iron or heavy skillet over medium-high until very hot. Cook 4–5 minutes per side without moving, then rest for 5 minutes before slicing. Resting is critical — cutting too early loses all the juices.",
+      tip:"Slice against the grain for the most tender bite. Look at which direction the muscle fibers run and cut perpendicular to them."
+    },
+    {
+      t:"Char the tortillas",
+      a:"Place corn tortillas directly over a gas burner flame (or in a dry cast iron pan over high heat) and char for 15–20 seconds per side — you want small blackened spots and a slight puff. This adds smoky flavor and texture that a microwave simply can't replicate. Stack them in a folded kitchen towel or foil as you go to keep them warm and pliable.",
+      tip:"Never skip charring. A raw, untoasted tortilla tastes like paper. The char is where the flavor lives."
+    },
+    {
+      t:"Build and finish with lime",
+      a:"Layer sliced chicken on the tortilla, then add finely diced raw onion (soaked in cold water for 5 minutes to mellow the sharpness, then drained), shredded cheese, and any other toppings. Finish with a generous squeeze of fresh lime over the entire taco just before eating — the acid brightens every other flavor and cuts through the richness of the cheese and chicken.",
+      tip:"Street taco style: keep toppings minimal and quality. Cilantro + onion + lime + salsa is often better than a loaded pile."
+    }
+  ]
 },
 
 {
-name:"Garlic Butter Shrimp Pasta",
-ingredients:["Shrimp","Pasta","Butter","Garlic","Lemon"],
-simpleSteps:[{t:"Boil",a:"done"},{t:"Cook",a:"pink"}],
-chefSteps:[
-{t:"Pasta",a:"200g 10 min boil"},
-{t:"Shrimp",a:"200g 3–4 min at 375°F"},
-{t:"Butter garlic",a:"2 tbsp butter 2 min sauté"},
-{t:"Finish",a:"lemon + toss"}
-]
+  name:"Garlic Butter Shrimp Pasta",
+  ingredients:["Shrimp","Pasta","Butter","Garlic","Lemon"],
+  simpleSteps:[
+    {t:"Boil pasta", a:"done"},
+    {t:"Cook shrimp", a:"pink"},
+    {t:"Add garlic butter", a:"sauce"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep the shrimp properly",
+      a:"Pat the shrimp completely dry with paper towels — moisture is the enemy of a good sear. Season with salt, pepper, and a pinch of red pepper flakes. If they have shells, peel them but save the shells — you can briefly sauté them in butter for 2 minutes then remove them to infuse incredible shrimp flavor into your sauce.",
+      tip:"Dry shrimp = sear. Wet shrimp = steam. The difference is enormous for both texture and flavor."
+    },
+    {
+      t:"Cook pasta and reserve water",
+      a:"Cook pasta in generously salted boiling water until 1 minute shy of al dente — it will finish in the sauce. Before draining, scoop out a full cup of starchy pasta water. This cloudy, salty, starchy liquid is liquid gold — it's what turns butter and garlic into a silky, emulsified sauce that clings to every strand.",
+      tip:"The pasta water is the secret sauce ingredient. Don't skip saving it."
+    },
+    {
+      t:"Make the garlic butter sauce",
+      a:"In a wide skillet over medium heat, melt butter slowly until it foams. Add thinly sliced garlic and cook 60–90 seconds until fragrant and just barely golden — watch carefully as garlic burns fast and turns bitter. Add a splash of pasta water and swirl the pan to start emulsifying the butter into a sauce.",
+      tip:"Keep the heat moderate for the garlic. High heat goes from golden to burnt in seconds."
+    },
+    {
+      t:"Sear shrimp and bring it together",
+      a:"Raise heat to medium-high. Add shrimp in a single layer and cook 90 seconds per side until pink, curled, and lightly seared. Remove shrimp before adding pasta — they'll overcook if left in the pan too long. Add drained pasta to the sauce and toss vigorously, adding splashes of pasta water to build a glossy, cohesive sauce. Return shrimp, squeeze in fresh lemon juice, and toss once more. Serve immediately.",
+      tip:"Shrimp are done the moment they form a 'C' shape. An 'O' shape means they're overcooked and rubbery."
+    }
+  ]
 },
 
 {
-name:"Beef Stir Fry",
-ingredients:["Ground beef","Broccoli","Soy sauce","Carrots","Rice"],
-simpleSteps:[{t:"Cook",a:"brown"},{t:"Add",a:"soft"}],
-chefSteps:[
-{t:"Rice",a:"15 min simmer"},
-{t:"Beef",a:"7 min 400°F"},
-{t:"Veg",a:"5 min high heat"},
-{t:"Finish",a:"soy glaze 2 min"}
-]
+  name:"Beef Stir Fry",
+  ingredients:["Ground beef","Broccoli","Soy sauce","Carrots","Rice"],
+  simpleSteps:[
+    {t:"Cook beef", a:"brown"},
+    {t:"Add veggies", a:"soft"},
+    {t:"Serve over rice", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep your vegetables",
+      a:"Cut broccoli into small, uniform florets so they cook evenly. Slice carrots on a diagonal — this creates more surface area for browning and looks intentional. Have everything cut, measured, and ready before you turn on the heat. Stir frying moves fast and there's no time to chop mid-cook.",
+      tip:"The diagonal cut on carrots isn't just aesthetic — more surface area means faster, more even cooking and better caramelization."
+    },
+    {
+      t:"Brown the beef with intention",
+      a:"Use a wok or the largest skillet you have. Heat it until it just starts to smoke, then add oil and the ground beef in one layer. Leave it completely untouched for 2–3 minutes — let a deep brown crust form on the bottom. Then break and stir, continuing until all the beef is browned with dark, caramelized bits throughout. Season with salt and pepper. This deep browning creates the rich, savory flavor foundation.",
+      tip:"Those dark bits stuck to the pan are flavor — they'll deglaze into the sauce when you add liquid."
+    },
+    {
+      t:"Stir fry the vegetables",
+      a:"Push beef to the side. Add a touch more oil and the carrots first (they take longest), cook 2 minutes, then add broccoli. Toss everything together and cook over high heat, stirring constantly. You want the vegetables tender-crisp — cooked through but still with a little bite and bright color. Broccoli should be vivid green, not olive drab.",
+      tip:"If the pan starts to dry out, add a tablespoon of water — it'll steam the vegetables and deglaze any stuck bits simultaneously."
+    },
+    {
+      t:"Build and finish the sauce",
+      a:"Drizzle soy sauce around the edges of the wok so it hits the hot metal and caramelizes before mixing into the food. Add a small spoonful of honey or brown sugar to balance, a splash of sesame oil off the heat, and toss everything vigorously for 60 seconds over high heat. The sauce should coat everything and reduce to a glaze, not pool at the bottom. Serve immediately over hot rice.",
+      tip:"Add a teaspoon of cornstarch mixed with water if you want a thicker, restaurant-style glossy sauce."
+    }
+  ]
 },
 
 {
-name:"Grilled Cheese",
-ingredients:["Bread","Cheese","Butter"],
-simpleSteps:[{t:"Butter",a:"done"},{t:"Melt",a:"golden"}],
-chefSteps:[
-{t:"Prep",a:"butter bread"},
-{t:"Cook",a:"325°F 3–4 min per side"},
-{t:"Finish",a:"cover 1 min melt"}
-]
+  name:"Grilled Cheese",
+  ingredients:["Bread","Cheese","Butter"],
+  simpleSteps:[
+    {t:"Butter bread", a:"done"},
+    {t:"Add cheese", a:"melt"},
+    {t:"Grill", a:"golden"}
+  ],
+  chefSteps:[
+    {
+      t:"Prepare the bread and butter",
+      a:"Use thick-cut bread — sourdough, brioche, or pullman loaf all work beautifully. Soften the butter to room temperature so it spreads easily all the way to the edges without tearing. A thin, even layer from corner to corner is what gives you that uniformly golden, crispy exterior. Unbuttered spots will stay pale and soft.",
+      tip:"Mayo on the outside instead of butter is a pro trick — it has a higher smoke point and gives an incredibly even, deep golden crust."
+    },
+    {
+      t:"Choose and layer the cheese",
+      a:"Use a blend of cheeses for complexity: something melty (American, fontina, or Gruyère) combined with something flavorful (sharp cheddar or aged gouda). Grate your own — pre-shredded cheese has anti-caking powder that prevents smooth melting. Layer the cheese generously but evenly. A thin smear of Dijon mustard on the inside of one slice is a subtle upgrade that adds depth without standing out.",
+      tip:"Grating your own cheese makes a huge difference. Pre-shredded melts grainy and uneven."
+    },
+    {
+      t:"Cook low and slow for perfection",
+      a:"Place the sandwich in a cold or barely warm pan, then turn the heat to medium-low. This counterintuitive approach lets the cheese melt fully before the outside burns. Cook 3–4 minutes per side, pressing gently with a spatula. The crust should be deep golden-brown, crackling, and audible. If the bread is golden but the cheese isn't melted, cover the pan with a lid for 60 seconds — the steam melts the cheese without burning the bread.",
+      tip:"The lid trick is the single best technique for getting perfectly melted cheese without burnt bread."
+    }
+  ]
 },
 
 {
-name:"Breakfast Burrito",
-ingredients:["Eggs","Tortilla","Cheese","Bacon"],
-simpleSteps:[{t:"Cook",a:"soft"}],
-chefSteps:[
-{t:"Eggs",a:"2 eggs 2–3 min"},
-{t:"Bacon",a:"6–8 min crisp"},
-{t:"Wrap",a:"serve hot"}
-]
+  name:"Breakfast Burrito",
+  ingredients:["Eggs","Tortilla","Cheese","Bacon"],
+  simpleSteps:[
+    {t:"Cook eggs", a:"soft"},
+    {t:"Cook bacon", a:"crispy"},
+    {t:"Wrap burrito", a:"final"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook the bacon properly",
+      a:"Lay bacon strips in a cold pan, then bring to medium heat — starting cold renders the fat gradually, giving you crispier, flatter, more evenly cooked bacon. Cook until the fat is rendered and the edges crisp up. Transfer to a paper towel-lined plate. Reserve a teaspoon of the bacon fat in the pan — this is what you'll scramble the eggs in for incredible flavor.",
+      tip:"Cold pan start for bacon is the move. It prevents curling and gives you professional-level results."
+    },
+    {
+      t:"Make perfect soft scrambled eggs",
+      a:"Crack eggs into a bowl and whisk with a pinch of salt until completely uniform — no streaks of white or yolk. Add to the bacon fat pan over medium-low heat. Stir constantly with a rubber spatula, making slow figure-8 and folding motions. Pull the pan off heat periodically to slow cooking. Remove when eggs look slightly underdone and glossy — they'll finish from residual heat. Season with pepper.",
+      tip:"The biggest egg mistake is high heat. Low and slow gives you creamy, custardy eggs. High heat gives you rubbery curds."
+    },
+    {
+      t:"Warm tortilla and wrap tightly",
+      a:"Warm a large flour tortilla in a dry pan over medium heat for 20–30 seconds per side — it should puff slightly and be fully pliable. Layer the ingredients off-center, leaving a 2-inch border on the sides: eggs first (they anchor everything), then crumbled bacon, then cheese on top (heat from the eggs will melt it). Fold the sides in, then roll from the bottom up, tucking tightly as you go. Place seam-side down in the hot pan for 30 seconds to seal.",
+      tip:"Don't overfill. A burrito you can't close defeats the purpose. Less is more for a clean wrap."
+    }
+  ]
 },
 
 {
-name:"Chicken Curry",
-ingredients:["Chicken breast","Curry powder","Coconut milk","Onions"],
-simpleSteps:[{t:"Cook",a:"done"}],
-chefSteps:[
-{t:"Chicken",a:"7 min 375°F"},
-{t:"Spices",a:"toast 1 min"},
-{t:"Simmer",a:"20 min low heat"}
-]
+  name:"Chicken Curry",
+  ingredients:["Chicken breast","Curry powder","Coconut milk","Onions"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"done"},
+    {t:"Add curry", a:"simmer"},
+    {t:"Add coconut milk", a:"rich"}
+  ],
+  chefSteps:[
+    {
+      t:"Build the aromatics base",
+      a:"Dice onions finely and cook them in oil over medium heat for 12–15 minutes until deeply golden — almost caramelized. This is the foundation of curry flavor. While they cook, mince garlic and grate fresh ginger if you have it. Add garlic in the last 2 minutes of onion cooking so it doesn't burn. The mixture should smell intensely sweet and savory.",
+      tip:"Under-cooked onions make a sharp, acrid curry. The long cook is what creates the deep, complex sweetness."
+    },
+    {
+      t:"Bloom the curry powder",
+      a:"Add the curry powder directly to the onion-garlic mixture and stir constantly for 60–90 seconds over medium heat. This 'blooming' step heats the fat-soluble compounds in the spices, releasing their full aroma and flavor. The mixture will look dry and fragrant. If it sticks, add a tiny splash of water to deglaze.",
+      tip:"Blooming spices in fat is the single most important step in curry. Skipping it makes the spices taste raw and flat."
+    },
+    {
+      t:"Add and brown the chicken",
+      a:"Cube the chicken breast into 1.5-inch chunks. Add to the pot and stir to coat with the spice mixture. Cook over medium-high heat for 3–4 minutes until the chicken develops some color on the outside. It doesn't need to cook through here — it will finish in the sauce. Season with salt.",
+      tip:"Don't rush to add liquid. Let the chicken sear in the spices first — this builds depth."
+    },
+    {
+      t:"Simmer to finish",
+      a:"Pour in the coconut milk, scraping up any bits from the bottom of the pot. Stir to combine. Bring to a gentle simmer (not a full boil — high heat can cause coconut milk to separate and look curdled). Cook 15–20 minutes uncovered until the sauce thickens, the chicken is cooked through, and the oil begins to pool at the surface (this is a good sign called 'oil on top'). Adjust salt to taste.",
+      tip:"A squeeze of lime juice just before serving brightens the whole dish. Acid is the finishing touch every curry needs."
+    }
+  ]
 },
 
 {
-name:"Veggie Omelette",
-ingredients:["Eggs","Bell peppers","Onions","Cheese"],
-simpleSteps:[{t:"Cook",a:"soft"}],
-chefSteps:[
-{t:"Veg",a:"3 min sauté"},
-{t:"Eggs",a:"2–3 min low heat"},
-{t:"Finish",a:"fold cheese melt"}
-]
+  name:"Veggie Omelette",
+  ingredients:["Eggs","Bell peppers","Onions","Cheese"],
+  simpleSteps:[
+    {t:"Cook veggies", a:"soft"},
+    {t:"Add eggs", a:"set"},
+    {t:"Fold omelette", a:"cheesy"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep and cook the vegetables",
+      a:"Dice bell peppers and onions into small, even pieces so they cook at the same rate. Heat a non-stick or well-seasoned pan over medium heat with a small amount of butter. Cook the vegetables 3–4 minutes, stirring occasionally, until softened and slightly caramelized. Season with salt and pepper, then remove from the pan and set aside. The pan is now perfectly seasoned for the eggs.",
+      tip:"Slightly undercooked vegetables are okay — they'll warm through again when the egg sets around them."
+    },
+    {
+      t:"Whisk eggs properly",
+      a:"Crack 3 eggs into a bowl and whisk vigorously for a full 30 seconds until completely combined and slightly frothy — incorporating air creates a lighter, more tender omelette. Season with salt now (not earlier, not after). Add a teaspoon of water or milk for extra tenderness. The batter should be uniform pale yellow with no streaks.",
+      tip:"Vigorous whisking makes the difference between a fluffy, even omelette and a dense, flat one."
+    },
+    {
+      t:"Cook and fold the omelette",
+      a:"Melt butter in the pan over medium heat until it foams but doesn't brown. Pour in the eggs. Let them sit for 10 seconds, then use a rubber spatula to gently pull the cooked edges inward while tilting the pan to let raw egg flow to the edges. Repeat until the egg is mostly set but the top is still glossy and slightly wet. Add vegetables and shredded cheese on one half. Tilt the pan and fold the omelette in half over the filling. Slide onto a plate immediately.",
+      tip:"The French omelette technique: cook with constant gentle movement. The goal is no color on the exterior and a custardy interior."
+    }
+  ]
 },
 
 {
-name:"BBQ Chicken Sandwich",
-ingredients:["Chicken breast","BBQ sauce","Bread","Onions"],
-simpleSteps:[{t:"Cook",a:"done"}],
-chefSteps:[
-{t:"Chicken",a:"7 min 375°F"},
-{t:"Sauce",a:"2 min mix"},
-{t:"Assemble",a:"serve"}
-]
+  name:"BBQ Chicken Sandwich",
+  ingredients:["Chicken breast","BBQ sauce","Bread","Onions"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"done"},
+    {t:"Add BBQ sauce", a:"mixed"},
+    {t:"Assemble sandwich", a:"final"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook chicken to stay juicy",
+      a:"Pound chicken breasts to an even 3/4-inch thickness for uniform cooking. Season generously with salt, pepper, smoked paprika, and garlic powder. Cook in a lightly oiled cast iron pan over medium-high heat — 4–5 minutes per side without pressing or poking. Use a thermometer: 165°F is safe but 160°F (carry-over will finish it) is ideal for maximum juiciness. Rest 5 minutes.",
+      tip:"Pressing the chicken while it cooks squeezes out moisture. Never press. Never poke."
+    },
+    {
+      t:"Caramelize the onions",
+      a:"Slice onions into thin rings. Cook in butter over medium-low heat for 20–25 minutes, stirring every few minutes, until deeply golden, jammy, and sweet. This is a patience exercise but the payoff is enormous — caramelized onions on a BBQ sandwich elevate it from fast food to something craveable. Season with a pinch of salt and optional splash of balsamic for depth.",
+      tip:"True caramelized onions take 20+ minutes. Anything less is just softened onions."
+    },
+    {
+      t:"Sauce and assemble",
+      a:"Slice the rested chicken and toss it in BBQ sauce over low heat for 60 seconds to warm the sauce and coat evenly. Toast the bread cut-side down in butter until golden. Layer: bottom bun, chicken and sauce, caramelized onions, and whatever else you like. Serve immediately while the chicken is warm and the bread is still crisp.",
+      tip:"Toast the bread. Untoasted bread gets soggy from the sauce within seconds."
+    }
+  ]
 },
 
 {
-name:"Salmon Lemon Herb",
-ingredients:["Salmon","Lemon","Garlic","Olive oil"],
-simpleSteps:[{t:"Cook",a:"flaky"}],
-chefSteps:[
-{t:"Salmon",a:"8 min 400°F"},
-{t:"Finish",a:"lemon garlic"}
-]
+  name:"Salmon Lemon Herb",
+  ingredients:["Salmon","Lemon","Garlic","Olive oil"],
+  simpleSteps:[
+    {t:"Cook salmon", a:"flaky"},
+    {t:"Add lemon", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep the salmon",
+      a:"Bring salmon to room temperature 15–20 minutes before cooking — cold fish straight from the fridge cooks unevenly. Pat completely dry with paper towels. Season the flesh side with salt and pepper. Score the skin lightly with a knife every inch to prevent curling during cooking.",
+      tip:"Dry fish sears beautifully. Wet fish steams and sticks to the pan."
+    },
+    {
+      t:"Achieve the perfect sear",
+      a:"Heat an oven-safe skillet (cast iron or stainless — not non-stick) over medium-high until very hot. Add a thin layer of olive oil. Place salmon skin-side DOWN and immediately press gently with a spatula for 10 seconds to prevent the skin from curling. Cook skin-side down for 4 minutes without touching — let the skin render and crisp. You'll see the flesh turn opaque from the bottom up.",
+      tip:"Do not move the salmon. If it sticks, it's not ready. It will release naturally when properly seared."
+    },
+    {
+      t:"Finish and rest",
+      a:"Flip the salmon and cook flesh-side down for just 60–90 seconds — barely enough to color the top. The center should still be slightly translucent and deep orange. Remove from heat and let rest in the pan 2 minutes. The carry-over heat finishes it perfectly. Finish with minced garlic briefly sautéed in butter in the same pan, then squeeze fresh lemon over the fish just before serving.",
+      tip:"Overcooked salmon is dry and chalky. Pull it when the thickest part still looks slightly underdone — it finishes on the plate."
+    }
+  ]
 },
 
 {
-name:"Chicken Alfredo",
-ingredients:["Chicken breast","Pasta","Cream","Parmesan"],
-simpleSteps:[{t:"Cook",a:"soft"}],
-chefSteps:[
-{t:"Pasta",a:"10 min"},
-{t:"Chicken",a:"7 min 375°F"},
-{t:"Sauce",a:"5 min simmer"}
-]
+  name:"Chicken Alfredo",
+  ingredients:["Chicken breast","Pasta","Cream","Parmesan"],
+  simpleSteps:[
+    {t:"Cook pasta", a:"soft"},
+    {t:"Cook chicken", a:"done"},
+    {t:"Make sauce", a:"creamy"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook and rest the chicken",
+      a:"Season chicken breasts well with salt, pepper, and garlic powder. Sear in a hot pan with a mix of olive oil and butter over medium-high heat — 5 minutes per side until golden and cooked through. Rest for 5 full minutes before slicing. While it rests, deglaze the pan with a splash of cream, scraping up the golden bits — pour this directly into your sauce.",
+      tip:"Those browned bits from chicken are concentrated flavor. Deglazing them into the cream is a chef-level technique."
+    },
+    {
+      t:"Make a real Alfredo sauce",
+      a:"In the same pan over medium heat, melt 2 tablespoons of butter. Add minced garlic and cook 60 seconds. Pour in heavy cream and bring to a gentle simmer. Cook 3–4 minutes until slightly reduced. Lower the heat to minimum, then add freshly grated Parmesan in small handfuls, stirring constantly between additions. The cheese should melt smoothly into a creamy sauce — if heat is too high it will seize and clump.",
+      tip:"Freshly grated Parmesan is essential. Pre-grated contains cellulose powder that prevents it from melting properly."
+    },
+    {
+      t:"Combine and serve immediately",
+      a:"Add cooked pasta directly to the sauce over low heat and toss to coat. Add reserved pasta water by the tablespoon if needed to reach a silky, flowing consistency — the sauce should coat the pasta without being thick and gluey. Slice the rested chicken and arrange on top. Finish with extra Parmesan, cracked black pepper, and fresh parsley if available. Serve immediately — Alfredo waits for no one.",
+      tip:"Alfredo thickens rapidly as it cools. Serve immediately in warm bowls."
+    }
+  ]
 },
 
 {
-name:"Tuna Sandwich",
-ingredients:["Tuna","Bread","Mayonnaise"],
-simpleSteps:[{t:"Mix",a:"ready"}],
-chefSteps:[
-{t:"Mix",a:"combine evenly"},
-{t:"Serve",a:"toast bread"}
-]
+  name:"Tuna Sandwich",
+  ingredients:["Tuna","Bread","Mayonnaise"],
+  simpleSteps:[
+    {t:"Mix tuna", a:"creamy"},
+    {t:"Assemble sandwich", a:"ready"}
+  ],
+  chefSteps:[
+    {
+      t:"Make a proper tuna mix",
+      a:"Drain the canned tuna very thoroughly — press it firmly in the strainer to remove as much liquid as possible. Excess liquid makes the sandwich soggy within minutes. In a bowl, combine tuna with mayonnaise and mix just until combined — don't overwork it or it becomes a paste. Season with salt, black pepper, a small squeeze of lemon juice, and optionally a teaspoon of Dijon mustard for sharpness. Taste before spreading.",
+      tip:"The ratio of mayo to tuna is personal. Start with less than you think — you can always add more, never take it away."
+    },
+    {
+      t:"Toast and assemble thoughtfully",
+      a:"Toast the bread until golden and crisp — a toasted tuna sandwich has texture contrast that an untoasted one completely lacks. Let the toast cool for 60 seconds so steam doesn't make it wet. Spread a thin layer of mayo on both sides of bread (this acts as a moisture barrier). Add the tuna mix, spreading evenly to the edges. Layer with lettuce (if available) — place it between the bread and the tuna so it insulates the bread from moisture.",
+      tip:"Lettuce between the bread and tuna is a structural moisture barrier, not just a garnish."
+    }
+  ]
 },
 
 {
-name:"Pancakes",
-ingredients:["Flour","Milk","Eggs","Sugar"],
-simpleSteps:[{t:"Mix",a:"smooth"}],
-chefSteps:[
-{t:"Batter",a:"2 min mix"},
-{t:"Cook",a:"2–3 min per side"}
-]
+  name:"Pancakes",
+  ingredients:["Flour","Milk","Eggs","Sugar"],
+  simpleSteps:[
+    {t:"Mix batter", a:"smooth"},
+    {t:"Cook pancakes", a:"golden"}
+  ],
+  chefSteps:[
+    {
+      t:"Mix the batter correctly",
+      a:"Combine dry ingredients (flour, sugar, baking powder, pinch of salt) in one bowl. Whisk wet ingredients (eggs, milk, melted butter) in another. Pour the wet into the dry and stir with a fork until just combined — lumps are completely fine and expected. Overmixing develops gluten and makes tough, dense pancakes. Let the batter rest 5 minutes while the pan heats.",
+      tip:"Lumpy batter makes fluffy pancakes. Smooth batter makes tough ones. Stop mixing early."
+    },
+    {
+      t:"Cook with control",
+      a:"Heat a non-stick pan or griddle over medium heat. Add a small pat of butter — when it foams and subsides, the pan is ready. Pour batter (about ¼ cup per pancake) and let it spread naturally. Watch for bubbles forming across the entire surface — when the bubbles pop and stay open (not refilling), it's time to flip. Flip once, only once, and cook another 60–90 seconds. Don't press them down.",
+      tip:"Flip once. Every extra flip deflates the rise and makes the pancake denser."
+    }
+  ]
 },
 
 {
-name:"Fried Chicken",
-ingredients:["Chicken breast","Flour","Oil"],
-simpleSteps:[{t:"Coat",a:"crispy"}],
-chefSteps:[
-{t:"Fry",a:"350°F 12–15 min"},
-{t:"Rest",a:"5 min drain"}
-]
+  name:"Fried Chicken",
+  ingredients:["Chicken breast","Flour","Oil"],
+  simpleSteps:[
+    {t:"Coat chicken", a:"floured"},
+    {t:"Fry chicken", a:"crispy"}
+  ],
+  chefSteps:[
+    {
+      t:"Season the flour and prep for coating",
+      a:"Season flour generously — add salt, black pepper, garlic powder, paprika, and cayenne to taste. This is where all the flavor of your crust comes from. Season your chicken directly with salt and pepper too. For the crispiest coating: dip the chicken in buttermilk or a beaten egg, then press firmly into the seasoned flour. Let it sit on a rack for 10 minutes before frying — this drying time helps the crust adhere and stay on during cooking.",
+      tip:"Pressing the flour coating onto the chicken is critical. Shake it gently to remove excess but press firmly first."
+    },
+    {
+      t:"Fry at the right temperature",
+      a:"Heat oil in a heavy pot to 350°F (175°C). Use a thermometer — oil temperature is everything. Too cool and the chicken absorbs oil and turns greasy. Too hot and the outside burns before the inside cooks. Fry in batches, never crowding the pot (crowding drops the temperature). Cook 6–8 minutes for breast pieces, turning halfway. The crust should be deep golden-brown. Rest on a rack — never a paper towel, which traps steam and softens the crust.",
+      tip:"A wire rack for resting keeps the bottom crust crispy. Paper towels steam the bottom and destroy the crunch."
+    }
+  ]
 },
 
 {
-name:"Chicken Noodle Soup",
-ingredients:["Chicken broth","Chicken breast","Carrots","Noodles"],
-simpleSteps:[{t:"Heat",a:"hot"}],
-chefSteps:[
-{t:"Broth",a:"10 min simmer"},
-{t:"Chicken",a:"10 min cook"},
-{t:"Noodles",a:"8 min"}
-]
+  name:"Chicken Noodle Soup",
+  ingredients:["Chicken broth","Chicken breast","Carrots","Noodles"],
+  simpleSteps:[
+    {t:"Heat broth", a:"hot"},
+    {t:"Add chicken", a:"tender"},
+    {t:"Cook noodles", a:"soft"}
+  ],
+  chefSteps:[
+    {
+      t:"Build flavor into the broth",
+      a:"Start by sautéing diced onion, sliced carrots, and any celery in a little butter or oil over medium heat for 5–6 minutes until softened. Add minced garlic for the last minute. Season with salt and pepper. Deglaze with the chicken broth and bring to a simmer. Add a bay leaf and a few sprigs of thyme if available. Simmer the broth with vegetables for 15 minutes before adding chicken.",
+      tip:"Sautéing the vegetables before adding broth builds a layer of flavor most people skip. It makes a significant difference."
+    },
+    {
+      t:"Poach the chicken gently",
+      a:"Add raw chicken breasts to the simmering (not boiling) broth. Keep the heat at a very gentle simmer — small bubbles, not a roiling boil. Boiling makes chicken tough and stringy. Cook 15–18 minutes, then remove and rest 5 minutes before shredding with two forks. Pull the meat into rustic, irregular pieces rather than chopping — they have more texture and hold up better in the soup.",
+      tip:"Poaching vs. boiling: poaching at 180°F gives you silky, tender chicken. Boiling at 212°F gives you rubbery, dry chicken."
+    },
+    {
+      t:"Add noodles and finish",
+      a:"Bring the broth back to a boil and add noodles. Cook them 1–2 minutes less than the package says — they'll continue cooking from residual heat in the hot soup. Return shredded chicken to the pot. Taste the broth now and adjust salt aggressively — a soup that tastes flat almost always just needs more salt. Finish with chopped fresh parsley and a small squeeze of lemon to brighten everything.",
+      tip:"Add noodles last and cook them slightly underdone. Noodles left in soup too long bloat, turn mushy, and absorb all the broth."
+    }
+  ]
 },
 
 {
-name:"Simple Chili",
-ingredients:["Ground beef","Tomatoes","Beans"],
-simpleSteps:[{t:"Cook",a:"thick"}],
-chefSteps:[
-{t:"Beef",a:"8 min brown"},
-{t:"Simmer",a:"30 min low"}
-]
+  name:"Simple Chili",
+  ingredients:["Ground beef","Tomatoes","Beans"],
+  simpleSteps:[
+    {t:"Cook beef", a:"brown"},
+    {t:"Simmer chili", a:"thick"}
+  ],
+  chefSteps:[
+    {
+      t:"Brown the beef deeply",
+      a:"Cook ground beef in a heavy pot over medium-high heat, breaking it up but leaving some larger chunks for texture. The key: don't stir too early. Let it sit for 3–4 minutes to develop a deep brown crust on the bottom. These caramelized bits are the foundation of chili flavor. Season with salt, pepper, cumin, chili powder, and smoked paprika while browning. Drain most of the fat but leave a tablespoon.",
+      tip:"Good chili requires patience at the browning stage. Pale, gray beef makes for a thin-tasting, one-dimensional chili."
+    },
+    {
+      t:"Build and simmer the chili",
+      a:"Add crushed tomatoes and stir, scraping up the browned bits from the bottom of the pot — this is deglazing and it adds enormous flavor. Add the beans (rinsed if canned). Bring to a simmer, then reduce heat to low. Simmer uncovered for at least 30–40 minutes, stirring every 10 minutes. The chili should reduce and thicken until a spoon dragged through it leaves a trail for a second. Taste and adjust seasoning — chili usually needs more salt and cumin than you expect.",
+      tip:"Chili is always better the next day. Make it ahead if you can — overnight rest lets the flavors develop and deepen significantly."
+    }
+  ]
 },
 
 {
-name:"Mac And Cheese",
-ingredients:["Pasta","Cheddar","Milk","Butter"],
-simpleSteps:[{t:"Cook",a:"creamy"}],
-chefSteps:[
-{t:"Pasta",a:"10 min"},
-{t:"Sauce",a:"5 min melt"},
-{t:"Mix",a:"2 min"}
-]
+  name:"Mac And Cheese",
+  ingredients:["Pasta","Cheddar","Milk","Butter"],
+  simpleSteps:[
+    {t:"Boil pasta", a:"soft"},
+    {t:"Make cheese sauce", a:"creamy"},
+    {t:"Combine", a:"smooth"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook pasta perfectly",
+      a:"Boil pasta in heavily salted water to just barely al dente — 1 minute less than the package minimum. It will finish cooking in the sauce. Drain and immediately toss with a tiny bit of butter to prevent sticking. Reserve a cup of pasta water.",
+      tip:"Under-cooking pasta slightly is deliberate — it finishes in the sauce and absorbs flavor rather than just sitting in it."
+    },
+    {
+      t:"Make a proper béchamel cheese sauce",
+      a:"Melt butter in a saucepan over medium heat. Whisk in an equal amount of flour and cook for 60–90 seconds until it smells nutty (this is a roux — it eliminates the raw flour taste). Slowly pour in warm milk while whisking constantly to prevent lumps. Cook 4–5 minutes, whisking, until thickened to a cream sauce consistency. Season with salt, pepper, and a pinch of mustard powder.",
+      tip:"Adding cold milk to a hot roux causes lumps. Warm your milk first, or add it very slowly while whisking constantly."
+    },
+    {
+      t:"Melt in the cheese and combine",
+      a:"Remove the sauce from heat and let it cool 30 seconds. Stir in freshly grated sharp cheddar in small handfuls — off the heat so the proteins don't seize and the sauce stays smooth. Keep stirring until completely melted. Add pasta and toss to coat, adding splashes of reserved pasta water to reach a flowing, creamy consistency. It should be saucy enough to pool slightly at the bottom — it will thicken as it cools.",
+      tip:"Never add cheese to a sauce that's actively boiling — the proteins tighten and you get a grainy, broken sauce."
+    }
+  ]
 },
 
 {
-name:"Steak And Potatoes",
-ingredients:["Steak","Potatoes","Butter","Garlic"],
-simpleSteps:[{t:"Cook",a:"hot"}],
-chefSteps:[
-{t:"Steak",a:"6 min per side 400°F"},
-{t:"Potatoes",a:"20 min roast"},
-{t:"Finish",a:"butter baste"}
-]
+  name:"Steak And Potatoes",
+  ingredients:["Steak","Potatoes","Butter","Garlic"],
+  simpleSteps:[
+    {t:"Cook steak", a:"seared"},
+    {t:"Cook potatoes", a:"golden"},
+    {t:"Serve", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep and dry brine the steak",
+      a:"Season the steak generously with salt on all sides at least 40 minutes before cooking (or overnight in the fridge uncovered). Salt draws out surface moisture initially, then gets reabsorbed — seasoning from within rather than sitting on the surface. Pat dry with paper towels right before cooking. A dry surface is essential for a proper crust.",
+      tip:"Dry brining overnight transforms cheap steaks. The salt penetrates the muscle, seasoning throughout and retaining moisture."
+    },
+    {
+      t:"Get a restaurant-quality sear",
+      a:"Use a cast iron skillet. Heat it empty over high heat for 3–4 minutes until it's extremely hot — a drop of water should vaporize immediately. Add just enough oil to coat. Lay the steak away from you and don't touch it for 2–3 minutes. A crust needs to form or it will stick. Flip and repeat. For extra flavor, add butter, smashed garlic cloves, and fresh thyme in the last minute and baste the steak continuously by tilting the pan and spooning the hot flavored butter over the top.",
+      tip:"The butter baste is the single biggest upgrade to home steak cooking. It adds flavor and helps finish the cooking gently."
+    },
+    {
+      t:"Rest the steak — non-negotiable",
+      a:"Rest the steak on a cutting board for AT LEAST 5 minutes (8 for thick cuts). Cutting before resting loses 30–40% of the juices onto the board. The muscle fibers need time to relax and reabsorb the juices. While the steak rests, dice potatoes and cook in the same buttery pan — the browned bits and residual fat flavor them perfectly. Cook until golden and tender.",
+      tip:"Rest time equals cut thickness in minutes as a rough guide. 1-inch steak = 5 minutes rest. 2-inch steak = 10 minutes."
+    }
+  ]
 },
 
 {
-name:"Shrimp Tacos",
-ingredients:["Shrimp","Tortilla","Lime","Cheese"],
-simpleSteps:[{t:"Cook",a:"pink"}],
-chefSteps:[
-{t:"Shrimp",a:"3–4 min"},
-{t:"Assemble",a:"serve fresh"}
-]
+  name:"Shrimp Tacos",
+  ingredients:["Shrimp","Tortilla","Lime","Cheese"],
+  simpleSteps:[
+    {t:"Cook shrimp", a:"pink"},
+    {t:"Warm tortillas", a:"soft"},
+    {t:"Assemble tacos", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Season and sear the shrimp",
+      a:"Pat shrimp completely dry. Season with salt, pepper, cumin, and a pinch of chili powder. Heat a skillet to high. Add oil and place shrimp in a single layer — don't crowd. Cook 60–90 seconds per side. They're done the instant they turn fully pink and curl into a C shape. Remove immediately — overcooked shrimp are rubbery and flavorless. Squeeze a little lime directly into the hot pan right at the end and let it sizzle.",
+      tip:"Shrimp go from perfect to overcooked in under 30 seconds. Pull them from the heat slightly before they look 'done'."
+    },
+    {
+      t:"Make a quick slaw or sauce",
+      a:"While shrimp cook, shred a handful of cabbage (if available) and toss with lime juice, a pinch of salt, and a small amount of mayo or sour cream for a quick slaw. The crunch and acid cut through the richness of the shrimp and cheese. Even without cabbage, a mix of lime juice and mayo makes a quick crema that elevates the entire taco.",
+      tip:"Acid (lime) is what makes tacos bright and fresh. Without it, all the flavors sit flat."
+    },
+    {
+      t:"Char tortillas and assemble",
+      a:"Char corn tortillas directly over a gas flame or in a dry cast iron pan — 15–20 seconds per side until lightly blistered. Double up two small tortillas per taco for structure. Layer shrimp, slaw, crumbled or shredded cheese, and finish with a generous squeeze of fresh lime. Less is more — don't overcrowd.",
+      tip:"Two tortillas per taco is the street taco standard — one splits from the weight, two hold together."
+    }
+  ]
 },
 
 {
-name:"Loaded Baked Potato",
-ingredients:["Potatoes","Cheddar","Bacon","Butter"],
-simpleSteps:[{t:"Bake",a:"soft"}],
-chefSteps:[
-{t:"Bake",a:"425°F 45 min"},
-{t:"Top",a:"add cheese bacon"}
-]
+  name:"Loaded Baked Potato",
+  ingredients:["Potatoes","Cheddar","Bacon","Butter"],
+  simpleSteps:[
+    {t:"Bake potatoes", a:"soft"},
+    {t:"Cook bacon", a:"crispy"},
+    {t:"Add toppings", a:"melted"}
+  ],
+  chefSteps:[
+    {
+      t:"Bake the potato properly",
+      a:"Scrub potatoes clean and dry completely. Rub all over with oil and coat generously with coarse salt — the salt crust draws out moisture and crisps the skin to a satisfying crunch. Pierce all over with a fork (prevents steam bursting). Place directly on the oven rack (not a pan) at 400°F / 200°C for 50–60 minutes. The skin should be crisp enough to audibly crack when pressed. Test doneness by squeezing — it should give without resistance.",
+      tip:"The oven rack placement is key. Airflow all around = crispy skin all the way around. A pan traps steam on the bottom."
+    },
+    {
+      t:"Prepare toppings while potato bakes",
+      a:"Cook bacon cold-pan-start over medium heat until rendered and crispy. Drain and crumble into pieces. Grate the cheddar fresh. Soften a generous knob of butter at room temperature. Having toppings ready means the potato goes from oven to plate while still steaming hot.",
+      tip:"Grating your own cheddar melts more smoothly and tastes sharper than pre-shredded."
+    },
+    {
+      t:"Open and load the potato",
+      a:"Cut a lengthwise slit across the top, then make a perpendicular cut. Squeeze both ends toward each other to open it up and push the fluffy interior upward. Drop in butter first while the potato is hottest — it melts into every crevice. Add sour cream if available. Top generously with cheddar (the heat of the potato will melt it), then bacon. Season the exposed potato flesh directly with salt and pepper.",
+      tip:"The butter goes in first. It melts into the potato flesh and creates a rich, flavored base for everything on top."
+    }
+  ]
 },
 
 {
-name:"Teriyaki Chicken",
-ingredients:["Chicken breast","Teriyaki sauce","Rice","Broccoli"],
-simpleSteps:[{t:"Cook",a:"done"}],
-chefSteps:[
-{t:"Chicken",a:"7 min 375°F"},
-{t:"Sauce",a:"3 min glaze"},
-{t:"Serve",a:"rice bowl"}
-]
+  name:"Teriyaki Chicken",
+  ingredients:["Chicken breast","Teriyaki sauce","Rice","Broccoli"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"done"},
+    {t:"Add teriyaki sauce", a:"sticky"},
+    {t:"Serve with rice", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep and sear the chicken",
+      a:"Slice chicken breasts in half horizontally to create thinner cutlets that cook faster and more evenly. Pat dry. Season lightly with salt and pepper. Heat a non-stick or cast iron pan over medium-high with a thin layer of oil. Sear 3–4 minutes per side until golden — don't move it during searing. Set aside on a plate.",
+      tip:"Thin cutlets cook in half the time and stay juicier because they spend less time on heat."
+    },
+    {
+      t:"Make or reduce the teriyaki glaze",
+      a:"If using bottled teriyaki sauce, add it to the empty pan and cook over medium heat for 2–3 minutes, stirring, until it reduces by about a third and becomes noticeably thicker and glossier. This step transforms thin, watery sauce into a proper restaurant-quality glaze that clings to the chicken instead of sliding off. Add back the chicken and toss to coat, cooking another 60–90 seconds.",
+      tip:"Reduced teriyaki sauce is completely different from the straight-from-bottle version. Always reduce it."
+    },
+    {
+      t:"Steam the broccoli and plate",
+      a:"Steam or microwave broccoli until bright green and just tender — not mushy. Season with a pinch of salt and a few drops of sesame oil if available. Serve the glazed chicken sliced over rice with broccoli on the side. Spoon any remaining sauce from the pan over everything. Garnish with sesame seeds if you have them.",
+      tip:"Bright green broccoli means it's cooked right. Olive-drab means overcooked — you've lost both texture and nutrients."
+    }
+  ]
 },
 
 {
-name:"French Toast",
-ingredients:["Bread","Eggs","Milk","Butter"],
-simpleSteps:[{t:"Cook",a:"golden"}],
-chefSteps:[
-{t:"Dip",a:"1 min soak"},
-{t:"Cook",a:"3 min per side"}
-]
+  name:"French Toast",
+  ingredients:["Bread","Eggs","Milk","Butter"],
+  simpleSteps:[
+    {t:"Mix eggs and milk", a:"smooth"},
+    {t:"Dip bread", a:"coated"},
+    {t:"Cook toast", a:"golden"}
+  ],
+  chefSteps:[
+    {
+      t:"Make the custard soak",
+      a:"Whisk together eggs, milk (or cream for richer results), a pinch of salt, a teaspoon of sugar, and a generous splash of vanilla extract. Add a pinch of cinnamon if desired. The ratio is about 1 egg per 2 slices of bread, with enough milk to create a loose custard. Whisk until completely smooth with no egg streaks.",
+      tip:"Using cream instead of milk gives you a much richer, more custardy interior. Worth it for a special occasion."
+    },
+    {
+      t:"Soak the bread properly",
+      a:"Use thick-cut bread — brioche, challah, or Texas toast are ideal because they absorb the custard without falling apart. Let each slice soak in the custard for 20–30 seconds per side — you want the custard to penetrate the bread fully, not just coat the surface. If the bread is very thick, let it soak a full minute per side. It should feel heavy and saturated.",
+      tip:"Stale bread actually works better than fresh. It absorbs the custard without getting soggy or falling apart."
+    },
+    {
+      t:"Cook to golden perfection",
+      a:"Melt butter in a non-stick pan over medium heat until it foams. Place soaked bread and cook 2–3 minutes per side until deep golden-brown. Don't rush with high heat — the outside should caramelize while the inside fully sets. The exterior should be crisp and caramelized, the interior should be custardy and tender like bread pudding. Serve with maple syrup and fresh fruit.",
+      tip:"Medium heat is key. Too low = pale and soggy. Too high = burnt outside, raw custard inside."
+    }
+  ]
 },
 
 {
-name:"Creamy Mushroom Pasta",
-ingredients:["Pasta","Mushrooms","Cream","Garlic"],
-simpleSteps:[{t:"Cook",a:"soft"}],
-chefSteps:[
-{t:"Mushrooms",a:"5 min sauté"},
-{t:"Cream",a:"5 min simmer"},
-{t:"Finish",a:"2 min mix"}
-]
+  name:"Creamy Mushroom Pasta",
+  ingredients:["Pasta","Mushrooms","Cream","Garlic"],
+  simpleSteps:[
+    {t:"Cook pasta", a:"soft"},
+    {t:"Cook mushrooms", a:"tender"},
+    {t:"Add cream", a:"rich"}
+  ],
+  chefSteps:[
+    {
+      t:"Brown the mushrooms properly",
+      a:"This is the most critical step. Slice mushrooms and spread in a single layer in a hot, dry pan — no oil yet. Let them sit undisturbed for 2–3 minutes until they release their moisture and that moisture evaporates. Only then add a pat of butter and continue cooking until deeply golden-brown. Never crowd the pan or they'll steam and turn limp and gray. Season with salt only after browning — salt draws moisture and prevents browning.",
+      tip:"The mushroom moisture must fully evaporate before browning begins. This takes patience but creates unmatched depth of flavor."
+    },
+    {
+      t:"Build the sauce",
+      a:"Add minced garlic to the browned mushrooms and cook 60 seconds. Add a splash of white wine or pasta water and scrape up any browned bits. Pour in the cream and bring to a gentle simmer. Cook 4–5 minutes until the cream reduces and thickens enough to coat the back of a spoon. Season with salt, pepper, and fresh thyme if available. Finish with freshly grated Parmesan and stir until melted.",
+      tip:"A small pinch of freshly grated nutmeg in a cream sauce adds warmth and depth that most people can't identify but immediately notice."
+    },
+    {
+      t:"Combine pasta and serve",
+      a:"Cook pasta in salted water until just shy of al dente. Reserve a cup of pasta water before draining. Add pasta directly to the mushroom cream sauce and toss over medium heat, adding pasta water as needed for a silky, flowing consistency. The starch from the pasta water emulsifies the sauce and makes it cling. Taste and adjust salt. Serve immediately with extra Parmesan and cracked pepper.",
+      tip:"The pasta water transforms a cream sauce from heavy and rich to light and glossy. Use it generously."
+    }
+  ]
 },
 
 {
-name:"Chicken Quesadilla",
-ingredients:["Chicken breast","Tortilla","Cheese","Butter"],
-simpleSteps:[{t:"Cook",a:"crispy"}],
-chefSteps:[
-{t:"Chicken",a:"7 min 375°F"},
-{t:"Grill",a:"3 min per side"},
-{t:"Melt",a:"cheese fully"}
-]
+  name:"Chicken Quesadilla",
+  ingredients:["Chicken breast","Tortilla","Cheese","Butter"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"done"},
+    {t:"Fill tortilla", a:"cheesy"},
+    {t:"Cook quesadilla", a:"crispy"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook and season the chicken",
+      a:"Dice chicken into small cubes and season with salt, pepper, cumin, and smoked paprika. Cook in a hot pan over medium-high heat with a little oil — don't stir for the first 2 minutes to develop a sear. Toss and finish cooking through. Let it cool slightly before filling. Warm chicken in a cold tortilla melts the cheese; hot chicken cooks the tortilla before the cheese melts.",
+      tip:"Slightly cooled chicken filling gives the quesadilla time to crisp before the cheese fully melts."
+    },
+    {
+      t:"Build and seal the quesadilla",
+      a:"Grate the cheese fresh — it melts better than pre-shredded. Spread cheese on one half of a large flour tortilla, then add chicken on top of the cheese (cheese underneath acts as glue to seal). Fold the tortilla over. Brush the outside with softened butter for a richer, crispier crust than oil alone.",
+      tip:"Cheese underneath the filling is what holds the quesadilla together when you cut it. Always put cheese closest to the tortilla."
+    },
+    {
+      t:"Cook for maximum crunch",
+      a:"Place quesadilla in a dry (no extra oil) pan over medium heat. Press down firmly with a spatula and cook 2–3 minutes until the bottom is deeply golden and audibly crisp. Flip carefully, press again, and cook another 2 minutes. The outside should crackle when you cut it. Let it rest 30 seconds before cutting — this allows the melted cheese to firm slightly so the filling doesn't slide out.",
+      tip:"No oil in the pan — the butter on the outside is enough. Extra oil makes the tortilla greasy rather than crispy."
+    }
+  ]
 },
 
 {
-name:"Honey Garlic Chicken",
-ingredients:["Chicken breast","Honey","Garlic","Soy sauce","Rice"],
-simpleSteps:[{t:"Cook",a:"sticky"}],
-chefSteps:[
-{t:"Chicken",a:"7 min 375°F"},
-{t:"Sauce",a:"3 min simmer"},
-{t:"Finish",a:"coat serve"}
-]
+  name:"Honey Garlic Chicken",
+  ingredients:["Chicken breast","Honey","Garlic","Soy sauce","Rice"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"golden"},
+    {t:"Make sauce", a:"sticky"},
+    {t:"Serve over rice", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Pound and sear the chicken",
+      a:"Pound chicken breasts to an even 3/4-inch thickness for quick, even cooking. Season both sides with salt and pepper. Sear in a hot skillet with oil over medium-high heat — 4 minutes per side without moving. You're looking for a deep golden-brown crust that creates flavor the sauce will build on. Remove chicken and set aside on a plate. Don't wipe the pan.",
+      tip:"The fond (browned bits) left in the pan after searing is the most flavorful part of your dish. Preserve it."
+    },
+    {
+      t:"Build the honey garlic sauce",
+      a:"Reduce heat to medium. Add minced garlic to the same pan and cook 60 seconds until fragrant and lightly golden. Add honey, soy sauce, and a splash of water. Stir and bring to a simmer. Cook 2–3 minutes until slightly reduced and the sauce coats a spoon. The honey will caramelize slightly and the soy will concentrate — you want a glossy, sticky, balanced sauce. Taste: it should be sweet, savory, and deeply garlicky.",
+      tip:"If the sauce tastes too sweet, a small splash of rice vinegar or squeeze of lemon will balance it immediately."
+    },
+    {
+      t:"Glaze and finish",
+      a:"Return the chicken to the pan and spoon the sauce over it continuously as it heats through over medium heat — about 2–3 minutes. The sauce will thicken further and the chicken will develop a lacquered, glossy coating. Slice and fan over rice. Spoon every bit of remaining sauce from the pan over the top — don't leave any behind.",
+      tip:"Continuous basting with the sauce in the last few minutes creates a professional-looking, deeply flavored glaze that looks restaurant quality."
+    }
+  ]
 }
 
 ];
 
-/* MATCH */
-function showMatches(){
-let top = recipes.map(r=>({
-...r,
-match:r.ingredients.filter(i=>selected.includes(i)).length
-})).sort((a,b)=>b.match-a.match);
+/* ================= PANTRY ================= */
+function openPantry(){
+  let html = `
+    <div class="header">🧺 Pantry</div>
+    <div class="card">
+      <input id="searchBox" class="searchInput" placeholder="Search ingredients..." oninput="filterIngredients()"/>
+    </div>
+    <div id="ingredientList">`;
 
-let html=`<div class="header">🍳 Recipes</div>`;
+  ingredientItems.forEach(i => {
+    html += `<div class="item ${selected.includes(i)?'selected':''}" data-item="${i}">${i}</div>`;
+  });
 
-top.forEach(r=>{
-html += `<div class="card" onclick="openRecipe('${r.name}')">
-<b>${r.name}</b><br><br>
-Match: ${r.match}/${r.ingredients.length}
-</div>`;
-});
+  html += `</div>
+    <div class="btn" onclick="showMatches()">🍳 Find Recipes</div>
+    <div class="btn" style="background:#ff4d4d;color:white" onclick="clearPantry()">🗑 Clear Pantry</div>
+    <div class="btn" onclick="show('home')">🏠 Home</div>`;
 
-html += `<div class="btn" onclick="show('home')">🏠 Home</div>`;
-document.getElementById("results").innerHTML = html;
-show("results");
+  document.getElementById("pantry").innerHTML = html;
+  document.querySelectorAll(".item").forEach(el => { el.onclick = () => toggle(el.dataset.item); });
+  show("pantry");
 }
 
-/* RECIPE */
-let current=null;
-let mode="simple";
+function filterIngredients(){
+  let q = document.getElementById("searchBox").value.toLowerCase();
+  let filtered = ingredientItems.filter(i => i.toLowerCase().includes(q));
+  document.getElementById("ingredientList").innerHTML = filtered.map(i =>
+    `<div class="item ${selected.includes(i)?'selected':''}" data-item="${i}">${i}</div>`
+  ).join("");
+  document.querySelectorAll(".item").forEach(el => { el.onclick = () => toggle(el.dataset.item); });
+}
+
+function toggle(i){
+  selected = selected.includes(i) ? selected.filter(x=>x!==i) : [...selected,i];
+  localStorage.setItem("ingredients", JSON.stringify(selected));
+  filterIngredients();
+}
+
+/* ================= MATCH ================= */
+function showMatches(){
+  let top = recipes.map(r => ({
+    ...r,
+    match: r.ingredients.filter(i => selected.includes(i)).length
+  })).sort((a,b) => b.match - a.match);
+
+  let html = `<div class="header">🍳 Recipes</div>`;
+  top.forEach(r => {
+    html += `
+      <div class="card" onclick="openRecipe('${r.name}')">
+        <b>${r.name}</b><br><br>
+        Match: ${r.match}/${r.ingredients.length}
+      </div>`;
+  });
+  html += `<div class="btn" onclick="show('home')">🏠 Home</div>`;
+  document.getElementById("results").innerHTML = html;
+  show("results");
+}
+
+/* ================= RECIPE ================= */
+let current = null;
+let mode = "simple";
 
 function openRecipe(name){
-current = recipes.find(r=>r.name===name);
-mode="simple";
-renderRecipe();
-show("recipe");
+  current = recipes.find(r => r.name === name);
+  mode = "simple";
+  renderRecipe();
+  show("recipe");
+}
+
+function switchMode(){
+  mode = mode === "simple" ? "chef" : "simple";
+  renderRecipe();
+  // Scroll to top of recipe page when switching modes
+  document.getElementById("recipe").scrollTop = 0;
 }
 
 function renderRecipe(){
+  let steps = mode === "simple" ? current.simpleSteps : current.chefSteps;
+  let isChef = mode === "chef";
 
-let steps = mode==="simple"?current.simpleSteps:current.chefSteps;
+  let html = `<div class="recipeTitle">${current.name}</div>`;
 
-let html = `
-<div class="recipeTitle">${current.name}</div>
-<div class="modeBadge">${mode==="simple"?"Simple Mode":"🔥 Chef Mode (Enhanced)"}</div>
-`;
+  if(isChef){
+    html += `
+      <div class="chef-banner">
+        <div class="chef-banner-title">🔥 CHEF MODE 🔥</div>
+        <div class="chef-banner-sub">Professional techniques & detailed instructions</div>
+      </div>`;
+  } else {
+    html += `<div class="modeBadge">🍳 Simple Mode</div>`;
+  }
 
-steps.forEach((s,i)=>{
-html += `<div class="card"><b>${i+1}. ${s.t}</b><br><br>${s.a}</div>`;
-});
+  steps.forEach((s, i) => {
+    if(isChef){
+      html += `
+        <div class="chef-card">
+          <div class="step-header">
+            <span class="step-number">${i+1}</span>
+            <div class="step-title">${s.t}</div>
+          </div>
+          <div class="step-body">${s.a}</div>
+          ${s.tip ? `<div class="step-tip">💡 Pro tip: ${s.tip}</div>` : ''}
+        </div>`;
+    } else {
+      html += `
+        <div class="card">
+          <b>${i+1}. ${s.t}</b><br><br>${s.a}
+        </div>`;
+    }
+  });
 
-html += `
-<div class="btn" onclick="mode=mode==='simple'?'chef':'simple';renderRecipe();">
-Switch Mode
-</div>
-<div class="btn" onclick="showMatches()">Back</div>
-<div class="btn" onclick="show('home')">Home</div>
-`;
+  html += `<div class="header">🧂 Ingredients</div>`;
+  current.ingredients.forEach(i => {
+    let has = selected.includes(i);
+    html += `<div class="card">${has ? "✅" : "❌"} ${i}</div>`;
+  });
 
-document.getElementById("recipe").innerHTML = html;
+  let missing = current.ingredients.filter(i => !selected.includes(i));
+  if(missing.length){
+    html += `<div class="header">🛒 Missing Ingredients</div>`;
+    missing.forEach(item => {
+      let q = encodeURIComponent(item);
+      html += `
+        <div class="card">
+          <b>${item}</b><br>
+          <a class="shopBtn" target="_blank" href="https://www.walmart.com/search?q=${q}">Walmart</a>
+        </div>`;
+    });
+  }
+
+  html += `
+    <div class="btn ${isChef ? 'btn-chef' : ''}" onclick="switchMode()">
+      ${isChef ? "🍳 Switch to Simple Mode" : "🔥 Switch to Chef Mode"}
+    </div>
+    <div class="btn" onclick="showMatches()">⬅ Back To Recipes</div>
+    <div class="btn" onclick="show('home')">🏠 Home</div>`;
+
+  document.getElementById("recipe").innerHTML = html;
 }
 
 show("home");
-
 </script>
-
 </body>
 </html>
