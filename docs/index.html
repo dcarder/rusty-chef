@@ -386,48 +386,26 @@ function show(id){
 
 /* ================= INGREDIENTS ================= */
 const ingredientItems = [
-  "Almonds","Apples","Arugula","Avocado",
-  "Bacon","Baking powder","Baking soda","Bananas","Basil","Bay leaf","BBQ sauce","Beans","Beef broth","Bell peppers","Blueberries","Bread","Breadcrumbs","Broccoli","Brown sugar","Butter","Buttermilk",
-  "Cabbage","Canola oil","Carrots","Cauliflower","Cayenne","Celery","Cheddar","Cheese","Chicken breast","Chicken broth","Chickpeas","Chili powder","Chives","Chocolate","Chorizo","Cilantro","Cinnamon","Coconut milk","Coconut oil","Coffee","Corn","Cornstarch","Crackers","Cream","Cream cheese","Cucumber","Cumin","Curry powder",
-  "Dill","Dijon mustard",
-  "Egg noodles","Eggplant","Eggs",
-  "Fennel","Fish sauce","Flour","Fontina",
-  "Garlic","Garlic powder","Ginger","Gouda","Granola","Green beans","Green onion","Ground beef","Ground pork","Ground turkey",
-  "Honey","Hot sauce",
-  "Italian seasoning",
-  "Jalapeño","Jam",
-  "Kale","Ketchup",
-  "Lemon","Lemon zest","Lentils","Lettuce","Lime","Lime zest",
-  "Marinara sauce","Maple syrup","Marshmallows","Mayonnaise","Milk","Mozzarella","Mushrooms","Mustard",
-  "Noodles","Nutmeg",
-  "Oats","Oil","Olive oil","Onions","Oregano",
-  "Paprika","Parmesan","Parsley","Pasta","Peanut butter","Peas","Pepper","Pineapple","Pork chops","Potatoes","Pumpkin",
-  "Quinoa",
-  "Ravioli",,
-  "Ramen noodles","Red pepper flakes","Rice","Rice noodles","Rice vinegar","Rosemary",
-  "Sage","Salmon","Salt","Sausage","Sesame oil","Sesame seeds","Shrimp","Smoked paprika","Sour cream","Soy sauce","Spinach","Sriracha","Steak","Strawberries","Sugar","Sweet potato",
-  "Tea","Teriyaki sauce","Thyme","Tofu","Tomatoes","Tortilla","Tuna","Turkey","Turmeric",
-  "Vanilla extract","Vinegar",
-  "Walnuts","White pepper","White wine","Worcestershire sauce",
-  "Yogurt",
-  "Zucchini"
+  "Avocado","Bacon","Baking soda","Bananas","Basil","BBQ sauce","Beans","Bell peppers","Bread","Breadcrumbs","Broccoli","Brown sugar","Butter","Cabbage","Carrots","Cheddar","Cheese","Chicken breast","Chicken broth","Chickpeas","Chocolate","Cinnamon","Coconut milk","Cornstarch","Crackers","Cream","Curry powder","Egg noodles","Eggs","Flour","Garlic","Garlic powder","Ginger","Ground beef","Honey","Hot sauce","Italian seasoning","Lemon","Lettuce","Lime","Maple syrup","Marinara sauce","Mayonnaise","Milk","Mushrooms","Noodles","Oats","Oil","Olive oil","Onions","Paprika","Parmesan","Parsley","Pasta","Pineapple","Pork chops","Potatoes","Ramen noodles","Ravioli","Rice","Salmon","Salt","Sausage","Sesame oil","Shrimp","Soy sauce","Steak","Sugar","Teriyaki sauce","Tofu","Tomatoes","Tortilla","Tuna","Turkey","Turmeric","Vanilla extract","Vinegar"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
 let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 
-function toggleFavorite(name){
+function toggleFavorite(idx){
+  const name = typeof idx === "number" ? recipes[idx].name : idx;
   favorites = favorites.includes(name) ? favorites.filter(f=>f!==name) : [...favorites, name];
   localStorage.setItem("favorites", JSON.stringify(favorites));
-  // Animate the star directly without full re-render
   const star = document.querySelector('.fav-star');
   const isFav = favorites.includes(name);
-  if(isFav){
-    star.classList.add('saved');
-    star.style.transform = 'scale(1.5)';
-    setTimeout(() => star.style.transform = '', 200);
-  } else {
-    star.classList.remove('saved');
+  if(star){
+    if(isFav){
+      star.classList.add('saved');
+      star.style.transform = 'scale(1.5)';
+      setTimeout(() => star.style.transform = '', 200);
+    } else {
+      star.classList.remove('saved');
+    }
   }
 }
 
@@ -443,7 +421,7 @@ function showFavorites(){
       if(!r) return;
       const match = r.ingredients.filter(i => selected.includes(i)).length;
       html += `
-        <div class="card" style="display:flex;align-items:center;justify-content:space-between;" onclick="openRecipe('${name}')">
+        <div class="card" style="display:flex;align-items:center;justify-content:space-between;" onclick="openRecipe(${recipes.findIndex(x=>x.name===name)})">
           <div><b>${name}</b><br><small style="opacity:0.6">Match: ${match}/${r.ingredients.length}</small></div>
           <span style="font-size:20px;color:#ffd700;">★</span>
         </div>`;
@@ -655,7 +633,7 @@ const recipes = [
 },
 
 {
-  name:"Breakfast Burrito",
+  name:"Lindzi's Breakfast Burrito",
   category:"breakfast",
   ingredients:["Eggs","Tortilla","Cheese","Bacon"],
   simpleSteps:[
@@ -1309,7 +1287,7 @@ const recipes = [
 },
 
 {
-  name:"Daniel Carder's Stuffed Bell Peppers",
+  name:"Daniel's Stuffed Bell Peppers",
   category:"dinner",
   ingredients:["Bell peppers","Ground beef","Rice","Tomatoes","Cheese"],
   simpleSteps:[
@@ -1449,7 +1427,7 @@ const recipes = [
 },
 
 {
-  name:"Banana Pancakes",
+  name:"Liam's Banana Pancakes",
   category:"breakfast",
   ingredients:["Bananas","Eggs","Oats","Butter"],
   simpleSteps:[
@@ -2240,7 +2218,7 @@ function showMatches(cat){
       </div>`;
       top3.forEach(r => {
         const isFav = favorites.includes(r.name);
-        html += `<div class="card" onclick="openRecipe('${r.name}')" style="display:flex;align-items:center;justify-content:space-between;">
+        html += `<div class="card" onclick="openRecipe(${recipes.findIndex(x=>x.name===r.name)})" style="display:flex;align-items:center;justify-content:space-between;">
           <div><b>${r.name}</b>${isFav ? '<span class="fav-badge">★ Saved</span>' : ''}<br><small style="opacity:0.6;margin-top:4px;display:block;">Match: ${r.match}/${r.ingredients.length}</small></div>
           <div style="font-size:20px;opacity:0.4;">›</div>
         </div>`;
@@ -2250,7 +2228,7 @@ function showMatches(cat){
     const group = scored.filter(r => r.category === activeCategory).sort((a,b) => b.match - a.match);
     group.forEach(r => {
       const isFav = favorites.includes(r.name);
-      html += `<div class="card" onclick="openRecipe('${r.name}')" style="display:flex;align-items:center;justify-content:space-between;">
+      html += `<div class="card" onclick="openRecipe(${recipes.findIndex(x=>x.name===r.name)})" style="display:flex;align-items:center;justify-content:space-between;">
         <div><b>${r.name}</b>${isFav ? '<span class="fav-badge">★ Saved</span>' : ''}<br><small style="opacity:0.6;margin-top:4px;display:block;">Match: ${r.match}/${r.ingredients.length}</small></div>
         <div style="font-size:20px;opacity:0.4;">›</div>
       </div>`;
@@ -2266,8 +2244,8 @@ function showMatches(cat){
 let current = null;
 let mode = "simple";
 
-function openRecipe(name){
-  current = recipes.find(r => r.name === name);
+function openRecipe(idx){
+  current = recipes[idx];
   mode = "simple";
   renderRecipe();
   show("recipe");
@@ -2287,7 +2265,7 @@ function renderRecipe(){
   let html = `
     <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px;">
       <div class="recipeTitle" style="margin-bottom:0;">${current.name}</div>
-      <span class="fav-star ${isFav ? 'saved' : ''}" onclick="toggleFavorite('${current.name}')">☆</span>
+      <span class="fav-star ${isFav ? 'saved' : ''}" onclick="toggleFavorite(${recipes.indexOf(current)})">☆</span>
     </div>`;
 
   if(isChef){
