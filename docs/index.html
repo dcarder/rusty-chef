@@ -23,18 +23,16 @@ overflow:hidden;
 position:absolute;
 inset:0;
 opacity:0;
-transform:translateY(10px);
 pointer-events:none;
-transition:.25s ease;
+transition:opacity .25s ease;
 overflow-y:auto;
 padding:12px;
 box-sizing:border-box;
-padding-bottom:120px;
+padding-bottom:160px;
 }
 
 .page.active{
 opacity:1;
-transform:translateY(0);
 pointer-events:auto;
 }
 
@@ -170,15 +168,22 @@ transform: scale(1.02);
 }
 
 .fav-star {
-font-size: 22px;
+font-size: 32px;
 cursor: pointer;
 user-select: none;
-transition: transform 0.15s;
+transition: transform 0.2s, color 0.2s;
 display: inline-block;
+color: rgba(255,255,255,0.3);
+line-height: 1;
+}
+
+.fav-star.saved {
+color: #ffd700;
+text-shadow: 0 0 10px rgba(255,215,0,0.6);
 }
 
 .fav-star:active {
-transform: scale(1.4);
+transform: scale(1.5);
 }
 
 .fav-badge {
@@ -221,32 +226,6 @@ margin-top:0;
 }
 
 /* Feedback button fixed on home screen */
-.feedbackFloat {
-position: fixed;
-top: 16px;
-left: 16px;
-z-index: 10;
-background: rgba(255,145,77,0.15);
-border: 1px solid rgba(255,145,77,0.45);
-border-radius: 20px;
-padding: 8px 14px;
-font-size: 13px;
-font-weight: 700;
-color: #ff914d;
-cursor: pointer;
-transition: .2s;
-text-decoration: none;
-display: flex;
-align-items: center;
-gap: 6px;
-backdrop-filter: blur(6px);
-}
-
-.feedbackFloat:hover {
-background: rgba(255,145,77,0.28);
-transform: scale(1.04);
-}
-
 #homeBg img{
 position:fixed;
 inset:0;
@@ -362,10 +341,6 @@ margin-top: 4px;
 
 <body>
 
-<!-- Feedback button: visible on all pages -->
-<a class="feedbackFloat" href="mailto:therustychef1@gmail.com?subject=Rusty%20Chef%20Feedback">
-  ✉️ Feedback
-</a>
 
 <div id="home" class="page active">
 
@@ -385,13 +360,7 @@ margin-top: 4px;
 <div class="chef">CHEF</div>
 </div>
 
-<div style="position:fixed;bottom:20px;left:0;right:0;z-index:5;display:flex;flex-direction:column;align-items:center;gap:10px;">
-  <div style="display:flex;gap:12px;">
-    <div class="btn" onclick="openPantry()" style="width:140px;margin-top:0;">🧺 Pantry</div>
-    <div class="btn" onclick="showMatches()" style="width:140px;margin-top:0;">🍳 Recipes</div>
-  </div>
-  <div class="btn btn-fav" onclick="showFavorites()" style="width:296px;margin-top:0;">⭐ Saved Recipes</div>
-</div>
+
 
 </div>
 
@@ -399,6 +368,13 @@ margin-top: 4px;
 <div id="results" class="page"></div>
 <div id="recipe" class="page"></div>
 <div id="favorites" class="page"></div>
+
+<!-- Permanent tab bar - lives outside .page so fixed positioning works -->
+<div id="tabBar" style="position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(0,0,0,0.92);backdrop-filter:blur(10px);border-top:1px solid rgba(255,255,255,0.1);padding:8px 12px 12px;display:flex;gap:8px;">
+  <div class="btn" onclick="openPantry()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">🧺<br>Pantry</div>
+  <div class="btn" onclick="showMatches()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">🍳<br>Recipes</div>
+  <div class="btn btn-fav" onclick="showFavorites()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">⭐<br>Saved</div>
+</div>
 
 <script>
 
@@ -410,26 +386,29 @@ function show(id){
 
 /* ================= INGREDIENTS ================= */
 const ingredientItems = [
-  "Almonds","Apples","Avocado",
-  "Bacon","Bananas","Basil","BBQ sauce","Beans","Beef broth","Bell peppers","Blueberries","Bread","Breadcrumbs","Broccoli","Brown sugar","Butter",
-  "Cabbage","Carrots","Cauliflower","Cheddar","Cheese","Chicken breast","Chicken broth","Chickpeas","Chives","Chocolate","Cinnamon","Coconut milk","Coffee","Corn","Cornstarch","Crackers","Cream","Cucumber","Curry powder",
+  "Almonds","Apples","Arugula","Avocado",
+  "Bacon","Baking powder","Baking soda","Bananas","Basil","Bay leaf","BBQ sauce","Beans","Beef broth","Bell peppers","Blueberries","Bread","Breadcrumbs","Broccoli","Brown sugar","Butter","Buttermilk",
+  "Cabbage","Canola oil","Carrots","Cauliflower","Cayenne","Celery","Cheddar","Cheese","Chicken breast","Chicken broth","Chickpeas","Chili powder","Chives","Chocolate","Chorizo","Cilantro","Cinnamon","Coconut milk","Coconut oil","Coffee","Corn","Cornstarch","Crackers","Cream","Cream cheese","Cucumber","Cumin","Curry powder",
+  "Dill","Dijon mustard",
   "Egg noodles","Eggplant","Eggs",
-  "Fish sauce","Flour",
-  "Garlic","Granola","Green beans","Ground beef",
+  "Fennel","Fish sauce","Flour","Fontina",
+  "Garlic","Garlic powder","Ginger","Gouda","Granola","Green beans","Green onion","Ground beef","Ground pork","Ground turkey",
   "Honey","Hot sauce",
-  "Jam",
-  "Ketchup",
-  "Lemon","Lentils","Lettuce","Lime",
-  "Maple syrup","Marshmallows","Mayonnaise","Milk","Mozzarella","Mushrooms","Mustard",
+  "Italian seasoning",
+  "Jalapeño","Jam",
+  "Kale","Ketchup",
+  "Lemon","Lemon zest","Lentils","Lettuce","Lime","Lime zest",
+  "Marinara sauce","Maple syrup","Marshmallows","Mayonnaise","Milk","Mozzarella","Mushrooms","Mustard",
   "Noodles","Nutmeg",
   "Oats","Oil","Olive oil","Onions","Oregano",
   "Paprika","Parmesan","Parsley","Pasta","Peanut butter","Peas","Pepper","Pineapple","Pork chops","Potatoes","Pumpkin",
   "Quinoa",
-  "Ramen noodles","Rice","Rice noodles",
-  "Salmon","Salt","Sausage","Sesame oil","Shrimp","Soy sauce","Spinach","Steak","Strawberries","Sugar","Sweet potato",
-  "Tea","Teriyaki sauce","Thyme","Tofu","Tomatoes","Tortilla","Tuna","Turkey",
-  "Vinegar",
-  "Walnuts","Worcestershire sauce",
+  "Ravioli",,
+  "Ramen noodles","Red pepper flakes","Rice","Rice noodles","Rice vinegar","Rosemary",
+  "Sage","Salmon","Salt","Sausage","Sesame oil","Sesame seeds","Shrimp","Smoked paprika","Sour cream","Soy sauce","Spinach","Sriracha","Steak","Strawberries","Sugar","Sweet potato",
+  "Tea","Teriyaki sauce","Thyme","Tofu","Tomatoes","Tortilla","Tuna","Turkey","Turmeric",
+  "Vanilla extract","Vinegar",
+  "Walnuts","White pepper","White wine","Worcestershire sauce",
   "Yogurt",
   "Zucchini"
 ];
@@ -440,7 +419,16 @@ let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 function toggleFavorite(name){
   favorites = favorites.includes(name) ? favorites.filter(f=>f!==name) : [...favorites, name];
   localStorage.setItem("favorites", JSON.stringify(favorites));
-  renderRecipe();
+  // Animate the star directly without full re-render
+  const star = document.querySelector('.fav-star');
+  const isFav = favorites.includes(name);
+  if(isFav){
+    star.classList.add('saved');
+    star.style.transform = 'scale(1.5)';
+    setTimeout(() => star.style.transform = '', 200);
+  } else {
+    star.classList.remove('saved');
+  }
 }
 
 function showFavorites(){
@@ -457,14 +445,12 @@ function showFavorites(){
       html += `
         <div class="card" style="display:flex;align-items:center;justify-content:space-between;" onclick="openRecipe('${name}')">
           <div><b>${name}</b><br><small style="opacity:0.6">Match: ${match}/${r.ingredients.length}</small></div>
-          <span style="font-size:20px;">⭐</span>
+          <span style="font-size:20px;color:#ffd700;">★</span>
         </div>`;
     });
   }
   html += `
-    <div class="btn" onclick="showMatches()">🍳 All Recipes</div>
-    <div class="btn" onclick="show('home')">🏠 Home</div>
-    <a class="btn btn-feedback" href="mailto:therustychef1@gmail.com?subject=Rusty%20Chef%20Feedback" style="display:block;text-align:center;text-decoration:none;">✉️ Send Feedback</a>`;
+    `;
   document.getElementById("favorites").innerHTML = html;
   show("favorites");
 }
@@ -480,6 +466,7 @@ const recipes = [
 
 {
   name:"Chicken Fried Rice",
+  category:"lunch",
   ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
   simpleSteps:[
     {t:"Cook rice", a:"fluffy"},
@@ -513,6 +500,7 @@ const recipes = [
 
 {
   name:"Spaghetti Bolognese",
+  category:"dinner",
   ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
   simpleSteps:[
     {t:"Boil pasta", a:"soft"},
@@ -546,6 +534,7 @@ const recipes = [
 
 {
   name:"Chicken Tacos",
+  category:"dinner",
   ingredients:["Chicken breast","Tortilla","Cheese","Onions","Lime"],
   simpleSteps:[
     {t:"Cook chicken", a:"done"},
@@ -573,6 +562,7 @@ const recipes = [
 
 {
   name:"Garlic Butter Shrimp Pasta",
+  category:"dinner",
   ingredients:["Shrimp","Pasta","Butter","Garlic","Lemon"],
   simpleSteps:[
     {t:"Boil pasta", a:"done"},
@@ -605,6 +595,7 @@ const recipes = [
 
 {
   name:"Beef Stir Fry",
+  category:"dinner",
   ingredients:["Ground beef","Broccoli","Soy sauce","Carrots","Rice"],
   simpleSteps:[
     {t:"Cook beef", a:"brown"},
@@ -637,6 +628,7 @@ const recipes = [
 
 {
   name:"Grilled Cheese",
+  category:"lunch",
   ingredients:["Bread","Cheese","Butter"],
   simpleSteps:[
     {t:"Butter bread", a:"done"},
@@ -664,6 +656,7 @@ const recipes = [
 
 {
   name:"Breakfast Burrito",
+  category:"breakfast",
   ingredients:["Eggs","Tortilla","Cheese","Bacon"],
   simpleSteps:[
     {t:"Cook eggs", a:"soft"},
@@ -691,6 +684,7 @@ const recipes = [
 
 {
   name:"Chicken Curry",
+  category:"dinner",
   ingredients:["Chicken breast","Curry powder","Coconut milk","Onions"],
   simpleSteps:[
     {t:"Cook chicken", a:"done"},
@@ -723,6 +717,7 @@ const recipes = [
 
 {
   name:"Veggie Omelette",
+  category:"breakfast",
   ingredients:["Eggs","Bell peppers","Onions","Cheese"],
   simpleSteps:[
     {t:"Cook veggies", a:"soft"},
@@ -750,6 +745,7 @@ const recipes = [
 
 {
   name:"BBQ Chicken Sandwich",
+  category:"lunch",
   ingredients:["Chicken breast","BBQ sauce","Bread","Onions"],
   simpleSteps:[
     {t:"Cook chicken", a:"done"},
@@ -777,6 +773,7 @@ const recipes = [
 
 {
   name:"Salmon Lemon Herb",
+  category:"dinner",
   ingredients:["Salmon","Lemon","Garlic","Olive oil"],
   simpleSteps:[
     {t:"Cook salmon", a:"flaky"},
@@ -803,6 +800,7 @@ const recipes = [
 
 {
   name:"Chicken Alfredo",
+  category:"dinner",
   ingredients:["Chicken breast","Pasta","Cream","Parmesan"],
   simpleSteps:[
     {t:"Cook pasta", a:"soft"},
@@ -830,6 +828,7 @@ const recipes = [
 
 {
   name:"Tuna Sandwich",
+  category:"lunch",
   ingredients:["Tuna","Bread","Mayonnaise"],
   simpleSteps:[
     {t:"Mix tuna", a:"creamy"},
@@ -851,6 +850,7 @@ const recipes = [
 
 {
   name:"Pancakes",
+  category:"breakfast",
   ingredients:["Flour","Milk","Eggs","Sugar"],
   simpleSteps:[
     {t:"Mix batter", a:"smooth"},
@@ -872,6 +872,7 @@ const recipes = [
 
 {
   name:"Fried Chicken",
+  category:"dinner",
   ingredients:["Chicken breast","Flour","Oil"],
   simpleSteps:[
     {t:"Coat chicken", a:"floured"},
@@ -893,6 +894,7 @@ const recipes = [
 
 {
   name:"Chicken Noodle Soup",
+  category:"lunch",
   ingredients:["Chicken broth","Chicken breast","Carrots","Noodles"],
   simpleSteps:[
     {t:"Heat broth", a:"hot"},
@@ -920,6 +922,7 @@ const recipes = [
 
 {
   name:"Simple Chili",
+  category:"dinner",
   ingredients:["Ground beef","Tomatoes","Beans"],
   simpleSteps:[
     {t:"Cook beef", a:"brown"},
@@ -941,6 +944,7 @@ const recipes = [
 
 {
   name:"Mac And Cheese",
+  category:"lunch",
   ingredients:["Pasta","Cheddar","Milk","Butter"],
   simpleSteps:[
     {t:"Boil pasta", a:"soft"},
@@ -968,6 +972,7 @@ const recipes = [
 
 {
   name:"Steak And Potatoes",
+  category:"dinner",
   ingredients:["Steak","Potatoes","Butter","Garlic"],
   simpleSteps:[
     {t:"Cook steak", a:"seared"},
@@ -995,6 +1000,7 @@ const recipes = [
 
 {
   name:"Shrimp Tacos",
+  category:"dinner",
   ingredients:["Shrimp","Tortilla","Lime","Cheese"],
   simpleSteps:[
     {t:"Cook shrimp", a:"pink"},
@@ -1022,6 +1028,7 @@ const recipes = [
 
 {
   name:"Loaded Baked Potato",
+  category:"lunch",
   ingredients:["Potatoes","Cheddar","Bacon","Butter"],
   simpleSteps:[
     {t:"Bake potatoes", a:"soft"},
@@ -1049,6 +1056,7 @@ const recipes = [
 
 {
   name:"Teriyaki Chicken",
+  category:"dinner",
   ingredients:["Chicken breast","Teriyaki sauce","Rice","Broccoli"],
   simpleSteps:[
     {t:"Cook chicken", a:"done"},
@@ -1076,6 +1084,7 @@ const recipes = [
 
 {
   name:"French Toast",
+  category:"breakfast",
   ingredients:["Bread","Eggs","Milk","Butter"],
   simpleSteps:[
     {t:"Mix eggs and milk", a:"smooth"},
@@ -1103,6 +1112,7 @@ const recipes = [
 
 {
   name:"Creamy Mushroom Pasta",
+  category:"dinner",
   ingredients:["Pasta","Mushrooms","Cream","Garlic"],
   simpleSteps:[
     {t:"Cook pasta", a:"soft"},
@@ -1130,6 +1140,7 @@ const recipes = [
 
 {
   name:"Chicken Quesadilla",
+  category:"lunch",
   ingredients:["Chicken breast","Tortilla","Cheese","Butter"],
   simpleSteps:[
     {t:"Cook chicken", a:"done"},
@@ -1157,6 +1168,7 @@ const recipes = [
 
 {
   name:"Honey Garlic Chicken",
+  category:"dinner",
   ingredients:["Chicken breast","Honey","Garlic","Soy sauce","Rice"],
   simpleSteps:[
     {t:"Cook chicken", a:"golden"},
@@ -1186,6 +1198,7 @@ const recipes = [
 
 {
   name:"Pulled Pork",
+  category:"dinner",
   ingredients:["Pork chops","BBQ sauce","Onions","Garlic","Brown sugar"],
   simpleSteps:[
     {t:"Season pork", a:"rubbed"},
@@ -1213,6 +1226,7 @@ const recipes = [
 
 {
   name:"Egg Fried Noodles",
+  category:"lunch",
   ingredients:["Noodles","Eggs","Soy sauce","Onions","Oil"],
   simpleSteps:[
     {t:"Cook noodles", a:"soft"},
@@ -1240,6 +1254,7 @@ const recipes = [
 
 {
   name:"Caesar Salad",
+  category:"lunch",
   ingredients:["Lettuce","Parmesan","Olive oil","Garlic","Lemon"],
   simpleSteps:[
     {t:"Make dressing", a:"creamy"},
@@ -1267,6 +1282,7 @@ const recipes = [
 
 {
   name:"Spicy Ramen",
+  category:"lunch",
   ingredients:["Ramen noodles","Eggs","Soy sauce","Chicken broth","Mushrooms"],
   simpleSteps:[
     {t:"Boil broth", a:"hot"},
@@ -1294,6 +1310,7 @@ const recipes = [
 
 {
   name:"Stuffed Bell Peppers",
+  category:"dinner",
   ingredients:["Bell peppers","Ground beef","Rice","Tomatoes","Cheese"],
   simpleSteps:[
     {t:"Cook filling", a:"mixed"},
@@ -1321,6 +1338,7 @@ const recipes = [
 
 {
   name:"Pesto Pasta",
+  category:"dinner",
   ingredients:["Pasta","Basil","Parmesan","Olive oil","Garlic"],
   simpleSteps:[
     {t:"Make pesto", a:"green"},
@@ -1348,6 +1366,7 @@ const recipes = [
 
 {
   name:"Fish Tacos",
+  category:"dinner",
   ingredients:["Salmon","Tortilla","Lime","Cabbage","Mayonnaise"],
   simpleSteps:[
     {t:"Season and cook fish", a:"flaky"},
@@ -1375,6 +1394,7 @@ const recipes = [
 
 {
   name:"Vegetable Curry",
+  category:"dinner",
   ingredients:["Potatoes","Chickpeas","Coconut milk","Curry powder","Tomatoes","Onions"],
   simpleSteps:[
     {t:"Cook onions", a:"soft"},
@@ -1402,6 +1422,7 @@ const recipes = [
 
 {
   name:"Beef Tacos",
+  category:"dinner",
   ingredients:["Ground beef","Tortilla","Cheese","Tomatoes","Onions","Lime"],
   simpleSteps:[
     {t:"Cook beef", a:"seasoned"},
@@ -1429,6 +1450,7 @@ const recipes = [
 
 {
   name:"Banana Pancakes",
+  category:"breakfast",
   ingredients:["Bananas","Eggs","Oats","Butter"],
   simpleSteps:[
     {t:"Mash bananas", a:"smooth"},
@@ -1456,6 +1478,7 @@ const recipes = [
 
 {
   name:"Sausage And Peppers",
+  category:"dinner",
   ingredients:["Sausage","Bell peppers","Onions","Olive oil","Garlic"],
   simpleSteps:[
     {t:"Cook sausage", a:"browned"},
@@ -1483,6 +1506,7 @@ const recipes = [
 
 {
   name:"Shakshuka",
+  category:"breakfast",
   ingredients:["Eggs","Tomatoes","Bell peppers","Onions","Garlic","Paprika"],
   simpleSteps:[
     {t:"Cook sauce", a:"thick"},
@@ -1510,6 +1534,7 @@ const recipes = [
 
 {
   name:"Baked Salmon",
+  category:"dinner",
   ingredients:["Salmon","Olive oil","Lemon","Garlic","Parsley"],
   simpleSteps:[
     {t:"Season salmon", a:"ready"},
@@ -1537,6 +1562,7 @@ const recipes = [
 
 {
   name:"Loaded Nachos",
+  category:"lunch",
   ingredients:["Crackers","Cheddar","Ground beef","Tomatoes","Onions","Beans"],
   simpleSteps:[
     {t:"Layer chips and cheese", a:"stacked"},
@@ -1564,6 +1590,7 @@ const recipes = [
 
 {
   name:"Creamy Tomato Soup",
+  category:"lunch",
   ingredients:["Tomatoes","Cream","Onions","Garlic","Butter","Chicken broth"],
   simpleSteps:[
     {t:"Cook tomatoes and onions", a:"soft"},
@@ -1591,6 +1618,7 @@ const recipes = [
 
 {
   name:"Turkey Meatballs",
+  category:"dinner",
   ingredients:["Turkey","Eggs","Breadcrumbs","Garlic","Parmesan","Olive oil"],
   simpleSteps:[
     {t:"Mix meatball mixture", a:"combined"},
@@ -1618,6 +1646,7 @@ const recipes = [
 
 {
   name:"Avocado Toast",
+  category:"breakfast",
   ingredients:["Avocado","Bread","Lemon","Salt","Eggs"],
   simpleSteps:[
     {t:"Toast bread", a:"crispy"},
@@ -1645,6 +1674,7 @@ const recipes = [
 
 {
   name:"Sweet And Sour Chicken",
+  category:"dinner",
   ingredients:["Chicken breast","Pineapple","Bell peppers","Soy sauce","Vinegar","Sugar"],
   simpleSteps:[
     {t:"Cook chicken", a:"golden"},
@@ -1672,6 +1702,7 @@ const recipes = [
 
 {
   name:"Lemon Garlic Pasta",
+  category:"dinner",
   ingredients:["Pasta","Lemon","Garlic","Olive oil","Parmesan"],
   simpleSteps:[
     {t:"Cook pasta", a:"al dente"},
@@ -1699,6 +1730,7 @@ const recipes = [
 
 {
   name:"Potato Soup",
+  category:"lunch",
   ingredients:["Potatoes","Chicken broth","Butter","Milk","Onions","Cheddar"],
   simpleSteps:[
     {t:"Cook potatoes", a:"soft"},
@@ -1726,6 +1758,7 @@ const recipes = [
 
 {
   name:"Chicken Fajitas",
+  category:"dinner",
   ingredients:["Chicken breast","Bell peppers","Onions","Tortilla","Lime"],
   simpleSteps:[
     {t:"Cook chicken", a:"seared"},
@@ -1753,6 +1786,7 @@ const recipes = [
 
 {
   name:"Egg Drop Soup",
+  category:"lunch",
   ingredients:["Eggs","Chicken broth","Cornstarch","Soy sauce","Onions"],
   simpleSteps:[
     {t:"Heat broth", a:"simmering"},
@@ -1780,6 +1814,7 @@ const recipes = [
 
 {
   name:"Baked Mac And Cheese",
+  category:"dinner",
   ingredients:["Pasta","Cheddar","Milk","Butter","Flour","Breadcrumbs"],
   simpleSteps:[
     {t:"Make cheese sauce", a:"creamy"},
@@ -1807,6 +1842,7 @@ const recipes = [
 
 {
   name:"Honey Sriracha Wings",
+  category:"lunch",
   ingredients:["Chicken breast","Honey","Hot sauce","Butter","Garlic","Soy sauce"],
   simpleSteps:[
     {t:"Cook chicken", a:"crispy"},
@@ -1836,6 +1872,7 @@ const recipes = [
 
 {
   name:"Crispy Tofu Stir Fry",
+  category:"tofu",
   ingredients:["Tofu","Soy sauce","Broccoli","Garlic","Sesame oil","Cornstarch","Rice"],
   simpleSteps:[
     {t:"Press and cube tofu", a:"firm"},
@@ -1863,6 +1900,7 @@ const recipes = [
 
 {
   name:"Egg Noodle Soup",
+  category:"lunch",
   ingredients:["Egg noodles","Chicken broth","Eggs","Garlic","Soy sauce","Onions","Sesame oil"],
   simpleSteps:[
     {t:"Heat broth", a:"simmering"},
@@ -1887,6 +1925,237 @@ const recipes = [
     }
   ]
 }
+,
+
+{
+  name:"Chocolate Lava Cake",
+  category:"dessert",
+  ingredients:["Chocolate","Butter","Eggs","Sugar","Flour"],
+  simpleSteps:[
+    {t:"Melt chocolate and butter", a:"smooth"},
+    {t:"Mix in eggs and sugar", a:"combined"},
+    {t:"Bake until set outside", a:"gooey center"}
+  ],
+  chefSteps:[
+    {
+      t:"Make the chocolate base",
+      a:"Chop chocolate into small pieces for even melting. Combine with butter in a heatproof bowl set over a pot of barely simmering water — the bowl should not touch the water. Stir gently until completely melted and glossy. Remove from heat and let cool for 3 minutes. If it's too hot when you add eggs, they'll scramble. The mixture should be warm but not steaming.",
+      tip:"Never melt chocolate over direct heat. The double boiler method is gentler and prevents seizing."
+    },
+    {
+      t:"Build the batter",
+      a:"Whisk eggs, egg yolks, and sugar together in a bowl until pale and slightly thick — about 90 seconds of vigorous whisking. This aeration creates a better texture. Fold the chocolate mixture into the eggs gently, then sift in flour and fold until just combined — no streaks, no overmixing. Overmixing develops gluten and makes the cake tough instead of tender.",
+      tip:"Folding, not stirring, preserves the air you whisked in. That air is what gives the cake lift around the molten center."
+    },
+    {
+      t:"Bake with precision",
+      a:"Butter and flour individual ramekins thoroughly — every spot must be covered or the cake will stick and the center will pull out when you flip it. Fill 3/4 full. Bake at 425°F for exactly 12 minutes. The edges should be set and pulling away slightly but the center should still jiggle. Rest 1 minute in the ramekin, then run a knife around the edge and invert onto a plate immediately. Serve within 60 seconds.",
+      tip:"Timing is everything. Every oven differs by a minute — do a test bake first. 12 min = flowing center. 14 min = no lava."
+    }
+  ]
+},
+
+{
+  name:"Banana Bread",
+  category:"dessert",
+  ingredients:["Bananas","Flour","Butter","Sugar","Eggs","Baking soda"],
+  simpleSteps:[
+    {t:"Mash bananas", a:"smooth"},
+    {t:"Mix batter", a:"combined"},
+    {t:"Bake until golden", a:"done"}
+  ],
+  chefSteps:[
+    {
+      t:"Use the right bananas",
+      a:"The bananas must be very overripe — deeply black-spotted or completely black. They should smell intensely sweet and almost fermented. Underripe bananas make bland, dense banana bread. Mash thoroughly with a fork until almost no chunks remain. The more uniform the mash, the more evenly the banana flavor distributes through the loaf.",
+      tip:"Can't wait for bananas to ripen? Put unpeeled bananas on a baking sheet at 300°F for 20 minutes until skins turn black. Instant overripe."
+    },
+    {
+      t:"Mix wet and dry separately",
+      a:"Melt butter and let it cool slightly. Whisk with sugar until combined, then add eggs one at a time, whisking after each. Fold in mashed banana. In a separate bowl, whisk flour, baking soda, and a pinch of salt. Add the dry ingredients to the wet and fold until just combined — stop the moment you see no more dry streaks. Lumps are fine. Overmixing makes dense, rubbery banana bread.",
+      tip:"The fold-until-just-combined rule is the most important step in any quick bread. Overmixing is irreversible."
+    },
+    {
+      t:"Bake low and slow",
+      a:"Pour into a buttered and floured loaf pan. Bake at 350°F for 55–65 minutes. The loaf is done when a toothpick inserted in the center comes out with just a few moist crumbs — not wet batter, not completely dry. The top should be deep golden-brown and cracked down the center. Cool in the pan for 10 minutes, then turn out and cool completely before slicing — cutting hot banana bread makes it gummy.",
+      tip:"Cool completely before slicing. Hot quick breads are gummy and collapse when cut. The texture sets as it cools."
+    }
+  ]
+},
+
+{
+  name:"Classic Brownies",
+  category:"dessert",
+  ingredients:["Chocolate","Butter","Sugar","Eggs","Flour","Vanilla extract"],
+  simpleSteps:[
+    {t:"Melt chocolate and butter", a:"smooth"},
+    {t:"Mix in sugar and eggs", a:"glossy"},
+    {t:"Bake until just set", a:"fudgy"}
+  ],
+  chefSteps:[
+    {
+      t:"Build the fudgy base",
+      a:"Melt butter and chocolate together over a double boiler or in short microwave bursts, stirring between each. Let cool 5 minutes. Whisk in sugar until fully incorporated — the mixture will look grainy at first, keep whisking. Add eggs one at a time, whisking vigorously after each. Add vanilla extract. The batter should turn glossy and ribbon-like when you lift the whisk — this glossiness is the sign of a properly emulsified fudgy brownie.",
+      tip:"That glossy ribbon texture is the key indicator. No gloss means undermixed and you'll get cakey, dry brownies."
+    },
+    {
+      t:"Add flour minimally",
+      a:"Sift flour directly into the chocolate mixture. Fold with a spatula using as few strokes as possible — 10 to 15 folds maximum. The moment no dry flour is visible, stop. Overworked brownie batter becomes tough and cakey. The batter should be thick and glossy, not fluffy.",
+      tip:"Less mixing = more fudge. More mixing = more cake. Choose fudge."
+    },
+    {
+      t:"Bake to the right doneness",
+      a:"Pour into a buttered and lined 8x8 pan. Bake at 350°F for 20–25 minutes. Pull them out when a toothpick inserted 1 inch from the edge comes out clean but the center toothpick still has moist crumbs. The center will look slightly underdone — that's correct. It sets as it cools. Cool completely in the pan before cutting. For cleaner cuts, refrigerate for 1 hour first then slice with a warm knife.",
+      tip:"Refrigerating before cutting is the difference between clean squares and crumbly smears."
+    }
+  ]
+},
+
+{
+  name:"Cinnamon French Toast Sticks",
+  category:"dessert",
+  ingredients:["Bread","Eggs","Milk","Butter","Cinnamon","Sugar","Vanilla extract","Maple syrup"],
+  simpleSteps:[
+    {t:"Make custard mix", a:"spiced"},
+    {t:"Dip and cook", a:"golden"},
+    {t:"Serve with syrup", a:"sweet"}
+  ],
+  chefSteps:[
+    {
+      t:"Make the spiced custard",
+      a:"Whisk eggs, milk, a generous pinch of cinnamon, sugar, vanilla extract, and a tiny pinch of salt until completely smooth. The sugar and cinnamon need to fully dissolve into the liquid — whisk for a full 30 seconds. Cut thick bread slices into thirds lengthwise to make sticks. Thick bread is essential — thin bread falls apart when soaked and won't hold up during cooking.",
+      tip:"Thick-cut brioche or Texas toast makes the best sticks. Standard sandwich bread turns soggy and tears."
+    },
+    {
+      t:"Soak and cook for texture",
+      a:"Soak each stick for 20 seconds per side — you want full custard penetration, not just surface coating. Melt butter in a non-stick pan over medium heat until foaming. Cook sticks on all four sides until deeply golden-brown, about 2 minutes per side. The sugar in the custard caramelizes on the outside creating a slightly crisp, sweet crust while the inside stays custardy.",
+      tip:"Cook all four sides, not just two. The full caramelization on every surface is what makes them indulgent."
+    },
+    {
+      t:"Finish with cinnamon sugar",
+      a:"While still hot from the pan, immediately toss or dust the sticks with a mix of cinnamon and sugar — it adheres to the hot surface and melts slightly into a thin sweet crust. Serve immediately with warm maple syrup for dipping. These do not hold well — serve straight from the pan.",
+      tip:"The cinnamon sugar coating goes on while hot. If you wait, it won't stick and just falls off."
+    }
+  ]
+},
+
+{
+  name:"Chocolate Chip Cookies",
+  category:"dessert",
+  ingredients:["Flour","Butter","Sugar","Brown sugar","Eggs","Vanilla extract","Chocolate","Baking soda","Salt"],
+  simpleSteps:[
+    {t:"Cream butter and sugar", a:"fluffy"},
+    {t:"Mix in eggs and flour", a:"dough"},
+    {t:"Bake until golden", a:"chewy"}
+  ],
+  chefSteps:[
+    {
+      t:"Brown the butter first",
+      a:"Instead of room-temperature butter, brown it first: melt in a light-colored pan over medium heat, swirling constantly, until the foam subsides and the milk solids turn golden-brown and smell nutty — about 5 minutes. Pour into a bowl immediately and let cool to room temperature. Brown butter adds a deep, toffee-like flavor that regular butter simply cannot match.",
+      tip:"Brown butter is the single biggest upgrade to chocolate chip cookies most people have never tried."
+    },
+    {
+      t:"Mix the dough and rest it",
+      a:"Whisk cooled brown butter with both white and brown sugar until combined. Add eggs and vanilla extract and whisk vigorously for 60 seconds until slightly lighter. Fold in flour, baking soda, and salt until just combined, then fold in chocolate chips or chopped chocolate. Cover the dough and refrigerate for at least 30 minutes — ideally overnight. Resting develops flavor and prevents the cookies from spreading too thin.",
+      tip:"Overnight rest is the difference between flat, greasy cookies and thick, chewy, bakery-style ones."
+    },
+    {
+      t:"Bake and pull early",
+      a:"Roll into balls and place on a parchment-lined baking sheet with plenty of space. Bake at 375°F for 10–11 minutes. Pull them out when the edges are set and golden but the centers still look slightly underdone and shiny. They finish setting on the hot pan as they cool. Sprinkle with flaky salt immediately out of the oven. Cool on the pan for 5 minutes before moving.",
+      tip:"Underbake slightly every time. Cookies continue cooking on the hot pan for 3-4 minutes after leaving the oven."
+    }
+  ]
+},
+
+{
+  name:"Tofu Scramble",
+  category:"tofu",
+  ingredients:["Tofu","Turmeric","Bell peppers","Onions","Soy sauce","Garlic","Olive oil"],
+  simpleSteps:[
+    {t:"Crumble tofu", a:"broken up"},
+    {t:"Cook with spices", a:"golden"},
+    {t:"Add veggies", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Press and crumble the tofu",
+      a:"Press firm tofu for 15 minutes to remove excess moisture — wrap in a towel and place something heavy on top. The drier the tofu, the better it browns and the less it steams. Crumble into irregular pieces using your hands — vary the sizes from fine crumbles to larger chunks, just like real scrambled eggs. Uniformly small pieces turn into mush; varied sizes give you texture.",
+      tip:"Irregular crumble sizes mimic real scrambled eggs far better than uniform fine crumbles."
+    },
+    {
+      t:"Season with turmeric and spices",
+      a:"Heat olive oil in a wide pan over medium-high. Add crumbled tofu in a single layer and let it sit undisturbed for 2 minutes to develop some golden color. Add turmeric — it turns the tofu egg-yellow and adds earthy flavor. Add garlic powder, a splash of soy sauce, and black salt (kala namak) if available — black salt has a sulfurous, egg-like flavor that makes tofu scramble taste remarkably close to real eggs.",
+      tip:"Kala namak (black salt) is the secret ingredient for egg flavor. Find it at Indian grocery stores — it's worth seeking out."
+    },
+    {
+      t:"Add vegetables and finish",
+      a:"Push tofu to the side and add diced bell peppers and onions to the empty side of the pan. Cook 2 minutes over high heat until slightly softened but still bright. Fold through the tofu. Add another splash of soy sauce and toss everything together for 60 seconds. The scramble should be golden, fragrant, and slightly crisp on some pieces. Serve immediately — it softens as it sits.",
+      tip:"Keep some pieces crispy and some soft — the texture contrast is what makes it satisfying."
+    }
+  ]
+},
+
+{
+  name:"Miso Glazed Tofu",
+  category:"tofu",
+  ingredients:["Tofu","Soy sauce","Sesame oil","Garlic","Ginger","Brown sugar","Rice"],
+  simpleSteps:[
+    {t:"Press and slice tofu", a:"firm"},
+    {t:"Make miso glaze", a:"sticky"},
+    {t:"Bake or pan fry", a:"caramelized"}
+  ],
+  chefSteps:[
+    {
+      t:"Press and prep the tofu",
+      a:"Press extra-firm tofu for at least 20 minutes — the longer the better. Slice into 1-inch thick rectangular slabs. Pat each piece dry with paper towels after pressing. Score the surface of each slab lightly with a knife in a crosshatch pattern — this creates grooves for the glaze to sink into and increases surface area for caramelization.",
+      tip:"Scoring the surface doubles the glaze contact area and creates beautiful caramelized ridges."
+    },
+    {
+      t:"Build the glaze",
+      a:"Whisk together soy sauce, a small spoon of brown sugar, minced garlic, grated fresh ginger, and sesame oil. The glaze should be salty, slightly sweet, and deeply aromatic. Brush generously over both sides of each tofu slab, pressing it in. Let marinate for 10 minutes minimum — 30 minutes is better. The longer it sits, the more flavor penetrates.",
+      tip:"Grating ginger rather than mincing releases more juice and flavor. A microplane is ideal."
+    },
+    {
+      t:"Caramelize for maximum flavor",
+      a:"For pan method: heat a non-stick pan over medium-high, add a thin layer of oil, and sear tofu 3–4 minutes per side without moving. The sugar in the glaze will caramelize to a deep mahogany color — this is where all the flavor lives. For oven method: bake at 400°F on a lined tray for 25 minutes, flipping halfway and brushing with extra glaze each time. Serve over rice with remaining glaze drizzled on top.",
+      tip:"The caramelized dark spots are flavor, not burning. Don't be afraid of the color."
+    }
+  ]
+}
+,
+
+{
+  name:"Mika's Fried Ravioli",
+  category:"lunch",
+  ingredients:["Ravioli","Breadcrumbs","Eggs","Parmesan","Italian seasoning","Garlic powder","Oil","Marinara sauce"],
+  simpleSteps:[
+    {t:"Coat ravioli", a:"breaded"},
+    {t:"Fry until golden", a:"crispy"},
+    {t:"Serve with marinara", a:"dipping"}
+  ],
+  chefSteps:[
+    {
+      t:"Set up the breading station",
+      a:"Set up three bowls in a line: flour seasoned with salt and pepper, beaten eggs whisked until smooth, and breadcrumbs mixed with finely grated Parmesan, Italian seasoning, garlic powder, and a pinch of salt. The Parmesan in the breadcrumbs is the secret — it melts into the crust as it fries, creating an incredibly savory, nutty coating. Use fresh or refrigerated ravioli, not frozen — frozen releases too much moisture and makes the breading soggy.",
+      tip:"The Parmesan-breadcrumb combo is what separates Mika's version from basic fried ravioli. Don't skip it."
+    },
+    {
+      t:"Bread each ravioli properly",
+      a:"Working one at a time: dredge ravioli in flour and shake off excess, dip in egg letting any drips fall off, then press firmly into the breadcrumb mixture on both sides. The press is important — it helps the coating bond to the pasta surface. Place on a wire rack and let them rest 5 minutes before frying. This drying time lets the breading adhere so it does not fall off in the oil.",
+      tip:"Resting the breaded ravioli for 5 minutes before frying makes the coating stick dramatically better."
+    },
+    {
+      t:"Fry to golden perfection",
+      a:"Heat oil in a heavy pan to 350°F — deep enough to come halfway up the ravioli. Test with a breadcrumb: it should sizzle immediately. Fry in small batches — crowding drops the temperature and makes them greasy instead of crispy. Cook 2–3 minutes per side until deep golden brown. Drain on a wire rack, never paper towels — a rack keeps the bottom crispy. Season immediately with extra Parmesan and a pinch of salt while still hot.",
+      tip:"Season the moment they come out of the oil. Hot surfaces absorb seasoning; cooled surfaces do not."
+    },
+    {
+      t:"Serve with warm marinara",
+      a:"Warm the marinara sauce in a small pan over low heat. Add a pinch of Italian seasoning and garlic powder to elevate store-bought sauce instantly. Pour into a dipping bowl. Arrange the fried ravioli on a plate, dust with extra Parmesan and Italian seasoning for color. Serve immediately — fried ravioli lose their crunch fast. These are best eaten straight from the pan.",
+      tip:"Warming the marinara with extra seasoning makes store-bought taste house-made. Takes 2 minutes and makes a big difference."
+    }
+  ]
+}
 ];
 
 /* ================= PANTRY ================= */
@@ -1903,10 +2172,9 @@ function openPantry(){
   });
 
   html += `</div>
-    <div class="btn" onclick="showMatches()">🍳 Find Recipes</div>
-    <div class="btn" style="background:#ff4d4d;color:white" onclick="clearPantry()">🗑 Clear Pantry</div>
-    <div class="btn" onclick="show('home')">🏠 Home</div>
-    <a class="btn btn-feedback" href="mailto:therustychef1@gmail.com?subject=Rusty%20Chef%20Feedback" style="display:block;text-align:center;text-decoration:none;">✉️ Send Feedback</a>`;
+    <div class="btn" style="margin-bottom:8px;" onclick="showMatches()">🔍 Find Recipes</div>
+    <div class="btn" style="background:#ff4d4d;color:white;margin-bottom:100px;" onclick="clearPantry()">🗑 Clear Pantry</div>
+    `;
 
   document.getElementById("pantry").innerHTML = html;
   document.querySelectorAll(".item").forEach(el => { el.onclick = () => toggle(el.dataset.item); });
@@ -1929,25 +2197,67 @@ function toggle(i){
 }
 
 /* ================= MATCH ================= */
-function showMatches(){
-  let top = recipes.map(r => ({
+const categoryOrder = ["breakfast","lunch","dinner","tofu","dessert"];
+const categoryLabels = {
+  breakfast: "🌅 Breakfast",
+  lunch: "☀️ Lunch",
+  dinner: "🌙 Dinner",
+  tofu: "🥢 Tofu",
+  dessert: "🍰 Dessert"
+};
+
+let activeCategory = "all";
+
+function showMatches(cat){
+  if(cat !== undefined) activeCategory = cat;
+
+  let scored = recipes.map(r => ({
     ...r,
     match: r.ingredients.filter(i => selected.includes(i)).length
-  })).sort((a,b) => b.match - a.match);
+  }));
 
   let html = `<div class="header">🍳 Recipes</div>`;
-  top.forEach(r => {
-    const isFav = favorites.includes(r.name);
-    html += `
-      <div class="card" onclick="openRecipe('${r.name}')" style="display:flex;align-items:center;justify-content:space-between;">
-        <div><b>${r.name}</b>${isFav ? '<span class="fav-badge">⭐ Saved</span>' : ''}<br><small style="opacity:0.6;margin-top:4px;display:block;">Match: ${r.match}/${r.ingredients.length}</small></div>
+
+  // Category filter pills
+  const allCats = ["all", ...categoryOrder.filter(c => scored.some(r => r.category === c))];
+  html += `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">`;
+  allCats.forEach(c => {
+    const active = activeCategory === c;
+    const label = c === "all" ? "🍽 All" : categoryLabels[c];
+    html += `<div onclick="showMatches('${c}')" style="padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ${active ? '#4facfe' : 'rgba(255,255,255,0.25)'};background:${active ? 'rgba(79,172,254,0.25)' : 'rgba(255,255,255,0.06)'};">${label}</div>`;
+  });
+  html += `</div>`;
+
+  if(activeCategory === "all"){
+    categoryOrder.forEach(cat => {
+      const group = scored.filter(r => r.category === cat).sort((a,b) => b.match - a.match);
+      if(!group.length) return;
+      const top3 = group.slice(0, 3);
+      const hasMore = group.length > 3;
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 6px;">
+        <div style="font-size:15px;font-weight:800;color:#ff914d;letter-spacing:1px;">${categoryLabels[cat]}</div>
+        ${hasMore ? `<div onclick="showMatches('${cat}')" style="font-size:12px;color:#4facfe;cursor:pointer;font-weight:600;">See all ${group.length} →</div>` : ''}
+      </div>`;
+      top3.forEach(r => {
+        const isFav = favorites.includes(r.name);
+        html += `<div class="card" onclick="openRecipe('${r.name}')" style="display:flex;align-items:center;justify-content:space-between;">
+          <div><b>${r.name}</b>${isFav ? '<span class="fav-badge">★ Saved</span>' : ''}<br><small style="opacity:0.6;margin-top:4px;display:block;">Match: ${r.match}/${r.ingredients.length}</small></div>
+          <div style="font-size:20px;opacity:0.4;">›</div>
+        </div>`;
+      });
+    });
+  } else {
+    const group = scored.filter(r => r.category === activeCategory).sort((a,b) => b.match - a.match);
+    group.forEach(r => {
+      const isFav = favorites.includes(r.name);
+      html += `<div class="card" onclick="openRecipe('${r.name}')" style="display:flex;align-items:center;justify-content:space-between;">
+        <div><b>${r.name}</b>${isFav ? '<span class="fav-badge">★ Saved</span>' : ''}<br><small style="opacity:0.6;margin-top:4px;display:block;">Match: ${r.match}/${r.ingredients.length}</small></div>
         <div style="font-size:20px;opacity:0.4;">›</div>
       </div>`;
-  });
-  html += `
-    <div class="btn btn-fav" onclick="showFavorites()">⭐ View Saved Recipes</div>
-    <div class="btn" onclick="show('home')">🏠 Home</div>
-    <a class="btn btn-feedback" href="mailto:therustychef1@gmail.com?subject=Rusty%20Chef%20Feedback" style="display:block;text-align:center;text-decoration:none;">✉️ Send Feedback</a>`;
+    });
+  }
+
+  html += `<div style="margin-bottom:100px;"></div>`;
   document.getElementById("results").innerHTML = html;
   show("results");
 }
@@ -1977,7 +2287,7 @@ function renderRecipe(){
   let html = `
     <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px;">
       <div class="recipeTitle" style="margin-bottom:0;">${current.name}</div>
-      <span class="fav-star" onclick="toggleFavorite('${current.name}')" title="${isFav ? 'Remove from saved' : 'Save recipe'}">${isFav ? '⭐' : '🤍'}</span>
+      <span class="fav-star ${isFav ? 'saved' : ''}" onclick="toggleFavorite('${current.name}')">☆</span>
     </div>`;
 
   if(isChef){
@@ -2032,10 +2342,9 @@ function renderRecipe(){
     <div class="btn ${isChef ? 'btn-chef' : ''}" onclick="switchMode()">
       ${isChef ? "🍳 Switch to Simple Mode" : "🔥 Switch to Chef Mode"}
     </div>
-    <div class="btn" onclick="showMatches()">⬅ Back To Recipes</div>
-    <div class="btn btn-fav" onclick="showFavorites()">⭐ View Saved Recipes</div>
-    <div class="btn" onclick="show('home')">🏠 Home</div>
-    <a class="btn btn-feedback" href="mailto:therustychef1@gmail.com?subject=Rusty%20Chef%20Feedback" style="display:block;text-align:center;text-decoration:none;">✉️ Send Feedback</a>`;
+    <div class="btn" onclick="showMatches()" style="margin-bottom:4px;">⬅ Back To Recipes</div>
+    <a class="btn btn-feedback" href="mailto:therustychef1@gmail.com?subject=Rusty%20Chef%20Feedback" style="display:block;text-align:center;text-decoration:none;margin-bottom:100px;">✉️ Send Feedback</a>
+    `;
 
   document.getElementById("recipe").innerHTML = html;
 }
