@@ -386,7 +386,7 @@ function show(id){
 
 /* ================= INGREDIENTS ================= */
 const ingredientItems = [
-  "Avocado","Bacon","Baking soda","Bananas","Basil","BBQ sauce","Beans","Bell peppers","Bread","Breadcrumbs","Broccoli","Brown sugar","Butter","Cabbage","Carrots","Cheddar","Cheese","Chicken breast","Chicken broth","Chickpeas","Chocolate","Cinnamon","Coconut milk","Cornstarch","Crackers","Cream","Curry powder","Egg noodles","Eggs","Flour","Garlic","Garlic powder","Ginger","Ground beef","Honey","Hot sauce","Italian seasoning","Lemon","Lettuce","Lime","Maple syrup","Marinara sauce","Mayonnaise","Milk","Mushrooms","Noodles","Oats","Oil","Olive oil","Onions","Paprika","Parmesan","Parsley","Pasta","Pineapple","Pork chops","Potatoes","Ramen noodles","Ravioli","Rice","Salmon","Salt","Sausage","Sesame oil","Shrimp","Soy sauce","Steak","Sugar","Teriyaki sauce","Tofu","Tomatoes","Tortilla","Tuna","Turkey","Turmeric","Vanilla extract","Vinegar"
+  "Allspice","Avocado","Bacon","Baking soda","Bananas","Basil","BBQ sauce","Beans","Beef broth","Bell peppers","Bread","Breadcrumbs","Broccoli","Brown sugar","Butter","Cabbage","Carrots","Cheddar","Cheese","Chicken breast","Chicken broth","Chickpeas","Chocolate","Cinnamon","Coconut milk","Cornstarch","Crackers","Cream","Curry powder","Egg noodles","Eggs","Flour","Garlic","Garlic powder","Ginger","Ground beef","Honey","Hot sauce","Italian seasoning","Lemon","Lettuce","Lime","Maple syrup","Marinara sauce","Mayonnaise","Milk","Mushrooms","Noodles","Nutmeg","Oats","Oil","Olive oil","Onions","Paprika","Parmesan","Parsley","Pepper","Pasta","Pineapple","Pork chops","Potatoes","Ramen noodles","Ravioli","Rice","Salmon","Salt","Sausage","Sesame oil","Shrimp","Soy sauce","Steak","Sugar","Teriyaki sauce","Tofu","Tomatoes","Tortilla","Tuna","Turkey","Turmeric","Vanilla extract","Vinegar"
 ];
 
 let selected = JSON.parse(localStorage.getItem("ingredients") || "[]");
@@ -2131,6 +2131,35 @@ const recipes = [
       t:"Serve with warm marinara",
       a:"Warm the marinara sauce in a small pan over low heat. Add a pinch of Italian seasoning and garlic powder to elevate store-bought sauce instantly. Pour into a dipping bowl. Arrange the fried ravioli on a plate, dust with extra Parmesan and Italian seasoning for color. Serve immediately — fried ravioli lose their crunch fast. These are best eaten straight from the pan.",
       tip:"Warming the marinara with extra seasoning makes store-bought taste house-made. Takes 2 minutes and makes a big difference."
+    }
+  ]
+}
+,
+
+{
+  name:"Wanda's Swedish Meatballs",
+  category:"dinner",
+  ingredients:["Ground beef","Olive oil","Flour","Beef broth","Nutmeg","Brown sugar","Pepper","Cream","Allspice"],
+  simpleSteps:[
+    {t:"Brown flour in olive oil", a:"golden roux"},
+    {t:"Add broth and spices", a:"simmering"},
+    {t:"Add cream after 3 hours", a:"rich sauce"}
+  ],
+  chefSteps:[
+    {
+      t:"Make the gravy base",
+      a:"Heat a pot over medium heat and add 2 tablespoons of olive oil. Add 1/4 cup of all-purpose flour and stir constantly for 2-3 minutes until the flour turns golden and smells nutty — this is Wanda's roux and it's the backbone of the whole dish. Don't rush it. A properly browned roux gives the gravy its deep, rich color and eliminates any raw flour taste.",
+      tip:"Keep stirring the flour the entire time. Walk away for even 30 seconds and it burns."
+    },
+    {
+      t:"Build the sauce with broth and spices",
+      a:"Pour in the entire box of beef broth while whisking constantly to prevent lumps. Add 1/4 teaspoon ground allspice, 1/4 teaspoon freshly grated nutmeg, and 1 to 2 tablespoons of brown sugar. Add pepper to your taste — Wanda skips salt entirely, letting the beef broth carry the saltiness. Stir everything together and bring to a gentle simmer.",
+      tip:"Freshly grated nutmeg has dramatically more flavor than pre-ground. A microplane and a whole nutmeg is worth it."
+    },
+    {
+      t:"Slow cook and finish with cream",
+      a:"Cook on high in a slow cooker for 6 to 8 hours, or maintain a very low simmer on the stovetop. After about 3 hours, stir in 1/4 cup of heavy whipping cream — this is Wanda's move. The cream goes in mid-cook, not at the end, so it has time to fully integrate and mellow into the sauce. Add more cream if needed toward the end to reach your preferred richness. Serve over egg noodles or mashed potatoes.",
+      tip:"Adding cream mid-cook rather than at the end gives it time to mellow and enrich the sauce all the way through."
     }
   ]
 }
