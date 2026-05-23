@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v18</title>
+<title>The Rusty Chef v17</title>
 
 <style>
 html,body{
@@ -51,6 +51,7 @@ margin:10px 0;
 border:1px solid rgba(255,255,255,.15);
 }
 
+/* Chef mode cards get a warm amber tint */
 .chef-card {
 background: rgba(255, 145, 77, 0.12);
 border-radius: 14px;
@@ -137,6 +138,10 @@ user-select:none;
 transform:scale(1.02);
 }
 
+.btn-chef {
+background: linear-gradient(135deg, #ff6a00, #ff914d);
+color: black;
+}
 
 .btn-feedback {
 background: rgba(255,145,77,0.15);
@@ -220,6 +225,7 @@ width:160px;
 margin-top:0;
 }
 
+/* Feedback button fixed on home screen */
 #homeBg img{
 position:fixed;
 inset:0;
@@ -294,6 +300,11 @@ text-align:center;
 margin-bottom:10px;
 }
 
+.modeBadge{
+text-align:center;
+margin-bottom:12px;
+opacity:.8;
+}
 
 .searchInput{
 width:100%;
@@ -305,99 +316,64 @@ font-size:16px;
 box-sizing:border-box;
 }
 
-
-
-/* ── Privacy Page ── */
-.priv-section {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px;
-  overflow: hidden;
-  margin: 10px 0;
-  transition: border-color 0.2s;
+/* Chef mode banner */
+.chef-banner {
+background: linear-gradient(135deg, rgba(255,106,0,0.25), rgba(255,60,0,0.15));
+border: 1px solid rgba(255,145,77,0.5);
+border-radius: 14px;
+padding: 14px;
+text-align: center;
+margin-bottom: 14px;
 }
-.priv-section:hover { border-color: rgba(255,145,77,0.35); }
-.priv-section-hd {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 13px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.03);
+.chef-banner .chef-banner-title {
+font-size: 18px;
+font-weight: 900;
+color: #ff914d;
+letter-spacing: 2px;
 }
-.priv-section-icon { font-size: 17px; flex-shrink: 0; }
-.priv-section-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #ff914d;
+.chef-banner .chef-banner-sub {
+font-size: 12px;
+color: rgba(255,200,130,0.8);
+margin-top: 4px;
 }
-.priv-section-body {
-  padding: 14px 16px;
-  font-size: 13px;
-  line-height: 1.75;
-  color: rgba(255,255,255,0.82);
-}
-.priv-section-body p { margin-bottom: 10px; }
-.priv-section-body p:last-child { margin-bottom: 0; }
-.priv-highlight {
-  background: rgba(255,145,77,0.1);
-  border: 1px solid rgba(255,145,77,0.25);
-  border-radius: 10px;
-  padding: 11px 14px;
-  font-size: 13px;
-  color: rgba(255,200,130,0.9);
-  line-height: 1.7;
-}
-.priv-contact {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,145,77,0.12);
-  border: 1px solid rgba(255,145,77,0.35);
-  border-radius: 10px;
-  padding: 10px 14px;
-  text-decoration: none;
-  color: #ff914d;
-  font-size: 13px;
-  font-weight: 700;
-  margin-top: 8px;
-  transition: background 0.2s;
-}
-.priv-contact:hover { background: rgba(255,145,77,0.22); }
 </style>
 </head>
 
 <body>
 
+
 <div id="home" class="page active">
+
 <div id="homeBg">
 <img src="copilot_image_1777179019874.jpeg">
 </div>
+
 <div id="introLogo">
 <div class="the">THE</div>
+
 <div>
 <span class="fire">🔥</span>
 <span class="rusty">RUSTY</span>
 <span class="fire">🔥</span>
 </div>
+
 <div class="chef">CHEF</div>
 </div>
+
+
+
 </div>
 
 <div id="pantry" class="page"></div>
 <div id="results" class="page"></div>
 <div id="recipe" class="page"></div>
 <div id="favorites" class="page"></div>
-<div id="privacy" class="page"></div>
 
-<!-- Permanent tab bar -->
+<!-- Permanent tab bar - lives outside .page so fixed positioning works -->
 <div id="tabBar" style="position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(0,0,0,0.92);backdrop-filter:blur(10px);border-top:1px solid rgba(255,255,255,0.1);padding:8px 12px 12px;display:flex;gap:8px;">
   <div class="btn" onclick="openPantry()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">🧺<br>Pantry</div>
   <div class="btn" onclick="showMatches()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">🍳<br>Recipes</div>
   <div class="btn btn-fav" onclick="showFavorites()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">⭐<br>Saved</div>
-  <a href="https://therustychef.com/privacy" target="_blank" class="btn" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.15);text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;">🔒<br>Privacy</a>
 </div>
 
 <script>
@@ -451,6 +427,8 @@ function showFavorites(){
         </div>`;
     });
   }
+  html += `
+    `;
   document.getElementById("favorites").innerHTML = html;
   show("favorites");
 }
@@ -461,125 +439,1730 @@ function clearPantry(){
   openPantry();
 }
 
-/* ================= PRIVACY ================= */
-function showPrivacy(){
-  document.getElementById("privacy").innerHTML = `
-    <div class="header">🔒 Privacy Policy</div>
-    <div style="text-align:center;margin-bottom:16px;font-size:12px;color:rgba(255,255,255,0.4);">Effective: May 23, 2026</div>
-
-    <div class="priv-section">
-      <div class="priv-section-hd"><span class="priv-section-icon">📋</span><div class="priv-section-title">About This Policy</div></div>
-      <div class="priv-section-body">
-        <p>This privacy policy applies to <strong>The Rusty Chef</strong> app for mobile devices, provided as a free service. This service is intended for use "AS IS".</p>
-      </div>
-    </div>
-
-    <div class="priv-section">
-      <div class="priv-section-hd"><span class="priv-section-icon">🛡️</span><div class="priv-section-title">Data Collection</div></div>
-      <div class="priv-section-body">
-        <div class="priv-highlight">The Rusty Chef does <strong>not</strong> collect, store, or sell any personal data. No information is ever transmitted from your device.</div>
-        <p style="margin-top:12px;">All app data — including your selected ingredients and saved recipes — is stored locally on your device only and never leaves it.</p>
-        <p>The app does <strong>not</strong> use AI technologies to process your data.</p>
-      </div>
-    </div>
-
-    <div class="priv-section">
-      <div class="priv-section-hd"><span class="priv-section-icon">👶</span><div class="priv-section-title">Children</div></div>
-      <div class="priv-section-body">
-        <p>The app does not address anyone under the age of 13, and no personal information is knowingly collected from children. Since no data is collected at all, there is no risk of children's information being stored or shared.</p>
-      </div>
-    </div>
-
-    <div class="priv-section">
-      <div class="priv-section-hd"><span class="priv-section-icon">🔄</span><div class="priv-section-title">Changes to This Policy</div></div>
-      <div class="priv-section-body">
-        <p>This Privacy Policy may be updated from time to time. Any changes will be reflected by updating this page. Continued use of the app constitutes acceptance of the current policy.</p>
-      </div>
-    </div>
-
-    <div class="priv-section">
-      <div class="priv-section-hd"><span class="priv-section-icon">✅</span><div class="priv-section-title">Your Consent</div></div>
-      <div class="priv-section-body">
-        <p>By using the app, you are consenting to the practices described in this Privacy Policy.</p>
-      </div>
-    </div>
-
-    <div class="priv-section">
-      <div class="priv-section-hd"><span class="priv-section-icon">✉️</span><div class="priv-section-title">Contact</div></div>
-      <div class="priv-section-body">
-        <p>Questions? Reach out:</p>
-        <a class="priv-contact" href="mailto:therustychef1@gmail.com">📬 therustychef1@gmail.com</a>
-      </div>
-    </div>
-
-    <div style="text-align:center;margin-top:24px;margin-bottom:20px;font-size:12px;color:rgba(255,255,255,0.25);">© 2026 The Rusty Chef</div>
-  `;
-  show("privacy");
-}
-
 /* ================= RECIPES ================= */
 const recipes = [
-{name:"Chicken Fried Rice",category:"lunch",ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],chefSteps:[{t:"Prep and cook the rice",a:"Rinse the rice under cold water 2–3 times until the water runs mostly clear — this removes excess starch and prevents a gummy texture. Cook using a 1:1.5 rice-to-water ratio. Once done, spread the rice on a tray or plate and refrigerate for at least 30 minutes (overnight is even better). Cold, dry rice fries instead of steams, giving you those distinct separated grains.",tip:"Day-old leftover rice is ideal. Never use freshly cooked rice — it'll clump and turn mushy."},{t:"Season and cook the chicken",a:"Dice the chicken breast into small, even ½-inch cubes so they cook quickly and evenly. Season generously with salt and pepper. Heat a wok or large skillet over high heat until it just begins to smoke. Add a thin layer of neutral oil and cook the chicken in a single layer without stirring for 90 seconds to develop a golden sear, then toss and finish cooking through. Remove from pan and set aside.",tip:"High heat is non-negotiable. A hot wok creates 'wok hei' — that smoky, slightly charred flavor you can't get at low temperatures."},{t:"Scramble the eggs separately",a:"Push everything to the side of the wok or use a clean pan. Add a touch of butter and crack in the eggs. Scramble them low and slow — stir gently and pull off heat while still slightly underdone and glossy. They'll finish cooking from residual heat. Soft, custardy eggs fold into the rice beautifully rather than becoming rubbery chunks.",tip:"Salt your eggs just before scrambling, not ahead of time — pre-salting draws out moisture and makes them watery."},{t:"Fry the rice and combine everything",a:"Add the cold rice to the hot wok and press it flat. Let it sit undisturbed for 60–90 seconds so the bottom layer starts to crisp. Then toss and repeat once more. Add the soy sauce in a ring around the outer edge of the wok (not directly on the rice) so it hits the hot metal first and caramelizes slightly before mixing in. Return the chicken and eggs, then add diced onions and carrots. Toss everything together over high heat for 2 minutes. Taste and adjust salt.",tip:"Add a few drops of sesame oil right at the end, off the heat, for aromatic depth. It burns easily if cooked too long."}]},
-{name:"Spaghetti Bolognese",category:"dinner",ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],chefSteps:[{t:"Build your soffritto base",a:"Finely dice the onions and mince the garlic. Cook them in olive oil over medium-low heat for 10–12 minutes, stirring occasionally, until completely softened and lightly golden — not browned. This slow cook transforms them from sharp and pungent into sweet and deeply savory. This is the flavor foundation that separates a good bolognese from a great one.",tip:"Patience here pays dividends. Rushing the soffritto leaves a raw, one-dimensional base."},{t:"Brown the beef deeply",a:"Raise heat to medium-high and add the ground beef in a single layer if possible. Do not stir for the first 3–4 minutes — you want a real sear, not a gray steam. Once a crust develops on the bottom, break it apart and continue browning. Season with salt and pepper. The goal is deeply caramelized, not just gray and cooked. Drain any excess fat if needed, but leave a little for richness.",tip:"Use 80/20 ground beef for best flavor. Leaner beef dries out and lacks richness."},{t:"Build and simmer the sauce",a:"Add the crushed or diced tomatoes and stir to combine. Bring to a gentle bubble, then reduce to a low simmer. Cook uncovered for at least 25–30 minutes, stirring every few minutes. The sauce should reduce and thicken until it clings to a spoon rather than sliding off watery. Add a small pinch of sugar if the tomatoes taste sharp. Taste and adjust salt.",tip:"A splash of whole milk or cream added in the last 5 minutes of simmering mellows acidity and adds silkiness — a classic Italian trick."},{t:"Cook and combine the pasta",a:"Boil pasta in heavily salted water until just shy of al dente — about 1 minute less than the package says. Reserve a large mug of pasta water before draining. Add the pasta directly into the sauce and toss over medium heat for 1–2 minutes, adding splashes of pasta water to loosen and emulsify. The starchy water helps the sauce coat every strand.",tip:"Never rinse your pasta. The surface starch is what makes sauce stick."}]},
-{name:"Chicken Tacos",category:"dinner",ingredients:["Chicken breast","Tortilla","Cheese","Onions","Lime"],chefSteps:[{t:"Season and cook the chicken",a:"Flatten the chicken breasts to an even thickness by pounding with a pan or rolling pin. Season both sides generously with salt, pepper, cumin, and a pinch of paprika. Heat a cast iron or heavy skillet over medium-high until very hot. Cook 4–5 minutes per side without moving, then rest for 5 minutes before slicing.",tip:"Slice against the grain for the most tender bite."},{t:"Char the tortillas",a:"Place corn tortillas directly over a gas burner flame and char for 15–20 seconds per side. Stack them in a folded kitchen towel to keep warm and pliable.",tip:"Never skip charring. A raw, untoasted tortilla tastes like paper."},{t:"Build and finish with lime",a:"Layer sliced chicken on the tortilla, then add finely diced raw onion, shredded cheese, and any other toppings. Finish with a generous squeeze of fresh lime over the entire taco just before eating.",tip:"Street taco style: keep toppings minimal and quality."}]},
-{name:"Garlic Butter Shrimp Pasta",category:"dinner",ingredients:["Shrimp","Pasta","Butter","Garlic","Lemon"],chefSteps:[{t:"Prep the shrimp properly",a:"Pat the shrimp completely dry with paper towels. Season with salt, pepper, and a pinch of red pepper flakes.",tip:"Dry shrimp = sear. Wet shrimp = steam."},{t:"Cook pasta and reserve water",a:"Cook pasta until 1 minute shy of al dente. Before draining, scoop out a full cup of starchy pasta water.",tip:"The pasta water is the secret sauce ingredient."},{t:"Make the garlic butter sauce",a:"Melt butter slowly until it foams. Add thinly sliced garlic and cook 60–90 seconds until fragrant and just barely golden.",tip:"Keep the heat moderate for the garlic."},{t:"Sear shrimp and bring it together",a:"Add shrimp in a single layer and cook 90 seconds per side until pink and curled. Return shrimp, squeeze in fresh lemon juice, and toss once more.",tip:"Shrimp are done the moment they form a 'C' shape."}]},
-{name:"Beef Stir Fry",category:"dinner",ingredients:["Ground beef","Broccoli","Soy sauce","Carrots","Rice"],chefSteps:[{t:"Prep your vegetables",a:"Cut broccoli into small, uniform florets. Slice carrots on a diagonal for more surface area. Have everything ready before you turn on the heat.",tip:"The diagonal cut on carrots isn't just aesthetic — more surface area means faster, more even cooking."},{t:"Brown the beef with intention",a:"Heat the wok until it just starts to smoke, then add oil and the ground beef in one layer. Leave completely untouched for 2–3 minutes to develop a deep brown crust.",tip:"Those dark bits stuck to the pan are flavor."},{t:"Stir fry the vegetables",a:"Push beef to the side. Add carrots first (they take longest), cook 2 minutes, then add broccoli. Cook over high heat, stirring constantly.",tip:"If the pan starts to dry out, add a tablespoon of water."},{t:"Build and finish the sauce",a:"Drizzle soy sauce around the edges of the wok so it caramelizes before mixing in. Add honey or brown sugar to balance, a splash of sesame oil off the heat.",tip:"Add a teaspoon of cornstarch mixed with water for a thicker, glossy sauce."}]},
-{name:"Grilled Cheese",category:"lunch",ingredients:["Bread","Cheese","Butter"],chefSteps:[{t:"Prepare the bread and butter",a:"Use thick-cut bread. Soften the butter to room temperature so it spreads easily all the way to the edges without tearing.",tip:"Mayo on the outside instead of butter gives an incredibly even, deep golden crust."},{t:"Choose and layer the cheese",a:"Use a blend: something melty (American, fontina) combined with something flavorful (sharp cheddar). Grate your own — pre-shredded has anti-caking powder that prevents smooth melting.",tip:"Grating your own cheese makes a huge difference."},{t:"Cook low and slow for perfection",a:"Place in a cold or barely warm pan, then turn to medium-low. Cook 3–4 minutes per side. If bread is golden but cheese isn't melted, cover with a lid for 60 seconds.",tip:"The lid trick is the single best technique for perfectly melted cheese without burnt bread."}]},
-{name:"Lindzi's Breakfast Burrito",category:"breakfast",ingredients:["Eggs","Tortilla","Cheese","Bacon"],chefSteps:[{t:"Cook the bacon properly",a:"Lay bacon strips in a cold pan, then bring to medium heat. Cook until fat is rendered and edges crisp up. Reserve a teaspoon of bacon fat for the eggs.",tip:"Cold pan start for bacon prevents curling."},{t:"Make perfect soft scrambled eggs",a:"Whisk eggs with a pinch of salt. Add to the bacon fat pan over medium-low heat. Stir constantly, pulling pan off heat periodically. Remove when slightly underdone and glossy.",tip:"Low and slow gives you creamy, custardy eggs."},{t:"Warm tortilla and wrap tightly",a:"Warm a large flour tortilla in a dry pan for 20–30 seconds per side. Layer eggs, crumbled bacon, then cheese. Fold sides in, roll from bottom up, then seal seam-side down.",tip:"Don't overfill. Less is more for a clean wrap."}]},
-{name:"Chicken Curry",category:"dinner",ingredients:["Chicken breast","Curry powder","Coconut milk","Onions"],chefSteps:[{t:"Build the aromatics base",a:"Dice onions finely and cook in oil over medium heat for 12–15 minutes until deeply golden. Add garlic in the last 2 minutes.",tip:"Under-cooked onions make a sharp, acrid curry."},{t:"Bloom the curry powder",a:"Add the curry powder to the onion-garlic mixture and stir constantly for 60–90 seconds over medium heat.",tip:"Blooming spices in fat is the single most important step in curry."},{t:"Add and brown the chicken",a:"Cube chicken into 1.5-inch chunks. Add to the pot and stir to coat. Cook over medium-high heat for 3–4 minutes until the chicken develops some color.",tip:"Don't rush to add liquid. Let the chicken sear in the spices first."},{t:"Simmer to finish",a:"Pour in the coconut milk. Bring to a gentle simmer. Cook 15–20 minutes uncovered until the sauce thickens.",tip:"A squeeze of lime juice just before serving brightens the whole dish."}]},
-{name:"Veggie Omelette",category:"breakfast",ingredients:["Eggs","Bell peppers","Onions","Cheese"],chefSteps:[{t:"Prep and cook the vegetables",a:"Dice bell peppers and onions into small, even pieces. Cook in butter over medium heat for 3–4 minutes until softened and slightly caramelized. Remove and set aside.",tip:"Slightly undercooked vegetables are okay — they'll warm through again."},{t:"Whisk eggs properly",a:"Crack 3 eggs into a bowl and whisk vigorously for a full 30 seconds until slightly frothy. Season with salt. Add a teaspoon of water or milk for extra tenderness.",tip:"Vigorous whisking makes the difference between a fluffy omelette and a dense one."},{t:"Cook and fold the omelette",a:"Melt butter until it foams. Pour in eggs. Let sit 10 seconds, then pull cooked edges inward while tilting pan. When mostly set but still glossy, add filling on one half and fold.",tip:"The goal is no color on the exterior and a custardy interior."}]},
-{name:"BBQ Chicken Sandwich",category:"lunch",ingredients:["Chicken breast","BBQ sauce","Bread","Onions"],chefSteps:[{t:"Cook chicken to stay juicy",a:"Pound chicken breasts to an even 3/4-inch thickness. Season with salt, pepper, smoked paprika, and garlic powder. Cook 4–5 minutes per side without pressing or poking.",tip:"Never press or poke the chicken while it cooks."},{t:"Caramelize the onions",a:"Slice onions into thin rings. Cook in butter over medium-low heat for 20–25 minutes until deeply golden, jammy, and sweet.",tip:"True caramelized onions take 20+ minutes."},{t:"Sauce and assemble",a:"Toss sliced chicken in BBQ sauce over low heat. Toast bread cut-side down in butter until golden. Layer and serve immediately.",tip:"Toast the bread. Untoasted bread gets soggy within seconds."}]},
-{name:"Salmon Lemon Herb",category:"dinner",ingredients:["Salmon","Lemon","Garlic","Olive oil"],chefSteps:[{t:"Prep the salmon",a:"Bring salmon to room temperature 15–20 minutes before cooking. Pat completely dry. Score the skin lightly every inch to prevent curling.",tip:"Dry fish sears beautifully. Wet fish steams."},{t:"Achieve the perfect sear",a:"Heat a cast iron skillet over medium-high until very hot. Add olive oil. Place salmon skin-side DOWN and press gently for 10 seconds. Cook skin-side down for 4 minutes without touching.",tip:"Do not move the salmon. It will release naturally when properly seared."},{t:"Finish and rest",a:"Flip and cook flesh-side down for just 60–90 seconds. Let rest in the pan 2 minutes. Finish with garlic sautéed in butter and squeeze fresh lemon over just before serving.",tip:"Overcooked salmon is dry and chalky. Pull it when the thickest part still looks slightly underdone."}]},
-{name:"Chicken Alfredo",category:"dinner",ingredients:["Chicken breast","Pasta","Cream","Parmesan"],chefSteps:[{t:"Cook and rest the chicken",a:"Season and sear in a hot pan — 5 minutes per side until golden. Rest 5 full minutes before slicing. Deglaze the pan with a splash of cream into your sauce.",tip:"Those browned bits from chicken are concentrated flavor."},{t:"Make a real Alfredo sauce",a:"Melt butter, add minced garlic for 60 seconds. Pour in heavy cream, simmer 3–4 minutes. Lower heat to minimum, then add freshly grated Parmesan in small handfuls.",tip:"Freshly grated Parmesan is essential. Pre-grated contains cellulose that prevents proper melting."},{t:"Combine and serve immediately",a:"Add cooked pasta to the sauce and toss to coat. Add reserved pasta water by the tablespoon if needed. Slice rested chicken and arrange on top.",tip:"Alfredo thickens rapidly as it cools. Serve immediately in warm bowls."}]},
-{name:"Tuna Sandwich",category:"lunch",ingredients:["Tuna","Bread","Mayonnaise"],chefSteps:[{t:"Make a proper tuna mix",a:"Drain tuna very thoroughly — press firmly in the strainer. Combine with mayonnaise and mix just until combined. Season with salt, pepper, a squeeze of lemon, and optional Dijon.",tip:"Start with less mayo than you think."},{t:"Toast and assemble thoughtfully",a:"Toast bread until golden and crisp. Let cool 60 seconds. Spread a thin layer of mayo on both sides as a moisture barrier. Add tuna mix and lettuce if available.",tip:"Lettuce between bread and tuna is a moisture barrier, not just garnish."}]},
-{name:"Pancakes",category:"breakfast",ingredients:["Flour","Milk","Eggs","Sugar"],chefSteps:[{t:"Mix the batter correctly",a:"Combine dry ingredients in one bowl, wet in another. Pour wet into dry and stir until just combined — lumps are fine and expected. Let rest 5 minutes.",tip:"Lumpy batter makes fluffy pancakes. Smooth batter makes tough ones."},{t:"Cook with control",a:"Add butter to pan — when it foams and subsides, the pan is ready. Pour about ¼ cup per pancake. Flip only when bubbles pop and stay open. Flip once only.",tip:"Flip once. Every extra flip deflates the rise."}]},
-{name:"Fried Chicken",category:"dinner",ingredients:["Chicken breast","Flour","Oil"],chefSteps:[{t:"Season the flour and prep for coating",a:"Season flour generously with salt, pepper, garlic powder, paprika, and cayenne. Dip chicken in buttermilk or egg, then press firmly into the seasoned flour. Let sit on a rack 10 minutes.",tip:"Pressing the flour coating onto the chicken is critical."},{t:"Fry at the right temperature",a:"Heat oil to 350°F. Fry in batches — never crowd the pot. Cook 6–8 minutes for breast pieces, turning halfway. Rest on a rack, never paper towels.",tip:"A wire rack keeps the bottom crust crispy. Paper towels destroy the crunch."}]},
-{name:"Chicken Noodle Soup",category:"lunch",ingredients:["Chicken broth","Chicken breast","Carrots","Noodles"],chefSteps:[{t:"Build flavor into the broth",a:"Sauté diced onion, sliced carrots, and celery in butter for 5–6 minutes. Add garlic for the last minute. Deglaze with broth. Simmer 15 minutes before adding chicken.",tip:"Sautéing vegetables before adding broth builds flavor most people skip."},{t:"Poach the chicken gently",a:"Add raw chicken breasts to gently simmering broth. Keep at a very gentle simmer — never boiling. Cook 15–18 minutes, then shred with two forks.",tip:"Poaching at 180°F gives silky chicken. Boiling at 212°F gives rubbery chicken."},{t:"Add noodles and finish",a:"Bring broth back to a boil and add noodles. Cook 1–2 minutes less than the package says. Return shredded chicken. Finish with parsley and a squeeze of lemon.",tip:"Add noodles last and cook them slightly underdone."}]},
-{name:"Simple Chili",category:"dinner",ingredients:["Ground beef","Tomatoes","Beans"],chefSteps:[{t:"Brown the beef deeply",a:"Cook ground beef over medium-high heat. Don't stir for 3–4 minutes to develop a deep brown crust. Season with salt, pepper, cumin, chili powder, and smoked paprika.",tip:"Pale gray beef makes for a thin-tasting, one-dimensional chili."},{t:"Build and simmer the chili",a:"Add crushed tomatoes and deglaze. Add beans. Simmer uncovered for 30–40 minutes until thick. Taste and adjust seasoning.",tip:"Chili is always better the next day."}]},
-{name:"Mac And Cheese",category:"lunch",ingredients:["Pasta","Cheddar","Milk","Butter"],chefSteps:[{t:"Cook pasta perfectly",a:"Boil pasta in heavily salted water to just barely al dente — 1 minute less than the package minimum. Reserve a cup of pasta water.",tip:"Under-cooking pasta slightly is deliberate."},{t:"Make a proper béchamel cheese sauce",a:"Melt butter, whisk in equal flour and cook 60–90 seconds. Slowly pour in warm milk while whisking. Cook 4–5 minutes until thickened. Season with salt, pepper, and mustard powder.",tip:"Adding cold milk to a hot roux causes lumps. Warm your milk first."},{t:"Melt in the cheese and combine",a:"Remove sauce from heat. Stir in freshly grated sharp cheddar in small handfuls off the heat. Add pasta and toss, adding pasta water to reach a flowing, creamy consistency.",tip:"Never add cheese to a sauce that's actively boiling."}]},
-{name:"Steak And Potatoes",category:"dinner",ingredients:["Steak","Potatoes","Butter","Garlic"],chefSteps:[{t:"Prep and dry brine the steak",a:"Season steak generously with salt at least 40 minutes before cooking. Pat dry with paper towels right before cooking.",tip:"Dry brining overnight transforms cheap steaks."},{t:"Get a restaurant-quality sear",a:"Use a cast iron skillet. Heat empty over high heat 3–4 minutes. Add oil, lay steak away from you, don't touch for 2–3 minutes. Baste with butter, garlic, and thyme in the last minute.",tip:"The butter baste is the single biggest upgrade to home steak cooking."},{t:"Rest the steak — non-negotiable",a:"Rest on a cutting board for AT LEAST 5 minutes. While it rests, cook diced potatoes in the same buttery pan.",tip:"Rest time equals cut thickness in minutes as a rough guide."}]},
-{name:"Shrimp Tacos",category:"dinner",ingredients:["Shrimp","Tortilla","Lime","Cheese"],chefSteps:[{t:"Season and sear the shrimp",a:"Pat shrimp dry. Season with salt, pepper, cumin, and chili powder. Cook 60–90 seconds per side until pink and curl into a C shape. Squeeze lime into the hot pan at the end.",tip:"Shrimp go from perfect to overcooked in under 30 seconds."},{t:"Make a quick slaw or sauce",a:"Shred cabbage and toss with lime juice, salt, and a small amount of mayo or sour cream for a quick slaw.",tip:"Acid (lime) is what makes tacos bright and fresh."},{t:"Char tortillas and assemble",a:"Char corn tortillas 15–20 seconds per side. Double up two small tortillas per taco. Layer shrimp, slaw, cheese, and finish with fresh lime.",tip:"Two tortillas per taco is the street taco standard."}]},
-{name:"Loaded Baked Potato",category:"lunch",ingredients:["Potatoes","Cheddar","Bacon","Butter"],chefSteps:[{t:"Bake the potato properly",a:"Rub all over with oil and coat generously with coarse salt. Pierce all over with a fork. Place directly on the oven rack at 400°F for 50–60 minutes.",tip:"Oven rack placement is key. Airflow all around = crispy skin."},{t:"Prepare toppings while potato bakes",a:"Cook bacon cold-pan-start until crispy. Drain and crumble. Grate the cheddar fresh.",tip:"Grating your own cheddar melts more smoothly."},{t:"Open and load the potato",a:"Cut a slit across the top and squeeze both ends to open. Drop in butter first, then sour cream, cheddar, and bacon.",tip:"The butter goes in first. It melts into every crevice."}]},
-{name:"Teriyaki Chicken",category:"dinner",ingredients:["Chicken breast","Teriyaki sauce","Rice","Broccoli"],chefSteps:[{t:"Prep and sear the chicken",a:"Slice chicken breasts in half horizontally to create thinner cutlets. Pat dry and season lightly. Sear 3–4 minutes per side until golden.",tip:"Thin cutlets cook in half the time and stay juicier."},{t:"Make or reduce the teriyaki glaze",a:"Add bottled teriyaki sauce to the empty pan and cook over medium heat for 2–3 minutes until it reduces and becomes noticeably thicker and glossier.",tip:"Reduced teriyaki sauce is completely different from the straight-from-bottle version."},{t:"Steam the broccoli and plate",a:"Steam broccoli until bright green and just tender. Serve glazed chicken sliced over rice with broccoli on the side.",tip:"Bright green broccoli means it's cooked right."}]},
-{name:"French Toast",category:"breakfast",ingredients:["Bread","Eggs","Milk","Butter"],chefSteps:[{t:"Make the custard soak",a:"Whisk together eggs, milk, a pinch of salt, a teaspoon of sugar, and vanilla extract. Whisk until completely smooth.",tip:"Using cream instead of milk gives you a richer, more custardy interior."},{t:"Soak the bread properly",a:"Use thick-cut bread. Let each slice soak for 20–30 seconds per side — you want the custard to fully penetrate.",tip:"Stale bread works better than fresh. It absorbs the custard without getting soggy."},{t:"Cook to golden perfection",a:"Melt butter over medium heat until it foams. Cook 2–3 minutes per side until deep golden-brown.",tip:"Medium heat is key. Too high = burnt outside, raw custard inside."}]},
-{name:"Creamy Mushroom Pasta",category:"dinner",ingredients:["Pasta","Mushrooms","Cream","Garlic"],chefSteps:[{t:"Brown the mushrooms properly",a:"Spread mushrooms in a single layer in a hot, dry pan. Let sit undisturbed for 2–3 minutes until moisture evaporates. Only then add butter and continue cooking until deeply golden-brown. Season with salt only after browning.",tip:"The mushroom moisture must fully evaporate before browning begins."},{t:"Build the sauce",a:"Add minced garlic and cook 60 seconds. Add a splash of white wine or pasta water. Pour in cream and simmer 4–5 minutes until thick. Finish with freshly grated Parmesan.",tip:"A small pinch of freshly grated nutmeg in a cream sauce adds warmth and depth."},{t:"Combine pasta and serve",a:"Add pasta directly to the mushroom cream sauce and toss, adding pasta water as needed for a silky consistency.",tip:"The pasta water transforms a cream sauce from heavy to light and glossy."}]},
-{name:"Chicken Quesadilla",category:"lunch",ingredients:["Chicken breast","Tortilla","Cheese","Butter"],chefSteps:[{t:"Cook and season the chicken",a:"Dice chicken into small cubes and season with salt, pepper, cumin, and smoked paprika. Don't stir for the first 2 minutes to develop a sear.",tip:"Slightly cooled chicken filling gives the quesadilla time to crisp before the cheese melts."},{t:"Build and seal the quesadilla",a:"Grate cheese fresh. Spread cheese on one half of a large flour tortilla, then add chicken on top. Fold over. Brush outside with softened butter.",tip:"Cheese underneath the filling is what holds the quesadilla together when you cut it."},{t:"Cook for maximum crunch",a:"Place in a dry pan over medium heat. Press firmly with a spatula and cook 2–3 minutes until deeply golden. Flip and repeat.",tip:"No oil in the pan — the butter on the outside is enough."}]},
-{name:"Honey Garlic Chicken",category:"dinner",ingredients:["Chicken breast","Honey","Garlic","Soy sauce","Rice"],chefSteps:[{t:"Pound and sear the chicken",a:"Pound to an even 3/4-inch thickness. Sear in a hot skillet — 4 minutes per side without moving. Remove and set aside on a plate. Don't wipe the pan.",tip:"The fond left in the pan after searing is the most flavorful part of your dish."},{t:"Build the honey garlic sauce",a:"Add minced garlic to the same pan and cook 60 seconds. Add honey, soy sauce, and a splash of water. Simmer 2–3 minutes until slightly reduced and glossy.",tip:"If the sauce tastes too sweet, a small splash of rice vinegar will balance it."},{t:"Glaze and finish",a:"Return chicken to the pan and spoon the sauce over it continuously for 2–3 minutes. The chicken will develop a lacquered, glossy coating.",tip:"Continuous basting creates a professional-looking, deeply flavored glaze."}]},
-{name:"Pulled Pork",category:"dinner",ingredients:["Pork chops","BBQ sauce","Onions","Garlic","Brown sugar"],chefSteps:[{t:"Build the dry rub",a:"Combine brown sugar, salt, black pepper, paprika, garlic powder, and cayenne. Pat pork dry then coat every surface generously. Let sit in fridge at least 1 hour, ideally overnight.",tip:"Overnight dry brining makes the difference between surface and deep seasoning."},{t:"Build flavor before slow cooking",a:"Sear the pork in a hot pan — 2 minutes per side until dark brown. Place in slow cooker with sliced onions, minced garlic, and a splash of broth. Cook low and slow 8–10 hours.",tip:"The sear creates a flavor crust that survives the long cook."},{t:"Shred and finish with sauce",a:"Shred with two forks pulling along the grain. Add cooking juices back into the meat. Stir in BBQ sauce gradually.",tip:"Always add some cooking juices back."}]},
-{name:"Egg Fried Noodles",category:"lunch",ingredients:["Noodles","Eggs","Soy sauce","Onions","Oil"],chefSteps:[{t:"Cook and dry the noodles",a:"Boil noodles, drain and rinse briefly under cold water. Toss with a few drops of oil. Spread on a plate to air dry for a few minutes.",tip:"The cold rinse and oil toss are non-negotiable."},{t:"Fry noodles for char",a:"Heat a wok over the highest heat your stove produces. Spread noodles flat and leave undisturbed for 90 seconds to develop golden-brown spots.",tip:"High heat and patience is everything. Stirring constantly just steams them."},{t:"Add eggs and season",a:"Push noodles to the side. Crack eggs in and scramble quickly — 30–40 seconds — then immediately fold through the noodles. Add soy sauce around the edge of the wok.",tip:"Folding eggs into noodles while still slightly wet creates a glossy coating."}]},
-{name:"Caesar Salad",category:"lunch",ingredients:["Lettuce","Parmesan","Olive oil","Garlic","Lemon"],chefSteps:[{t:"Make the dressing from scratch",a:"Mince garlic almost to a paste. Whisk with lemon juice, Worcestershire, and Dijon mustard. Slowly drizzle in olive oil while whisking constantly. Stir in grated Parmesan.",tip:"Whisking the oil in slowly is what creates an emulsified dressing."},{t:"Prep the romaine properly",a:"Use only the inner leaves of romaine. Wash and dry completely. Wet lettuce dilutes the dressing.",tip:"Drying the lettuce is as important as making the dressing."},{t:"Dress and serve immediately",a:"Add dressing to the bowl first, then add lettuce and toss. Add shaved Parmesan over the top.",tip:"Dress just before serving. A dressed Caesar left for 10 minutes turns limp."}]},
-{name:"Spicy Ramen",category:"lunch",ingredients:["Ramen noodles","Eggs","Soy sauce","Chicken broth","Mushrooms"],chefSteps:[{t:"Build a proper broth base",a:"Start with chicken broth. Add soy sauce, sesame oil, minced garlic, and chili paste. Bring to a gentle simmer and let cook for 10 minutes.",tip:"A 10-minute simmer transforms store-bought broth."},{t:"Make soft-boiled ramen eggs",a:"Boil eggs exactly 6 minutes 30 seconds. Transfer immediately to an ice bath for 5 minutes. Peel and slice in half just before serving.",tip:"The ice bath stops cooking instantly."},{t:"Cook noodles separately and assemble",a:"Cook ramen noodles in a separate pot of plain boiling water. Sauté mushrooms in butter until golden. Ladle hot broth over everything. Top with the halved soft-boiled egg.",tip:"Cooking noodles in plain water keeps the broth clear and clean-tasting."}]},
-{name:"Daniel's Stuffed Bell Peppers",category:"dinner",ingredients:["Bell peppers","Ground beef","Rice","Tomatoes","Cheese"],chefSteps:[{t:"Pre-cook the peppers",a:"Slice tops off bell peppers and remove seeds. Place cut-side down on a baking tray and roast at 400°F for 10 minutes.",tip:"Pre-roasting is the step most recipes skip."},{t:"Build a flavorful filling",a:"Brown ground beef deeply. Season with salt, pepper, garlic powder, and paprika. Add diced tomatoes and cooked rice. Simmer 3–4 minutes.",tip:"Over-season the filling slightly. The pepper will dilute the flavor."},{t:"Fill, top, and bake",a:"Pack filling firmly, mounding above the rim. Top generously with shredded cheese. Bake at 375°F for 20–25 minutes until cheese is bubbling.",tip:"Packing the filling firmly prevents it from shrinking away from the sides."}]},
-{name:"Pesto Pasta",category:"dinner",ingredients:["Pasta","Basil","Parmesan","Olive oil","Garlic"],chefSteps:[{t:"Make proper pesto",a:"Combine fresh basil, Parmesan, garlic, and salt in a food processor. Pulse until roughly chopped. With motor running, slowly drizzle in olive oil.",tip:"Over-processing turns pesto warm and bitter. Short pulses only."},{t:"Cook pasta and reserve water",a:"Cook pasta in well-salted water until al dente. Reserve a full cup of pasta water before draining.",tip:"The pasta water is what makes pesto saucy instead of clumpy."},{t:"Combine off the heat",a:"Let drained pasta cool 30 seconds before adding pesto — hot pasta oxidizes the basil and turns it brown. Toss with pasta water until glossy.",tip:"Off-heat mixing preserves the bright green color."}]},
-{name:"Fish Tacos",category:"dinner",ingredients:["Salmon","Tortilla","Lime","Cabbage","Mayonnaise"],chefSteps:[{t:"Season and cook the fish",a:"Pat salmon dry and season with salt, pepper, cumin, and chili powder. Cook skin-side up 3 minutes, then flip and cook 2 more minutes. Break into large flakes.",tip:"Don't move the fish for the first 3 minutes."},{t:"Make the lime crema slaw",a:"Shred cabbage and toss with lime juice and salt. Let sit 5 minutes. Stir in a spoonful of mayonnaise and another squeeze of lime.",tip:"Letting cabbage sit in lime juice for 5 minutes transforms it."},{t:"Char tortillas and build",a:"Char corn tortillas 15 seconds per side. Double them up per taco. Layer slaw first, then flaked fish, then a squeeze of lime.",tip:"Slaw underneath the fish keeps everything in place."}]},
-{name:"Vegetable Curry",category:"dinner",ingredients:["Potatoes","Chickpeas","Coconut milk","Curry powder","Tomatoes","Onions"],chefSteps:[{t:"Build the flavor base",a:"Dice onions finely and cook in oil for 12 minutes until deeply golden. Add garlic, then curry powder and stir constantly for 90 seconds. Add diced tomatoes and cook 5 more minutes.",tip:"The oil separating from the tomato-spice mixture signals the base is properly cooked."},{t:"Add vegetables and build the curry",a:"Add cubed potatoes and chickpeas and stir to coat. Cook 3 minutes in the spiced oil before adding liquid. Pour in coconut milk and enough water to just cover.",tip:"Toasting vegetables in spice base before adding liquid builds flavor."},{t:"Simmer to finish",a:"Simmer uncovered 20–25 minutes until potatoes are tender and the sauce has thickened. Finish with a squeeze of lime.",tip:"Pressing some chickpeas against the pot thickens the curry naturally."}]},
-{name:"Beef Tacos",category:"dinner",ingredients:["Ground beef","Tortilla","Cheese","Tomatoes","Onions","Lime"],chefSteps:[{t:"Season and brown the beef properly",a:"Cook ground beef over medium-high. Don't stir for 3 minutes — let a deep brown crust develop. Season with salt, pepper, cumin, chili powder, garlic powder, and oregano.",tip:"The dark bits from browning are where all the taco flavor lives."},{t:"Make a quick fresh salsa",a:"Dice tomatoes and onions. Combine with lime, salt, and optional cilantro. Let sit 5 minutes.",tip:"Salting the salsa and letting it rest 5 minutes creates a cohesive, saucy texture."},{t:"Char tortillas and build",a:"Char corn tortillas 15 seconds per side. Double up two tortillas per taco. Layer beef, fresh salsa, and shredded cheese. Finish with a squeeze of lime.",tip:"Fresh lime squeezed right before eating brightens every other flavor."}]},
-{name:"Liam's Banana Pancakes",category:"breakfast",ingredients:["Bananas","Eggs","Oats","Butter"],chefSteps:[{t:"Choose ripe bananas and make the batter",a:"Use very ripe bananas — deeply spotted or nearly black. Mash thoroughly. Whisk in eggs. If using oats, blend them first to create a fine flour.",tip:"Overripe bananas you'd never eat are the best bananas for this."},{t:"Rest the batter",a:"Let the batter rest 5 minutes after mixing. If it seems too thick, add a splash of milk.",tip:"Rested batter makes fluffier pancakes."},{t:"Cook low and slow",a:"Melt butter in a non-stick pan over medium-low heat. Pour small amounts — about 3 tablespoons each. Cook until bubbles form and edges look set, then flip gently.",tip:"Smaller pancakes are easier to flip. Banana batter is delicate."}]},
-{name:"Sausage And Peppers",category:"dinner",ingredients:["Sausage","Bell peppers","Onions","Olive oil","Garlic"],chefSteps:[{t:"Sear the sausage for color",a:"Slice sausages into 1-inch rounds. Heat a wide pan over medium-high. Add sausage and don't touch for 2–3 minutes to get a deep brown sear on the cut faces.",tip:"Leaving the sausage undisturbed for the sear is critical."},{t:"Build the peppers and onions",a:"In the same pan with the sausage drippings, add sliced bell peppers and onions. Cook over medium heat 12–15 minutes until soft and slightly jammy. Add garlic in the last 2 minutes.",tip:"The sausage drippings are the secret flavor base."},{t:"Combine and finish",a:"Return the sausage, add a small splash of water to deglaze, and cook together over medium heat for 5 minutes.",tip:"The final 5 minutes together allows the sausage to absorb the pepper and onion flavors."}]},
-{name:"Shakshuka",category:"breakfast",ingredients:["Eggs","Tomatoes","Bell peppers","Onions","Garlic","Paprika"],chefSteps:[{t:"Build the tomato sauce base",a:"Cook diced onions and bell peppers in olive oil 8 minutes. Add garlic, then paprika, cumin, and cayenne for 60 seconds. Add crushed tomatoes and simmer 15 minutes uncovered until thick.",tip:"A properly reduced sauce is essential."},{t:"Poach the eggs in the sauce",a:"Create small wells in the sauce. Crack eggs one at a time into a cup first, then gently slide each into a well. Cover and cook over medium-low heat for 5–7 minutes.",tip:"Cracking eggs into a cup first gives you control."},{t:"Serve directly from the pan",a:"Shakshuka waits for no one — serve immediately. Finish with a drizzle of olive oil and cracked black pepper.",tip:"Every minute off heat the yolks continue to set."}]},
-{name:"Baked Salmon",category:"dinner",ingredients:["Salmon","Olive oil","Lemon","Garlic","Parsley"],chefSteps:[{t:"Prep and season the salmon",a:"Bring salmon to room temperature 15 minutes before cooking. Pat dry. Mix minced garlic, olive oil, salt, pepper, and lemon zest into a paste and spread over the flesh side. Lay thin lemon slices on top.",tip:"Lemon slices on top create a steam barrier that keeps the fish moist."},{t:"Bake at the right temperature",a:"Bake at 400°F for 12–15 minutes depending on thickness. The fish is done when it flakes easily but the center still looks slightly translucent.",tip:"Pull salmon 1–2 minutes before it looks fully done."},{t:"Rest and finish",a:"Rest on the tray for 2 minutes. Squeeze fresh lemon directly over the fish right before serving and scatter chopped fresh parsley.",tip:"Lemon zest adds fragrance throughout cooking. Fresh lemon juice at the end adds brightness."}]},
-{name:"Loaded Nachos",category:"lunch",ingredients:["Crackers","Cheddar","Ground beef","Tomatoes","Onions","Beans"],chefSteps:[{t:"Season the beef and build the base",a:"Brown ground beef with spices. Spread chips in a single layer on a baking tray — not piled up. Distribute beef and beans evenly across every chip.",tip:"Single layer nachos every time."},{t:"Layer cheese properly",a:"Grate cheese fresh. Distribute evenly over everything. Bake at 400°F for 8–10 minutes until cheese is fully melted.",tip:"Cheese goes on last, directly over everything."},{t:"Add fresh toppings after baking",a:"Never bake fresh toppings. Add cold toppings immediately after pulling from the oven: diced tomatoes, raw onion, sour cream, and salsa.",tip:"Hot + cold contrast is what makes nachos great."}]},
-{name:"Creamy Tomato Soup",category:"lunch",ingredients:["Tomatoes","Cream","Onions","Garlic","Butter","Chicken broth"],chefSteps:[{t:"Roast the tomatoes first",a:"Halve tomatoes, drizzle with olive oil, salt, and pepper. Roast at 400°F for 25–30 minutes until caramelized and slightly charred at the edges.",tip:"Roasting vs. boiling tomatoes is the single biggest quality difference."},{t:"Build and simmer the soup",a:"Add roasted tomatoes and juices to the pot with sautéed onions. Pour in chicken broth and simmer 10 minutes. Blend until completely smooth.",tip:"Never fill a blender more than halfway with hot liquid."},{t:"Finish with cream and season",a:"Return blended soup to the pot. Stir in heavy cream and heat gently — don't boil after adding cream. Taste and adjust salt aggressively.",tip:"Adding cream then immediately boiling breaks the emulsion."}]},
-{name:"Turkey Meatballs",category:"dinner",ingredients:["Turkey","Eggs","Breadcrumbs","Garlic","Parmesan","Olive oil"],chefSteps:[{t:"Mix the meatball base correctly",a:"Combine ground turkey with a beaten egg, breadcrumbs soaked in milk, minced garlic, grated Parmesan, salt, pepper, and oregano. Mix with hands until just combined.",tip:"The milk-soaked breadcrumb (panade) is the difference between juicy and dry meatballs."},{t:"Roll and sear for color",a:"Wet your hands lightly with water and roll into uniform 1.5-inch balls. Sear in olive oil in batches — don't crowd. Cook 2 minutes per side until golden.",tip:"Wet hands make rolling effortless."},{t:"Finish in sauce",a:"Transfer seared meatballs to a pot of simmering tomato sauce or chicken broth. Simmer gently for 15–20 minutes.",tip:"Finishing in liquid is what keeps turkey meatballs moist."}]},
-{name:"Avocado Toast",category:"breakfast",ingredients:["Avocado","Bread","Lemon","Salt","Eggs"],chefSteps:[{t:"Choose and prepare the avocado",a:"Use a ripe avocado. Add a generous squeeze of lemon immediately after scooping. Mash with a fork to your preferred texture. Season with flaky salt and black pepper.",tip:"The lemon goes in before tasting, not after."},{t:"Toast the bread properly",a:"Toast thick-cut sourdough until deeply golden and crisp. For extra flavor, rub the hot toast immediately with a cut clove of raw garlic.",tip:"Rubbing hot toast with raw garlic is a life-changing move."},{t:"Build and finish",a:"Spread avocado generously right before eating — never ahead of time. Top with a soft-poached egg if desired. Finish with flaky salt, pepper, and a final squeeze of lemon.",tip:"Assemble right before eating."}]},
-{name:"Sweet And Sour Chicken",category:"dinner",ingredients:["Chicken breast","Pineapple","Bell peppers","Soy sauce","Vinegar","Sugar"],chefSteps:[{t:"Prep and cook the chicken",a:"Cut chicken into uniform 1-inch cubes. Toss in cornstarch before cooking — this creates a crisp surface. Cook in a hot, oiled pan without stirring for 2–3 minutes until golden.",tip:"The cornstarch coating is what makes restaurant sweet and sour chicken crisp."},{t:"Build the sweet and sour sauce",a:"In the same pan, combine pineapple juice, rice vinegar, soy sauce, sugar, and ketchup. Mix cornstarch with cold water and pour into the simmering sauce while whisking.",tip:"Adding the cornstarch slurry to simmering liquid makes it thicken instantly."},{t:"Stir fry vegetables and combine",a:"Add diced bell peppers and cook 2 minutes. Add pineapple chunks for the last 30 seconds. Return chicken and pour sauce over. Toss over high heat 60 seconds.",tip:"The vegetables should stay slightly crunchy."}]},
-{name:"Lemon Garlic Pasta",category:"dinner",ingredients:["Pasta","Lemon","Garlic","Olive oil","Parmesan"],chefSteps:[{t:"Cook pasta and build the base",a:"Cook pasta until al dente. Reserve a generous cup of pasta water. In a wide pan, warm olive oil and add garlic. Cook slowly for 2–3 minutes until fragrant and just barely golden.",tip:"Slow-cooked garlic in olive oil becomes mellow and sweet."},{t:"Build the lemon sauce",a:"Add lemon zest and cook 30 seconds. Add a big splash of pasta water and swirl. Squeeze in the juice of a whole lemon.",tip:"Zest before juice, always."},{t:"Finish with Parmesan and serve",a:"Add drained pasta and toss, adding more pasta water as needed. Remove from heat and stir in freshly grated Parmesan in small handfuls.",tip:"This dish demands freshly grated Parmesan."}]},
-{name:"Potato Soup",category:"lunch",ingredients:["Potatoes","Chicken broth","Butter","Milk","Onions","Cheddar"],chefSteps:[{t:"Build the flavor base",a:"Dice onions and cook in butter for 8–10 minutes until softened and golden. Add garlic for the last minute. Add diced potatoes and stir to coat in the butter before adding any liquid.",tip:"Sautéing potatoes briefly before adding liquid creates a caramelized surface."},{t:"Simmer until tender",a:"Pour in chicken broth until potatoes are just covered. Simmer 15–20 minutes until completely tender.",tip:"Fully tender potatoes blend silky-smooth."},{t:"Blend, add dairy, and finish",a:"Use an immersion blender to blend about half the soup. Stir in milk or cream and heat gently. Add shredded cheddar off the heat in small handfuls.",tip:"Half-blend technique gives you both creamy body and satisfying potato chunks."}]},
-{name:"Chicken Fajitas",category:"dinner",ingredients:["Chicken breast","Bell peppers","Onions","Tortilla","Lime"],chefSteps:[{t:"Marinate and sear the chicken",a:"Slice chicken breast into thin strips and season with salt, pepper, cumin, chili powder, garlic powder, and lime. Heat a cast iron pan until just smoking. Sear without stirring for 90 seconds.",tip:"Overcrowding drops the temperature and you'll steam instead of sear."},{t:"Char the vegetables",a:"In the same hot pan, add sliced bell peppers and onions. Cook over high heat without stirring for 2 minutes until char marks develop.",tip:"Restaurant fajitas are sizzling because of extremely high heat."},{t:"Char tortillas and serve sizzling",a:"Char flour tortillas over a gas flame or in the dry pan. Serve the chicken and vegetables immediately while still sizzling hot.",tip:"Serve immediately from the hot pan. The sizzle fades fast."}]},
-{name:"Egg Drop Soup",category:"lunch",ingredients:["Eggs","Chicken broth","Cornstarch","Soy sauce","Onions"],chefSteps:[{t:"Season and thicken the broth",a:"Bring chicken broth to a gentle simmer. Season with soy sauce, sesame oil, salt, and white pepper. Mix cornstarch with cold water into a slurry and pour slowly into the simmering broth while stirring.",tip:"Cornstarch must be mixed with cold water first."},{t:"Stream eggs correctly",a:"Whisk eggs thoroughly. Stir soup in a slow circular motion to create a whirlpool. While swirling, pour the beaten eggs in a slow, thin stream from a height of 6–8 inches.",tip:"The pouring height matters — it breaks the egg into finer streams."},{t:"Finish and serve immediately",a:"Let the soup sit undisturbed for 30 seconds. Stir gently once. Ladle immediately into bowls. Garnish with sliced green onions.",tip:"Serve within 1–2 minutes of finishing."}]},
-{name:"Baked Mac And Cheese",category:"dinner",ingredients:["Pasta","Cheddar","Milk","Butter","Flour","Breadcrumbs"],chefSteps:[{t:"Make the béchamel base",a:"Melt butter, add equal amount of flour and whisk constantly for 90 seconds. Pour warm milk in gradually while whisking. Cook 5–6 minutes until thick. Season with salt, pepper, mustard powder, and nutmeg.",tip:"Warm milk prevents lumps far better than cold."},{t:"Melt in cheese and combine",a:"Remove sauce from heat. Stir in freshly grated sharp cheddar in handfuls. Add cooked al-dente pasta and stir to coat thoroughly.",tip:"Make the sauce saucier than seems right before baking."},{t:"Top and bake for the crust",a:"Pour pasta into a buttered baking dish. Mix breadcrumbs with melted butter and spread in an even layer. Bake at 375°F for 25–30 minutes until the top is deep golden-brown.",tip:"Buttered breadcrumbs are the move. Plain breadcrumbs turn dry and pale."}]},
-{name:"Honey Sriracha Wings",category:"lunch",ingredients:["Chicken breast","Honey","Hot sauce","Butter","Garlic","Soy sauce"],chefSteps:[{t:"Get the chicken crispy",a:"Pat chicken pieces completely dry. Season with salt, pepper, and a light coating of cornstarch or baking powder. Bake at 425°F on a wire rack over a baking tray for 35–40 minutes, flipping halfway.",tip:"Baking powder on chicken skin is the restaurant trick for incredible crispiness."},{t:"Make the honey sriracha glaze",a:"Combine honey, sriracha, soy sauce, minced garlic, and a tablespoon of butter in a saucepan. Simmer 3–4 minutes until slightly reduced and glossy.",tip:"The butter in the sauce is the 'cling' ingredient."},{t:"Toss and serve immediately",a:"Remove chicken from the oven and immediately toss in the sauce while piping hot. Serve immediately while crispy.",tip:"Toss in sauce right before serving, never ahead of time."}]},
-{name:"Crispy Tofu Stir Fry",category:"tofu",ingredients:["Tofu","Soy sauce","Broccoli","Garlic","Sesame oil","Cornstarch","Rice"],chefSteps:[{t:"Press the tofu properly",a:"Wrap tofu in a kitchen towel, place something heavy on top, and let press for at least 20 minutes. After pressing, cut into uniform 1-inch cubes. Season with salt and pepper.",tip:"Pressing is non-negotiable. Unpressed tofu will never get crispy."},{t:"Coat and fry for maximum crunch",a:"Toss tofu cubes lightly in cornstarch. Heat a pan over medium-high with a generous layer of oil. Add tofu in a single layer and do not touch for 3 full minutes. Flip and repeat on all sides.",tip:"Cornstarch coating is the secret to restaurant-style crispy tofu."},{t:"Build the stir fry sauce and combine",a:"Cook minced garlic 60 seconds. Add broccoli and cook 3 minutes. Mix soy sauce with water and cornstarch for a quick sauce. Pour in, toss, then return the crispy tofu and fold gently. Finish with sesame oil.",tip:"Add tofu back at the very end and fold gently."}]},
-{name:"Egg Noodle Soup",category:"lunch",ingredients:["Egg noodles","Chicken broth","Eggs","Garlic","Soy sauce","Onions","Sesame oil"],chefSteps:[{t:"Build a deeply flavored broth",a:"Start with chicken broth. Add smashed garlic cloves, soy sauce, sesame oil, and sliced onions. Simmer 12 minutes uncovered.",tip:"A properly built broth is 80% of the dish."},{t:"Cook egg noodles separately",a:"Cook egg noodles in a separate pot of boiling salted water. Drain and toss with sesame oil to prevent clumping. Place noodles in the serving bowl first.",tip:"Cooking noodles in broth muddies it."},{t:"Poach an egg directly in the broth",a:"Bring strained broth to a gentle simmer. Crack an egg into a small cup. Create a gentle swirl in the broth, then slide the egg in. Cook 3 minutes for runny yolk. Place on top of the noodles.",tip:"Cracking the egg into a cup first gives you control."}]},
-{name:"Chocolate Lava Cake",category:"dessert",ingredients:["Chocolate","Butter","Eggs","Sugar","Flour"],chefSteps:[{t:"Make the chocolate base",a:"Combine chopped chocolate with butter in a heatproof bowl over barely simmering water. Stir until melted and glossy. Remove from heat and let cool 3 minutes.",tip:"Never melt chocolate over direct heat."},{t:"Build the batter",a:"Whisk eggs, egg yolks, and sugar until pale and slightly thick — about 90 seconds. Fold the chocolate mixture into the eggs gently, then sift in flour and fold until just combined.",tip:"Folding preserves the air you whisked in."},{t:"Bake with precision",a:"Butter and flour individual ramekins thoroughly. Fill 3/4 full. Bake at 425°F for exactly 12 minutes. The edges should be set but the center should still jiggle. Rest 1 minute, then invert onto a plate immediately.",tip:"Timing is everything. 12 min = flowing center. 14 min = no lava."}]},
-{name:"Banana Bread",category:"dessert",ingredients:["Bananas","Flour","Butter","Sugar","Eggs","Baking soda"],chefSteps:[{t:"Use the right bananas",a:"The bananas must be very overripe — deeply black-spotted or completely black. Mash thoroughly until almost no chunks remain.",tip:"Can't wait for bananas to ripen? Bake unpeeled at 300°F for 20 minutes until skins turn black."},{t:"Mix wet and dry separately",a:"Melt butter, whisk with sugar, add eggs one at a time. Fold in mashed banana. Whisk flour, baking soda, and salt separately. Add dry to wet and fold until just combined.",tip:"The fold-until-just-combined rule is the most important step in any quick bread."},{t:"Bake low and slow",a:"Pour into a buttered loaf pan. Bake at 350°F for 55–65 minutes. The loaf is done when a toothpick comes out with just a few moist crumbs. Cool completely before slicing.",tip:"Cool completely before slicing. Hot quick breads are gummy."}]},
-{name:"Classic Brownies",category:"dessert",ingredients:["Chocolate","Butter","Sugar","Eggs","Flour","Vanilla extract"],chefSteps:[{t:"Build the fudgy base",a:"Melt butter and chocolate together. Let cool 5 minutes. Whisk in sugar, then add eggs one at a time, whisking vigorously after each. Add vanilla. The batter should turn glossy and ribbon-like.",tip:"That glossy ribbon texture is the key indicator of a properly emulsified fudgy brownie."},{t:"Add flour minimally",a:"Sift flour directly into the chocolate mixture. Fold with a spatula using 10 to 15 folds maximum. Stop the moment no dry flour is visible.",tip:"Less mixing = more fudge. More mixing = more cake."},{t:"Bake to the right doneness",a:"Pour into a buttered 8x8 pan. Bake at 350°F for 20–25 minutes. Pull out when the edge toothpick is clean but the center toothpick still has moist crumbs. Cool completely before cutting.",tip:"Refrigerating before cutting is the difference between clean squares and crumbly smears."}]},
-{name:"Cinnamon French Toast Sticks",category:"dessert",ingredients:["Bread","Eggs","Milk","Butter","Cinnamon","Sugar","Vanilla extract","Maple syrup"],chefSteps:[{t:"Make the spiced custard",a:"Whisk eggs, milk, cinnamon, sugar, vanilla extract, and a tiny pinch of salt until completely smooth. Cut thick bread slices into thirds lengthwise.",tip:"Thick-cut brioche or Texas toast makes the best sticks."},{t:"Soak and cook for texture",a:"Soak each stick 20 seconds per side. Melt butter in a non-stick pan over medium heat. Cook sticks on all four sides until deeply golden-brown, about 2 minutes per side.",tip:"Cook all four sides. The full caramelization is what makes them indulgent."},{t:"Finish with cinnamon sugar",a:"While still hot from the pan, immediately toss or dust with cinnamon and sugar. Serve immediately with warm maple syrup for dipping.",tip:"The cinnamon sugar coating goes on while hot."}]},
-{name:"Chocolate Chip Cookies",category:"dessert",ingredients:["Flour","Butter","Sugar","Brown sugar","Eggs","Vanilla extract","Chocolate","Baking soda","Salt"],chefSteps:[{t:"Brown the butter first",a:"Melt butter in a light-colored pan over medium heat, swirling constantly, until the milk solids turn golden-brown and smell nutty — about 5 minutes. Pour into a bowl and let cool.",tip:"Brown butter is the single biggest upgrade to chocolate chip cookies."},{t:"Mix the dough and rest it",a:"Whisk cooled brown butter with both white and brown sugar. Add eggs and vanilla extract. Fold in flour, baking soda, and salt until just combined, then fold in chocolate chips. Refrigerate at least 30 minutes.",tip:"Overnight rest is the difference between flat cookies and thick, chewy bakery-style ones."},{t:"Bake and pull early",a:"Roll into balls and place on parchment-lined sheet. Bake at 375°F for 10–11 minutes. Pull out when edges are set but centers still look slightly underdone. Sprinkle with flaky salt immediately.",tip:"Underbake slightly every time. Cookies continue cooking on the hot pan."}]},
-{name:"Tofu Scramble",category:"tofu",ingredients:["Tofu","Turmeric","Bell peppers","Onions","Soy sauce","Garlic","Olive oil"],chefSteps:[{t:"Press and crumble the tofu",a:"Press firm tofu for 15 minutes. Crumble into irregular pieces using your hands — vary the sizes from fine crumbles to larger chunks, just like real scrambled eggs.",tip:"Irregular crumble sizes mimic real scrambled eggs far better than uniform fine crumbles."},{t:"Season with turmeric and spices",a:"Heat olive oil over medium-high. Add crumbled tofu in a single layer and let sit 2 minutes to develop golden color. Add turmeric, garlic powder, and a splash of soy sauce.",tip:"Kala namak (black salt) is the secret ingredient for egg flavor."},{t:"Add vegetables and finish",a:"Push tofu to the side and add diced bell peppers and onions. Cook 2 minutes over high heat. Fold through the tofu. Add another splash of soy sauce and toss 60 seconds.",tip:"Keep some pieces crispy and some soft — the texture contrast is what makes it satisfying."}]},
-{name:"Miso Glazed Tofu",category:"tofu",ingredients:["Tofu","Soy sauce","Sesame oil","Garlic","Ginger","Brown sugar","Rice"],chefSteps:[{t:"Press and prep the tofu",a:"Press extra-firm tofu for at least 20 minutes. Slice into 1-inch thick rectangular slabs. Score the surface of each slab lightly with a knife in a crosshatch pattern.",tip:"Scoring the surface doubles the glaze contact area."},{t:"Build the glaze",a:"Whisk together soy sauce, brown sugar, minced garlic, grated fresh ginger, and sesame oil. Brush generously over both sides of each tofu slab. Let marinate at least 10 minutes.",tip:"Grating ginger rather than mincing releases more juice and flavor."},{t:"Caramelize for maximum flavor",a:"For pan method: sear tofu 3–4 minutes per side without moving. For oven method: bake at 400°F for 25 minutes, flipping halfway and brushing with extra glaze each time.",tip:"The caramelized dark spots are flavor, not burning."}]},
-{name:"Mika's Fried Ravioli",category:"lunch",ingredients:["Ravioli","Breadcrumbs","Eggs","Parmesan","Italian seasoning","Garlic powder","Oil","Marinara sauce"],chefSteps:[{t:"Set up the breading station",a:"Set up three bowls: flour with salt and pepper, beaten eggs, and breadcrumbs mixed with finely grated Parmesan, Italian seasoning, garlic powder, and salt. Use fresh or refrigerated ravioli, not frozen.",tip:"The Parmesan-breadcrumb combo is what separates Mika's version from basic fried ravioli."},{t:"Bread each ravioli properly",a:"Dredge in flour, dip in egg, then press firmly into the breadcrumb mixture on both sides. Place on a wire rack and let rest 5 minutes before frying.",tip:"Resting the breaded ravioli for 5 minutes before frying makes the coating stick dramatically better."},{t:"Fry to golden perfection",a:"Heat oil to 350°F. Fry in small batches — crowding makes them greasy. Cook 2–3 minutes per side until deep golden brown. Drain on a wire rack. Season immediately with extra Parmesan and salt while still hot.",tip:"Season the moment they come out of the oil."},{t:"Serve with warm marinara",a:"Warm marinara in a small pan over low heat. Add a pinch of Italian seasoning and garlic powder. Pour into a dipping bowl. Serve immediately.",tip:"Warming the marinara with extra seasoning makes store-bought taste house-made."}]},
-{name:"Wanda's Swedish Meatballs",category:"dinner",ingredients:["Ground beef","Olive oil","Flour","Beef broth","Nutmeg","Brown sugar","Pepper","Cream","Allspice"],chefSteps:[{t:"Make the gravy base",a:"Heat a pot over medium heat and add 2 tablespoons of olive oil. Add 1/4 cup of all-purpose flour and stir constantly for 2-3 minutes until the flour turns golden and smells nutty.",tip:"Keep stirring the flour the entire time. Walk away for even 30 seconds and it burns."},{t:"Build the sauce with broth and spices",a:"Pour in the entire box of beef broth while whisking constantly. Add 1/4 teaspoon ground allspice, 1/4 teaspoon freshly grated nutmeg, and 1 to 2 tablespoons of brown sugar. Add pepper to taste.",tip:"Freshly grated nutmeg has dramatically more flavor than pre-ground."},{t:"Slow cook and finish with cream",a:"Cook on high in a slow cooker for 6 to 8 hours. After about 3 hours, stir in 1/4 cup of heavy whipping cream. Add more cream if needed toward the end.",tip:"Adding cream mid-cook rather than at the end gives it time to mellow and enrich the sauce."}]}
+
+{
+  name:"Chicken Fried Rice",
+  category:"lunch",
+  ingredients:["Rice","Eggs","Chicken breast","Soy sauce","Onions","Carrots"],
+  simpleSteps:[
+    {t:"Cook rice", a:"fluffy"},
+    {t:"Cook chicken", a:"done"},
+    {t:"Scramble eggs", a:"soft"},
+    {t:"Mix everything", a:"hot pan"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep and cook the rice",
+      a:"Rinse the rice under cold water 2–3 times until the water runs mostly clear — this removes excess starch and prevents a gummy texture. Cook using a 1:1.5 rice-to-water ratio. Once done, spread the rice on a tray or plate and refrigerate for at least 30 minutes (overnight is even better). Cold, dry rice fries instead of steams, giving you those distinct separated grains.",
+      tip:"Day-old leftover rice is ideal. Never use freshly cooked rice — it'll clump and turn mushy."
+    },
+    {
+      t:"Season and cook the chicken",
+      a:"Dice the chicken breast into small, even ½-inch cubes so they cook quickly and evenly. Season generously with salt and pepper. Heat a wok or large skillet over high heat until it just begins to smoke. Add a thin layer of neutral oil and cook the chicken in a single layer without stirring for 90 seconds to develop a golden sear, then toss and finish cooking through. Remove from pan and set aside.",
+      tip:"High heat is non-negotiable. A hot wok creates 'wok hei' — that smoky, slightly charred flavor you can't get at low temperatures."
+    },
+    {
+      t:"Scramble the eggs separately",
+      a:"Push everything to the side of the wok or use a clean pan. Add a touch of butter and crack in the eggs. Scramble them low and slow — stir gently and pull off heat while still slightly underdone and glossy. They'll finish cooking from residual heat. Soft, custardy eggs fold into the rice beautifully rather than becoming rubbery chunks.",
+      tip:"Salt your eggs just before scrambling, not ahead of time — pre-salting draws out moisture and makes them watery."
+    },
+    {
+      t:"Fry the rice and combine everything",
+      a:"Add the cold rice to the hot wok and press it flat. Let it sit undisturbed for 60–90 seconds so the bottom layer starts to crisp. Then toss and repeat once more. Add the soy sauce in a ring around the outer edge of the wok (not directly on the rice) so it hits the hot metal first and caramelizes slightly before mixing in. Return the chicken and eggs, then add diced onions and carrots. Toss everything together over high heat for 2 minutes. Taste and adjust salt.",
+      tip:"Add a few drops of sesame oil right at the end, off the heat, for aromatic depth. It burns easily if cooked too long."
+    }
+  ]
+},
+
+{
+  name:"Spaghetti Bolognese",
+  category:"dinner",
+  ingredients:["Pasta","Ground beef","Tomatoes","Onions","Garlic"],
+  simpleSteps:[
+    {t:"Boil pasta", a:"soft"},
+    {t:"Cook beef", a:"brown"},
+    {t:"Add sauce", a:"tomato"},
+    {t:"Combine", a:"mix"}
+  ],
+  chefSteps:[
+    {
+      t:"Build your soffritto base",
+      a:"Finely dice the onions and mince the garlic. Cook them in olive oil over medium-low heat for 10–12 minutes, stirring occasionally, until completely softened and lightly golden — not browned. This slow cook transforms them from sharp and pungent into sweet and deeply savory. This is the flavor foundation that separates a good bolognese from a great one.",
+      tip:"Patience here pays dividends. Rushing the soffritto leaves a raw, one-dimensional base."
+    },
+    {
+      t:"Brown the beef deeply",
+      a:"Raise heat to medium-high and add the ground beef in a single layer if possible. Do not stir for the first 3–4 minutes — you want a real sear, not a gray steam. Once a crust develops on the bottom, break it apart and continue browning. Season with salt and pepper. The goal is deeply caramelized, not just gray and cooked. Drain any excess fat if needed, but leave a little for richness.",
+      tip:"Use 80/20 ground beef for best flavor. Leaner beef dries out and lacks richness."
+    },
+    {
+      t:"Build and simmer the sauce",
+      a:"Add the crushed or diced tomatoes and stir to combine. Bring to a gentle bubble, then reduce to a low simmer. Cook uncovered for at least 25–30 minutes, stirring every few minutes. The sauce should reduce and thicken until it clings to a spoon rather than sliding off watery. Add a small pinch of sugar if the tomatoes taste sharp. Taste and adjust salt.",
+      tip:"A splash of whole milk or cream added in the last 5 minutes of simmering mellows acidity and adds silkiness — a classic Italian trick."
+    },
+    {
+      t:"Cook and combine the pasta",
+      a:"Boil pasta in heavily salted water (it should taste like mild sea water) until just shy of al dente — about 1 minute less than the package says. Reserve a large mug of pasta water before draining. Add the pasta directly into the sauce and toss over medium heat for 1–2 minutes, adding splashes of pasta water to loosen and emulsify. The starchy water helps the sauce coat every strand.",
+      tip:"Never rinse your pasta. The surface starch is what makes sauce stick."
+    }
+  ]
+},
+
+{
+  name:"Chicken Tacos",
+  category:"dinner",
+  ingredients:["Chicken breast","Tortilla","Cheese","Onions","Lime"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"done"},
+    {t:"Warm tortillas", a:"soft"},
+    {t:"Assemble tacos", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Season and cook the chicken",
+      a:"Flatten the chicken breasts to an even thickness by pounding with a pan or rolling pin — this ensures they cook evenly without drying out. Season both sides generously with salt, pepper, cumin, and a pinch of paprika. Heat a cast iron or heavy skillet over medium-high until very hot. Cook 4–5 minutes per side without moving, then rest for 5 minutes before slicing. Resting is critical — cutting too early loses all the juices.",
+      tip:"Slice against the grain for the most tender bite. Look at which direction the muscle fibers run and cut perpendicular to them."
+    },
+    {
+      t:"Char the tortillas",
+      a:"Place corn tortillas directly over a gas burner flame (or in a dry cast iron pan over high heat) and char for 15–20 seconds per side — you want small blackened spots and a slight puff. This adds smoky flavor and texture that a microwave simply can't replicate. Stack them in a folded kitchen towel or foil as you go to keep them warm and pliable.",
+      tip:"Never skip charring. A raw, untoasted tortilla tastes like paper. The char is where the flavor lives."
+    },
+    {
+      t:"Build and finish with lime",
+      a:"Layer sliced chicken on the tortilla, then add finely diced raw onion (soaked in cold water for 5 minutes to mellow the sharpness, then drained), shredded cheese, and any other toppings. Finish with a generous squeeze of fresh lime over the entire taco just before eating — the acid brightens every other flavor and cuts through the richness of the cheese and chicken.",
+      tip:"Street taco style: keep toppings minimal and quality. Cilantro + onion + lime + salsa is often better than a loaded pile."
+    }
+  ]
+},
+
+{
+  name:"Garlic Butter Shrimp Pasta",
+  category:"dinner",
+  ingredients:["Shrimp","Pasta","Butter","Garlic","Lemon"],
+  simpleSteps:[
+    {t:"Boil pasta", a:"done"},
+    {t:"Cook shrimp", a:"pink"},
+    {t:"Add garlic butter", a:"sauce"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep the shrimp properly",
+      a:"Pat the shrimp completely dry with paper towels — moisture is the enemy of a good sear. Season with salt, pepper, and a pinch of red pepper flakes. If they have shells, peel them but save the shells — you can briefly sauté them in butter for 2 minutes then remove them to infuse incredible shrimp flavor into your sauce.",
+      tip:"Dry shrimp = sear. Wet shrimp = steam. The difference is enormous for both texture and flavor."
+    },
+    {
+      t:"Cook pasta and reserve water",
+      a:"Cook pasta in generously salted boiling water until 1 minute shy of al dente — it will finish in the sauce. Before draining, scoop out a full cup of starchy pasta water. This cloudy, salty, starchy liquid is liquid gold — it's what turns butter and garlic into a silky, emulsified sauce that clings to every strand.",
+      tip:"The pasta water is the secret sauce ingredient. Don't skip saving it."
+    },
+    {
+      t:"Make the garlic butter sauce",
+      a:"In a wide skillet over medium heat, melt butter slowly until it foams. Add thinly sliced garlic and cook 60–90 seconds until fragrant and just barely golden — watch carefully as garlic burns fast and turns bitter. Add a splash of pasta water and swirl the pan to start emulsifying the butter into a sauce.",
+      tip:"Keep the heat moderate for the garlic. High heat goes from golden to burnt in seconds."
+    },
+    {
+      t:"Sear shrimp and bring it together",
+      a:"Raise heat to medium-high. Add shrimp in a single layer and cook 90 seconds per side until pink, curled, and lightly seared. Remove shrimp before adding pasta — they'll overcook if left in the pan too long. Add drained pasta to the sauce and toss vigorously, adding splashes of pasta water to build a glossy, cohesive sauce. Return shrimp, squeeze in fresh lemon juice, and toss once more. Serve immediately.",
+      tip:"Shrimp are done the moment they form a 'C' shape. An 'O' shape means they're overcooked and rubbery."
+    }
+  ]
+},
+
+{
+  name:"Beef Stir Fry",
+  category:"dinner",
+  ingredients:["Ground beef","Broccoli","Soy sauce","Carrots","Rice"],
+  simpleSteps:[
+    {t:"Cook beef", a:"brown"},
+    {t:"Add veggies", a:"soft"},
+    {t:"Serve over rice", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep your vegetables",
+      a:"Cut broccoli into small, uniform florets so they cook evenly. Slice carrots on a diagonal — this creates more surface area for browning and looks intentional. Have everything cut, measured, and ready before you turn on the heat. Stir frying moves fast and there's no time to chop mid-cook.",
+      tip:"The diagonal cut on carrots isn't just aesthetic — more surface area means faster, more even cooking and better caramelization."
+    },
+    {
+      t:"Brown the beef with intention",
+      a:"Use a wok or the largest skillet you have. Heat it until it just starts to smoke, then add oil and the ground beef in one layer. Leave it completely untouched for 2–3 minutes — let a deep brown crust form on the bottom. Then break and stir, continuing until all the beef is browned with dark, caramelized bits throughout. Season with salt and pepper. This deep browning creates the rich, savory flavor foundation.",
+      tip:"Those dark bits stuck to the pan are flavor — they'll deglaze into the sauce when you add liquid."
+    },
+    {
+      t:"Stir fry the vegetables",
+      a:"Push beef to the side. Add a touch more oil and the carrots first (they take longest), cook 2 minutes, then add broccoli. Toss everything together and cook over high heat, stirring constantly. You want the vegetables tender-crisp — cooked through but still with a little bite and bright color. Broccoli should be vivid green, not olive drab.",
+      tip:"If the pan starts to dry out, add a tablespoon of water — it'll steam the vegetables and deglaze any stuck bits simultaneously."
+    },
+    {
+      t:"Build and finish the sauce",
+      a:"Drizzle soy sauce around the edges of the wok so it hits the hot metal and caramelizes before mixing into the food. Add a small spoonful of honey or brown sugar to balance, a splash of sesame oil off the heat, and toss everything vigorously for 60 seconds over high heat. The sauce should coat everything and reduce to a glaze, not pool at the bottom. Serve immediately over hot rice.",
+      tip:"Add a teaspoon of cornstarch mixed with water if you want a thicker, restaurant-style glossy sauce."
+    }
+  ]
+},
+
+{
+  name:"Grilled Cheese",
+  category:"lunch",
+  ingredients:["Bread","Cheese","Butter"],
+  simpleSteps:[
+    {t:"Butter bread", a:"done"},
+    {t:"Add cheese", a:"melt"},
+    {t:"Grill", a:"golden"}
+  ],
+  chefSteps:[
+    {
+      t:"Prepare the bread and butter",
+      a:"Use thick-cut bread — sourdough, brioche, or pullman loaf all work beautifully. Soften the butter to room temperature so it spreads easily all the way to the edges without tearing. A thin, even layer from corner to corner is what gives you that uniformly golden, crispy exterior. Unbuttered spots will stay pale and soft.",
+      tip:"Mayo on the outside instead of butter is a pro trick — it has a higher smoke point and gives an incredibly even, deep golden crust."
+    },
+    {
+      t:"Choose and layer the cheese",
+      a:"Use a blend of cheeses for complexity: something melty (American, fontina, or Gruyère) combined with something flavorful (sharp cheddar or aged gouda). Grate your own — pre-shredded cheese has anti-caking powder that prevents smooth melting. Layer the cheese generously but evenly. A thin smear of Dijon mustard on the inside of one slice is a subtle upgrade that adds depth without standing out.",
+      tip:"Grating your own cheese makes a huge difference. Pre-shredded melts grainy and uneven."
+    },
+    {
+      t:"Cook low and slow for perfection",
+      a:"Place the sandwich in a cold or barely warm pan, then turn the heat to medium-low. This counterintuitive approach lets the cheese melt fully before the outside burns. Cook 3–4 minutes per side, pressing gently with a spatula. The crust should be deep golden-brown, crackling, and audible. If the bread is golden but the cheese isn't melted, cover the pan with a lid for 60 seconds — the steam melts the cheese without burning the bread.",
+      tip:"The lid trick is the single best technique for getting perfectly melted cheese without burnt bread."
+    }
+  ]
+},
+
+{
+  name:"Lindzi's Breakfast Burrito",
+  category:"breakfast",
+  ingredients:["Eggs","Tortilla","Cheese","Bacon"],
+  simpleSteps:[
+    {t:"Cook eggs", a:"soft"},
+    {t:"Cook bacon", a:"crispy"},
+    {t:"Wrap burrito", a:"final"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook the bacon properly",
+      a:"Lay bacon strips in a cold pan, then bring to medium heat — starting cold renders the fat gradually, giving you crispier, flatter, more evenly cooked bacon. Cook until the fat is rendered and the edges crisp up. Transfer to a paper towel-lined plate. Reserve a teaspoon of the bacon fat in the pan — this is what you'll scramble the eggs in for incredible flavor.",
+      tip:"Cold pan start for bacon is the move. It prevents curling and gives you professional-level results."
+    },
+    {
+      t:"Make perfect soft scrambled eggs",
+      a:"Crack eggs into a bowl and whisk with a pinch of salt until completely uniform — no streaks of white or yolk. Add to the bacon fat pan over medium-low heat. Stir constantly with a rubber spatula, making slow figure-8 and folding motions. Pull the pan off heat periodically to slow cooking. Remove when eggs look slightly underdone and glossy — they'll finish from residual heat. Season with pepper.",
+      tip:"The biggest egg mistake is high heat. Low and slow gives you creamy, custardy eggs. High heat gives you rubbery curds."
+    },
+    {
+      t:"Warm tortilla and wrap tightly",
+      a:"Warm a large flour tortilla in a dry pan over medium heat for 20–30 seconds per side — it should puff slightly and be fully pliable. Layer the ingredients off-center, leaving a 2-inch border on the sides: eggs first (they anchor everything), then crumbled bacon, then cheese on top (heat from the eggs will melt it). Fold the sides in, then roll from the bottom up, tucking tightly as you go. Place seam-side down in the hot pan for 30 seconds to seal.",
+      tip:"Don't overfill. A burrito you can't close defeats the purpose. Less is more for a clean wrap."
+    }
+  ]
+},
+
+{
+  name:"Chicken Curry",
+  category:"dinner",
+  ingredients:["Chicken breast","Curry powder","Coconut milk","Onions"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"done"},
+    {t:"Add curry", a:"simmer"},
+    {t:"Add coconut milk", a:"rich"}
+  ],
+  chefSteps:[
+    {
+      t:"Build the aromatics base",
+      a:"Dice onions finely and cook them in oil over medium heat for 12–15 minutes until deeply golden — almost caramelized. This is the foundation of curry flavor. While they cook, mince garlic and grate fresh ginger if you have it. Add garlic in the last 2 minutes of onion cooking so it doesn't burn. The mixture should smell intensely sweet and savory.",
+      tip:"Under-cooked onions make a sharp, acrid curry. The long cook is what creates the deep, complex sweetness."
+    },
+    {
+      t:"Bloom the curry powder",
+      a:"Add the curry powder directly to the onion-garlic mixture and stir constantly for 60–90 seconds over medium heat. This 'blooming' step heats the fat-soluble compounds in the spices, releasing their full aroma and flavor. The mixture will look dry and fragrant. If it sticks, add a tiny splash of water to deglaze.",
+      tip:"Blooming spices in fat is the single most important step in curry. Skipping it makes the spices taste raw and flat."
+    },
+    {
+      t:"Add and brown the chicken",
+      a:"Cube the chicken breast into 1.5-inch chunks. Add to the pot and stir to coat with the spice mixture. Cook over medium-high heat for 3–4 minutes until the chicken develops some color on the outside. It doesn't need to cook through here — it will finish in the sauce. Season with salt.",
+      tip:"Don't rush to add liquid. Let the chicken sear in the spices first — this builds depth."
+    },
+    {
+      t:"Simmer to finish",
+      a:"Pour in the coconut milk, scraping up any bits from the bottom of the pot. Stir to combine. Bring to a gentle simmer (not a full boil — high heat can cause coconut milk to separate and look curdled). Cook 15–20 minutes uncovered until the sauce thickens, the chicken is cooked through, and the oil begins to pool at the surface (this is a good sign called 'oil on top'). Adjust salt to taste.",
+      tip:"A squeeze of lime juice just before serving brightens the whole dish. Acid is the finishing touch every curry needs."
+    }
+  ]
+},
+
+{
+  name:"Veggie Omelette",
+  category:"breakfast",
+  ingredients:["Eggs","Bell peppers","Onions","Cheese"],
+  simpleSteps:[
+    {t:"Cook veggies", a:"soft"},
+    {t:"Add eggs", a:"set"},
+    {t:"Fold omelette", a:"cheesy"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep and cook the vegetables",
+      a:"Dice bell peppers and onions into small, even pieces so they cook at the same rate. Heat a non-stick or well-seasoned pan over medium heat with a small amount of butter. Cook the vegetables 3–4 minutes, stirring occasionally, until softened and slightly caramelized. Season with salt and pepper, then remove from the pan and set aside. The pan is now perfectly seasoned for the eggs.",
+      tip:"Slightly undercooked vegetables are okay — they'll warm through again when the egg sets around them."
+    },
+    {
+      t:"Whisk eggs properly",
+      a:"Crack 3 eggs into a bowl and whisk vigorously for a full 30 seconds until completely combined and slightly frothy — incorporating air creates a lighter, more tender omelette. Season with salt now (not earlier, not after). Add a teaspoon of water or milk for extra tenderness. The batter should be uniform pale yellow with no streaks.",
+      tip:"Vigorous whisking makes the difference between a fluffy, even omelette and a dense, flat one."
+    },
+    {
+      t:"Cook and fold the omelette",
+      a:"Melt butter in the pan over medium heat until it foams but doesn't brown. Pour in the eggs. Let them sit for 10 seconds, then use a rubber spatula to gently pull the cooked edges inward while tilting the pan to let raw egg flow to the edges. Repeat until the egg is mostly set but the top is still glossy and slightly wet. Add vegetables and shredded cheese on one half. Tilt the pan and fold the omelette in half over the filling. Slide onto a plate immediately.",
+      tip:"The French omelette technique: cook with constant gentle movement. The goal is no color on the exterior and a custardy interior."
+    }
+  ]
+},
+
+{
+  name:"BBQ Chicken Sandwich",
+  category:"lunch",
+  ingredients:["Chicken breast","BBQ sauce","Bread","Onions"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"done"},
+    {t:"Add BBQ sauce", a:"mixed"},
+    {t:"Assemble sandwich", a:"final"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook chicken to stay juicy",
+      a:"Pound chicken breasts to an even 3/4-inch thickness for uniform cooking. Season generously with salt, pepper, smoked paprika, and garlic powder. Cook in a lightly oiled cast iron pan over medium-high heat — 4–5 minutes per side without pressing or poking. Use a thermometer: 165°F is safe but 160°F (carry-over will finish it) is ideal for maximum juiciness. Rest 5 minutes.",
+      tip:"Pressing the chicken while it cooks squeezes out moisture. Never press. Never poke."
+    },
+    {
+      t:"Caramelize the onions",
+      a:"Slice onions into thin rings. Cook in butter over medium-low heat for 20–25 minutes, stirring every few minutes, until deeply golden, jammy, and sweet. This is a patience exercise but the payoff is enormous — caramelized onions on a BBQ sandwich elevate it from fast food to something craveable. Season with a pinch of salt and optional splash of balsamic for depth.",
+      tip:"True caramelized onions take 20+ minutes. Anything less is just softened onions."
+    },
+    {
+      t:"Sauce and assemble",
+      a:"Slice the rested chicken and toss it in BBQ sauce over low heat for 60 seconds to warm the sauce and coat evenly. Toast the bread cut-side down in butter until golden. Layer: bottom bun, chicken and sauce, caramelized onions, and whatever else you like. Serve immediately while the chicken is warm and the bread is still crisp.",
+      tip:"Toast the bread. Untoasted bread gets soggy from the sauce within seconds."
+    }
+  ]
+},
+
+{
+  name:"Salmon Lemon Herb",
+  category:"dinner",
+  ingredients:["Salmon","Lemon","Garlic","Olive oil"],
+  simpleSteps:[
+    {t:"Cook salmon", a:"flaky"},
+    {t:"Add lemon", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep the salmon",
+      a:"Bring salmon to room temperature 15–20 minutes before cooking — cold fish straight from the fridge cooks unevenly. Pat completely dry with paper towels. Season the flesh side with salt and pepper. Score the skin lightly with a knife every inch to prevent curling during cooking.",
+      tip:"Dry fish sears beautifully. Wet fish steams and sticks to the pan."
+    },
+    {
+      t:"Achieve the perfect sear",
+      a:"Heat an oven-safe skillet (cast iron or stainless — not non-stick) over medium-high until very hot. Add a thin layer of olive oil. Place salmon skin-side DOWN and immediately press gently with a spatula for 10 seconds to prevent the skin from curling. Cook skin-side down for 4 minutes without touching — let the skin render and crisp. You'll see the flesh turn opaque from the bottom up.",
+      tip:"Do not move the salmon. If it sticks, it's not ready. It will release naturally when properly seared."
+    },
+    {
+      t:"Finish and rest",
+      a:"Flip the salmon and cook flesh-side down for just 60–90 seconds — barely enough to color the top. The center should still be slightly translucent and deep orange. Remove from heat and let rest in the pan 2 minutes. The carry-over heat finishes it perfectly. Finish with minced garlic briefly sautéed in butter in the same pan, then squeeze fresh lemon over the fish just before serving.",
+      tip:"Overcooked salmon is dry and chalky. Pull it when the thickest part still looks slightly underdone — it finishes on the plate."
+    }
+  ]
+},
+
+{
+  name:"Chicken Alfredo",
+  category:"dinner",
+  ingredients:["Chicken breast","Pasta","Cream","Parmesan"],
+  simpleSteps:[
+    {t:"Cook pasta", a:"soft"},
+    {t:"Cook chicken", a:"done"},
+    {t:"Make sauce", a:"creamy"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook and rest the chicken",
+      a:"Season chicken breasts well with salt, pepper, and garlic powder. Sear in a hot pan with a mix of olive oil and butter over medium-high heat — 5 minutes per side until golden and cooked through. Rest for 5 full minutes before slicing. While it rests, deglaze the pan with a splash of cream, scraping up the golden bits — pour this directly into your sauce.",
+      tip:"Those browned bits from chicken are concentrated flavor. Deglazing them into the cream is a chef-level technique."
+    },
+    {
+      t:"Make a real Alfredo sauce",
+      a:"In the same pan over medium heat, melt 2 tablespoons of butter. Add minced garlic and cook 60 seconds. Pour in heavy cream and bring to a gentle simmer. Cook 3–4 minutes until slightly reduced. Lower the heat to minimum, then add freshly grated Parmesan in small handfuls, stirring constantly between additions. The cheese should melt smoothly into a creamy sauce — if heat is too high it will seize and clump.",
+      tip:"Freshly grated Parmesan is essential. Pre-grated contains cellulose powder that prevents it from melting properly."
+    },
+    {
+      t:"Combine and serve immediately",
+      a:"Add cooked pasta directly to the sauce over low heat and toss to coat. Add reserved pasta water by the tablespoon if needed to reach a silky, flowing consistency — the sauce should coat the pasta without being thick and gluey. Slice the rested chicken and arrange on top. Finish with extra Parmesan, cracked black pepper, and fresh parsley if available. Serve immediately — Alfredo waits for no one.",
+      tip:"Alfredo thickens rapidly as it cools. Serve immediately in warm bowls."
+    }
+  ]
+},
+
+{
+  name:"Tuna Sandwich",
+  category:"lunch",
+  ingredients:["Tuna","Bread","Mayonnaise"],
+  simpleSteps:[
+    {t:"Mix tuna", a:"creamy"},
+    {t:"Assemble sandwich", a:"ready"}
+  ],
+  chefSteps:[
+    {
+      t:"Make a proper tuna mix",
+      a:"Drain the canned tuna very thoroughly — press it firmly in the strainer to remove as much liquid as possible. Excess liquid makes the sandwich soggy within minutes. In a bowl, combine tuna with mayonnaise and mix just until combined — don't overwork it or it becomes a paste. Season with salt, black pepper, a small squeeze of lemon juice, and optionally a teaspoon of Dijon mustard for sharpness. Taste before spreading.",
+      tip:"The ratio of mayo to tuna is personal. Start with less than you think — you can always add more, never take it away."
+    },
+    {
+      t:"Toast and assemble thoughtfully",
+      a:"Toast the bread until golden and crisp — a toasted tuna sandwich has texture contrast that an untoasted one completely lacks. Let the toast cool for 60 seconds so steam doesn't make it wet. Spread a thin layer of mayo on both sides of bread (this acts as a moisture barrier). Add the tuna mix, spreading evenly to the edges. Layer with lettuce (if available) — place it between the bread and the tuna so it insulates the bread from moisture.",
+      tip:"Lettuce between the bread and tuna is a structural moisture barrier, not just a garnish."
+    }
+  ]
+},
+
+{
+  name:"Pancakes",
+  category:"breakfast",
+  ingredients:["Flour","Milk","Eggs","Sugar"],
+  simpleSteps:[
+    {t:"Mix batter", a:"smooth"},
+    {t:"Cook pancakes", a:"golden"}
+  ],
+  chefSteps:[
+    {
+      t:"Mix the batter correctly",
+      a:"Combine dry ingredients (flour, sugar, baking powder, pinch of salt) in one bowl. Whisk wet ingredients (eggs, milk, melted butter) in another. Pour the wet into the dry and stir with a fork until just combined — lumps are completely fine and expected. Overmixing develops gluten and makes tough, dense pancakes. Let the batter rest 5 minutes while the pan heats.",
+      tip:"Lumpy batter makes fluffy pancakes. Smooth batter makes tough ones. Stop mixing early."
+    },
+    {
+      t:"Cook with control",
+      a:"Heat a non-stick pan or griddle over medium heat. Add a small pat of butter — when it foams and subsides, the pan is ready. Pour batter (about ¼ cup per pancake) and let it spread naturally. Watch for bubbles forming across the entire surface — when the bubbles pop and stay open (not refilling), it's time to flip. Flip once, only once, and cook another 60–90 seconds. Don't press them down.",
+      tip:"Flip once. Every extra flip deflates the rise and makes the pancake denser."
+    }
+  ]
+},
+
+{
+  name:"Fried Chicken",
+  category:"dinner",
+  ingredients:["Chicken breast","Flour","Oil"],
+  simpleSteps:[
+    {t:"Coat chicken", a:"floured"},
+    {t:"Fry chicken", a:"crispy"}
+  ],
+  chefSteps:[
+    {
+      t:"Season the flour and prep for coating",
+      a:"Season flour generously — add salt, black pepper, garlic powder, paprika, and cayenne to taste. This is where all the flavor of your crust comes from. Season your chicken directly with salt and pepper too. For the crispiest coating: dip the chicken in buttermilk or a beaten egg, then press firmly into the seasoned flour. Let it sit on a rack for 10 minutes before frying — this drying time helps the crust adhere and stay on during cooking.",
+      tip:"Pressing the flour coating onto the chicken is critical. Shake it gently to remove excess but press firmly first."
+    },
+    {
+      t:"Fry at the right temperature",
+      a:"Heat oil in a heavy pot to 350°F (175°C). Use a thermometer — oil temperature is everything. Too cool and the chicken absorbs oil and turns greasy. Too hot and the outside burns before the inside cooks. Fry in batches, never crowding the pot (crowding drops the temperature). Cook 6–8 minutes for breast pieces, turning halfway. The crust should be deep golden-brown. Rest on a rack — never a paper towel, which traps steam and softens the crust.",
+      tip:"A wire rack for resting keeps the bottom crust crispy. Paper towels steam the bottom and destroy the crunch."
+    }
+  ]
+},
+
+{
+  name:"Chicken Noodle Soup",
+  category:"lunch",
+  ingredients:["Chicken broth","Chicken breast","Carrots","Noodles"],
+  simpleSteps:[
+    {t:"Heat broth", a:"hot"},
+    {t:"Add chicken", a:"tender"},
+    {t:"Cook noodles", a:"soft"}
+  ],
+  chefSteps:[
+    {
+      t:"Build flavor into the broth",
+      a:"Start by sautéing diced onion, sliced carrots, and any celery in a little butter or oil over medium heat for 5–6 minutes until softened. Add minced garlic for the last minute. Season with salt and pepper. Deglaze with the chicken broth and bring to a simmer. Add a bay leaf and a few sprigs of thyme if available. Simmer the broth with vegetables for 15 minutes before adding chicken.",
+      tip:"Sautéing the vegetables before adding broth builds a layer of flavor most people skip. It makes a significant difference."
+    },
+    {
+      t:"Poach the chicken gently",
+      a:"Add raw chicken breasts to the simmering (not boiling) broth. Keep the heat at a very gentle simmer — small bubbles, not a roiling boil. Boiling makes chicken tough and stringy. Cook 15–18 minutes, then remove and rest 5 minutes before shredding with two forks. Pull the meat into rustic, irregular pieces rather than chopping — they have more texture and hold up better in the soup.",
+      tip:"Poaching vs. boiling: poaching at 180°F gives you silky, tender chicken. Boiling at 212°F gives you rubbery, dry chicken."
+    },
+    {
+      t:"Add noodles and finish",
+      a:"Bring the broth back to a boil and add noodles. Cook them 1–2 minutes less than the package says — they'll continue cooking from residual heat in the hot soup. Return shredded chicken to the pot. Taste the broth now and adjust salt aggressively — a soup that tastes flat almost always just needs more salt. Finish with chopped fresh parsley and a small squeeze of lemon to brighten everything.",
+      tip:"Add noodles last and cook them slightly underdone. Noodles left in soup too long bloat, turn mushy, and absorb all the broth."
+    }
+  ]
+},
+
+{
+  name:"Simple Chili",
+  category:"dinner",
+  ingredients:["Ground beef","Tomatoes","Beans"],
+  simpleSteps:[
+    {t:"Cook beef", a:"brown"},
+    {t:"Simmer chili", a:"thick"}
+  ],
+  chefSteps:[
+    {
+      t:"Brown the beef deeply",
+      a:"Cook ground beef in a heavy pot over medium-high heat, breaking it up but leaving some larger chunks for texture. The key: don't stir too early. Let it sit for 3–4 minutes to develop a deep brown crust on the bottom. These caramelized bits are the foundation of chili flavor. Season with salt, pepper, cumin, chili powder, and smoked paprika while browning. Drain most of the fat but leave a tablespoon.",
+      tip:"Good chili requires patience at the browning stage. Pale, gray beef makes for a thin-tasting, one-dimensional chili."
+    },
+    {
+      t:"Build and simmer the chili",
+      a:"Add crushed tomatoes and stir, scraping up the browned bits from the bottom of the pot — this is deglazing and it adds enormous flavor. Add the beans (rinsed if canned). Bring to a simmer, then reduce heat to low. Simmer uncovered for at least 30–40 minutes, stirring every 10 minutes. The chili should reduce and thicken until a spoon dragged through it leaves a trail for a second. Taste and adjust seasoning — chili usually needs more salt and cumin than you expect.",
+      tip:"Chili is always better the next day. Make it ahead if you can — overnight rest lets the flavors develop and deepen significantly."
+    }
+  ]
+},
+
+{
+  name:"Mac And Cheese",
+  category:"lunch",
+  ingredients:["Pasta","Cheddar","Milk","Butter"],
+  simpleSteps:[
+    {t:"Boil pasta", a:"soft"},
+    {t:"Make cheese sauce", a:"creamy"},
+    {t:"Combine", a:"smooth"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook pasta perfectly",
+      a:"Boil pasta in heavily salted water to just barely al dente — 1 minute less than the package minimum. It will finish cooking in the sauce. Drain and immediately toss with a tiny bit of butter to prevent sticking. Reserve a cup of pasta water.",
+      tip:"Under-cooking pasta slightly is deliberate — it finishes in the sauce and absorbs flavor rather than just sitting in it."
+    },
+    {
+      t:"Make a proper béchamel cheese sauce",
+      a:"Melt butter in a saucepan over medium heat. Whisk in an equal amount of flour and cook for 60–90 seconds until it smells nutty (this is a roux — it eliminates the raw flour taste). Slowly pour in warm milk while whisking constantly to prevent lumps. Cook 4–5 minutes, whisking, until thickened to a cream sauce consistency. Season with salt, pepper, and a pinch of mustard powder.",
+      tip:"Adding cold milk to a hot roux causes lumps. Warm your milk first, or add it very slowly while whisking constantly."
+    },
+    {
+      t:"Melt in the cheese and combine",
+      a:"Remove the sauce from heat and let it cool 30 seconds. Stir in freshly grated sharp cheddar in small handfuls — off the heat so the proteins don't seize and the sauce stays smooth. Keep stirring until completely melted. Add pasta and toss to coat, adding splashes of reserved pasta water to reach a flowing, creamy consistency. It should be saucy enough to pool slightly at the bottom — it will thicken as it cools.",
+      tip:"Never add cheese to a sauce that's actively boiling — the proteins tighten and you get a grainy, broken sauce."
+    }
+  ]
+},
+
+{
+  name:"Steak And Potatoes",
+  category:"dinner",
+  ingredients:["Steak","Potatoes","Butter","Garlic"],
+  simpleSteps:[
+    {t:"Cook steak", a:"seared"},
+    {t:"Cook potatoes", a:"golden"},
+    {t:"Serve", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep and dry brine the steak",
+      a:"Season the steak generously with salt on all sides at least 40 minutes before cooking (or overnight in the fridge uncovered). Salt draws out surface moisture initially, then gets reabsorbed — seasoning from within rather than sitting on the surface. Pat dry with paper towels right before cooking. A dry surface is essential for a proper crust.",
+      tip:"Dry brining overnight transforms cheap steaks. The salt penetrates the muscle, seasoning throughout and retaining moisture."
+    },
+    {
+      t:"Get a restaurant-quality sear",
+      a:"Use a cast iron skillet. Heat it empty over high heat for 3–4 minutes until it's extremely hot — a drop of water should vaporize immediately. Add just enough oil to coat. Lay the steak away from you and don't touch it for 2–3 minutes. A crust needs to form or it will stick. Flip and repeat. For extra flavor, add butter, smashed garlic cloves, and fresh thyme in the last minute and baste the steak continuously by tilting the pan and spooning the hot flavored butter over the top.",
+      tip:"The butter baste is the single biggest upgrade to home steak cooking. It adds flavor and helps finish the cooking gently."
+    },
+    {
+      t:"Rest the steak — non-negotiable",
+      a:"Rest the steak on a cutting board for AT LEAST 5 minutes (8 for thick cuts). Cutting before resting loses 30–40% of the juices onto the board. The muscle fibers need time to relax and reabsorb the juices. While the steak rests, dice potatoes and cook in the same buttery pan — the browned bits and residual fat flavor them perfectly. Cook until golden and tender.",
+      tip:"Rest time equals cut thickness in minutes as a rough guide. 1-inch steak = 5 minutes rest. 2-inch steak = 10 minutes."
+    }
+  ]
+},
+
+{
+  name:"Shrimp Tacos",
+  category:"dinner",
+  ingredients:["Shrimp","Tortilla","Lime","Cheese"],
+  simpleSteps:[
+    {t:"Cook shrimp", a:"pink"},
+    {t:"Warm tortillas", a:"soft"},
+    {t:"Assemble tacos", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Season and sear the shrimp",
+      a:"Pat shrimp completely dry. Season with salt, pepper, cumin, and a pinch of chili powder. Heat a skillet to high. Add oil and place shrimp in a single layer — don't crowd. Cook 60–90 seconds per side. They're done the instant they turn fully pink and curl into a C shape. Remove immediately — overcooked shrimp are rubbery and flavorless. Squeeze a little lime directly into the hot pan right at the end and let it sizzle.",
+      tip:"Shrimp go from perfect to overcooked in under 30 seconds. Pull them from the heat slightly before they look 'done'."
+    },
+    {
+      t:"Make a quick slaw or sauce",
+      a:"While shrimp cook, shred a handful of cabbage (if available) and toss with lime juice, a pinch of salt, and a small amount of mayo or sour cream for a quick slaw. The crunch and acid cut through the richness of the shrimp and cheese. Even without cabbage, a mix of lime juice and mayo makes a quick crema that elevates the entire taco.",
+      tip:"Acid (lime) is what makes tacos bright and fresh. Without it, all the flavors sit flat."
+    },
+    {
+      t:"Char tortillas and assemble",
+      a:"Char corn tortillas directly over a gas flame or in a dry cast iron pan — 15–20 seconds per side until lightly blistered. Double up two small tortillas per taco for structure. Layer shrimp, slaw, crumbled or shredded cheese, and finish with a generous squeeze of fresh lime. Less is more — don't overcrowd.",
+      tip:"Two tortillas per taco is the street taco standard — one splits from the weight, two hold together."
+    }
+  ]
+},
+
+{
+  name:"Loaded Baked Potato",
+  category:"lunch",
+  ingredients:["Potatoes","Cheddar","Bacon","Butter"],
+  simpleSteps:[
+    {t:"Bake potatoes", a:"soft"},
+    {t:"Cook bacon", a:"crispy"},
+    {t:"Add toppings", a:"melted"}
+  ],
+  chefSteps:[
+    {
+      t:"Bake the potato properly",
+      a:"Scrub potatoes clean and dry completely. Rub all over with oil and coat generously with coarse salt — the salt crust draws out moisture and crisps the skin to a satisfying crunch. Pierce all over with a fork (prevents steam bursting). Place directly on the oven rack (not a pan) at 400°F / 200°C for 50–60 minutes. The skin should be crisp enough to audibly crack when pressed. Test doneness by squeezing — it should give without resistance.",
+      tip:"The oven rack placement is key. Airflow all around = crispy skin all the way around. A pan traps steam on the bottom."
+    },
+    {
+      t:"Prepare toppings while potato bakes",
+      a:"Cook bacon cold-pan-start over medium heat until rendered and crispy. Drain and crumble into pieces. Grate the cheddar fresh. Soften a generous knob of butter at room temperature. Having toppings ready means the potato goes from oven to plate while still steaming hot.",
+      tip:"Grating your own cheddar melts more smoothly and tastes sharper than pre-shredded."
+    },
+    {
+      t:"Open and load the potato",
+      a:"Cut a lengthwise slit across the top, then make a perpendicular cut. Squeeze both ends toward each other to open it up and push the fluffy interior upward. Drop in butter first while the potato is hottest — it melts into every crevice. Add sour cream if available. Top generously with cheddar (the heat of the potato will melt it), then bacon. Season the exposed potato flesh directly with salt and pepper.",
+      tip:"The butter goes in first. It melts into the potato flesh and creates a rich, flavored base for everything on top."
+    }
+  ]
+},
+
+{
+  name:"Teriyaki Chicken",
+  category:"dinner",
+  ingredients:["Chicken breast","Teriyaki sauce","Rice","Broccoli"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"done"},
+    {t:"Add teriyaki sauce", a:"sticky"},
+    {t:"Serve with rice", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep and sear the chicken",
+      a:"Slice chicken breasts in half horizontally to create thinner cutlets that cook faster and more evenly. Pat dry. Season lightly with salt and pepper. Heat a non-stick or cast iron pan over medium-high with a thin layer of oil. Sear 3–4 minutes per side until golden — don't move it during searing. Set aside on a plate.",
+      tip:"Thin cutlets cook in half the time and stay juicier because they spend less time on heat."
+    },
+    {
+      t:"Make or reduce the teriyaki glaze",
+      a:"If using bottled teriyaki sauce, add it to the empty pan and cook over medium heat for 2–3 minutes, stirring, until it reduces by about a third and becomes noticeably thicker and glossier. This step transforms thin, watery sauce into a proper restaurant-quality glaze that clings to the chicken instead of sliding off. Add back the chicken and toss to coat, cooking another 60–90 seconds.",
+      tip:"Reduced teriyaki sauce is completely different from the straight-from-bottle version. Always reduce it."
+    },
+    {
+      t:"Steam the broccoli and plate",
+      a:"Steam or microwave broccoli until bright green and just tender — not mushy. Season with a pinch of salt and a few drops of sesame oil if available. Serve the glazed chicken sliced over rice with broccoli on the side. Spoon any remaining sauce from the pan over everything. Garnish with sesame seeds if you have them.",
+      tip:"Bright green broccoli means it's cooked right. Olive-drab means overcooked — you've lost both texture and nutrients."
+    }
+  ]
+},
+
+{
+  name:"French Toast",
+  category:"breakfast",
+  ingredients:["Bread","Eggs","Milk","Butter"],
+  simpleSteps:[
+    {t:"Mix eggs and milk", a:"smooth"},
+    {t:"Dip bread", a:"coated"},
+    {t:"Cook toast", a:"golden"}
+  ],
+  chefSteps:[
+    {
+      t:"Make the custard soak",
+      a:"Whisk together eggs, milk (or cream for richer results), a pinch of salt, a teaspoon of sugar, and a generous splash of vanilla extract. Add a pinch of cinnamon if desired. The ratio is about 1 egg per 2 slices of bread, with enough milk to create a loose custard. Whisk until completely smooth with no egg streaks.",
+      tip:"Using cream instead of milk gives you a much richer, more custardy interior. Worth it for a special occasion."
+    },
+    {
+      t:"Soak the bread properly",
+      a:"Use thick-cut bread — brioche, challah, or Texas toast are ideal because they absorb the custard without falling apart. Let each slice soak in the custard for 20–30 seconds per side — you want the custard to penetrate the bread fully, not just coat the surface. If the bread is very thick, let it soak a full minute per side. It should feel heavy and saturated.",
+      tip:"Stale bread actually works better than fresh. It absorbs the custard without getting soggy or falling apart."
+    },
+    {
+      t:"Cook to golden perfection",
+      a:"Melt butter in a non-stick pan over medium heat until it foams. Place soaked bread and cook 2–3 minutes per side until deep golden-brown. Don't rush with high heat — the outside should caramelize while the inside fully sets. The exterior should be crisp and caramelized, the interior should be custardy and tender like bread pudding. Serve with maple syrup and fresh fruit.",
+      tip:"Medium heat is key. Too low = pale and soggy. Too high = burnt outside, raw custard inside."
+    }
+  ]
+},
+
+{
+  name:"Creamy Mushroom Pasta",
+  category:"dinner",
+  ingredients:["Pasta","Mushrooms","Cream","Garlic"],
+  simpleSteps:[
+    {t:"Cook pasta", a:"soft"},
+    {t:"Cook mushrooms", a:"tender"},
+    {t:"Add cream", a:"rich"}
+  ],
+  chefSteps:[
+    {
+      t:"Brown the mushrooms properly",
+      a:"This is the most critical step. Slice mushrooms and spread in a single layer in a hot, dry pan — no oil yet. Let them sit undisturbed for 2–3 minutes until they release their moisture and that moisture evaporates. Only then add a pat of butter and continue cooking until deeply golden-brown. Never crowd the pan or they'll steam and turn limp and gray. Season with salt only after browning — salt draws moisture and prevents browning.",
+      tip:"The mushroom moisture must fully evaporate before browning begins. This takes patience but creates unmatched depth of flavor."
+    },
+    {
+      t:"Build the sauce",
+      a:"Add minced garlic to the browned mushrooms and cook 60 seconds. Add a splash of white wine or pasta water and scrape up any browned bits. Pour in the cream and bring to a gentle simmer. Cook 4–5 minutes until the cream reduces and thickens enough to coat the back of a spoon. Season with salt, pepper, and fresh thyme if available. Finish with freshly grated Parmesan and stir until melted.",
+      tip:"A small pinch of freshly grated nutmeg in a cream sauce adds warmth and depth that most people can't identify but immediately notice."
+    },
+    {
+      t:"Combine pasta and serve",
+      a:"Cook pasta in salted water until just shy of al dente. Reserve a cup of pasta water before draining. Add pasta directly to the mushroom cream sauce and toss over medium heat, adding pasta water as needed for a silky, flowing consistency. The starch from the pasta water emulsifies the sauce and makes it cling. Taste and adjust salt. Serve immediately with extra Parmesan and cracked pepper.",
+      tip:"The pasta water transforms a cream sauce from heavy and rich to light and glossy. Use it generously."
+    }
+  ]
+},
+
+{
+  name:"Chicken Quesadilla",
+  category:"lunch",
+  ingredients:["Chicken breast","Tortilla","Cheese","Butter"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"done"},
+    {t:"Fill tortilla", a:"cheesy"},
+    {t:"Cook quesadilla", a:"crispy"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook and season the chicken",
+      a:"Dice chicken into small cubes and season with salt, pepper, cumin, and smoked paprika. Cook in a hot pan over medium-high heat with a little oil — don't stir for the first 2 minutes to develop a sear. Toss and finish cooking through. Let it cool slightly before filling. Warm chicken in a cold tortilla melts the cheese; hot chicken cooks the tortilla before the cheese melts.",
+      tip:"Slightly cooled chicken filling gives the quesadilla time to crisp before the cheese fully melts."
+    },
+    {
+      t:"Build and seal the quesadilla",
+      a:"Grate the cheese fresh — it melts better than pre-shredded. Spread cheese on one half of a large flour tortilla, then add chicken on top of the cheese (cheese underneath acts as glue to seal). Fold the tortilla over. Brush the outside with softened butter for a richer, crispier crust than oil alone.",
+      tip:"Cheese underneath the filling is what holds the quesadilla together when you cut it. Always put cheese closest to the tortilla."
+    },
+    {
+      t:"Cook for maximum crunch",
+      a:"Place quesadilla in a dry (no extra oil) pan over medium heat. Press down firmly with a spatula and cook 2–3 minutes until the bottom is deeply golden and audibly crisp. Flip carefully, press again, and cook another 2 minutes. The outside should crackle when you cut it. Let it rest 30 seconds before cutting — this allows the melted cheese to firm slightly so the filling doesn't slide out.",
+      tip:"No oil in the pan — the butter on the outside is enough. Extra oil makes the tortilla greasy rather than crispy."
+    }
+  ]
+},
+
+{
+  name:"Honey Garlic Chicken",
+  category:"dinner",
+  ingredients:["Chicken breast","Honey","Garlic","Soy sauce","Rice"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"golden"},
+    {t:"Make sauce", a:"sticky"},
+    {t:"Serve over rice", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Pound and sear the chicken",
+      a:"Pound chicken breasts to an even 3/4-inch thickness for quick, even cooking. Season both sides with salt and pepper. Sear in a hot skillet with oil over medium-high heat — 4 minutes per side without moving. You're looking for a deep golden-brown crust that creates flavor the sauce will build on. Remove chicken and set aside on a plate. Don't wipe the pan.",
+      tip:"The fond (browned bits) left in the pan after searing is the most flavorful part of your dish. Preserve it."
+    },
+    {
+      t:"Build the honey garlic sauce",
+      a:"Reduce heat to medium. Add minced garlic to the same pan and cook 60 seconds until fragrant and lightly golden. Add honey, soy sauce, and a splash of water. Stir and bring to a simmer. Cook 2–3 minutes until slightly reduced and the sauce coats a spoon. The honey will caramelize slightly and the soy will concentrate — you want a glossy, sticky, balanced sauce. Taste: it should be sweet, savory, and deeply garlicky.",
+      tip:"If the sauce tastes too sweet, a small splash of rice vinegar or squeeze of lemon will balance it immediately."
+    },
+    {
+      t:"Glaze and finish",
+      a:"Return the chicken to the pan and spoon the sauce over it continuously as it heats through over medium heat — about 2–3 minutes. The sauce will thicken further and the chicken will develop a lacquered, glossy coating. Slice and fan over rice. Spoon every bit of remaining sauce from the pan over the top — don't leave any behind.",
+      tip:"Continuous basting with the sauce in the last few minutes creates a professional-looking, deeply flavored glaze that looks restaurant quality."
+    }
+  ]
+}
+
+,
+
+{
+  name:"Pulled Pork",
+  category:"dinner",
+  ingredients:["Pork chops","BBQ sauce","Onions","Garlic","Brown sugar"],
+  simpleSteps:[
+    {t:"Season pork", a:"rubbed"},
+    {t:"Slow cook", a:"tender"},
+    {t:"Shred and sauce", a:"saucy"}
+  ],
+  chefSteps:[
+    {
+      t:"Build the dry rub",
+      a:"Combine brown sugar, salt, black pepper, paprika, garlic powder, and a pinch of cayenne in a bowl. Pat the pork completely dry then coat every surface generously — press the rub in firmly with your hands so it adheres. Let it sit uncovered in the fridge for at least 1 hour, ideally overnight. The salt draws moisture out then back in, seasoning the meat deeply.",
+      tip:"Overnight dry brining makes the difference between surface seasoning and seasoning you taste all the way through."
+    },
+    {
+      t:"Build flavor before slow cooking",
+      a:"Sear the pork in a hot, oiled pan over high heat — 2 minutes per side until a dark brown crust forms. Don't skip this. Then place in a slow cooker or oven-safe pot with sliced onions, minced garlic, and a splash of water or broth on the bottom. The liquid prevents scorching and creates steam. Cook low and slow: 225°F oven for 6–8 hours, or slow cooker on low for 8–10 hours.",
+      tip:"The sear creates a flavor crust that survives the long cook. Skipping it gives you gray, one-dimensional pulled pork."
+    },
+    {
+      t:"Shred and finish with sauce",
+      a:"The pork is ready when two forks slide through it effortlessly and the bone (if any) pulls clean. Remove and shred with two forks, pulling along the grain into long strands — not against it. Skim fat from the cooking juices and add a few spoonfuls back into the meat to keep it moist. Stir in BBQ sauce gradually — you want the meat saucy but not drowned. Taste and adjust.",
+      tip:"Always add some cooking juices back. They carry concentrated pork flavor that BBQ sauce alone can't replicate."
+    }
+  ]
+},
+
+{
+  name:"Egg Fried Noodles",
+  category:"lunch",
+  ingredients:["Noodles","Eggs","Soy sauce","Onions","Oil"],
+  simpleSteps:[
+    {t:"Cook noodles", a:"soft"},
+    {t:"Scramble eggs", a:"golden"},
+    {t:"Toss everything", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook and dry the noodles",
+      a:"Boil noodles until just cooked through, then drain and rinse briefly under cold water to stop cooking and remove surface starch. Toss with a few drops of oil immediately to prevent clumping. Spread on a plate to air dry for a few minutes — surface moisture is the enemy of a good stir fry. Dry noodles fry and char; wet noodles steam and go limp.",
+      tip:"The cold rinse and oil toss are non-negotiable. Clumped, wet noodles will never fry properly."
+    },
+    {
+      t:"Fry noodles for char",
+      a:"Heat a wok or large pan over the highest heat your stove produces. Add oil, then spread the noodles in a single layer and press flat. Leave completely undisturbed for 90 seconds — you want the bottom layer to develop golden-brown, slightly crispy spots. Toss and repeat. This char is what gives wok noodles their distinctive flavor.",
+      tip:"High heat and patience during this step is everything. Stirring constantly just steams them."
+    },
+    {
+      t:"Add eggs and season",
+      a:"Push noodles to the side of the wok. Add a touch of oil and crack eggs directly in. Scramble quickly over high heat — just 30–40 seconds — then immediately fold through the noodles before they fully set. The eggs should coat the noodles rather than sitting as separate chunks. Add soy sauce around the edge of the wok (not on the noodles directly) and toss with diced onions for 60 more seconds.",
+      tip:"Folding eggs into noodles while still slightly wet creates a glossy, restaurant-style coating."
+    }
+  ]
+},
+
+{
+  name:"Caesar Salad",
+  category:"lunch",
+  ingredients:["Lettuce","Parmesan","Olive oil","Garlic","Lemon"],
+  simpleSteps:[
+    {t:"Make dressing", a:"creamy"},
+    {t:"Toss lettuce", a:"coated"},
+    {t:"Add parmesan", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Make the dressing from scratch",
+      a:"Mince garlic as finely as possible — almost to a paste. Whisk together the garlic, a big squeeze of lemon juice, a teaspoon of Worcestershire sauce, and a teaspoon of Dijon mustard. Slowly drizzle in olive oil while whisking constantly to emulsify — it should thicken slightly and turn glossy. Stir in a generous amount of finely grated Parmesan. Season with salt and lots of cracked black pepper. Taste — it should be sharp, garlicky, and rich.",
+      tip:"Whisking the oil in slowly is what creates an emulsified dressing that clings to the lettuce. Dumped in all at once it just slides off."
+    },
+    {
+      t:"Prep the romaine properly",
+      a:"Use only the inner leaves of romaine — the pale, crisp hearts. Tear or cut into large pieces. Wash and dry completely in a salad spinner or with towels. Wet lettuce dilutes the dressing and turns it watery within minutes. Cold, very dry lettuce holds the dressing and stays crisp.",
+      tip:"Drying the lettuce is as important as making the dressing. Wet leaves ruin everything."
+    },
+    {
+      t:"Dress and serve immediately",
+      a:"Add dressing to the bowl first, then add lettuce on top and toss — this ensures every leaf gets evenly coated without overdressing. Use tongs and toss gently but thoroughly. Add shaved or grated Parmesan over the top. Serve immediately — dressed Caesar salad deteriorates quickly. The lettuce should be glossy and well-coated but not soggy.",
+      tip:"Dress just before serving. A dressed Caesar salad left for 10 minutes turns limp and watery."
+    }
+  ]
+},
+
+{
+  name:"Spicy Ramen",
+  category:"lunch",
+  ingredients:["Ramen noodles","Eggs","Soy sauce","Chicken broth","Mushrooms"],
+  simpleSteps:[
+    {t:"Boil broth", a:"hot"},
+    {t:"Cook noodles", a:"soft"},
+    {t:"Add toppings", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Build a proper broth base",
+      a:"Start with chicken broth in a pot over medium heat. Add soy sauce, a tablespoon of sesame oil, minced garlic, and a teaspoon of chili paste or hot sauce for heat. Bring to a gentle simmer and let it cook for 10 minutes so the flavors meld. Taste repeatedly and adjust — the broth should be deeply savory, slightly spicy, and aromatic. This is your entire flavor foundation.",
+      tip:"A 10-minute simmer transforms store-bought broth into something that tastes intentional. Never skip it."
+    },
+    {
+      t:"Make soft-boiled ramen eggs",
+      a:"Bring water to a full boil. Lower eggs in gently with a spoon and cook exactly 6 minutes 30 seconds for a jammy, custard-like yolk. Transfer immediately to an ice bath for 5 minutes. Peel carefully and slice in half just before serving. Optionally marinate peeled eggs in a mix of soy sauce, water, and a pinch of sugar for 30 minutes — they'll turn golden and deeply flavored.",
+      tip:"The ice bath stops cooking instantly. One extra minute on heat and you lose the jammy yolk entirely."
+    },
+    {
+      t:"Cook noodles separately and assemble",
+      a:"Cook ramen noodles in a separate pot of plain boiling water — never in the broth, as they release starch that muddies and thickens it. Cook until just tender, drain, and place in a bowl. Sauté sliced mushrooms in butter until golden and add to the bowl. Ladle the hot broth over everything. Top with the halved soft-boiled egg. Finish with sliced green onions and a drizzle of sesame oil.",
+      tip:"Cooking noodles in plain water keeps the broth clear and clean-tasting."
+    }
+  ]
+},
+
+{
+  name:"Daniel's Stuffed Bell Peppers",
+  category:"dinner",
+  ingredients:["Bell peppers","Ground beef","Rice","Tomatoes","Cheese"],
+  simpleSteps:[
+    {t:"Cook filling", a:"mixed"},
+    {t:"Stuff peppers", a:"full"},
+    {t:"Bake", a:"tender"}
+  ],
+  chefSteps:[
+    {
+      t:"Pre-cook the peppers",
+      a:"Slice the tops off bell peppers and remove seeds and membranes. Place cut-side down on a baking tray and roast at 400°F for 10 minutes. This pre-cook softens them so they finish perfectly when stuffed and baked — skipping this step leaves the pepper firm and undercooked while the filling overcooks. Let them cool slightly before filling.",
+      tip:"Pre-roasting is the step most recipes skip and why homemade stuffed peppers often have tough, underdone pepper."
+    },
+    {
+      t:"Build a flavorful filling",
+      a:"Brown ground beef deeply in a pan over medium-high heat — let it sit before stirring to develop crust. Season with salt, pepper, garlic powder, and paprika. Drain excess fat. Add diced tomatoes and cooked rice and stir to combine. Simmer 3–4 minutes until the mixture tightens and the liquid reduces slightly. Taste and adjust seasoning aggressively — the filling needs to be boldly seasoned since the pepper will mellow it.",
+      tip:"Over-season the filling slightly. The pepper itself is bland and will dilute the flavor of whatever's inside."
+    },
+    {
+      t:"Fill, top, and bake",
+      a:"Flip peppers upright and pack filling firmly, mounding slightly above the rim. Top generously with shredded cheese — it should completely cover the filling. Bake at 375°F for 20–25 minutes until the cheese is melted and bubbling with golden spots and the pepper is completely tender when pierced with a knife. Rest 5 minutes before serving.",
+      tip:"Packing the filling firmly prevents it from shrinking away from the sides during baking."
+    }
+  ]
+},
+
+{
+  name:"Pesto Pasta",
+  category:"dinner",
+  ingredients:["Pasta","Basil","Parmesan","Olive oil","Garlic"],
+  simpleSteps:[
+    {t:"Make pesto", a:"green"},
+    {t:"Cook pasta", a:"al dente"},
+    {t:"Toss together", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Make proper pesto",
+      a:"Combine fresh basil leaves, Parmesan, garlic, and a pinch of salt in a food processor. Pulse until roughly chopped. With the motor running, slowly drizzle in olive oil until the pesto reaches a thick, scoopable consistency. Don't over-process — you want texture, not a smooth paste. Taste and adjust salt. If making by hand, use a knife to finely chop everything and stir together with oil.",
+      tip:"Over-processing turns pesto warm and bitter from the heat of the blade. Short pulses only."
+    },
+    {
+      t:"Cook pasta and reserve water",
+      a:"Cook pasta in well-salted boiling water until al dente. Reserve a full cup of pasta water before draining — it's essential for adjusting the sauce. Drain the pasta but do not rinse.",
+      tip:"The pasta water is what makes pesto saucy instead of clumpy. Never skip saving it."
+    },
+    {
+      t:"Combine off the heat",
+      a:"This is critical: let the drained pasta cool for 30 seconds before adding pesto. Adding pesto to scorching pasta oxidizes the basil and turns it brown and bitter. Toss pesto through the pasta off the heat, adding pasta water a splash at a time until every strand is glossy and well-coated. Finish with extra Parmesan and cracked pepper. Serve immediately.",
+      tip:"Off-heat mixing preserves the bright green color and fresh flavor of the basil."
+    }
+  ]
+},
+
+{
+  name:"Fish Tacos",
+  category:"dinner",
+  ingredients:["Salmon","Tortilla","Lime","Cabbage","Mayonnaise"],
+  simpleSteps:[
+    {t:"Season and cook fish", a:"flaky"},
+    {t:"Make slaw", a:"crunchy"},
+    {t:"Assemble tacos", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Season and cook the fish",
+      a:"Pat salmon completely dry and season with salt, pepper, cumin, and a pinch of chili powder. Heat a non-stick pan over medium-high with a thin layer of oil until shimmering. Cook fish skin-side up for 3 minutes until a golden crust forms, then flip and cook another 2 minutes. Break into large flakes with a fork — don't overwork it. The fish should be opaque through with crisp edges and moist interior.",
+      tip:"Don't move the fish for the first 3 minutes. The crust needs to form or it'll stick and tear."
+    },
+    {
+      t:"Make the lime crema slaw",
+      a:"Thinly shred cabbage and toss with a generous squeeze of lime juice and a pinch of salt. Let it sit 5 minutes — the lime slightly softens the cabbage and seasons it through. Stir in a spoonful of mayonnaise for creaminess and another squeeze of lime. The slaw should be bright, acidic, and lightly creamy — it's the counterpoint to the rich fish.",
+      tip:"Letting cabbage sit in lime juice for 5 minutes transforms it from raw and harsh to bright and tender."
+    },
+    {
+      t:"Char tortillas and build",
+      a:"Char corn tortillas over a gas flame or dry cast iron — 15 seconds per side until spotted and fragrant. Double them up per taco. Layer slaw first (it acts as a bed that keeps the fish from sliding), then flaked fish on top, then an extra squeeze of lime directly over the fish just before eating. Keep toppings minimal — the fish and slaw are the stars.",
+      tip:"Slaw underneath the fish keeps everything in place and prevents the taco from sliding apart."
+    }
+  ]
+},
+
+{
+  name:"Vegetable Curry",
+  category:"dinner",
+  ingredients:["Potatoes","Chickpeas","Coconut milk","Curry powder","Tomatoes","Onions"],
+  simpleSteps:[
+    {t:"Cook onions", a:"soft"},
+    {t:"Add curry and veggies", a:"simmering"},
+    {t:"Add coconut milk", a:"creamy"}
+  ],
+  chefSteps:[
+    {
+      t:"Build the flavor base",
+      a:"Dice onions finely and cook in oil over medium heat for 12 minutes until deeply golden. Add minced garlic and cook 2 more minutes. Add curry powder and stir constantly for 90 seconds — blooming the spices in the fat releases their full flavor. The mixture will smell intensely fragrant. Add diced tomatoes and cook another 5 minutes until they break down and the oil separates from the mixture.",
+      tip:"The oil separating from the tomato-spice mixture (called 'bhunao') is the signal that the base is properly cooked. Don't rush past it."
+    },
+    {
+      t:"Add vegetables and build the curry",
+      a:"Add cubed potatoes and chickpeas and stir to coat with the spice base. Cook 3 minutes over medium-high heat — this step toasts the outside of the vegetables in the spiced oil before liquid is added, building another layer of flavor. Season with salt. Pour in coconut milk and enough water to just cover. Bring to a simmer.",
+      tip:"Toasting vegetables in the spice base before adding liquid is a professional technique most home cooks skip."
+    },
+    {
+      t:"Simmer to finish",
+      a:"Simmer uncovered for 20–25 minutes until potatoes are completely tender and the sauce has thickened. Stir every few minutes and press a few chickpeas against the side of the pot to help thicken the sauce naturally. Taste and adjust salt. Finish with a squeeze of lime and fresh cilantro if available. The curry should be thick, deeply spiced, and cling to a spoon.",
+      tip:"Pressing some chickpeas against the pot thickens the curry naturally without adding starch."
+    }
+  ]
+},
+
+{
+  name:"Beef Tacos",
+  category:"dinner",
+  ingredients:["Ground beef","Tortilla","Cheese","Tomatoes","Onions","Lime"],
+  simpleSteps:[
+    {t:"Cook beef", a:"seasoned"},
+    {t:"Warm tortillas", a:"soft"},
+    {t:"Assemble tacos", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Season and brown the beef properly",
+      a:"Cook ground beef in a hot pan over medium-high heat. Don't stir for 3 minutes — let a deep brown crust develop on the bottom. Then break apart and continue browning until all pink is gone and the meat has dark, caramelized bits throughout. Season with salt, pepper, cumin, chili powder, garlic powder, and a pinch of oregano. Add a splash of water and stir, scraping up the browned bits into the meat.",
+      tip:"The dark bits from browning are where all the taco flavor lives. Never drain them away."
+    },
+    {
+      t:"Make a quick fresh salsa",
+      a:"Dice tomatoes and onions into small, uniform pieces. Combine with a generous squeeze of lime, a pinch of salt, and optional fresh cilantro. Let it sit for 5 minutes — the salt draws out juice from the tomatoes, creating a natural dressing. The salsa should be bright, acidic, and chunky — far better than anything from a jar.",
+      tip:"Salting the salsa and letting it rest 5 minutes draws out the tomato juices and creates a cohesive, saucy texture."
+    },
+    {
+      t:"Char tortillas and build",
+      a:"Char corn tortillas directly over a gas flame or in a dry cast iron pan — 15 seconds per side. Double up two tortillas per taco for street-taco style. Layer beef, fresh salsa, and shredded cheese. Finish with a squeeze of lime over the entire taco right before eating. The acid ties all the flavors together.",
+      tip:"Fresh lime squeezed right before eating brightens every other flavor and makes the taco taste alive."
+    }
+  ]
+},
+
+{
+  name:"Liam's Banana Pancakes",
+  category:"breakfast",
+  ingredients:["Bananas","Eggs","Oats","Butter"],
+  simpleSteps:[
+    {t:"Mash bananas", a:"smooth"},
+    {t:"Mix batter", a:"combined"},
+    {t:"Cook pancakes", a:"golden"}
+  ],
+  chefSteps:[
+    {
+      t:"Choose ripe bananas and make the batter",
+      a:"Use very ripe bananas — deeply spotted or nearly black. The riper the banana, the sweeter and more flavorful the pancakes. Mash thoroughly until almost no lumps remain. Whisk in eggs until completely incorporated. If using oats, blend them briefly in a blender first to create a fine flour — whole oats make dense, gummy pancakes. The batter will be thicker than regular pancake batter; that's correct.",
+      tip:"Overripe bananas you'd never eat are the best bananas for this. The more spots, the sweeter."
+    },
+    {
+      t:"Rest the batter",
+      a:"Let the batter rest 5 minutes after mixing. If using oats, this rest is especially important — it allows the oat flour to hydrate and the batter to thicken to the right consistency. If it seems too thick after resting, add a splash of milk. If too thin, let it rest another few minutes.",
+      tip:"Rested batter makes fluffier pancakes. The hydration time changes the texture significantly."
+    },
+    {
+      t:"Cook low and slow",
+      a:"Melt butter in a non-stick pan over medium-low heat — these pancakes burn more easily than regular ones because of the natural sugars in the banana. Pour small amounts (about 3 tablespoons each — these cook better small). Cook until bubbles form and the edges look set, about 2–3 minutes. Flip gently and cook another 90 seconds. They should be deep golden, not dark brown.",
+      tip:"Smaller pancakes are easier to flip and cook more evenly. Banana batter is delicate — don't make them too large."
+    }
+  ]
+},
+
+{
+  name:"Sausage And Peppers",
+  category:"dinner",
+  ingredients:["Sausage","Bell peppers","Onions","Olive oil","Garlic"],
+  simpleSteps:[
+    {t:"Cook sausage", a:"browned"},
+    {t:"Cook peppers and onions", a:"soft"},
+    {t:"Combine", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Sear the sausage for color",
+      a:"Slice sausages into 1-inch rounds or leave whole depending on preference. Heat a wide pan over medium-high with a thin layer of oil. Add sausage and don't touch for 2–3 minutes — you want a deep brown sear on the cut faces, not a gray steam. Flip and repeat. Remove sausage and set aside — it will finish cooking with the vegetables. The browned fat left in the pan is flavor gold.",
+      tip:"Leaving the sausage undisturbed for the sear is critical. Color equals flavor."
+    },
+    {
+      t:"Build the peppers and onions",
+      a:"In the same pan with the sausage drippings, add sliced bell peppers and onions. Cook over medium heat for 12–15 minutes, stirring occasionally, until they're soft, caramelized, and slightly jammy. Add minced garlic in the last 2 minutes. Season with salt, pepper, and a pinch of dried oregano. The vegetables should be sweet and deeply savory from cooking in the sausage fat.",
+      tip:"The sausage drippings are the secret flavor base for the vegetables. Never wipe the pan."
+    },
+    {
+      t:"Combine and finish",
+      a:"Return the sausage to the pan and nestle it into the peppers and onions. Add a small splash of water to deglaze any stuck bits, stir, and cook together over medium heat for 5 minutes. Everything should be glazed and cohesive. Taste and adjust salt. Serve over bread, rice, or on its own.",
+      tip:"The final 5 minutes together allows the sausage to absorb the pepper and onion flavors and vice versa."
+    }
+  ]
+},
+
+{
+  name:"Shakshuka",
+  category:"breakfast",
+  ingredients:["Eggs","Tomatoes","Bell peppers","Onions","Garlic","Paprika"],
+  simpleSteps:[
+    {t:"Cook sauce", a:"thick"},
+    {t:"Crack in eggs", a:"poached"},
+    {t:"Serve in pan", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Build the tomato sauce base",
+      a:"Dice onions and bell peppers and cook in olive oil over medium heat for 8 minutes until softened. Add minced garlic and cook 2 minutes more. Add paprika, cumin, and a pinch of cayenne and stir for 60 seconds to bloom the spices. Add crushed tomatoes, season with salt and pepper, and simmer uncovered for 15 minutes until the sauce thickens and the oil floats to the top. The sauce should be thick enough that a spoon dragged through it holds its shape briefly.",
+      tip:"A properly reduced sauce is essential — too watery and the eggs won't hold their shape when they poach."
+    },
+    {
+      t:"Poach the eggs in the sauce",
+      a:"Use a spoon to create small wells in the sauce. Crack eggs one at a time into a cup first, then gently slide each egg into a well — cracking directly into the pan risks breaking yolks. The egg white should sink into the sauce while the yolk sits on top. Cover the pan with a lid and cook over medium-low heat for 5–7 minutes. Check frequently — you want the whites fully set but yolks still runny.",
+      tip:"Cracking eggs into a cup first gives you control. One broken yolk ruins the whole presentation."
+    },
+    {
+      t:"Serve directly from the pan",
+      a:"Shakshuka waits for no one — serve immediately in the pan. The eggs continue cooking from residual heat. Finish with a drizzle of good olive oil, cracked black pepper, and fresh herbs if available. Serve with crusty bread or toast for dipping into the runny yolks and sauce.",
+      tip:"Every minute off heat the yolks continue to set. Serve the moment the whites are just opaque."
+    }
+  ]
+},
+
+{
+  name:"Baked Salmon",
+  category:"dinner",
+  ingredients:["Salmon","Olive oil","Lemon","Garlic","Parsley"],
+  simpleSteps:[
+    {t:"Season salmon", a:"ready"},
+    {t:"Bake", a:"flaky"},
+    {t:"Finish with lemon", a:"bright"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep and season the salmon",
+      a:"Bring salmon to room temperature 15 minutes before cooking. Pat completely dry. Mix minced garlic, olive oil, salt, pepper, and lemon zest into a paste and spread over the flesh side generously. Place on a parchment-lined baking tray skin-side down. Lay thin lemon slices directly on top of the fish — they protect the surface from drying out and infuse flavor.",
+      tip:"Lemon slices on top aren't just for presentation — they create a steam barrier that keeps the fish moist throughout baking."
+    },
+    {
+      t:"Bake at the right temperature",
+      a:"Bake at 400°F for 12–15 minutes depending on thickness. The fish is done when it flakes easily at the thickest part with a fork — but the center should still look slightly darker orange and barely translucent. It will continue cooking for 2 minutes after leaving the oven. Overbaked salmon is dry and chalky; trust carry-over heat to finish it.",
+      tip:"Pull salmon 1–2 minutes before it looks fully done. Carry-over cooking finishes it perfectly on the plate."
+    },
+    {
+      t:"Rest and finish",
+      a:"Rest the salmon on the tray for 2 minutes before moving — it firms up slightly and the carry-over heat finishes the center. Squeeze fresh lemon directly over the fish right before serving and scatter chopped fresh parsley. The acid from fresh lemon transforms the dish from rich to bright and balanced.",
+      tip:"Lemon zest in the marinade adds fragrant citrus flavor throughout cooking. Fresh lemon juice at the end adds brightness. Both together is the full picture."
+    }
+  ]
+},
+
+{
+  name:"Loaded Nachos",
+  category:"lunch",
+  ingredients:["Crackers","Cheddar","Ground beef","Tomatoes","Onions","Beans"],
+  simpleSteps:[
+    {t:"Layer chips and cheese", a:"stacked"},
+    {t:"Bake", a:"melted"},
+    {t:"Add toppings", a:"loaded"}
+  ],
+  chefSteps:[
+    {
+      t:"Season the beef and build the base",
+      a:"Brown ground beef with salt, pepper, cumin, chili powder, and garlic powder. Drain excess fat. Spread tortilla chips (or crackers) in a single layer on a baking tray — not piled up. Single layer is critical: piled chips result in soggy ones on the bottom and unmelted cheese on top. Distribute beef and beans evenly across every chip.",
+      tip:"Single layer nachos every time. Piling them is why the bottom always gets soggy and the top stays cold."
+    },
+    {
+      t:"Layer cheese properly",
+      a:"Grate cheese fresh — pre-shredded won't melt smoothly. Distribute cheese generously and evenly over everything, making sure every chip gets some coverage. Bake at 400°F for 8–10 minutes until cheese is fully melted and the edges of chips are just starting to brown. Watch carefully — the difference between perfectly melted and burnt is about 2 minutes.",
+      tip:"Cheese goes on last, directly over everything. Never bury it under toppings or it won't melt."
+    },
+    {
+      t:"Add fresh toppings after baking",
+      a:"Never bake fresh toppings — they cook and lose their freshness. Add cold toppings immediately after pulling the nachos from the oven: diced fresh tomatoes, finely diced raw onion, sour cream in dollops, and salsa. The contrast of hot melted nachos against cold fresh toppings is the entire point. Serve immediately before the chips soften.",
+      tip:"Hot + cold contrast is what makes nachos great. Baking the fresh toppings ruins that contrast entirely."
+    }
+  ]
+},
+
+{
+  name:"Creamy Tomato Soup",
+  category:"lunch",
+  ingredients:["Tomatoes","Cream","Onions","Garlic","Butter","Chicken broth"],
+  simpleSteps:[
+    {t:"Cook tomatoes and onions", a:"soft"},
+    {t:"Blend smooth", a:"creamy"},
+    {t:"Add cream", a:"rich"}
+  ],
+  chefSteps:[
+    {
+      t:"Roast the tomatoes first",
+      a:"Halve tomatoes and place cut-side up on a baking tray. Drizzle with olive oil, salt, and pepper. Roast at 400°F for 25–30 minutes until caramelized, shrunken, and slightly charred at the edges. This roasting concentrates the tomato flavor and adds deep sweetness that boiling tomatoes can never achieve. Meanwhile, sauté diced onions and garlic in butter in a pot until golden.",
+      tip:"Roasting vs. boiling tomatoes for soup is the single biggest quality difference. Roasted tomatoes have 3x the depth of flavor."
+    },
+    {
+      t:"Build and simmer the soup",
+      a:"Add roasted tomatoes and all their juices to the pot with the onions. Pour in chicken broth and bring to a simmer. Cook 10 minutes. Blend with an immersion blender (or carefully in a regular blender in batches — never fill more than half full with hot liquid) until completely smooth. Strain through a fine mesh strainer for an ultra-silky texture if desired.",
+      tip:"Never fill a blender more than halfway with hot liquid. Steam builds pressure and can blow the lid off."
+    },
+    {
+      t:"Finish with cream and season",
+      a:"Return blended soup to the pot over low heat. Stir in heavy cream and heat gently — don't boil after adding cream or it can curdle and separate. Taste and adjust salt aggressively. A good tomato soup always needs more salt than you expect. Add a pinch of sugar if the tomatoes were acidic. Finish with a swirl of cream on top and cracked black pepper.",
+      tip:"Adding cream then immediately boiling breaks the emulsion. Keep heat gentle after the cream goes in."
+    }
+  ]
+},
+
+{
+  name:"Turkey Meatballs",
+  category:"dinner",
+  ingredients:["Turkey","Eggs","Breadcrumbs","Garlic","Parmesan","Olive oil"],
+  simpleSteps:[
+    {t:"Mix meatball mixture", a:"combined"},
+    {t:"Roll and cook", a:"golden"},
+    {t:"Simmer in sauce", a:"tender"}
+  ],
+  chefSteps:[
+    {
+      t:"Mix the meatball base correctly",
+      a:"Combine ground turkey with a beaten egg, breadcrumbs soaked in a splash of milk (this keeps them moist), finely minced garlic, grated Parmesan, salt, black pepper, and dried oregano. Mix with your hands until just combined — don't overwork. Overmixing develops protein strands and makes dense, rubbery meatballs. The mixture should be slightly tacky but hold its shape.",
+      tip:"The milk-soaked breadcrumb (panade) is the difference between juicy and dry meatballs. Never skip it."
+    },
+    {
+      t:"Roll and sear for color",
+      a:"Wet your hands lightly with water to prevent sticking and roll mixture into uniform balls — about 1.5 inches. Wetting hands is key; dry hands cause the mixture to tear and stick. Heat olive oil in a pan over medium-high and sear in batches — don't crowd. Cook 2 minutes per side until golden on all sides. They don't need to cook through here.",
+      tip:"Wet hands make rolling effortless. Dry hands tear the meatballs and cause uneven surfaces."
+    },
+    {
+      t:"Finish in sauce",
+      a:"Transfer seared meatballs to a pot of simmering tomato sauce or chicken broth. Simmer gently for 15–20 minutes — the liquid finishes cooking the inside while keeping them moist. Simmering in sauce rather than baking dry makes the difference between juicy meatballs and dense ones. Taste the sauce after — the meatball fat and juices enrich it significantly.",
+      tip:"Finishing in liquid is what keeps turkey meatballs moist. Turkey is lean and dries out quickly in a hot oven."
+    }
+  ]
+},
+
+{
+  name:"Avocado Toast",
+  category:"breakfast",
+  ingredients:["Avocado","Bread","Lemon","Salt","Eggs"],
+  simpleSteps:[
+    {t:"Toast bread", a:"crispy"},
+    {t:"Mash avocado", a:"smooth"},
+    {t:"Top and season", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Choose and prepare the avocado",
+      a:"Use a ripe avocado — it should yield to gentle pressure but not feel mushy. Halve, remove the pit, and scoop the flesh into a bowl. Add a generous squeeze of lemon or lime juice immediately — this prevents browning and adds brightness. Mash with a fork to your preferred texture: roughly chunky or smoother. Season with flaky salt and black pepper before tasting.",
+      tip:"The lemon goes in before tasting, not after. It changes the flavor profile significantly and needs to integrate."
+    },
+    {
+      t:"Toast the bread properly",
+      a:"Toast thick-cut sourdough or country bread until deeply golden and crisp all the way through — not pale and soft. The toast needs structural integrity to support the avocado without going soggy. For extra flavor, rub the hot toast immediately with a cut clove of raw garlic — the heat melts the garlic into the surface and infuses incredible flavor.",
+      tip:"Rubbing hot toast with raw garlic is a life-changing move. It disappears into the bread but the flavor is unmistakable."
+    },
+    {
+      t:"Build and finish",
+      a:"Spread avocado generously on the toast right before eating — never ahead of time. Top with a soft-poached or fried egg if desired. Finish with flaky sea salt, cracked black pepper, red pepper flakes for heat, and a final squeeze of lemon. Eat immediately — the contrast of warm crisp toast and cool creamy avocado is fleeting.",
+      tip:"Assemble right before eating. Avocado on toast left for even 5 minutes turns the toast soggy and the avocado dull."
+    }
+  ]
+},
+
+{
+  name:"Sweet And Sour Chicken",
+  category:"dinner",
+  ingredients:["Chicken breast","Pineapple","Bell peppers","Soy sauce","Vinegar","Sugar"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"golden"},
+    {t:"Make sauce", a:"sticky"},
+    {t:"Toss together", a:"glossy"}
+  ],
+  chefSteps:[
+    {
+      t:"Prep and cook the chicken",
+      a:"Cut chicken breast into uniform 1-inch cubes — even size means even cooking. Season with salt and pepper. For a light coating, toss in cornstarch before cooking — this creates a crisp surface that holds the sauce beautifully. Cook in a hot, oiled pan in a single layer over medium-high heat without stirring for 2–3 minutes until golden, then toss and finish. Remove from pan.",
+      tip:"The cornstarch coating is what makes restaurant sweet and sour chicken glossy and crisp. Don't skip it."
+    },
+    {
+      t:"Build the sweet and sour sauce",
+      a:"In the same pan over medium heat, combine pineapple juice (or chunks), rice vinegar, soy sauce, sugar, and a splash of ketchup. Whisk together and bring to a simmer. Mix a teaspoon of cornstarch with a tablespoon of cold water and pour into the simmering sauce while whisking — it will thicken immediately to a glossy, clingy consistency. Taste: it should be bright, tangy, and sweet in equal measure.",
+      tip:"Adding the cornstarch slurry to simmering (not cold) liquid is what makes it thicken instantly and smoothly."
+    },
+    {
+      t:"Stir fry vegetables and combine",
+      a:"Add diced bell peppers to the pan and cook 2 minutes over high heat — just enough to soften slightly while keeping their crunch and color. Add pineapple chunks for the last 30 seconds. Return the chicken to the pan and pour the sauce over everything. Toss vigorously over high heat for 60 seconds until everything is evenly coated and glossy. Serve immediately over rice.",
+      tip:"The vegetables should stay slightly crunchy. Overcooked bell peppers turn limp and lose their color."
+    }
+  ]
+},
+
+{
+  name:"Lemon Garlic Pasta",
+  category:"dinner",
+  ingredients:["Pasta","Lemon","Garlic","Olive oil","Parmesan"],
+  simpleSteps:[
+    {t:"Cook pasta", a:"al dente"},
+    {t:"Make sauce", a:"lemony"},
+    {t:"Toss together", a:"bright"}
+  ],
+  chefSteps:[
+    {
+      t:"Cook pasta and build the base",
+      a:"Cook pasta in heavily salted boiling water until al dente. Reserve a generous cup of pasta water — it's the backbone of this sauce. In a wide pan over medium heat, warm olive oil and add thinly sliced or minced garlic. Cook slowly for 2–3 minutes until fragrant and just barely golden. Watch carefully — a few seconds too long and it turns bitter.",
+      tip:"Slow-cooked garlic in olive oil becomes mellow and sweet. High heat makes it sharp and acrid."
+    },
+    {
+      t:"Build the lemon sauce",
+      a:"Add lemon zest to the garlic oil and cook 30 seconds. Add a big splash of pasta water and swirl the pan — the starch begins emulsifying with the oil into a light sauce. Squeeze in the juice of a whole lemon and stir. The sauce should be bright yellow, slightly thickened, and smell intensely of lemon and garlic.",
+      tip:"Zest before juice, always. Zesting a juiced lemon is nearly impossible and the zest has more flavor than the juice."
+    },
+    {
+      t:"Finish with Parmesan and serve",
+      a:"Add drained pasta directly to the lemon sauce and toss over medium heat, adding more pasta water as needed for a flowing consistency. Remove from heat and stir in freshly grated Parmesan in small handfuls — off the heat prevents clumping. The cheese should melt into a creamy coating. Taste and adjust salt and lemon. Serve immediately with extra Parmesan and cracked pepper.",
+      tip:"This dish demands freshly grated Parmesan. Pre-grated won't melt and the dish will taste grainy."
+    }
+  ]
+},
+
+{
+  name:"Potato Soup",
+  category:"lunch",
+  ingredients:["Potatoes","Chicken broth","Butter","Milk","Onions","Cheddar"],
+  simpleSteps:[
+    {t:"Cook potatoes", a:"soft"},
+    {t:"Blend partially", a:"thick"},
+    {t:"Add cheese", a:"creamy"}
+  ],
+  chefSteps:[
+    {
+      t:"Build the flavor base",
+      a:"Dice onions and cook in butter over medium heat for 8–10 minutes until softened and golden — they form the sweet, savory base of the soup. Add minced garlic for the last minute. Season with salt and pepper. Add diced potatoes and stir to coat in the butter and onions before adding any liquid — this brief sauté adds depth you can't get from boiling alone.",
+      tip:"Sautéing potatoes briefly before adding liquid creates a slightly caramelized surface that deepens the soup's flavor."
+    },
+    {
+      t:"Simmer until tender",
+      a:"Pour in chicken broth until the potatoes are just covered. Bring to a simmer and cook 15–20 minutes until the potatoes are completely tender — a fork should slide through with zero resistance. Don't rush this step. Under-cooked potato chunks in soup are unpleasant and won't blend smoothly.",
+      tip:"Fully tender potatoes blend or mash silky-smooth. Even slightly undercooked potato stays grainy."
+    },
+    {
+      t:"Blend, add dairy, and finish",
+      a:"Use an immersion blender to blend about half the soup — this creates a creamy base while keeping chunky potato pieces for texture. Stir in milk or cream and heat gently. Add shredded cheddar off the heat in small handfuls, stirring until melted. Never add cheese to boiling soup — it seizes and turns grainy. Taste and adjust salt. Serve topped with extra cheese, crumbled bacon if available, and cracked pepper.",
+      tip:"Half-blend technique gives you both creamy body and satisfying potato chunks — better than fully smooth or fully chunky alone."
+    }
+  ]
+},
+
+{
+  name:"Chicken Fajitas",
+  category:"dinner",
+  ingredients:["Chicken breast","Bell peppers","Onions","Tortilla","Lime"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"seared"},
+    {t:"Cook peppers and onions", a:"soft"},
+    {t:"Serve in tortillas", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Marinate and sear the chicken",
+      a:"Slice chicken breast into thin strips and season generously with salt, pepper, cumin, chili powder, garlic powder, and a squeeze of lime. Even 15 minutes of marinating makes a difference. Heat a cast iron or heavy pan over very high heat until just smoking. Sear chicken strips in a single layer without stirring for 90 seconds, then toss and finish. High heat and a thin layer are essential — you want char marks, not steam.",
+      tip:"Overcrowding the pan drops the temperature and you'll steam instead of sear. Cook in batches if needed."
+    },
+    {
+      t:"Char the vegetables",
+      a:"In the same hot pan, add sliced bell peppers and onions. Cook over high heat without stirring for 2 minutes until char marks develop on the edges, then toss. Continue cooking until the peppers are tender-crisp with blackened spots and the onions are soft and slightly caramelized. Season with salt. The char is what separates restaurant fajitas from pale, steamed ones.",
+      tip:"Restaurant fajitas are sizzling because the vegetables are cooked over extremely high heat. Replicate that at home by not reducing the heat."
+    },
+    {
+      t:"Char tortillas and serve sizzling",
+      a:"Char flour tortillas over a gas flame or in the dry pan — 20 seconds per side. Serve the chicken and vegetables immediately while still sizzling hot, directly to the table. The sizzle is part of the experience — it comes from residual heat and moisture in the pan hitting the hot surface. Squeeze fresh lime over everything right before eating.",
+      tip:"Serve immediately from the hot pan directly to the table. The sizzle fades fast and so does the excitement."
+    }
+  ]
+},
+
+{
+  name:"Egg Drop Soup",
+  category:"lunch",
+  ingredients:["Eggs","Chicken broth","Cornstarch","Soy sauce","Onions"],
+  simpleSteps:[
+    {t:"Heat broth", a:"simmering"},
+    {t:"Thicken broth", a:"silky"},
+    {t:"Stream in eggs", a:"ribbons"}
+  ],
+  chefSteps:[
+    {
+      t:"Season and thicken the broth",
+      a:"Bring chicken broth to a gentle simmer — small bubbles, not a rolling boil. Season with soy sauce, a few drops of sesame oil, salt, and white pepper. Taste and adjust — the broth should be clearly seasoned and savory on its own. Mix cornstarch with cold water (never hot) into a slurry and pour slowly into the simmering broth while stirring constantly. The soup will turn from watery to silky and slightly thickened.",
+      tip:"Cornstarch must be mixed with cold water first. Adding dry cornstarch directly to hot liquid creates lumps instantly."
+    },
+    {
+      t:"Stream eggs correctly",
+      a:"Whisk eggs thoroughly until completely uniform. This is the most technique-sensitive step: use a fork or chopstick to stir the soup in a slow, steady circular motion to create a gentle whirlpool. While the soup is swirling, pour the beaten eggs in a slow, thin stream from a height of 6–8 inches. The motion spreads the egg into long, silky ribbons rather than clumps. Stop stirring immediately after pouring.",
+      tip:"The pouring height matters — it breaks the egg into finer streams. Low pouring creates thick clumps."
+    },
+    {
+      t:"Finish and serve immediately",
+      a:"After streaming in the eggs, let the soup sit undisturbed for 30 seconds. The egg ribbons finish cooking from residual heat. Stir gently once. Ladle immediately into bowls — egg drop soup waits for no one. The egg continues cooking in the hot broth and will turn rubbery if left sitting. Garnish with sliced green onions.",
+      tip:"Serve within 1–2 minutes of finishing. Egg left in hot broth continues to cook and will toughen."
+    }
+  ]
+},
+
+{
+  name:"Baked Mac And Cheese",
+  category:"dinner",
+  ingredients:["Pasta","Cheddar","Milk","Butter","Flour","Breadcrumbs"],
+  simpleSteps:[
+    {t:"Make cheese sauce", a:"creamy"},
+    {t:"Mix with pasta", a:"combined"},
+    {t:"Bake with breadcrumbs", a:"crispy top"}
+  ],
+  chefSteps:[
+    {
+      t:"Make the béchamel base",
+      a:"Melt butter in a saucepan over medium heat. Add equal amount of flour and whisk constantly for 90 seconds until the mixture smells nutty — this is the roux and it eliminates raw flour taste. Pour warm milk in gradually while whisking vigorously to prevent any lumps. Cook 5–6 minutes, whisking, until the sauce is thick enough to coat the back of a spoon heavily. Season with salt, pepper, mustard powder, and a pinch of nutmeg.",
+      tip:"Warm milk prevents lumps far better than cold. Heat it in the microwave for 90 seconds before adding."
+    },
+    {
+      t:"Melt in cheese and combine",
+      a:"Remove sauce from heat. Stir in freshly grated sharp cheddar and optional Gruyère in handfuls, off the heat so it melts smoothly without seizing. The sauce should be thick, glossy, and intensely cheesy. Add cooked, al-dente pasta and stir to coat thoroughly. The pasta will absorb some sauce in the oven — the mixture should look saucier than you want the final result.",
+      tip:"Make the sauce saucier than seems right before baking. It thickens substantially in the oven."
+    },
+    {
+      t:"Top and bake for the crust",
+      a:"Pour pasta into a buttered baking dish. Mix breadcrumbs with melted butter and a pinch of salt and spread in an even layer over the top. Bake at 375°F for 25–30 minutes until the top is deep golden-brown and the edges are bubbling. The breadcrumb crust should shatter slightly when you break into it. Rest 5 minutes before serving — it sets up and becomes easier to portion.",
+      tip:"Buttered breadcrumbs are the move. Plain breadcrumbs turn dry and pale. The butter is what makes them golden and crisp."
+    }
+  ]
+},
+
+{
+  name:"Honey Sriracha Wings",
+  category:"lunch",
+  ingredients:["Chicken breast","Honey","Hot sauce","Butter","Garlic","Soy sauce"],
+  simpleSteps:[
+    {t:"Cook chicken", a:"crispy"},
+    {t:"Make sauce", a:"sticky"},
+    {t:"Toss and serve", a:"coated"}
+  ],
+  chefSteps:[
+    {
+      t:"Get the chicken crispy",
+      a:"Pat chicken pieces completely dry — this is the most important step for crispiness. Season with salt, pepper, and a light coating of cornstarch or baking powder (baking powder raises the skin pH and creates an exceptionally crispy exterior). Bake at 425°F on a wire rack over a baking tray — the rack allows air circulation underneath so the bottom doesn't steam and go soggy. Bake 35–40 minutes, flipping halfway.",
+      tip:"Baking powder on chicken skin is the restaurant trick for incredible crispiness without deep frying."
+    },
+    {
+      t:"Make the honey sriracha glaze",
+      a:"Combine honey, sriracha (adjust to your heat preference), soy sauce, minced garlic, and a tablespoon of butter in a small saucepan. Simmer over medium heat for 3–4 minutes until slightly reduced and glossy. The butter adds richness and makes the sauce cling rather than slide off. Taste — it should be sweet, spicy, garlicky, and sticky.",
+      tip:"The butter in the sauce is the 'cling' ingredient. Sauce without fat slides straight off the chicken."
+    },
+    {
+      t:"Toss and serve immediately",
+      a:"Remove chicken from the oven and immediately toss in the sauce while piping hot — the residual heat helps the sauce set onto the surface and caramelize slightly. Every piece should be fully and evenly coated. Serve immediately while crispy. Wings left in sauce too long lose their crispiness as the sugar in the honey steams the coating.",
+      tip:"Toss in sauce right before serving, never ahead of time. The sugar in honey softens any crispy coating quickly."
+    }
+  ]
+}
+
+,
+
+{
+  name:"Crispy Tofu Stir Fry",
+  category:"tofu",
+  ingredients:["Tofu","Soy sauce","Broccoli","Garlic","Sesame oil","Cornstarch","Rice"],
+  simpleSteps:[
+    {t:"Press and cube tofu", a:"firm"},
+    {t:"Fry until crispy", a:"golden"},
+    {t:"Stir fry with veggies", a:"saucy"}
+  ],
+  chefSteps:[
+    {
+      t:"Press the tofu properly",
+      a:"Remove tofu from the package and wrap in a clean kitchen towel or several layers of paper towels. Place a heavy pan or book on top and let it press for at least 20 minutes — longer is better. This removes the excess water that is the number one reason home tofu turns soft and steams instead of crisping. After pressing, cut into uniform 1-inch cubes. Season with salt and pepper.",
+      tip:"Pressing is non-negotiable. Unpressed tofu will never get crispy — it just steams in its own moisture."
+    },
+    {
+      t:"Coat and fry for maximum crunch",
+      a:"Toss pressed tofu cubes lightly in cornstarch until each piece has a thin, dry coating — shake off any excess. Heat a non-stick or cast iron pan over medium-high with a generous layer of oil. Add tofu in a single layer and do not touch for 3 full minutes. The cornstarch coating needs to bond with the pan. Once the bottom is deeply golden and releases naturally, flip each piece and repeat on all sides. Remove and rest on a wire rack.",
+      tip:"Cornstarch coating is the secret to restaurant-style crispy tofu. Flour doesn't work nearly as well."
+    },
+    {
+      t:"Build the stir fry sauce and combine",
+      a:"In the same pan, add a touch of oil and cook minced garlic over medium heat for 60 seconds. Add broccoli florets and cook over high heat for 3 minutes, tossing frequently. Mix soy sauce with a splash of water and a teaspoon of cornstarch for a quick sauce. Pour into the pan and toss — it will thicken immediately. Return the crispy tofu and fold through gently to keep the crust intact. Finish with a drizzle of sesame oil off the heat.",
+      tip:"Add tofu back at the very end and fold gently. Stirring aggressively breaks the crispy coating you worked hard for."
+    }
+  ]
+},
+
+{
+  name:"Egg Noodle Soup",
+  category:"lunch",
+  ingredients:["Egg noodles","Chicken broth","Eggs","Garlic","Soy sauce","Onions","Sesame oil"],
+  simpleSteps:[
+    {t:"Heat broth", a:"simmering"},
+    {t:"Cook egg noodles", a:"tender"},
+    {t:"Add egg and toppings", a:"hot"}
+  ],
+  chefSteps:[
+    {
+      t:"Build a deeply flavored broth",
+      a:"Start with chicken broth in a pot. Add smashed garlic cloves, a splash of soy sauce, a few drops of sesame oil, and sliced onions. Bring to a gentle simmer and cook for 12 minutes uncovered — this infuses the aromatics deeply into the broth. Taste after 10 minutes and adjust with more soy sauce for saltiness or a pinch of sugar if it tastes flat. The broth should be golden, savory, and aromatic before anything else goes in.",
+      tip:"A properly built broth is 80% of the dish. Never rush the simmer — it's doing all the flavor work."
+    },
+    {
+      t:"Cook egg noodles separately",
+      a:"Cook egg noodles in a separate pot of boiling salted water — never in the broth, as the noodles release starch that makes it cloudy and gluey. Cook until just tender, about 1 minute less than the package says. Drain and toss immediately with a few drops of sesame oil to prevent clumping. Place noodles in the serving bowl first, then ladle the hot broth over them.",
+      tip:"Cooking noodles in broth muddies it and the noodles absorb too much liquid. Separate pots, always."
+    },
+    {
+      t:"Poach an egg directly in the broth",
+      a:"Bring the strained broth to a gentle simmer — small steady bubbles, not a rolling boil. Crack an egg into a small cup. Use a spoon to create a gentle swirl in the broth, then slide the egg in from the cup. Cook 3 minutes for a runny yolk, 4 minutes for jammy. Lift out carefully with a slotted spoon and place on top of the noodles. Ladle hot broth over everything. Finish with sliced green onions and a final drop of sesame oil.",
+      tip:"Cracking the egg into a cup first gives you control — a broken yolk ruins the presentation and the texture."
+    }
+  ]
+}
+,
+
+{
+  name:"Chocolate Lava Cake",
+  category:"dessert",
+  ingredients:["Chocolate","Butter","Eggs","Sugar","Flour"],
+  simpleSteps:[
+    {t:"Melt chocolate and butter", a:"smooth"},
+    {t:"Mix in eggs and sugar", a:"combined"},
+    {t:"Bake until set outside", a:"gooey center"}
+  ],
+  chefSteps:[
+    {
+      t:"Make the chocolate base",
+      a:"Chop chocolate into small pieces for even melting. Combine with butter in a heatproof bowl set over a pot of barely simmering water — the bowl should not touch the water. Stir gently until completely melted and glossy. Remove from heat and let cool for 3 minutes. If it's too hot when you add eggs, they'll scramble. The mixture should be warm but not steaming.",
+      tip:"Never melt chocolate over direct heat. The double boiler method is gentler and prevents seizing."
+    },
+    {
+      t:"Build the batter",
+      a:"Whisk eggs, egg yolks, and sugar together in a bowl until pale and slightly thick — about 90 seconds of vigorous whisking. This aeration creates a better texture. Fold the chocolate mixture into the eggs gently, then sift in flour and fold until just combined — no streaks, no overmixing. Overmixing develops gluten and makes the cake tough instead of tender.",
+      tip:"Folding, not stirring, preserves the air you whisked in. That air is what gives the cake lift around the molten center."
+    },
+    {
+      t:"Bake with precision",
+      a:"Butter and flour individual ramekins thoroughly — every spot must be covered or the cake will stick and the center will pull out when you flip it. Fill 3/4 full. Bake at 425°F for exactly 12 minutes. The edges should be set and pulling away slightly but the center should still jiggle. Rest 1 minute in the ramekin, then run a knife around the edge and invert onto a plate immediately. Serve within 60 seconds.",
+      tip:"Timing is everything. Every oven differs by a minute — do a test bake first. 12 min = flowing center. 14 min = no lava."
+    }
+  ]
+},
+
+{
+  name:"Banana Bread",
+  category:"dessert",
+  ingredients:["Bananas","Flour","Butter","Sugar","Eggs","Baking soda"],
+  simpleSteps:[
+    {t:"Mash bananas", a:"smooth"},
+    {t:"Mix batter", a:"combined"},
+    {t:"Bake until golden", a:"done"}
+  ],
+  chefSteps:[
+    {
+      t:"Use the right bananas",
+      a:"The bananas must be very overripe — deeply black-spotted or completely black. They should smell intensely sweet and almost fermented. Underripe bananas make bland, dense banana bread. Mash thoroughly with a fork until almost no chunks remain. The more uniform the mash, the more evenly the banana flavor distributes through the loaf.",
+      tip:"Can't wait for bananas to ripen? Put unpeeled bananas on a baking sheet at 300°F for 20 minutes until skins turn black. Instant overripe."
+    },
+    {
+      t:"Mix wet and dry separately",
+      a:"Melt butter and let it cool slightly. Whisk with sugar until combined, then add eggs one at a time, whisking after each. Fold in mashed banana. In a separate bowl, whisk flour, baking soda, and a pinch of salt. Add the dry ingredients to the wet and fold until just combined — stop the moment you see no more dry streaks. Lumps are fine. Overmixing makes dense, rubbery banana bread.",
+      tip:"The fold-until-just-combined rule is the most important step in any quick bread. Overmixing is irreversible."
+    },
+    {
+      t:"Bake low and slow",
+      a:"Pour into a buttered and floured loaf pan. Bake at 350°F for 55–65 minutes. The loaf is done when a toothpick inserted in the center comes out with just a few moist crumbs — not wet batter, not completely dry. The top should be deep golden-brown and cracked down the center. Cool in the pan for 10 minutes, then turn out and cool completely before slicing — cutting hot banana bread makes it gummy.",
+      tip:"Cool completely before slicing. Hot quick breads are gummy and collapse when cut. The texture sets as it cools."
+    }
+  ]
+},
+
+{
+  name:"Classic Brownies",
+  category:"dessert",
+  ingredients:["Chocolate","Butter","Sugar","Eggs","Flour","Vanilla extract"],
+  simpleSteps:[
+    {t:"Melt chocolate and butter", a:"smooth"},
+    {t:"Mix in sugar and eggs", a:"glossy"},
+    {t:"Bake until just set", a:"fudgy"}
+  ],
+  chefSteps:[
+    {
+      t:"Build the fudgy base",
+      a:"Melt butter and chocolate together over a double boiler or in short microwave bursts, stirring between each. Let cool 5 minutes. Whisk in sugar until fully incorporated — the mixture will look grainy at first, keep whisking. Add eggs one at a time, whisking vigorously after each. Add vanilla extract. The batter should turn glossy and ribbon-like when you lift the whisk — this glossiness is the sign of a properly emulsified fudgy brownie.",
+      tip:"That glossy ribbon texture is the key indicator. No gloss means undermixed and you'll get cakey, dry brownies."
+    },
+    {
+      t:"Add flour minimally",
+      a:"Sift flour directly into the chocolate mixture. Fold with a spatula using as few strokes as possible — 10 to 15 folds maximum. The moment no dry flour is visible, stop. Overworked brownie batter becomes tough and cakey. The batter should be thick and glossy, not fluffy.",
+      tip:"Less mixing = more fudge. More mixing = more cake. Choose fudge."
+    },
+    {
+      t:"Bake to the right doneness",
+      a:"Pour into a buttered and lined 8x8 pan. Bake at 350°F for 20–25 minutes. Pull them out when a toothpick inserted 1 inch from the edge comes out clean but the center toothpick still has moist crumbs. The center will look slightly underdone — that's correct. It sets as it cools. Cool completely in the pan before cutting. For cleaner cuts, refrigerate for 1 hour first then slice with a warm knife.",
+      tip:"Refrigerating before cutting is the difference between clean squares and crumbly smears."
+    }
+  ]
+},
+
+{
+  name:"Cinnamon French Toast Sticks",
+  category:"dessert",
+  ingredients:["Bread","Eggs","Milk","Butter","Cinnamon","Sugar","Vanilla extract","Maple syrup"],
+  simpleSteps:[
+    {t:"Make custard mix", a:"spiced"},
+    {t:"Dip and cook", a:"golden"},
+    {t:"Serve with syrup", a:"sweet"}
+  ],
+  chefSteps:[
+    {
+      t:"Make the spiced custard",
+      a:"Whisk eggs, milk, a generous pinch of cinnamon, sugar, vanilla extract, and a tiny pinch of salt until completely smooth. The sugar and cinnamon need to fully dissolve into the liquid — whisk for a full 30 seconds. Cut thick bread slices into thirds lengthwise to make sticks. Thick bread is essential — thin bread falls apart when soaked and won't hold up during cooking.",
+      tip:"Thick-cut brioche or Texas toast makes the best sticks. Standard sandwich bread turns soggy and tears."
+    },
+    {
+      t:"Soak and cook for texture",
+      a:"Soak each stick for 20 seconds per side — you want full custard penetration, not just surface coating. Melt butter in a non-stick pan over medium heat until foaming. Cook sticks on all four sides until deeply golden-brown, about 2 minutes per side. The sugar in the custard caramelizes on the outside creating a slightly crisp, sweet crust while the inside stays custardy.",
+      tip:"Cook all four sides, not just two. The full caramelization on every surface is what makes them indulgent."
+    },
+    {
+      t:"Finish with cinnamon sugar",
+      a:"While still hot from the pan, immediately toss or dust the sticks with a mix of cinnamon and sugar — it adheres to the hot surface and melts slightly into a thin sweet crust. Serve immediately with warm maple syrup for dipping. These do not hold well — serve straight from the pan.",
+      tip:"The cinnamon sugar coating goes on while hot. If you wait, it won't stick and just falls off."
+    }
+  ]
+},
+
+{
+  name:"Chocolate Chip Cookies",
+  category:"dessert",
+  ingredients:["Flour","Butter","Sugar","Brown sugar","Eggs","Vanilla extract","Chocolate","Baking soda","Salt"],
+  simpleSteps:[
+    {t:"Cream butter and sugar", a:"fluffy"},
+    {t:"Mix in eggs and flour", a:"dough"},
+    {t:"Bake until golden", a:"chewy"}
+  ],
+  chefSteps:[
+    {
+      t:"Brown the butter first",
+      a:"Instead of room-temperature butter, brown it first: melt in a light-colored pan over medium heat, swirling constantly, until the foam subsides and the milk solids turn golden-brown and smell nutty — about 5 minutes. Pour into a bowl immediately and let cool to room temperature. Brown butter adds a deep, toffee-like flavor that regular butter simply cannot match.",
+      tip:"Brown butter is the single biggest upgrade to chocolate chip cookies most people have never tried."
+    },
+    {
+      t:"Mix the dough and rest it",
+      a:"Whisk cooled brown butter with both white and brown sugar until combined. Add eggs and vanilla extract and whisk vigorously for 60 seconds until slightly lighter. Fold in flour, baking soda, and salt until just combined, then fold in chocolate chips or chopped chocolate. Cover the dough and refrigerate for at least 30 minutes — ideally overnight. Resting develops flavor and prevents the cookies from spreading too thin.",
+      tip:"Overnight rest is the difference between flat, greasy cookies and thick, chewy, bakery-style ones."
+    },
+    {
+      t:"Bake and pull early",
+      a:"Roll into balls and place on a parchment-lined baking sheet with plenty of space. Bake at 375°F for 10–11 minutes. Pull them out when the edges are set and golden but the centers still look slightly underdone and shiny. They finish setting on the hot pan as they cool. Sprinkle with flaky salt immediately out of the oven. Cool on the pan for 5 minutes before moving.",
+      tip:"Underbake slightly every time. Cookies continue cooking on the hot pan for 3-4 minutes after leaving the oven."
+    }
+  ]
+},
+
+{
+  name:"Tofu Scramble",
+  category:"tofu",
+  ingredients:["Tofu","Turmeric","Bell peppers","Onions","Soy sauce","Garlic","Olive oil"],
+  simpleSteps:[
+    {t:"Crumble tofu", a:"broken up"},
+    {t:"Cook with spices", a:"golden"},
+    {t:"Add veggies", a:"fresh"}
+  ],
+  chefSteps:[
+    {
+      t:"Press and crumble the tofu",
+      a:"Press firm tofu for 15 minutes to remove excess moisture — wrap in a towel and place something heavy on top. The drier the tofu, the better it browns and the less it steams. Crumble into irregular pieces using your hands — vary the sizes from fine crumbles to larger chunks, just like real scrambled eggs. Uniformly small pieces turn into mush; varied sizes give you texture.",
+      tip:"Irregular crumble sizes mimic real scrambled eggs far better than uniform fine crumbles."
+    },
+    {
+      t:"Season with turmeric and spices",
+      a:"Heat olive oil in a wide pan over medium-high. Add crumbled tofu in a single layer and let it sit undisturbed for 2 minutes to develop some golden color. Add turmeric — it turns the tofu egg-yellow and adds earthy flavor. Add garlic powder, a splash of soy sauce, and black salt (kala namak) if available — black salt has a sulfurous, egg-like flavor that makes tofu scramble taste remarkably close to real eggs.",
+      tip:"Kala namak (black salt) is the secret ingredient for egg flavor. Find it at Indian grocery stores — it's worth seeking out."
+    },
+    {
+      t:"Add vegetables and finish",
+      a:"Push tofu to the side and add diced bell peppers and onions to the empty side of the pan. Cook 2 minutes over high heat until slightly softened but still bright. Fold through the tofu. Add another splash of soy sauce and toss everything together for 60 seconds. The scramble should be golden, fragrant, and slightly crisp on some pieces. Serve immediately — it softens as it sits.",
+      tip:"Keep some pieces crispy and some soft — the texture contrast is what makes it satisfying."
+    }
+  ]
+},
+
+{
+  name:"Miso Glazed Tofu",
+  category:"tofu",
+  ingredients:["Tofu","Soy sauce","Sesame oil","Garlic","Ginger","Brown sugar","Rice"],
+  simpleSteps:[
+    {t:"Press and slice tofu", a:"firm"},
+    {t:"Make miso glaze", a:"sticky"},
+    {t:"Bake or pan fry", a:"caramelized"}
+  ],
+  chefSteps:[
+    {
+      t:"Press and prep the tofu",
+      a:"Press extra-firm tofu for at least 20 minutes — the longer the better. Slice into 1-inch thick rectangular slabs. Pat each piece dry with paper towels after pressing. Score the surface of each slab lightly with a knife in a crosshatch pattern — this creates grooves for the glaze to sink into and increases surface area for caramelization.",
+      tip:"Scoring the surface doubles the glaze contact area and creates beautiful caramelized ridges."
+    },
+    {
+      t:"Build the glaze",
+      a:"Whisk together soy sauce, a small spoon of brown sugar, minced garlic, grated fresh ginger, and sesame oil. The glaze should be salty, slightly sweet, and deeply aromatic. Brush generously over both sides of each tofu slab, pressing it in. Let marinate for 10 minutes minimum — 30 minutes is better. The longer it sits, the more flavor penetrates.",
+      tip:"Grating ginger rather than mincing releases more juice and flavor. A microplane is ideal."
+    },
+    {
+      t:"Caramelize for maximum flavor",
+      a:"For pan method: heat a non-stick pan over medium-high, add a thin layer of oil, and sear tofu 3–4 minutes per side without moving. The sugar in the glaze will caramelize to a deep mahogany color — this is where all the flavor lives. For oven method: bake at 400°F on a lined tray for 25 minutes, flipping halfway and brushing with extra glaze each time. Serve over rice with remaining glaze drizzled on top.",
+      tip:"The caramelized dark spots are flavor, not burning. Don't be afraid of the color."
+    }
+  ]
+}
+,
+
+{
+  name:"Mika's Fried Ravioli",
+  category:"lunch",
+  ingredients:["Ravioli","Breadcrumbs","Eggs","Parmesan","Italian seasoning","Garlic powder","Oil","Marinara sauce"],
+  simpleSteps:[
+    {t:"Coat ravioli", a:"breaded"},
+    {t:"Fry until golden", a:"crispy"},
+    {t:"Serve with marinara", a:"dipping"}
+  ],
+  chefSteps:[
+    {
+      t:"Set up the breading station",
+      a:"Set up three bowls in a line: flour seasoned with salt and pepper, beaten eggs whisked until smooth, and breadcrumbs mixed with finely grated Parmesan, Italian seasoning, garlic powder, and a pinch of salt. The Parmesan in the breadcrumbs is the secret — it melts into the crust as it fries, creating an incredibly savory, nutty coating. Use fresh or refrigerated ravioli, not frozen — frozen releases too much moisture and makes the breading soggy.",
+      tip:"The Parmesan-breadcrumb combo is what separates Mika's version from basic fried ravioli. Don't skip it."
+    },
+    {
+      t:"Bread each ravioli properly",
+      a:"Working one at a time: dredge ravioli in flour and shake off excess, dip in egg letting any drips fall off, then press firmly into the breadcrumb mixture on both sides. The press is important — it helps the coating bond to the pasta surface. Place on a wire rack and let them rest 5 minutes before frying. This drying time lets the breading adhere so it does not fall off in the oil.",
+      tip:"Resting the breaded ravioli for 5 minutes before frying makes the coating stick dramatically better."
+    },
+    {
+      t:"Fry to golden perfection",
+      a:"Heat oil in a heavy pan to 350°F — deep enough to come halfway up the ravioli. Test with a breadcrumb: it should sizzle immediately. Fry in small batches — crowding drops the temperature and makes them greasy instead of crispy. Cook 2–3 minutes per side until deep golden brown. Drain on a wire rack, never paper towels — a rack keeps the bottom crispy. Season immediately with extra Parmesan and a pinch of salt while still hot.",
+      tip:"Season the moment they come out of the oil. Hot surfaces absorb seasoning; cooled surfaces do not."
+    },
+    {
+      t:"Serve with warm marinara",
+      a:"Warm the marinara sauce in a small pan over low heat. Add a pinch of Italian seasoning and garlic powder to elevate store-bought sauce instantly. Pour into a dipping bowl. Arrange the fried ravioli on a plate, dust with extra Parmesan and Italian seasoning for color. Serve immediately — fried ravioli lose their crunch fast. These are best eaten straight from the pan.",
+      tip:"Warming the marinara with extra seasoning makes store-bought taste house-made. Takes 2 minutes and makes a big difference."
+    }
+  ]
+}
+,
+
+{
+  name:"Wanda's Swedish Meatballs",
+  category:"dinner",
+  ingredients:["Ground beef","Olive oil","Flour","Beef broth","Nutmeg","Brown sugar","Pepper","Cream","Allspice"],
+  simpleSteps:[
+    {t:"Brown flour in olive oil", a:"golden roux"},
+    {t:"Add broth and spices", a:"simmering"},
+    {t:"Add cream after 3 hours", a:"rich sauce"}
+  ],
+  chefSteps:[
+    {
+      t:"Make the gravy base",
+      a:"Heat a pot over medium heat and add 2 tablespoons of olive oil. Add 1/4 cup of all-purpose flour and stir constantly for 2-3 minutes until the flour turns golden and smells nutty — this is Wanda's roux and it's the backbone of the whole dish. Don't rush it. A properly browned roux gives the gravy its deep, rich color and eliminates any raw flour taste.",
+      tip:"Keep stirring the flour the entire time. Walk away for even 30 seconds and it burns."
+    },
+    {
+      t:"Build the sauce with broth and spices",
+      a:"Pour in the entire box of beef broth while whisking constantly to prevent lumps. Add 1/4 teaspoon ground allspice, 1/4 teaspoon freshly grated nutmeg, and 1 to 2 tablespoons of brown sugar. Add pepper to your taste — Wanda skips salt entirely, letting the beef broth carry the saltiness. Stir everything together and bring to a gentle simmer.",
+      tip:"Freshly grated nutmeg has dramatically more flavor than pre-ground. A microplane and a whole nutmeg is worth it."
+    },
+    {
+      t:"Slow cook and finish with cream",
+      a:"Cook on high in a slow cooker for 6 to 8 hours, or maintain a very low simmer on the stovetop. After about 3 hours, stir in 1/4 cup of heavy whipping cream — this is Wanda's move. The cream goes in mid-cook, not at the end, so it has time to fully integrate and mellow into the sauce. Add more cream if needed toward the end to reach your preferred richness. Serve over egg noodles or mashed potatoes.",
+      tip:"Adding cream mid-cook rather than at the end gives it time to mellow and enrich the sauce all the way through."
+    }
+  ]
+}
 ];
 
 /* ================= PANTRY ================= */
@@ -642,6 +2225,7 @@ function showMatches(cat){
 
   let html = `<div class="header">🍳 Recipes</div>`;
 
+  // Category filter pills
   const allCats = ["all", ...categoryOrder.filter(c => scored.some(r => r.category === c))];
   html += `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">`;
   allCats.forEach(c => {
@@ -687,15 +2271,24 @@ function showMatches(cat){
 
 /* ================= RECIPE ================= */
 let current = null;
+let mode = "simple";
 
 function openRecipe(idx){
   current = recipes[idx];
+  mode = "simple";
   renderRecipe();
   show("recipe");
 }
 
+function switchMode(){
+  mode = mode === "simple" ? "chef" : "simple";
+  renderRecipe();
+  document.getElementById("recipe").scrollTop = 0;
+}
+
 function renderRecipe(){
-  let steps = current.chefSteps;
+  let steps = mode === "simple" ? current.simpleSteps : current.chefSteps;
+  let isChef = mode === "chef";
 
   let isFav = favorites.includes(current.name);
   let html = `
@@ -704,16 +2297,33 @@ function renderRecipe(){
       <span class="fav-star ${isFav ? 'saved' : ''}" onclick="toggleFavorite(${recipes.indexOf(current)})">☆</span>
     </div>`;
 
-  steps.forEach((s, i) => {
+  if(isChef){
     html += `
-      <div class="chef-card">
-        <div class="step-header">
-          <span class="step-number">${i+1}</span>
-          <div class="step-title">${s.t}</div>
-        </div>
-        <div class="step-body">${s.a}</div>
-        ${s.tip ? `<div class="step-tip">💡 Pro tip: ${s.tip}</div>` : ''}
+      <div class="chef-banner">
+        <div class="chef-banner-title">🔥 CHEF MODE 🔥</div>
+        <div class="chef-banner-sub">Professional techniques & detailed instructions</div>
       </div>`;
+  } else {
+    html += `<div class="modeBadge">🍳 Simple Mode</div>`;
+  }
+
+  steps.forEach((s, i) => {
+    if(isChef){
+      html += `
+        <div class="chef-card">
+          <div class="step-header">
+            <span class="step-number">${i+1}</span>
+            <div class="step-title">${s.t}</div>
+          </div>
+          <div class="step-body">${s.a}</div>
+          ${s.tip ? `<div class="step-tip">💡 Pro tip: ${s.tip}</div>` : ''}
+        </div>`;
+    } else {
+      html += `
+        <div class="card">
+          <b>${i+1}. ${s.t}</b><br><br>${s.a}
+        </div>`;
+    }
   });
 
   html += `<div class="header">🧂 Ingredients</div>`;
@@ -736,6 +2346,9 @@ function renderRecipe(){
   }
 
   html += `
+    <div class="btn ${isChef ? 'btn-chef' : ''}" onclick="switchMode()">
+      ${isChef ? "🍳 Switch to Simple Mode" : "🔥 Switch to Chef Mode"}
+    </div>
     <div class="btn" onclick="showMatches()" style="margin-bottom:4px;">⬅ Back To Recipes</div>
     <a class="btn btn-feedback" href="mailto:therustychef1@gmail.com?subject=Rusty%20Chef%20Feedback" style="display:block;text-align:center;text-decoration:none;margin-bottom:100px;">✉️ Send Feedback</a>
     `;
