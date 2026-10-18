@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v25</title>
+<title>The Rusty Chef v26</title>
 <meta name="description" content="Tell it what's in your pantry and get chef-level recipes you can make tonight.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://therustychef.com">
@@ -2346,9 +2346,27 @@ function shopUrl(name){
 /* ================= SHARE ================= */
 const APP_LINK = "https://therustychef.com";
 
-function shareText(r){
-  return `Check out ${r.name} on The Rusty Chef 🔥 ${APP_LINK}`;
+// Each recipe gets its own link, e.g. therustychef.com/#chicken-tacos
+function recipeSlug(r){
+  return r.name.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
+
+function recipeLink(r){
+  return APP_LINK + "/#" + recipeSlug(r);
+}
+
+function shareText(r){
+  return `Check out ${r.name} on The Rusty Chef 🔥 ${recipeLink(r)}`;
+}
+
+// Opening a shared link goes straight to that recipe
+function openFromLink(){
+  const slug = decodeURIComponent((location.hash || "").replace(/^#\/?/, "")).toLowerCase();
+  if(!slug) return;
+  const i = recipes.findIndex(r => recipeSlug(r) === slug);
+  if(i >= 0) openRecipe(i);
+}
+window.addEventListener("hashchange", openFromLink);
 
 function smsHref(r){
   // iPhone uses "&body=", Android uses "?body="
@@ -2364,7 +2382,7 @@ async function shareRecipe(ev){
   // so anything other than "they closed it" falls back to our own share panel.
   if(navigator.share){
     try{
-      await navigator.share({ title: "The Rusty Chef: " + r.name, text: `Check out ${r.name} on The Rusty Chef 🔥`, url: APP_LINK });
+      await navigator.share({ title: "The Rusty Chef: " + r.name, text: `Check out ${r.name} on The Rusty Chef 🔥`, url: recipeLink(r) });
       return;
     }catch(e){
       if(e && e.name === "AbortError") return;
@@ -2387,7 +2405,7 @@ function openSharePanel(r){
       <div style="display:flex;gap:8px;margin-top:10px;">
         <a class="btn btn-share" href="${smsHref(r)}" target="_blank" style="flex:1;margin-bottom:0;padding:12px 4px;font-size:13px;line-height:1.3;">💬<br>Messages</a>
         <a class="btn btn-insta" href="https://www.instagram.com/direct/inbox/" target="_blank" onclick="shareInstagram()" style="flex:1;padding:12px 4px;font-size:13px;line-height:1.3;">📸<br>Instagram DM</a>
-        <a class="btn btn-messenger" href="fb-messenger://share?link=${encodeURIComponent(APP_LINK)}" target="_blank" onclick="shareMessenger()" style="flex:1;padding:12px 4px;font-size:13px;line-height:1.3;">⚡<br>Messenger</a>
+        <a class="btn btn-messenger" href="fb-messenger://share?link=${encodeURIComponent(recipeLink(r))}" target="_blank" onclick="shareMessenger()" style="flex:1;padding:12px 4px;font-size:13px;line-height:1.3;">⚡<br>Messenger</a>
       </div>
       <div class="btn btn-chef" onclick="copyShare()">📋 Copy message</div>
       <div id="shareNote" style="text-align:center;font-size:13px;margin-top:8px;min-height:18px;color:#4ade80;"></div>
@@ -2567,6 +2585,9 @@ function renderRecipe(){
   document.getElementById("recipe").innerHTML = html;
 }
 
+
+/* ================= START ================= */
+openFromLink();
 </script>
 
 
