@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v26</title>
+<title>The Rusty Chef v27</title>
 <meta name="description" content="Tell it what's in your pantry and get chef-level recipes you can make tonight.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://therustychef.com">
@@ -2352,16 +2352,25 @@ function recipeSlug(r){
 }
 
 function recipeLink(r){
-  return APP_LINK + "/#" + recipeSlug(r);
+  return APP_LINK + "/?recipe=" + recipeSlug(r);
 }
 
 function shareText(r){
   return `Check out ${r.name} on The Rusty Chef 🔥 ${recipeLink(r)}`;
 }
 
-// Opening a shared link goes straight to that recipe
+// Opening a shared link goes straight to that recipe.
+// Works with ?recipe=chicken-tacos (main format) and #chicken-tacos (older links).
+function linkSlug(){
+  let slug = "";
+  try{ slug = new URLSearchParams(location.search).get("recipe") || ""; }catch(e){}
+  if(!slug) slug = (location.hash || "").replace(/^#\/?/, "");
+  try{ slug = decodeURIComponent(slug); }catch(e){}
+  return slug.trim().toLowerCase();
+}
+
 function openFromLink(){
-  const slug = decodeURIComponent((location.hash || "").replace(/^#\/?/, "")).toLowerCase();
+  const slug = linkSlug();
   if(!slug) return;
   const i = recipes.findIndex(r => recipeSlug(r) === slug);
   if(i >= 0) openRecipe(i);
@@ -2588,6 +2597,7 @@ function renderRecipe(){
 
 /* ================= START ================= */
 openFromLink();
+window.addEventListener("pageshow", openFromLink); // also when the phone restores the page from its cache
 </script>
 
 
