@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v20</title>
+<title>The Rusty Chef v21</title>
 
 <style>
 html,body{
@@ -2111,14 +2111,55 @@ function smsHref(r){
 }
 
 async function shareRecipe(ev){
+  if(ev) ev.preventDefault();
   const r = recipes[currentRecipe];
-  if(!r || !navigator.share) return; // no share sheet: the link opens Messages instead
-  ev.preventDefault();
+  if(!r) return;
+  // Try the phone's share sheet first. Inside the Claude app it's often blocked,
+  // so anything other than "they closed it" falls back to our own share panel.
+  if(navigator.share){
+    try{
+      await navigator.share({ title: "The Rusty Chef: " + r.name, text: `Check out ${r.name} on The Rusty Chef 🔥`, url: APP_LINK });
+      return;
+    }catch(e){
+      if(e && e.name === "AbortError") return;
+    }
+  }
+  openSharePanel(r);
+}
+
+function openSharePanel(r){
+  closeSharePanel();
+  const msg = shareText(r);
+  const el = document.createElement("div");
+  el.id = "sharePanel";
+  el.style.cssText = "position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;";
+  el.onclick = e => { if(e.target === el) closeSharePanel(); };
+  el.innerHTML = `
+    <div style="background:#1a1a1a;width:100%;border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(255,255,255,.15);">
+      <div class="header" style="margin-bottom:6px;">📲 Share ${r.name}</div>
+      <textarea id="shareMsg" style="width:100%;box-sizing:border-box;height:84px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:#000;color:white;padding:10px;font-size:14px;">${msg}</textarea>
+      <a class="btn btn-share" href="${smsHref(r)}" target="_blank" style="margin-top:10px;">💬 Text it</a>
+      <div class="btn btn-chef" onclick="copyShare()">📋 Copy message</div>
+      <div id="shareNote" style="text-align:center;font-size:13px;margin-top:8px;min-height:18px;color:#4ade80;"></div>
+      <div class="btn btn-feedback" onclick="closeSharePanel()" style="padding:10px;">Close</div>
+    </div>`;
+  document.body.appendChild(el);
+}
+
+function closeSharePanel(){
+  const el = document.getElementById("sharePanel");
+  if(el) el.remove();
+}
+
+async function copyShare(){
+  const ta = document.getElementById("shareMsg"), note = document.getElementById("shareNote");
   try{
-    await navigator.share({ title: "The Rusty Chef: " + r.name, text: `Check out ${r.name} on The Rusty Chef 🔥`, url: APP_LINK });
+    await navigator.clipboard.writeText(ta.value);
+    note.textContent = "✅ Copied! Paste it into a text.";
   }catch(e){
-    if(e && e.name === "AbortError") return; // they closed the share sheet
-    window.open(smsHref(r), "_top");
+    ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+    let ok = false; try{ ok = document.execCommand("copy"); }catch(_){}
+    note.textContent = ok ? "✅ Copied! Paste it into a text." : "Message is highlighted. Press and hold it, then tap Copy.";
   }
 }
 
@@ -2188,6 +2229,7 @@ function resetTimer(n){
 
 /* ================= SINGLE RECIPE ================= */
 function openRecipe(i){
+  closeSharePanel();
   currentRecipe = i;
   renderRecipe();
   document.getElementById("recipe").scrollTop = 0;
@@ -2209,7 +2251,7 @@ function renderRecipe(){
     ${photoImg(r.name, "recipe-hero", 800)}
     <div class="recipeTitle" style="margin-top:14px;">${r.name}</div>
 
-    <a class="btn btn-share" href="${smsHref(r)}" target="_top" onclick="shareRecipe(event)">📲 Share this recipe</a>
+    <div class="btn btn-share" onclick="shareRecipe(event)">📲 Share this recipe</div>
 
     <div class="card">
       <b>Ingredients</b>
