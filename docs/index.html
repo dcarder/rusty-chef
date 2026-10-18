@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v19</title>
+<title>The Rusty Chef v20</title>
 
 <style>
 html,body{
@@ -410,12 +410,20 @@ background:rgba(255,255,255,.06);
 width:52px;
 height:52px;
 }
+
+/* Share button */
+.btn-share{
+display:block;
+background:linear-gradient(135deg,#22c55e,#4ade80);
+color:black;
+text-decoration:none;
+margin-top:0;
+margin-bottom:12px;
+}
 </style>
 </head>
 
 <body>
-
-
 <div id="home" class="page active">
 
 <div id="homeBg">
@@ -1762,7 +1770,6 @@ ingredientItems = [...new Set(recipes.flatMap(r => r.ingredients))]
 
 /* ================= STATE ================= */
 let currentRecipe = 0;
-let chefMode = true; // recipes always open in Chef Mode
 let recipeFilter = "all";
 
 function matchCount(r){
@@ -1776,7 +1783,6 @@ function openPantry(){
     <div class="modeBadge" id="pantryCount"></div>
     <label for="scanInput" class="btn btn-chef" style="display:block;margin-top:0;margin-bottom:10px;">📷 Scan my food with camera</label>
     <input type="file" id="scanInput" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;" onchange="scanPhoto(this)">
-    <div id="geminiSetup">${geminiSetupHtml()}</div>
     <div id="scanArea"></div>
     <input class="searchInput" id="pantrySearch" placeholder="Search ingredients..." oninput="renderPantryList(this.value)">
     <div id="pantryList"></div>
@@ -1818,10 +1824,29 @@ function toggleIngredient(el){
 }
 
 /* ================= CAMERA SCAN =================
-   1. With a Gemini key saved: Gemini looks at the photo.
-   2. Everyone else: a free food-recognition model runs on the visitor's own phone.
-   Every result is confirmed with "Is it …?" before it's added. */
+   Uses two free AI models that run right in the browser (no account, no key):
+   - COCO-SSD finds separate objects in the photo
+   - MobileNet names what each object (and each part of the photo) looks like
+   They only know some foods, so the user confirms results before adding. */
 
+const SCAN_LIBS = [
+  "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js",
+  "https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js",
+  "https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"
+];
+
+// What the AI calls it -> your pantry ingredient name
+const SCAN_WORDS = {
+  "banana":"Bananas", "broccoli":"Broccoli", "carrot":"Carrots",
+  "bell pepper":"Bell peppers", "mushroom":"Mushrooms", "agaric":"Mushrooms", "bolete":"Mushrooms",
+  "lemon":"Lemon", "french loaf":"Bread", "bagel":"Bread", "sandwich":"Bread",
+  "guacamole":"Avocado", "mashed potato":"Potatoes", "hotdog":"Sausage", "hot dog":"Sausage",
+  "burrito":"Tortilla", "chocolate sauce":"Chocolate", "honeycomb":"Honey",
+  "meat loaf":"Ground beef", "cheeseburger":"Ground beef", "carbonara":"Pasta",
+  "coho":"Salmon", "milk can":"Milk"
+};
+
+let scanModels = null;
 let scanFound = [];
 
 function loadScript(src){
@@ -1832,9 +1857,30 @@ function loadScript(src){
   });
 }
 
+async function getScanModels(){
+  if(scanModels) return scanModels;
+  // Give up after 45 seconds instead of spinning forever (e.g. no internet or a blocked viewer)
+  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 45000));
+  const load = (async () => {
+    for(const src of SCAN_LIBS) await loadScript(src);
+    const [net, det] = await Promise.all([mobilenet.load({version:2, alpha:1.0}), cocoSsd.load()]);
+    return {net, det};
+  })();
+  scanModels = await Promise.race([load, timeout]);
+  return scanModels;
+}
+
 function scanStatus(html){
   const area = document.getElementById("scanArea");
   if(area) area.innerHTML = html;
+}
+
+function toPantryName(label){
+  const l = label.toLowerCase();
+  for(const word in SCAN_WORDS){
+    if(l.includes(word) && ingredientItems.includes(SCAN_WORDS[word])) return SCAN_WORDS[word];
+  }
+  return null;
 }
 
 function cropCanvas(src, x, y, w, h){
@@ -1844,6 +1890,21 @@ function cropCanvas(src, x, y, w, h){
   return c;
 }
 
+// Claude vision: available when the app is opened from its claude.ai link
+async function getClaudeVision(){
+  try{
+    if(!window.claude || typeof window.claude.use !== "function") return null;
+    const s = await window.claude.use("sample");
+    if(!s) return null;
+    const lim = await s.limits().catch(() => null);
+    return lim && lim.images ? s : null;
+  }catch(e){ return null; }
+}
+
+function canvasToBlob(c){
+  return new Promise(res => c.toBlob(res, "image/jpeg", 0.85));
+}
+
 function resizeTo(img, maxSide){
   const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
   const c = document.createElement("canvas");
@@ -1851,6 +1912,13 @@ function resizeTo(img, maxSide){
   c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
   return c;
 }
+
+const CLAUDE_ERRORS = {
+  not_granted: "Claude wasn't allowed to look at photos. Tap ingredients below instead, or reopen the app and choose Allow.",
+  rate_limited: "Too many scans right now. Wait a minute and try again.",
+  image_rejected: "That photo couldn't be read. Try a different picture.",
+  session_expired: "Please sign in to Claude again, then try another scan."
+};
 
 async function scanPhoto(input){
   const file = input.files && input.files[0];
@@ -1871,255 +1939,99 @@ async function scanPhoto(input){
     return;
   }
 
-  // ---- Option B: Google Gemini looks at the photo (needs the user's free Gemini API key)
-  const geminiKey = storeGet("geminiKey");
-  if(geminiKey){
-    busy("Gemini is looking at your food...");
+  // ---- Option A: Claude looks at the photo (smart: reads labels, many items at once)
+  const vision = await getClaudeVision();
+  if(vision){
+    busy("Claude is looking at your food... (can take up to a minute)");
     try{
-      scanFound = await geminiScan(resizeTo(img, 1280), geminiKey);
-      showScanResults(preview, "Gemini");
+      const blob = await canvasToBlob(resizeTo(img, 1280));
+      const prompt =
+        "This photo shows someone's food at home (fridge, pantry, cupboard, counter or groceries). " +
+        "List every ingredient from the list below that you can see in the photo. Count packaged items " +
+        "when you can tell what they are from the label, bottle or box. Don't guess at things you can't see.\n\n" +
+        "Allowed names (copy them exactly): " + JSON.stringify(ingredientItems) + "\n\n" +
+        'Reply with only a JSON array of matching names, for example ["Eggs","Milk"]. Reply [] if none are visible.';
+      const answer = await vision.json(prompt, { images: [blob] });
+      const lookup = {};
+      ingredientItems.forEach(n => lookup[n.toLowerCase()] = n);
+      const found = new Set();
+      (Array.isArray(answer) ? answer : []).forEach(a => {
+        const n = lookup[String(a).trim().toLowerCase()];
+        if(n) found.add(n);
+      });
+      scanFound = [...found];
+      showScanResults(preview, true);
     }catch(e){
-      const msg = e && e.message === "bad_key"
-        ? "Gemini didn't accept your API key. Tap ⚙️ Gemini settings to fix it."
-        : e && e.message === "blocked"
-          ? "Gemini can't be reached from here. Open the website in Chrome or Safari and try again."
-          : "Gemini couldn't finish the scan. Try again in a moment.";
+      const msg = CLAUDE_ERRORS[e && e.code] || "The scan didn't finish. Try again in a moment.";
       scanStatus(`<div class="card">${preview}<div style="text-align:center;">😕 ${msg}</div>
         <div class="btn" onclick="scanStatus('')" style="padding:10px;">OK</div></div>`);
     }
     return;
   }
 
-  // ---- Option C: smart on-phone recognition (free, no key, works for every visitor)
-  busy(clipModel ? "Looking at your food..." : "Downloading the food scanner (first time only, about 100 MB)...<br><small style='opacity:.6'>Wi-Fi helps. After this, scans are much faster.</small><div id='clipProgress' style='margin-top:8px;font-weight:700;'></div>");
+  // ---- Option B: basic AI that runs in the browser (works outside Claude)
+  busy(scanModels ? "Looking at your food..." : "Loading the AI (first scan only, takes a moment)...");
   try{
     const small = resizeTo(img, 640);
-    const classify = await getClipModel();
+    const {net, det} = await getScanModels();
     busy("Looking at your food...");
-    scanFound = await clipScan(classify, small);
-    showScanResults(preview, "The scanner");
-  } catch(e){
-    clipModel = null;
-    scanStatus(`<div class="card" style="text-align:center;">😕 The scanner couldn't load. It needs internet and Chrome or Safari, and very old phones may not be able to run it.<br><small style="opacity:.6">You can still tap ingredients below.</small>
-      <div class="btn" onclick="scanStatus('')" style="padding:10px;">OK</div></div>`);
-  }
-}
 
-/* ================= ON-PHONE FOOD RECOGNITION =================
-   CLIP compares the photo against the exact names in your pantry list.
-   Runs entirely in the visitor's browser: no server, no key, no account. */
-const CLIP_LIB = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2";
-const CLIP_MODEL = "Xenova/clip-vit-base-patch32";
-// Non-food answers. If one of these wins, that part of the photo is ignored.
-const CLIP_DISTRACTORS = ["a kitchen counter","an empty shelf","a refrigerator door","a person","a hand","a table","a wall","a plate"];
-let clipModel = null;
-
-async function getClipModel(){
-  if(clipModel) return clipModel;
-  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 240000));
-  const load = (async () => {
-    const { pipeline } = await import(CLIP_LIB);
-    const files = {};
-    return await pipeline("zero-shot-image-classification", CLIP_MODEL, {
-      progress_callback: p => {
-        if(p.status === "progress" && p.file){
-          files[p.file] = p.progress || 0;
-          const vals = Object.values(files);
-          const pct = Math.round(vals.reduce((x, y) => x + y, 0) / vals.length);
-          const el = document.getElementById("clipProgress");
-          if(el) el.textContent = pct + "%";
-        }
-      }
-    });
-  })();
-  clipModel = await Promise.race([load, timeout]);
-  return clipModel;
-}
-
-async function clipScan(classify, canvas){
-  const W = canvas.width, H = canvas.height;
-  // Whole photo, the middle, and four quarters, so separate items each get a turn
-  const regions = [[0,0,W,H],[W*.2,H*.2,W*.6,H*.6],[0,0,W/2,H/2],[W/2,0,W/2,H/2],[0,H/2,W/2,H/2],[W/2,H/2,W/2,H/2]];
-  const images = regions.map(([x,y,w,h]) => cropCanvas(canvas, x, y, w, h).toDataURL("image/jpeg", 0.9));
-  const labels = [...ingredientItems.map(n => n.toLowerCase()), ...CLIP_DISTRACTORS];
-  const lookup = {};
-  ingredientItems.forEach(n => lookup[n.toLowerCase()] = n);
-
-  let results = await classify(images, labels, { hypothesis_template: "a photo of {}, a type of food." });
-  if(!Array.isArray(results[0])) results = [results];
-
-  const best = {};   // pantry name -> best score
-  results.forEach((list, idx) => {
-    const top = list.slice(0, 2);
-    top.forEach((g, rank) => {
-      const name = lookup[g.label];
-      if(!name) return;                       // a distractor won
-      const need = idx === 0 ? 0.12 : 0.2;     // whole photo can be a bit less sure
-      if(rank === 1 && g.score < 0.25) return; // runner-up only if it's strong
-      if(g.score >= need) best[name] = Math.max(best[name] || 0, g.score);
-    });
-  });
-  // Most confident first, so the first "Is it…?" question is the best guess
-  return Object.keys(best).sort((a, b) => best[b] - best[a]).slice(0, 6);
-}
-
-/* Scan results: ask "Is this X?" one item at a time.
-   Yes = tick it in the pantry. No = point to the manual list and go back to the pantry. */
-let scanQueue = [];
-let scanPreview = "";
-let scanBy = "";
-let scanAdded = [];
-
-function showScanResults(preview, by){
-  scanPreview = preview;
-  scanBy = by;
-  scanQueue = [...scanFound];
-  scanAdded = [];
-  if(scanQueue.length === 0){ scanNotFound(); return; }
-  askNextScan();
-}
-
-function askNextScan(){
-  if(scanQueue.length === 0){ finishScan(); return; }
-  const name = scanQueue[0];
-  const have = selected.includes(name);
-  const left = scanQueue.length - 1;
-  scanStatus(`<div class="card" style="text-align:center;">${scanPreview}
-    <div style="font-size:13px;opacity:.6;">${scanBy} thinks it found:</div>
-    <div style="font-size:24px;font-weight:800;margin:6px 0 2px;">Is it ${name}?</div>
-    ${have ? `<small style="opacity:.6;">Already in your pantry</small>` : ""}
-    <div style="display:flex;gap:10px;margin-top:12px;">
-      <div class="btn" onclick="scanAnswer(true)" style="flex:1;margin-top:0;background:#4ade80;">✅ Yes</div>
-      <div class="btn btn-feedback" onclick="scanAnswer(false)" style="flex:1;margin-top:0;">❌ No</div>
-    </div>
-    ${left ? `<small style="opacity:.5;display:block;margin-top:8px;">${left} more to check</small>` : ""}
-  </div>`);
-}
-
-function scanAnswer(yes){
-  const name = scanQueue.shift();
-  if(yes){
-    if(!selected.includes(name)){
-      selected.push(name);
-      storeSet("ingredients", JSON.stringify(selected));
-      renderPantryList(document.getElementById("pantrySearch").value);
-      updatePantryCount();
-    }
-    scanAdded.push(name);
-    askNextScan();
-  } else {
-    scanTryOldWay("Sorry about that!");
-  }
-}
-
-function scanNotFound(){
-  scanTryOldWay(`${scanBy} couldn't tell what that was.`);
-}
-
-function scanTryOldWay(lead){
-  scanQueue = [];
-  const kept = scanAdded.length ? `<div style="margin-top:6px;font-size:13px;color:#4ade80;">✅ Added: ${scanAdded.join(", ")}</div>` : "";
-  scanStatus(`<div class="card" style="text-align:center;">
-    <div style="font-size:30px;">🔧</div>
-    <b>${lead}</b>
-    <div style="margin-top:6px;opacity:.8;">Try the old way: tap your ingredient in the list below.</div>
-    <small style="opacity:.55;display:block;margin-top:6px;">The photo scanner is still being worked on.</small>
-    ${kept}
-  </div>`);
-  setTimeout(backToPantryList, 3500);
-}
-
-function finishScan(){
-  scanStatus(`<div class="card" style="text-align:center;">
-    <div style="font-size:30px;">🎉</div>
-    <b>Added to your pantry:</b>
-    <div style="margin-top:6px;">${scanAdded.join(", ")}</div>
-  </div>`);
-  setTimeout(backToPantryList, 2000);
-}
-
-function backToPantryList(){
-  scanStatus("");
-  const search = document.getElementById("pantrySearch");
-  if(search){ search.value = ""; renderPantryList(""); search.scrollIntoView({behavior:"smooth", block:"start"}); }
-}
-
-/* ================= GEMINI ================= */
-const GEMINI_MODELS = ["gemini-flash-latest", "gemini-2.5-flash"];
-
-function geminiSetupHtml(){
-  const has = !!storeGet("geminiKey");
-  return `<div style="text-align:center;margin:-4px 0 10px;">
-    <span onclick="openGeminiSetup()" style="font-size:13px;color:#ff914d;cursor:pointer;">⚙️ Gemini settings${has ? " · connected ✅" : ""}</span></div>`;
-}
-
-function openGeminiSetup(){
-  const has = !!storeGet("geminiKey");
-  document.getElementById("geminiSetup").innerHTML = `
-    <div class="card">
-      <b>Scan with Google Gemini</b>
-      <small style="opacity:.7;display:block;margin:6px 0 10px;line-height:1.5;">
-        Get a free API key at <b>aistudio.google.com/apikey</b> and paste it here. It's saved only on this device.
-</small>
-      <input class="searchInput" id="geminiKeyIn" type="password" placeholder="${has ? "Key saved. Paste a new one to replace it" : "Paste your Gemini API key"}" autocomplete="off">
-      <div style="display:flex;gap:8px;">
-        <div class="btn btn-chef" onclick="saveGeminiKey()" style="flex:1;padding:10px;">Save</div>
-        ${has ? `<div class="btn btn-feedback" onclick="removeGeminiKey()" style="flex:1;padding:10px;">Remove</div>` : ""}
-        <div class="btn btn-feedback" onclick="closeGeminiSetup()" style="flex:1;padding:10px;">Close</div>
-      </div>
-    </div>`;
-}
-function closeGeminiSetup(){ document.getElementById("geminiSetup").innerHTML = geminiSetupHtml(); }
-function saveGeminiKey(){
-  const k = document.getElementById("geminiKeyIn").value.trim();
-  if(k) storeSet("geminiKey", k);
-  closeGeminiSetup();
-}
-function removeGeminiKey(){
-  try{ localStorage.removeItem("geminiKey"); }catch(e){}
-  closeGeminiSetup();
-}
-
-async function geminiScan(canvas, key){
-  const base64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
-  const prompt =
-    "This photo shows someone's food at home (fridge, pantry, cupboard, counter or groceries). " +
-    "List every ingredient from the list below that you can see in the photo. Count packaged items " +
-    "when you can tell what they are from the label, bottle or box. Don't guess at things you can't see.\n\n" +
-    "Allowed names (copy them exactly): " + JSON.stringify(ingredientItems) + "\n\n" +
-    'Reply with only a JSON array of matching names, for example ["Eggs","Milk"]. Reply [] if none are visible.';
-  const body = JSON.stringify({
-    contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64 } }] }],
-    generationConfig: { responseMimeType: "application/json", temperature: 0 }
-  });
-
-  let lastErr = new Error("failed");
-  for(const model of GEMINI_MODELS){
-    let res;
-    try{
-      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-        body
-      });
-    }catch(e){ throw new Error("blocked"); }
-    if(res.status === 400 || res.status === 401 || res.status === 403){
-      const t = await res.text();
-      if(/API key|PERMISSION_DENIED|API_KEY/i.test(t)) throw new Error("bad_key");
-      lastErr = new Error("failed"); continue;
-    }
-    if(!res.ok){ lastErr = new Error("failed"); continue; }
-    const data = await res.json();
-    const text = (data.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("");
-    const m = text.match(/\[[\s\S]*\]/);
-    const arr = m ? JSON.parse(m[0]) : [];
-    const lookup = {};
-    ingredientItems.forEach(n => lookup[n.toLowerCase()] = n);
     const found = new Set();
-    arr.forEach(a => { const n = lookup[String(a).trim().toLowerCase()]; if(n) found.add(n); });
-    return [...found];
+    const W = small.width, H = small.height;
+
+    const objects = await det.detect(small, 20, 0.3);
+    for(const o of objects){
+      const hit = toPantryName(o.class);
+      if(hit && o.score >= 0.4) found.add(hit);
+      const [x, y, w, h] = o.bbox;
+      if(w > 20 && h > 20){
+        const guesses = await net.classify(cropCanvas(small, x, y, w, h), 3);
+        guesses.forEach(g => { const n = toPantryName(g.className); if(n && g.probability >= 0.2) found.add(n); });
+      }
+    }
+
+    const regions = [[0,0,W,H],[0,0,W/2,H/2],[W/2,0,W/2,H/2],[0,H/2,W/2,H/2],[W/2,H/2,W/2,H/2]];
+    for(const [x, y, w, h] of regions){
+      const guesses = await net.classify(cropCanvas(small, x, y, w, h), 5);
+      guesses.forEach(g => { const n = toPantryName(g.className); if(n && g.probability >= 0.15) found.add(n); });
+    }
+
+    scanFound = [...found];
+    showScanResults(preview, false);
+  } catch(e){
+    scanModels = null;
+    scanStatus(`<div class="card" style="text-align:center;">😕 The scanner couldn't load. It needs internet and a regular browser (Chrome or Safari). App previews block it.<br><small style="opacity:.6">You can still tap ingredients below.</small></div>`);
   }
-  throw lastErr;
+}
+
+function showScanResults(preview, usedClaude){
+  if(scanFound.length === 0){
+    scanStatus(`<div class="card">${preview}<div style="text-align:center;">🤔 I didn't recognize anything.<br><small style="opacity:.6">Try one item at a time in good light, or tap ingredients below.</small></div>
+      <div class="btn" onclick="scanStatus('')" style="padding:10px;">OK</div></div>`);
+    return;
+  }
+  let html = `<div class="card">${preview}<b>I spotted:</b><small style="opacity:.6;display:block;margin-bottom:6px;">Tap to uncheck anything that's wrong.</small>`;
+  scanFound.forEach(name => {
+    const have = selected.includes(name);
+    html += `<div class="item selected" data-name="${name}" onclick="this.classList.toggle('selected');this.firstChild.textContent=this.classList.contains('selected')?'✅ ':'⬜ '"><span>✅ </span>${name}${have ? ' <small style="opacity:.6">(already in pantry)</small>' : ""}</div>`;
+  });
+  html += `<div class="btn btn-chef" onclick="addScanned()">Add to pantry</div>
+    <div class="btn btn-feedback" onclick="scanStatus('')" style="padding:10px;">Cancel</div>
+    <small style="opacity:.55;display:block;margin-top:8px;">${usedClaude
+      ? "Scanned by Claude. Anything it missed, tap in the list below."
+      : "The basic scanner knows fresh foods best (bananas, broccoli, carrots, peppers, mushrooms, lemons, bread). Packaged items like sauces and spices need to be tapped below."}</small></div>`;
+  scanStatus(html);
+}
+
+function addScanned(){
+  document.querySelectorAll("#scanArea .item.selected").forEach(el => {
+    const n = el.dataset.name;
+    if(!selected.includes(n)) selected.push(n);
+  });
+  storeSet("ingredients", JSON.stringify(selected));
+  scanStatus("");
+  renderPantryList(document.getElementById("pantrySearch").value);
+  updatePantryCount();
 }
 
 function updatePantryCount(){
@@ -2154,17 +2066,19 @@ function showMatches(){
     const pct = Math.round(m / total * 100);
     const fav = favorites.includes(r.name) ? `<span class="fav-badge">★ Saved</span>` : "";
     html += `
-      <div class="card" onclick="openRecipe(${i})" style="cursor:pointer;display:flex;gap:12px;align-items:flex-start;">
-        ${photoImg(r.name, "thumb", 200)}
-        <div style="flex:1;min-width:0;">
-        <b>${r.name}</b>${fav}<br>
-        <small style="opacity:0.7">Match: ${m}/${total} (${pct}%)${r.category ? " · " + r.category : ""}</small>
+      <div class="card" onclick="openRecipe(${i})" style="cursor:pointer;">
+        <div style="display:flex;gap:12px;align-items:center;">
+          ${photoImg(r.name, "thumb", 200)}
+          <div style="flex:1;min-width:0;">
+            <b>${r.name}</b>${fav}<br>
+            <small style="opacity:0.7">Match: ${m}/${total} (${pct}%)${r.category ? " · " + r.category : ""}</small>
+          </div>
+        </div>
         <div style="height:6px;background:rgba(255,255,255,.12);border-radius:3px;margin-top:8px;overflow:hidden;">
           <div style="height:100%;width:${pct}%;background:${pct === 100 ? "#4ade80" : "#4facfe"};"></div>
         </div>
         ${missing.length ? `<small style="opacity:0.55;display:block;margin-top:6px;">Missing: ${missing.join(", ")}</small>`
                          : `<small style="color:#4ade80;display:block;margin-top:6px;">You have everything! 🎉</small>`}
-        </div>
       </div>`;
   });
 
@@ -2183,137 +2097,107 @@ function shopUrl(name){
 }
 
 
-/* ================= STEP TIMERS =================
-   Reads the cooking time out of each Chef Mode step ("10–12 minutes", "90 seconds", "1½ hours")
-   and gives it a timer with Start / Pause / Reset. Timers keep running if you switch screens. */
-const timers = {};
-let timerTick = null;
-let audioCtx = null;
+/* ================= SHARE ================= */
+const APP_LINK = "https://claude.ai/code/artifact/9a802672-4d6c-464a-9ea1-4624548f3ae9";
 
-function parseStepTime(text){
-  const num = "(\\d+(?:\\.\\d+)?½?|½)";
-  const re = new RegExp(num + "(?:\\s*(?:–|-|to)\\s*" + num + ")?\\s*(?:(?:more|extra)\\s+)?(hours?|hrs?|minutes?|mins?|seconds?|secs?)\\b", "gi");
-  const val = v => v === "½" ? 0.5 : parseFloat(v.replace("½", "")) + (v.endsWith("½") ? 0.5 : 0);
-  let best = null;
-  // Uses the longest time in the step (the main cook/bake/simmer). A range uses its longer end.
-  for(const m of String(text).matchAll(re)){
-    const amount = m[2] ? val(m[2]) : val(m[1]);
-    const unit = m[3].toLowerCase();
-    const secs = Math.round(amount * (unit.startsWith("h") ? 3600 : unit.startsWith("m") ? 60 : 1));
-    if(secs > 0 && (!best || secs > best.secs)) best = { secs, label: m[0] };
-  }
-  return best;
+function shareText(r){
+  return `Check out ${r.name} on The Rusty Chef 🔥 ${APP_LINK}`;
 }
 
-function fmtTime(sec){
-  sec = Math.max(0, Math.ceil(sec));
-  const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
-  return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s).padStart(2, "0");
+function smsHref(r){
+  // iPhone uses "&body=", Android uses "?body="
+  const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  return "sms:" + (ios ? "&" : "?") + "body=" + encodeURIComponent(shareText(r));
 }
 
-function timerRemaining(t){
-  return t.running ? (t.endAt - Date.now()) / 1000 : t.remaining;
-}
-
-function timerHtml(recipeIdx, stepIdx, text){
-  const p = parseStepTime(text);
-  if(!p) return "";
-  const key = recipeIdx + "-" + stepIdx;
-  if(!timers[key]) timers[key] = { total: p.secs, remaining: p.secs, running: false, endAt: 0, done: false };
-  const t = timers[key];
-  return `<div class="step-timer${t.done ? " done" : ""}" id="tm-${key}">
-      <span class="tm-clock">${t.done ? "Done!" : fmtTime(timerRemaining(t))}</span>
-      <span class="tm-label">⏱ ${p.label}</span>
-      <span class="tm-btn" onclick="timerToggle('${key}')">${t.running ? "Pause" : t.done ? "Again" : t.remaining < t.total ? "Resume" : "▶ Start"}</span>
-      <span class="tm-btn tm-reset" onclick="timerReset('${key}')" title="Reset">↺</span>
-    </div>`;
-}
-
-function timerToggle(key){
-  const t = timers[key];
-  if(!t) return;
-  unlockAudio();
-  if(t.running){
-    t.remaining = timerRemaining(t);
-    t.running = false;
-  } else {
-    if(t.done || t.remaining <= 0){ t.remaining = t.total; t.done = false; }
-    t.endAt = Date.now() + t.remaining * 1000;
-    t.running = true;
-    if(!timerTick) timerTick = setInterval(updateTimers, 250);
-  }
-  updateTimer(key);
-}
-
-function timerReset(key){
-  const t = timers[key];
-  if(!t) return;
-  t.running = false; t.done = false; t.remaining = t.total;
-  updateTimer(key);
-}
-
-function updateTimer(key){
-  const t = timers[key];
-  const el = document.getElementById("tm-" + key);
-  if(!t || !el) return;
-  el.classList.toggle("done", t.done);
-  el.querySelector(".tm-clock").textContent = t.done ? "Done!" : fmtTime(timerRemaining(t));
-  el.querySelector(".tm-btn").textContent = t.running ? "Pause" : t.done ? "Again" : t.remaining < t.total ? "Resume" : "▶ Start";
-}
-
-function updateTimers(){
-  let anyRunning = false;
-  for(const key in timers){
-    const t = timers[key];
-    if(!t.running) continue;
-    if(timerRemaining(t) <= 0){
-      t.running = false; t.remaining = 0; t.done = true;
-      timerFinished(key);
-    } else anyRunning = true;
-    updateTimer(key);
-  }
-  if(!anyRunning){ clearInterval(timerTick); timerTick = null; }
-}
-
-function timerFinished(key){
-  try{ if(navigator.vibrate) navigator.vibrate([400, 200, 400, 200, 400]); }catch(e){}
-  if(!audioCtx) return;
-  [0, 0.5, 1, 1.5, 2].forEach(at => {
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = "square"; o.frequency.value = 880;
-    g.gain.setValueAtTime(0.0001, audioCtx.currentTime + at);
-    g.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + at + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + at + 0.35);
-    o.connect(g).connect(audioCtx.destination);
-    o.start(audioCtx.currentTime + at); o.stop(audioCtx.currentTime + at + 0.4);
-  });
-}
-
-// Phones only allow sound after a tap, so the first Start tap turns sound on
-function unlockAudio(){
+async function shareRecipe(ev){
+  const r = recipes[currentRecipe];
+  if(!r || !navigator.share) return; // no share sheet: the link opens Messages instead
+  ev.preventDefault();
   try{
-    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if(audioCtx.state === "suspended") audioCtx.resume();
+    await navigator.share({ title: "The Rusty Chef: " + r.name, text: `Check out ${r.name} on The Rusty Chef 🔥`, url: APP_LINK });
+  }catch(e){
+    if(e && e.name === "AbortError") return; // they closed the share sheet
+    window.open(smsHref(r), "_top");
+  }
+}
+
+/* ================= STEP TIMERS ================= */
+let stepTimers = {};
+
+function stepSeconds(text){
+  const m = text.match(/(\d+(?:\.\d+)?)(?:\s*(?:–|-|to)\s*(\d+(?:\.\d+)?))?\s*(hours?|hrs?|minutes?|mins?|seconds?|secs?)\b/i);
+  if(!m) return 0;
+  const n = parseFloat(m[2] || m[1]);
+  const u = m[3].toLowerCase();
+  const secs = u.startsWith("h") ? n * 3600 : u.startsWith("m") ? n * 60 : n;
+  return secs >= 10 && secs <= 4 * 3600 ? Math.round(secs) : 0;
+}
+
+function fmtTime(s){
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+  return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0");
+}
+
+function clearTimers(){
+  Object.values(stepTimers).forEach(t => clearInterval(t.iv));
+  stepTimers = {};
+}
+
+function drawTimer(n){
+  const t = stepTimers[n], el = document.getElementById("timer" + n);
+  if(!t || !el) return;
+  el.querySelector(".tm-clock").textContent = fmtTime(t.left);
+  el.querySelector(".tm-go").textContent = t.left === 0 ? "Done!" : t.iv ? "Pause" : (t.left < t.total ? "Resume" : "Start");
+  el.classList.toggle("done", t.left === 0);
+}
+
+function beep(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.4, 0.8].forEach(d => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.3, ctx.currentTime + d);
+      o.start(ctx.currentTime + d); o.stop(ctx.currentTime + d + 0.25);
+    });
   }catch(e){}
+  try{ navigator.vibrate && navigator.vibrate([300, 150, 300, 150, 300]); }catch(e){}
+}
+
+function toggleTimer(n){
+  const t = stepTimers[n];
+  if(!t || t.left === 0) return;
+  if(t.iv){ clearInterval(t.iv); t.iv = null; }
+  else{
+    t.iv = setInterval(() => {
+      t.left = Math.max(0, t.left - 1);
+      if(t.left === 0){ clearInterval(t.iv); t.iv = null; beep(); }
+      drawTimer(n);
+    }, 1000);
+  }
+  drawTimer(n);
+}
+
+function resetTimer(n){
+  const t = stepTimers[n];
+  if(!t) return;
+  clearInterval(t.iv); t.iv = null; t.left = t.total;
+  drawTimer(n);
 }
 
 /* ================= SINGLE RECIPE ================= */
 function openRecipe(i){
   currentRecipe = i;
-  chefMode = true;
   renderRecipe();
   document.getElementById("recipe").scrollTop = 0;
   show("recipe");
 }
 
-function setMode(chef){
-  chefMode = chef;
-  renderRecipe();
-}
-
 function renderRecipe(){
   const r = recipes[currentRecipe];
   if(!r) return;
+  clearTimers();
   const isFav = favorites.includes(r.name);
   const missing = r.ingredients.filter(x => !selected.includes(x));
 
@@ -2322,13 +2206,10 @@ function renderRecipe(){
       <div class="btn" onclick="showMatches()" style="margin-top:0;padding:8px 14px;">← Back</div>
       <span class="fav-star${isFav ? " saved" : ""}" onclick="toggleFavorite(${currentRecipe})">★</span>
     </div>
-    ${recipePhotos[r.name] ? `${photoImg(r.name, "recipe-hero", 900)}<div class="photo-credit">Photo: Unsplash</div>` : ""}
+    ${photoImg(r.name, "recipe-hero", 800)}
     <div class="recipeTitle" style="margin-top:14px;">${r.name}</div>
 
-    <div style="display:flex;gap:8px;margin-bottom:12px;">
-      <div class="btn btn-chef" onclick="setMode(true)" style="flex:1;margin-top:0;${chefMode ? "" : "opacity:.45;"}">👨‍🍳 Chef Mode</div>
-      <div class="btn" onclick="setMode(false)" style="flex:1;margin-top:0;${chefMode ? "opacity:.45;" : ""}">🍽️ Simple</div>
-    </div>
+    <a class="btn btn-share" href="${smsHref(r)}" target="_top" onclick="shareRecipe(event)">📲 Share this recipe</a>
 
     <div class="card">
       <b>Ingredients</b>
@@ -2339,36 +2220,35 @@ function renderRecipe(){
              <span>❌ ${x}</span>
              <a target="_blank" href="${shopUrl(x)}" style="background:#0071ce;color:white;text-decoration:none;font-weight:700;font-size:13px;padding:6px 12px;border-radius:20px;">🛒 Buy</a>
            </div>`).join("")}
+    </div>
+
+    <div class="chef-banner">
+      <div class="chef-banner-title">🔥 CHEF MODE 🔥</div>
+      <div class="chef-banner-sub">Detailed technique + pro tips</div>
     </div>`;
 
-  if(chefMode && r.chefSteps){
+  (r.chefSteps || []).forEach((s, n) => {
+    const secs = stepSeconds(s.a);
+    if(secs) stepTimers[n] = { total: secs, left: secs, iv: null };
     html += `
-      <div class="chef-banner">
-        <div class="chef-banner-title">🔥 CHEF MODE 🔥</div>
-        <div class="chef-banner-sub">Detailed technique + pro tips</div>
+      <div class="chef-card">
+        <div class="step-header"><span class="step-number">${n + 1}</span><span class="step-title" style="margin-bottom:0;">${s.t}</span></div>
+        <div class="step-body">${s.a}</div>
+        ${s.tip ? `<div class="step-tip">💡 ${s.tip}</div>` : ""}
+        ${secs ? `<div class="step-timer" id="timer${n}">
+            <span class="tm-clock">${fmtTime(secs)}</span>
+            <span class="tm-label">⏱️ Step timer</span>
+            <span class="tm-btn tm-go" onclick="toggleTimer(${n})">Start</span>
+            <span class="tm-btn tm-reset" onclick="resetTimer(${n})">↺</span>
+          </div>` : ""}
       </div>`;
-    r.chefSteps.forEach((s, n) => {
-      html += `
-        <div class="chef-card">
-          <div class="step-header"><span class="step-number">${n + 1}</span><span class="step-title" style="margin-bottom:0;">${s.t}</span></div>
-          <div class="step-body">${s.a}</div>
-          ${s.tip ? `<div class="step-tip">💡 ${s.tip}</div>` : ""}
-          ${timerHtml(currentRecipe, n, s.a)}
-        </div>`;
-    });
-  } else {
-    r.simpleSteps.forEach((s, n) => {
-      html += `
-        <div class="card" style="display:flex;align-items:center;">
-          <span class="step-number" style="background:#4facfe;">${n + 1}</span>
-          <div><b>${s.t}</b> <span style="opacity:.6">— ${s.a}</span></div>
-        </div>`;
-    });
-  }
+  });
 
   document.getElementById("recipe").innerHTML = html;
 }
 
 </script>
+
+
 </body>
 </html>
