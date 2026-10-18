@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v21</title>
+<title>The Rusty Chef v22</title>
 
 <style>
 html,body{
@@ -1764,6 +1764,226 @@ const recipes = [
 
 ];
 
+/* ================= AMOUNTS & EXTRAS =================
+   serves:   how many people the recipe feeds
+   amounts:  how much of each ingredient (keys match the ingredient names)
+   add:      ingredients the steps use that weren't listed (they count in Pantry matching)
+   staples:  basics most kitchens have (salt, pepper, oil); shown but not counted
+   optional: nice-to-haves mentioned in the steps or tips; not counted */
+const recipeDetails = {
+  "Chicken Fried Rice": { serves:4,
+    amounts:{"Rice":"1½ cups uncooked (about 4 cups cooked, cold)","Eggs":"3","Chicken breast":"1 lb","Soy sauce":"3 tbsp","Onions":"1 small","Carrots":"2, diced"},
+    add:{"Butter":"1 tbsp"},
+    staples:["Salt","Pepper","Cooking oil (2 tbsp)"],
+    optional:["Sesame oil (1 tsp)"] },
+  "Spaghetti Bolognese": { serves:4,
+    amounts:{"Pasta":"1 lb spaghetti","Ground beef":"1 lb (80/20)","Tomatoes":"1 can (28 oz) crushed","Onions":"1 large","Garlic":"3 cloves"},
+    add:{"Olive oil":"2 tbsp"},
+    staples:["Salt","Pepper"],
+    optional:["Sugar (a pinch)","Milk or cream (¼ cup)"] },
+  "Chicken Tacos": { serves:4,
+    amounts:{"Chicken breast":"1½ lb","Tortilla":"8 small corn","Cheese":"1 cup shredded","Onions":"½ small","Lime":"2"},
+    add:{"Cumin":"1 tsp","Paprika":"½ tsp"},
+    staples:["Salt","Pepper","Cooking oil (1 tbsp)"],
+    optional:["Cilantro","Salsa"] },
+  "Garlic Butter Shrimp Pasta": { serves:4,
+    amounts:{"Shrimp":"1 lb, peeled","Pasta":"12 oz","Butter":"6 tbsp","Garlic":"6 cloves","Lemon":"1"},
+    add:{"Red pepper flakes":"¼ tsp"},
+    staples:["Salt","Pepper"],
+    optional:[] },
+  "Beef Stir Fry": { serves:4,
+    amounts:{"Ground beef":"1 lb","Broccoli":"1 head (about 3 cups florets)","Soy sauce":"3 tbsp","Carrots":"2","Rice":"1½ cups uncooked"},
+    add:{},
+    staples:["Salt","Pepper","Cooking oil (2 tbsp)"],
+    optional:["Sugar (a pinch)","Cornstarch (1 tsp, for thicker sauce)"] },
+  "Fluffy Pancakes": { serves:2,
+    amounts:{"Flour":"1 cup","Eggs":"1","Milk":"1 cup","Sugar":"1 tbsp","Baking soda":"½ tsp","Butter":"2 tbsp melted + more for the pan","Vinegar":"1 tbsp"},
+    add:{},
+    staples:["Salt (a pinch)"],
+    optional:[] },
+  "French Toast": { serves:3,
+    amounts:{"Bread":"6 thick slices","Eggs":"3","Milk":"¾ cup","Cinnamon":"½ tsp","Vanilla extract":"1 tsp","Butter":"2 tbsp","Maple syrup":"to serve"},
+    add:{},
+    staples:["Salt (a pinch)"],
+    optional:[] },
+  "Bacon & Egg Breakfast Tacos": { serves:2,
+    amounts:{"Tortilla":"4 small","Eggs":"4","Bacon":"4 strips","Cheddar":"½ cup shredded","Hot sauce":"a few dashes"},
+    add:{},
+    staples:["Salt","Pepper"],
+    optional:[] },
+  "Mushroom & Cheese Omelette": { serves:1,
+    amounts:{"Eggs":"3","Mushrooms":"4 oz (about 5)","Cheese":"¼ cup shredded","Butter":"1 tbsp","Onions":"2 tbsp diced"},
+    add:{},
+    staples:["Salt"],
+    optional:[] },
+  "Avocado Toast with Egg": { serves:2,
+    amounts:{"Bread":"2 thick slices","Avocado":"1 ripe","Eggs":"2","Lemon":"½","Salt":"a good pinch","Pepper":"to taste"},
+    add:{},
+    staples:["Cooking oil (1 tbsp)"],
+    optional:["Olive oil (for brushing the bread)"] },
+  "Banana Cinnamon Oatmeal": { serves:2,
+    amounts:{"Oats":"1 cup","Milk":"2 cups + a splash","Bananas":"1","Honey":"1 tbsp","Cinnamon":"½ tsp + a dusting"},
+    add:{"Butter":"1 tsp (or a splash of oil)"},
+    staples:["Salt (a pinch)"],
+    optional:[] },
+  "Crispy Breakfast Potatoes": { serves:4,
+    amounts:{"Potatoes":"1½ lb","Onions":"1","Bell peppers":"1","Paprika":"1 tsp","Oil":"3 tbsp"},
+    add:{},
+    staples:["Salt","Pepper"],
+    optional:[] },
+  "Sausage Breakfast Burrito": { serves:2,
+    amounts:{"Tortilla":"2 large","Sausage":"½ lb","Eggs":"4","Potatoes":"1 medium","Cheddar":"½ cup shredded"},
+    add:{},
+    staples:["Salt","Pepper"],
+    optional:[] },
+  "Banana Bread": { serves:8,
+    amounts:{"Bananas":"3 very ripe","Flour":"1½ cups","Sugar":"¾ cup","Eggs":"1","Butter":"⅓ cup melted + a little to grease the pan","Baking soda":"1 tsp","Cinnamon":"½ tsp"},
+    add:{},
+    staples:["Salt (a pinch)"],
+    optional:["Vanilla extract (1 tsp)"] },
+  "Shakshuka": { serves:3,
+    amounts:{"Eggs":"4–6","Tomatoes":"1 can (28 oz) crushed, or 6 fresh","Onions":"1","Bell peppers":"1","Garlic":"3 cloves","Paprika":"2 tsp"},
+    add:{"Olive oil":"2 tbsp"},
+    staples:["Salt","Pepper"],
+    optional:["Bread (for dipping)"] },
+  "Biscuits & Sausage Gravy": { serves:4,
+    amounts:{"Flour":"2 cups + 3 tbsp","Butter":"6 tbsp, very cold","Milk":"¾ cup + 2 cups","Sausage":"½ lb","Baking soda":"1 tsp","Lemon":"1 (for 1 tbsp juice)"},
+    add:{},
+    staples:["Salt","Pepper (lots)"],
+    optional:[] },
+  "Bacon, Egg & Cheese Sandwich": { serves:1,
+    amounts:{"Bread":"2 slices","Eggs":"1","Cheddar":"1 slice","Bacon":"3 strips","Butter":"1 tbsp"},
+    add:{},
+    staples:[],
+    optional:[] },
+  "Banana Chocolate Crepes": { serves:4,
+    amounts:{"Flour":"1 cup","Eggs":"2","Milk":"1¼ cups","Butter":"2 tbsp melted + more for the pan","Bananas":"2","Chocolate":"3 oz","Sugar":"1 tbsp + a dusting"},
+    add:{},
+    staples:["Salt (a pinch)"],
+    optional:[] },
+  "Grilled Cheese & Tomato Soup": { serves:2,
+    amounts:{"Bread":"4 slices","Cheddar":"1½ cups shredded","Butter":"3 tbsp","Tomatoes":"1 can (28 oz), or 6 fresh","Onions":"1","Garlic":"2 cloves","Chicken broth":"1 cup","Cream":"¼ cup"},
+    add:{},
+    staples:["Salt","Pepper"],
+    optional:["Sugar (a pinch)"] },
+  "Chicken Caesar Wrap": { serves:2,
+    amounts:{"Tortilla":"2 large","Chicken breast":"1 (about 8 oz)","Lettuce":"1 head romaine","Parmesan":"¼ cup grated","Mayonnaise":"3 tbsp","Lemon":"½ (1 tbsp juice)","Garlic":"1 clove"},
+    add:{},
+    staples:["Salt","Pepper","Cooking oil (1 tbsp)"],
+    optional:[] },
+  "Tuna Melt": { serves:2,
+    amounts:{"Tuna":"1 can (5 oz)","Bread":"4 slices","Mayonnaise":"2 tbsp + a little for the outside","Cheddar":"4 slices","Onions":"1 tbsp finely diced","Lemon":"a squeeze"},
+    add:{},
+    staples:["Salt","Pepper"],
+    optional:["Butter (instead of mayo on the outside)"] },
+  "Classic BLT": { serves:2,
+    amounts:{"Bacon":"8–10 strips","Lettuce":"4 leaves","Tomatoes":"1 large","Bread":"4 slices","Mayonnaise":"2 tbsp"},
+    add:{},
+    staples:["Salt","Pepper"],
+    optional:[] },
+  "Chicken Quesadillas": { serves:2,
+    amounts:{"Tortilla":"2 large","Chicken breast":"1 (about 8 oz)","Cheese":"1½ cups shredded","Bell peppers":"1","Onions":"½"},
+    add:{"Paprika":"½ tsp"},
+    staples:["Salt","Pepper","Cooking oil (1 tbsp)"],
+    optional:[] },
+  "Chicken Noodle Soup": { serves:6,
+    amounts:{"Chicken breast":"1 lb (about 2)","Egg noodles":"3 cups (about 6 oz)","Carrots":"3","Onions":"1","Chicken broth":"6–8 cups","Parsley":"2 tbsp chopped"},
+    add:{},
+    staples:["Salt","Pepper","Butter or cooking oil (2 tbsp)"],
+    optional:["Celery (1 stalk)"] },
+  "Chickpea Coconut Curry": { serves:4,
+    amounts:{"Chickpeas":"1 can (15 oz), drained","Coconut milk":"1 can (13.5 oz)","Curry powder":"2 tbsp","Onions":"1","Garlic":"3 cloves","Ginger":"1 tbsp grated","Tomatoes":"2 medium, or 1 can diced","Rice":"1½ cups uncooked"},
+    add:{},
+    staples:["Salt","Cooking oil (2 tbsp)"],
+    optional:["Lime or lemon (a squeeze)"] },
+  "Upgraded Ramen": { serves:1,
+    amounts:{"Ramen noodles":"1 pack","Eggs":"1","Soy sauce":"1 tbsp","Garlic":"1 clove","Sesame oil":"1 tsp + a few drops","Ginger":"½ tsp grated"},
+    add:{},
+    staples:["Water (2 cups + more to boil the egg)","Ice"],
+    optional:["Leftover meat or vegetables"] },
+  "Turkey & Cheese Panini": { serves:1,
+    amounts:{"Turkey":"3–4 oz sliced","Bread":"2 slices","Cheese":"2 slices","Butter":"1 tbsp softened","Tomatoes":"½, thinly sliced","Basil":"4–5 leaves"},
+    add:{},
+    staples:[],
+    optional:[] },
+  "Chicken Lettuce Wraps": { serves:4,
+    amounts:{"Chicken breast":"1 lb","Lettuce":"1 head (iceberg or butter)","Soy sauce":"2 tbsp","Garlic":"3 cloves","Ginger":"1 tbsp grated","Mushrooms":"8 oz","Sesame oil":"1 tsp"},
+    add:{},
+    staples:["Cooking oil (1 tbsp)"],
+    optional:[] },
+  "Black Bean Burrito Bowl": { serves:4,
+    amounts:{"Rice":"1 cup uncooked","Beans":"1 can (15 oz) black beans, drained","Avocado":"1","Lime":"2","Tomatoes":"2","Cheese":"1 cup shredded","Onions":"1 small"},
+    add:{"Paprika":"a pinch"},
+    staples:["Salt","Pepper"],
+    optional:[] },
+  "Teriyaki Tofu Bowl": { serves:3,
+    amounts:{"Tofu":"1 block (14 oz) firm","Teriyaki sauce":"⅓ cup","Rice":"1 cup uncooked","Broccoli":"2 cups florets","Cornstarch":"1–2 tbsp","Sesame oil":"1 tsp"},
+    add:{},
+    staples:["Salt (a pinch)","Cooking oil (2 tbsp)"],
+    optional:[] },
+  "Garlic Butter Steak & Potatoes": { serves:2,
+    amounts:{"Steak":"2 steaks, about 1 lb total, 1 inch thick","Potatoes":"1½ lb","Butter":"2 tbsp","Garlic":"3 cloves","Olive oil":"2 tbsp"},
+    add:{},
+    staples:["Salt","Pepper","Cooking oil (1 tbsp)"],
+    optional:[] },
+  "Honey Garlic Salmon": { serves:2,
+    amounts:{"Salmon":"2 fillets (about 6 oz each)","Honey":"3 tbsp","Soy sauce":"2 tbsp","Garlic":"3 cloves","Lemon":"1","Rice":"1 cup uncooked"},
+    add:{},
+    staples:["Salt","Pepper","Cooking oil (1 tbsp)"],
+    optional:[] },
+  "BBQ Pork Chops": { serves:4,
+    amounts:{"Pork chops":"4, about 1 inch thick","BBQ sauce":"½ cup","Brown sugar":"1 tbsp","Paprika":"1 tsp","Garlic powder":"1 tsp"},
+    add:{},
+    staples:["Salt (1 tsp)","Pepper (½ tsp)","Cooking oil (1 tbsp)"],
+    optional:[] },
+  "Chicken Alfredo": { serves:4,
+    amounts:{"Pasta":"1 lb fettuccine","Chicken breast":"1 lb","Cream":"1 cup","Butter":"3 tbsp","Parmesan":"1 cup finely grated","Garlic":"2 cloves"},
+    add:{},
+    staples:["Salt","Pepper","Cooking oil (1 tbsp)"],
+    optional:[] },
+  "Baked Ravioli": { serves:4,
+    amounts:{"Ravioli":"1 bag (about 25 oz) frozen","Marinara sauce":"1 jar (24 oz)","Cheese":"2 cups shredded mozzarella","Parmesan":"½ cup grated","Italian seasoning":"1 tsp"},
+    add:{},
+    staples:["Cooking spray (for the foil)"],
+    optional:[] },
+  "Sausage, Peppers & Onions": { serves:4,
+    amounts:{"Sausage":"1 lb (4–5 links)","Bell peppers":"3","Onions":"2","Olive oil":"2 tbsp","Garlic":"3 cloves","Bread":"4 rolls"},
+    add:{},
+    staples:["Salt","Water (a splash)"],
+    optional:[] },
+  "Classic Cheeseburgers": { serves:4,
+    amounts:{"Ground beef":"1½ lb","Bread":"4 buns","Cheese":"4 slices","Lettuce":"4 leaves","Tomatoes":"1","Onions":"1"},
+    add:{},
+    staples:["Salt","Pepper"],
+    optional:[] },
+  "Chicken Parmesan": { serves:4,
+    amounts:{"Chicken breast":"2 large (about 1½ lb)","Breadcrumbs":"1 cup","Eggs":"2","Flour":"½ cup","Marinara sauce":"1½ cups","Cheese":"1 cup shredded mozzarella","Parmesan":"½ cup grated","Pasta":"12 oz"},
+    add:{},
+    staples:["Salt","Pepper","Cooking oil (about 1 cup, for frying)"],
+    optional:[] },
+  "Hearty Beef Stew": { serves:6,
+    amounts:{"Steak":"2 lb chuck roast","Potatoes":"1½ lb","Carrots":"4","Onions":"1","Beef broth":"4 cups","Flour":"2 tbsp","Garlic":"3 cloves"},
+    add:{},
+    staples:["Salt","Pepper","Cooking oil (2 tbsp)"],
+    optional:[] },
+  "Lemon Garlic Sheet Pan Chicken": { serves:4,
+    amounts:{"Chicken breast":"1½ lb","Potatoes":"1½ lb","Broccoli":"1 head","Lemon":"1","Garlic":"3 cloves","Olive oil":"4 tbsp","Italian seasoning":"1 tsp"},
+    add:{},
+    staples:["Salt","Pepper"],
+    optional:[] }
+};
+
+// Merge the details into each recipe (runs once, before the Pantry list is built)
+recipes.forEach(r => {
+  const d = recipeDetails[r.name];
+  if(!d) return;
+  r.serves = d.serves;
+  r.amounts = Object.assign({}, d.amounts, d.add);
+  Object.keys(d.add || {}).forEach(n => { if(!r.ingredients.includes(n)) r.ingredients.push(n); });
+  r.staples = d.staples || [];
+  r.optional = d.optional || [];
+});
+
 /* Pantry only lists ingredients that appear in at least one recipe */
 ingredientItems = [...new Set(recipes.flatMap(r => r.ingredients))]
   .sort((a, b) => a.localeCompare(b, undefined, {sensitivity: "base"}));
@@ -2254,14 +2474,26 @@ function renderRecipe(){
     <div class="btn btn-share" onclick="shareRecipe(event)">📲 Share this recipe</div>
 
     <div class="card">
-      <b>Ingredients</b>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <b>Ingredients</b>
+        ${r.serves ? `<small style="opacity:.7;">🍽️ Serves ${r.serves}</small>` : ""}
+      </div>
       ${missing.length ? `<small style="opacity:.6;display:block;margin-top:4px;">Tap 🛒 to buy what you're missing at Walmart</small>` : ""}
-      ${r.ingredients.map(x => selected.includes(x)
-        ? `<div style="margin-top:8px;">✅ ${x}</div>`
-        : `<div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;">
-             <span>❌ ${x}</span>
-             <a target="_blank" href="${shopUrl(x)}" style="background:#0071ce;color:white;text-decoration:none;font-weight:700;font-size:13px;padding:6px 12px;border-radius:20px;">🛒 Buy</a>
-           </div>`).join("")}
+      ${r.ingredients.map(x => {
+        const amt = r.amounts && r.amounts[x] ? `<small style="display:block;opacity:.6;margin-left:24px;">${r.amounts[x]}</small>` : "";
+        return selected.includes(x)
+          ? `<div style="margin-top:8px;">✅ ${x}${amt}</div>`
+          : `<div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+               <span>❌ ${x}${amt}</span>
+               <a target="_blank" href="${shopUrl(x)}" style="flex-shrink:0;background:#0071ce;color:white;text-decoration:none;font-weight:700;font-size:13px;padding:6px 12px;border-radius:20px;">🛒 Buy</a>
+             </div>`;
+      }).join("")}
+      ${r.staples && r.staples.length ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);font-size:13px;">
+          <b style="opacity:.8;">🧂 Staples</b> <small style="opacity:.5;">(not counted in your match)</small>
+          <div style="opacity:.75;margin-top:4px;">${r.staples.join(" · ")}</div></div>` : ""}
+      ${r.optional && r.optional.length ? `<div style="margin-top:10px;font-size:13px;">
+          <b style="opacity:.8;">✨ Optional</b>
+          <div style="opacity:.75;margin-top:4px;">${r.optional.join(" · ")}</div></div>` : ""}
     </div>
 
     <div class="chef-banner">
