@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v18</title>
+<title>The Rusty Chef v19</title>
 
 <style>
 html,body{
@@ -381,6 +381,35 @@ background:rgba(74,222,128,.15);
 animation:flicker 0.6s infinite alternate;
 }
 .step-timer.done .tm-clock{color:#4ade80;}
+
+/* Food photos */
+.recipe-hero{
+display:block;
+width:100%;
+height:210px;
+object-fit:cover;
+border-radius:14px;
+margin-top:12px;
+background:rgba(255,255,255,.06);
+}
+.photo-credit{
+text-align:right;
+font-size:10px;
+opacity:.4;
+margin-top:3px;
+}
+.thumb{
+width:72px;
+height:72px;
+flex-shrink:0;
+object-fit:cover;
+border-radius:10px;
+background:rgba(255,255,255,.06);
+}
+.thumb.small{
+width:52px;
+height:52px;
+}
 </style>
 </head>
 
@@ -468,8 +497,9 @@ function showFavorites(){
       if(!r) return;
       const match = r.ingredients.filter(i => selected.includes(i)).length;
       html += `
-        <div class="card" style="display:flex;align-items:center;justify-content:space-between;" onclick="openRecipe(${recipes.findIndex(x=>x.name===name)})">
-          <div><b>${name}</b><br><small style="opacity:0.6">Match: ${match}/${r.ingredients.length}</small></div>
+        <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openRecipe(${recipes.findIndex(x=>x.name===name)})">
+          ${photoImg(name, "thumb small", 150)}
+          <div style="flex:1;min-width:0;"><b>${name}</b><br><small style="opacity:0.6">Match: ${match}/${r.ingredients.length}</small></div>
           <span style="font-size:20px;color:#ffd700;">★</span>
         </div>`;
     });
@@ -484,6 +514,62 @@ function clearPantry(){
   selected = [];
   storeSet("ingredients", JSON.stringify(selected));
   openPantry();
+}
+
+/* ================= FOOD PHOTOS =================
+   Free photos from Unsplash (unsplash.com/license). To change a picture, swap the
+   "photo-..." id for any other Unsplash photo id. Recipes without an entry just show no photo. */
+const recipePhotos = {
+  "Chicken Fried Rice": "photo-1603133872878-684f208fb84b",
+  "Spaghetti Bolognese": "photo-1622973536968-3ead9e780960",
+  "Chicken Tacos": "photo-1565299585323-38d6b0865b47",
+  "Garlic Butter Shrimp Pasta": "photo-1677681483419-e18aa1376db7",
+  "Beef Stir Fry": "photo-1760504526069-ff0f8bf6e4ca",
+  "Fluffy Pancakes": "photo-1528207776546-365bb710ee93",
+  "French Toast": "photo-1484723091739-30a097e8f929",
+  "Bacon & Egg Breakfast Tacos": "photo-1574782090889-7567420ce7e9",
+  "Mushroom & Cheese Omelette": "photo-1510693206972-df098062cb71",
+  "Avocado Toast with Egg": "photo-1525351484163-7529414344d8",
+  "Banana Cinnamon Oatmeal": "photo-1598259298632-e785684cfa90",
+  "Crispy Breakfast Potatoes": "photo-1633959639799-6d3f66e05710",
+  "Sausage Breakfast Burrito": "photo-1731090389603-d63060ee08a6",
+  "Banana Bread": "photo-1632931057819-4eefffa8e007",
+  "Shakshuka": "photo-1780704664094-1595bf7c9a46",
+  "Biscuits & Sausage Gravy": "photo-1774025627495-f0610ffbdc8f",
+  "Bacon, Egg & Cheese Sandwich": "photo-1627564803215-ad55bad5c5ea",
+  "Banana Chocolate Crepes": "photo-1565087170449-fa23854a6100",
+  "Grilled Cheese & Tomato Soup": "photo-1528736235302-52922df5c122",
+  "Chicken Caesar Wrap": "photo-1626700051175-6818013e1d4f",
+  "Tuna Melt": "photo-1676300187476-fa0723ba0377",
+  "Classic BLT": "photo-1722041220514-f6a26e286f2e",
+  "Chicken Quesadillas": "photo-1673990349292-ed2dfa7988c9",
+  "Chicken Noodle Soup": "photo-1612966948332-81d747414a8f",
+  "Chickpea Coconut Curry": "photo-1585937421612-70a008356fbe",
+  "Upgraded Ramen": "photo-1612927601601-6638404737ce",
+  "Turkey & Cheese Panini": "photo-1621852004158-f3bc188ace2d",
+  "Chicken Lettuce Wraps": "photo-1790029410336-75f1fba33a7b",
+  "Black Bean Burrito Bowl": "photo-1647545401750-6dd5539879ac",
+  "Teriyaki Tofu Bowl": "photo-1546069901-ba9599a7e63c",
+  "Garlic Butter Steak & Potatoes": "photo-1600891964092-4316c288032e",
+  "Honey Garlic Salmon": "photo-1467003909585-2f8a72700288",
+  "BBQ Pork Chops": "photo-1692106914421-e04e1066bd62",
+  "Chicken Alfredo": "photo-1645112411341-6c4fd023714a",
+  "Baked Ravioli": "photo-1778850620699-79ba3ff60bf0",
+  "Sausage, Peppers & Onions": "photo-1585325701165-351af916e581",
+  "Classic Cheeseburgers": "photo-1568901346375-23c9450c58cd",
+  "Chicken Parmesan": "photo-1762631383362-bad467f94a8d",
+  "Hearty Beef Stew": "photo-1664741662725-bd131742b7b7",
+  "Lemon Garlic Sheet Pan Chicken": "photo-1762154194962-cccc677be031",
+};
+
+function photoUrl(name, width){
+  const id = recipePhotos[name];
+  return id ? `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=70` : "";
+}
+
+function photoImg(name, cls, width){
+  const url = photoUrl(name, width);
+  return url ? `<img class="${cls}" src="${url}" alt="${name}" loading="lazy" onerror="this.style.display='none'">` : "";
 }
 
 /* ================= RECIPES ================= */
@@ -2068,7 +2154,9 @@ function showMatches(){
     const pct = Math.round(m / total * 100);
     const fav = favorites.includes(r.name) ? `<span class="fav-badge">★ Saved</span>` : "";
     html += `
-      <div class="card" onclick="openRecipe(${i})" style="cursor:pointer;">
+      <div class="card" onclick="openRecipe(${i})" style="cursor:pointer;display:flex;gap:12px;align-items:flex-start;">
+        ${photoImg(r.name, "thumb", 200)}
+        <div style="flex:1;min-width:0;">
         <b>${r.name}</b>${fav}<br>
         <small style="opacity:0.7">Match: ${m}/${total} (${pct}%)${r.category ? " · " + r.category : ""}</small>
         <div style="height:6px;background:rgba(255,255,255,.12);border-radius:3px;margin-top:8px;overflow:hidden;">
@@ -2076,6 +2164,7 @@ function showMatches(){
         </div>
         ${missing.length ? `<small style="opacity:0.55;display:block;margin-top:6px;">Missing: ${missing.join(", ")}</small>`
                          : `<small style="color:#4ade80;display:block;margin-top:6px;">You have everything! 🎉</small>`}
+        </div>
       </div>`;
   });
 
@@ -2233,6 +2322,7 @@ function renderRecipe(){
       <div class="btn" onclick="showMatches()" style="margin-top:0;padding:8px 14px;">← Back</div>
       <span class="fav-star${isFav ? " saved" : ""}" onclick="toggleFavorite(${currentRecipe})">★</span>
     </div>
+    ${recipePhotos[r.name] ? `${photoImg(r.name, "recipe-hero", 900)}<div class="photo-credit">Photo: Unsplash</div>` : ""}
     <div class="recipeTitle" style="margin-top:14px;">${r.name}</div>
 
     <div style="display:flex;gap:8px;margin-bottom:12px;">
@@ -2281,4 +2371,4 @@ function renderRecipe(){
 
 </script>
 </body>
-</html
+</html>
