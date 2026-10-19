@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v27</title>
+<title>The Rusty Chef v28</title>
 <meta name="description" content="Tell it what's in your pantry and get chef-level recipes you can make tonight.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://therustychef.com">
@@ -12,6 +12,20 @@
 <meta property="og:description" content="Tell it what's in your pantry and get chef-level recipes you can make tonight.">
 <meta property="og:image" content="https://therustychef.com/copilot_image_1777179019874.jpeg">
 <meta name="twitter:card" content="summary_large_image">
+<!-- Google Analytics (only counts visits on therustychef.com, not test copies) -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){ dataLayer.push(arguments); }
+(function(){
+  if(!/(^|\.)therustychef\.com$/i.test(location.hostname)) return;
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://www.googletagmanager.com/gtag/js?id=G-HQW1J6XPPS";
+  document.head.appendChild(s);
+  gtag("js", new Date());
+  gtag("config", "G-HQW1J6XPPS");
+})();
+</script>
 
 <style>
 html,body{
@@ -2402,6 +2416,7 @@ async function shareRecipe(ev){
 
 function openSharePanel(r){
   closeSharePanel();
+  gtag("event", "share", { method: "share_panel", item_id: recipeSlug(r), content_type: "recipe" });
   const msg = shareText(r);
   const el = document.createElement("div");
   el.id = "sharePanel";
@@ -2524,6 +2539,7 @@ function resetTimer(n){
 function openRecipe(i){
   closeSharePanel();
   currentRecipe = i;
+  if(recipes[i]) gtag("event", "view_recipe", { recipe_name: recipes[i].name });
   renderRecipe();
   document.getElementById("recipe").scrollTop = 0;
   show("recipe");
