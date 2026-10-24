@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Rusty Chef v29</title>
+<title>The Rusty Chef</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Silkscreen&family=Barlow+Condensed:wght@500;600&display=swap">
 <meta name="description" content="Tell it what's in your pantry and get chef-level recipes you can make tonight.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://therustychef.com">
@@ -460,6 +462,28 @@ text-decoration:none;
 margin-top:0;
 margin-bottom:12px;
 }
+
+/* ================= GAME TAB (therustychef.com arcade) ================= */
+#game{--g-bg:#0e1213;--g-panel:#171c1d;--g-line:#2d3a3b;--g-fg:#efe6d2;--g-muted:#9aa5a2;--g-amber:#f0a23a;--g-neon:#ff5a2a;
+  background:radial-gradient(120% 60% at 50% 0%,#1d2a2b 0%,#0e1213 60%) #0e1213;color:var(--g-fg);font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:17px}
+#game .rg-cab{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:12px;padding-top:4px}
+#game .rg-marquee{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:4px 16px}
+#game .rg-h1{font-family:'Bungee','Arial Black',Impact,sans-serif;font-weight:400;margin:0;font-size:clamp(24px,5.4vw,44px);line-height:1;color:var(--g-amber);text-shadow:0 0 12px rgba(255,90,42,.55),0 0 2px #000}
+#game .rg-tag{font-family:'Bungee','Arial Black',sans-serif;font-size:12px;letter-spacing:.06em;background:var(--g-neon);color:#1a0f0a;padding:5px 10px;border-radius:2px;transform:rotate(-1deg)}
+#game .rg-screen{position:relative;border:3px solid #2b3233;border-radius:8px;overflow:hidden;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#game canvas{display:block;width:100%;max-width:100%;aspect-ratio:768/640;touch-action:none}
+#game .rg-bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;color:var(--g-muted);font-size:15px}
+#game .rg-keys{display:flex;flex-wrap:wrap;gap:6px 14px}
+#game kbd{font-family:'Silkscreen','Courier New',monospace;font-size:11px;background:var(--g-panel);border:1px solid var(--g-line);border-bottom-width:3px;border-radius:4px;padding:2px 6px;color:var(--g-fg)}
+#game .rg-btn{font:600 15px 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:.04em;text-transform:uppercase;background:var(--g-panel);color:var(--g-fg);border:1px solid var(--g-line);border-radius:6px;padding:7px 12px;cursor:pointer}
+#game .rg-pad{display:none;justify-content:space-between;align-items:center;gap:16px;user-select:none;-webkit-user-select:none}
+#game .rg-dpad{display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(3,58px);gap:4px}
+#game .rg-pad button{font-family:'Silkscreen','Courier New',monospace;font-size:18px;background:#1e2526;color:var(--g-fg);border:1px solid var(--g-line);border-bottom-width:4px;border-radius:10px;touch-action:none}
+#game .rg-pad button.on{background:#2c3637;border-color:var(--g-amber)}
+#game .rg-dpad .u{grid-column:2;grid-row:1}#game .rg-dpad .l{grid-column:1;grid-row:2}#game .rg-dpad .r{grid-column:3;grid-row:2}#game .rg-dpad .d{grid-column:2;grid-row:3}
+#game .rg-oil{width:104px;height:104px;border-radius:50%!important;font-family:'Bungee','Arial Black',sans-serif!important;font-size:18px!important;background:var(--g-amber)!important;color:#1a0f0a!important;border-color:#a8641d!important}
+@media (pointer:coarse){#game .rg-pad{display:flex}#game .rg-keys{display:none}}
+@media (max-width:420px){#game .rg-dpad{grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,50px)}#game .rg-oil{width:92px;height:92px}}
 </style>
 </head>
 
@@ -491,11 +515,31 @@ margin-bottom:12px;
 <div id="recipe" class="page"></div>
 <div id="favorites" class="page"></div>
 
+<div id="game" class="page">
+<div class="rg-cab">
+  <div class="rg-marquee"><h1 class="rg-h1">therustychef.com</h1><span class="rg-tag">NO TASTE BUDS REQUIRED</span></div>
+  <div class="rg-screen"><canvas id="rg-cv" width="768" height="640" aria-label="therustychef.com game screen"></canvas></div>
+  <div class="rg-bar">
+    <div class="rg-keys"><span><kbd>←</kbd> <kbd>→</kbd> walk</span><span><kbd>↑</kbd> <kbd>↓</kbd> ladders</span><span><kbd>Space</kbd> oil spray</span><span><kbd>P</kbd> pause</span><span><kbd>Enter</kbd> start</span></div>
+    <div style="display:flex;gap:8px"><button class="rg-btn" id="rg-mute" aria-pressed="false">Sound on</button><button class="rg-btn" id="rg-pause">Pause</button></div>
+  </div>
+  <div class="rg-pad">
+    <div class="rg-dpad">
+      <button class="u" data-k="up" aria-label="Up">▲</button><button class="l" data-k="left" aria-label="Left">◀</button>
+      <button class="r" data-k="right" aria-label="Right">▶</button><button class="d" data-k="down" aria-label="Down">▼</button>
+    </div>
+    <button class="rg-oil" data-k="fire" aria-label="Oil spray">OIL</button>
+  </div>
+</div>
+</div>
+
+
 <!-- Permanent tab bar - lives outside .page so fixed positioning works -->
 <div id="tabBar" style="position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(0,0,0,0.92);backdrop-filter:blur(10px);border-top:1px solid rgba(255,255,255,0.1);padding:8px 12px calc(12px + env(safe-area-inset-bottom, 0px));display:flex;gap:8px;">
   <div class="btn" onclick="openPantry()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">🧺<br>Pantry</div>
   <div class="btn" onclick="showMatches()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">🍳<br>Recipes</div>
   <div class="btn btn-fav" onclick="showFavorites()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">⭐<br>Saved</div>
+  <div class="btn btn-chef" onclick="openGame()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">🎮<br>Game</div>
 </div>
 
 <script>
@@ -2216,406 +2260,4 @@ async function scanPhoto(input){
       ingredientItems.forEach(n => lookup[n.toLowerCase()] = n);
       const found = new Set();
       (Array.isArray(answer) ? answer : []).forEach(a => {
-        const n = lookup[String(a).trim().toLowerCase()];
-        if(n) found.add(n);
-      });
-      scanFound = [...found];
-      showScanResults(preview, true);
-    }catch(e){
-      const msg = CLAUDE_ERRORS[e && e.code] || "The scan didn't finish. Try again in a moment.";
-      scanStatus(`<div class="card">${preview}<div style="text-align:center;">😕 ${msg}</div>
-        <div class="btn" onclick="scanStatus('')" style="padding:10px;">OK</div></div>`);
-    }
-    return;
-  }
-
-  // ---- Option B: basic AI that runs in the browser (works outside Claude)
-  busy(scanModels ? "Looking at your food..." : "Loading the AI (first scan only, takes a moment)...");
-  try{
-    const small = resizeTo(img, 640);
-    const {net, det} = await getScanModels();
-    busy("Looking at your food...");
-
-    const found = new Set();
-    const W = small.width, H = small.height;
-
-    const objects = await det.detect(small, 20, 0.3);
-    for(const o of objects){
-      const hit = toPantryName(o.class);
-      if(hit && o.score >= 0.4) found.add(hit);
-      const [x, y, w, h] = o.bbox;
-      if(w > 20 && h > 20){
-        const guesses = await net.classify(cropCanvas(small, x, y, w, h), 3);
-        guesses.forEach(g => { const n = toPantryName(g.className); if(n && g.probability >= 0.2) found.add(n); });
-      }
-    }
-
-    const regions = [[0,0,W,H],[0,0,W/2,H/2],[W/2,0,W/2,H/2],[0,H/2,W/2,H/2],[W/2,H/2,W/2,H/2]];
-    for(const [x, y, w, h] of regions){
-      const guesses = await net.classify(cropCanvas(small, x, y, w, h), 5);
-      guesses.forEach(g => { const n = toPantryName(g.className); if(n && g.probability >= 0.15) found.add(n); });
-    }
-
-    scanFound = [...found];
-    showScanResults(preview, false);
-  } catch(e){
-    scanModels = null;
-    scanStatus(`<div class="card" style="text-align:center;">😕 The scanner couldn't load. It needs internet and a regular browser (Chrome or Safari). App previews block it.<br><small style="opacity:.6">You can still tap ingredients below.</small></div>`);
-  }
-}
-
-function showScanResults(preview, usedClaude){
-  if(scanFound.length === 0){
-    scanStatus(`<div class="card">${preview}<div style="text-align:center;">🤔 I didn't recognize anything.<br><small style="opacity:.6">Try one item at a time in good light, or tap ingredients below.</small></div>
-      <div class="btn" onclick="scanStatus('')" style="padding:10px;">OK</div></div>`);
-    return;
-  }
-  let html = `<div class="card">${preview}<b>I spotted:</b><small style="opacity:.6;display:block;margin-bottom:6px;">Tap to uncheck anything that's wrong.</small>`;
-  scanFound.forEach(name => {
-    const have = selected.includes(name);
-    html += `<div class="item selected" data-name="${name}" onclick="this.classList.toggle('selected');this.firstChild.textContent=this.classList.contains('selected')?'✅ ':'⬜ '"><span>✅ </span>${name}${have ? ' <small style="opacity:.6">(already in pantry)</small>' : ""}</div>`;
-  });
-  html += `<div class="btn btn-chef" onclick="addScanned()">Add to pantry</div>
-    <div class="btn btn-feedback" onclick="scanStatus('')" style="padding:10px;">Cancel</div>
-    <small style="opacity:.55;display:block;margin-top:8px;">${usedClaude
-      ? "Scanned by Claude. Anything it missed, tap in the list below."
-      : "The basic scanner knows fresh foods best (bananas, broccoli, carrots, peppers, mushrooms, lemons, bread). Packaged items like sauces and spices need to be tapped below."}</small></div>`;
-  scanStatus(html);
-}
-
-function addScanned(){
-  document.querySelectorAll("#scanArea .item.selected").forEach(el => {
-    const n = el.dataset.name;
-    if(!selected.includes(n)) selected.push(n);
-  });
-  storeSet("ingredients", JSON.stringify(selected));
-  scanStatus("");
-  renderPantryList(document.getElementById("pantrySearch").value);
-  updatePantryCount();
-}
-
-function updatePantryCount(){
-  const el = document.getElementById("pantryCount");
-  if(el) el.textContent = `${selected.length} ingredient${selected.length === 1 ? "" : "s"} selected`;
-}
-
-/* ================= RECIPE LIST ================= */
-function showMatches(){
-  const cats = ["all", ...new Set(recipes.map(r => r.category).filter(Boolean))];
-  let html = `<div class="header">🍳 Recipes</div>`;
-
-  html += `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:6px;">`;
-  cats.forEach(c => {
-    const on = c === recipeFilter;
-    html += `<div class="item${on ? " selected" : ""}" style="margin:0;padding:6px 14px;text-transform:capitalize;" onclick="setFilter('${c}')">${c}</div>`;
-  });
-  html += `</div>`;
-
-  if(selected.length === 0){
-    html += `<div class="modeBadge">Tip: add ingredients in your Pantry to see your best matches first.</div>`;
-  }
-
-  const list = recipes
-    .map((r, i) => ({r, i, m: matchCount(r)}))
-    .filter(x => recipeFilter === "all" || x.r.category === recipeFilter)
-    .sort((a, b) => (b.m / b.r.ingredients.length) - (a.m / a.r.ingredients.length));
-
-  list.forEach(({r, i, m}) => {
-    const total = r.ingredients.length;
-    const missing = r.ingredients.filter(x => !selected.includes(x));
-    const pct = Math.round(m / total * 100);
-    const fav = favorites.includes(r.name) ? `<span class="fav-badge">★ Saved</span>` : "";
-    html += `
-      <div class="card" onclick="openRecipe(${i})" style="cursor:pointer;">
-        <div style="display:flex;gap:12px;align-items:center;">
-          ${photoImg(r.name, "thumb", 200)}
-          <div style="flex:1;min-width:0;">
-            <b>${r.name}</b>${fav}<br>
-            <small style="opacity:0.7">Match: ${m}/${total} (${pct}%)${r.category ? " · " + r.category : ""}</small>
-          </div>
-        </div>
-        <div style="height:6px;background:rgba(255,255,255,.12);border-radius:3px;margin-top:8px;overflow:hidden;">
-          <div style="height:100%;width:${pct}%;background:${pct === 100 ? "#4ade80" : "#4facfe"};"></div>
-        </div>
-        ${missing.length ? `<small style="opacity:0.55;display:block;margin-top:6px;">Missing: ${missing.join(", ")}</small>`
-                         : `<small style="color:#4ade80;display:block;margin-top:6px;">You have everything! 🎉</small>`}
-      </div>`;
-  });
-
-  document.getElementById("results").innerHTML = html;
-  show("results");
-}
-
-function setFilter(c){
-  recipeFilter = c;
-  showMatches();
-}
-
-/* ================= SHOPPING ================= */
-function shopUrl(name){
-  return "https://www.walmart.com/search?q=" + encodeURIComponent(name);
-}
-
-
-/* ================= SHARE ================= */
-const APP_LINK = "https://therustychef.com";
-
-// Each recipe gets its own link, e.g. therustychef.com/#chicken-tacos
-function recipeSlug(r){
-  return r.name.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
-
-function recipeLink(r){
-  return APP_LINK + "/?recipe=" + recipeSlug(r);
-}
-
-function shareText(r){
-  return `Check out ${r.name} on The Rusty Chef 🔥 ${recipeLink(r)}`;
-}
-
-// Opening a shared link goes straight to that recipe.
-// Works with ?recipe=chicken-tacos (main format) and #chicken-tacos (older links).
-function linkSlug(){
-  let slug = "";
-  try{ slug = new URLSearchParams(location.search).get("recipe") || ""; }catch(e){}
-  if(!slug) slug = (location.hash || "").replace(/^#\/?/, "");
-  try{ slug = decodeURIComponent(slug); }catch(e){}
-  return slug.trim().toLowerCase();
-}
-
-function openFromLink(){
-  const slug = linkSlug();
-  if(!slug) return;
-  const i = recipes.findIndex(r => recipeSlug(r) === slug);
-  if(i >= 0) openRecipe(i);
-}
-window.addEventListener("hashchange", openFromLink);
-
-function smsHref(r){
-  // iPhone uses "&body=", Android uses "?body="
-  const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  return "sms:" + (ios ? "&" : "?") + "body=" + encodeURIComponent(shareText(r));
-}
-
-async function shareRecipe(ev){
-  if(ev) ev.preventDefault();
-  const r = recipes[currentRecipe];
-  if(!r) return;
-  // Try the phone's share sheet first. Inside the Claude app it's often blocked,
-  // so anything other than "they closed it" falls back to our own share panel.
-  if(navigator.share){
-    try{
-      await navigator.share({ title: "The Rusty Chef: " + r.name, text: `Check out ${r.name} on The Rusty Chef 🔥`, url: recipeLink(r) });
-      return;
-    }catch(e){
-      if(e && e.name === "AbortError") return;
-    }
-  }
-  openSharePanel(r);
-}
-
-function openSharePanel(r){
-  closeSharePanel();
-  gtag("event", "share", { method: "share_panel", item_id: recipeSlug(r), content_type: "recipe" });
-  const msg = shareText(r);
-  const el = document.createElement("div");
-  el.id = "sharePanel";
-  el.style.cssText = "position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;";
-  el.onclick = e => { if(e.target === el) closeSharePanel(); };
-  el.innerHTML = `
-    <div style="background:#1a1a1a;width:100%;border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(255,255,255,.15);">
-      <div class="header" style="margin-bottom:6px;">📲 Share ${r.name}</div>
-      <textarea id="shareMsg" style="width:100%;box-sizing:border-box;height:84px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:#000;color:white;padding:10px;font-size:14px;">${msg}</textarea>
-      <div style="display:flex;gap:8px;margin-top:10px;">
-        <a class="btn btn-share" href="${smsHref(r)}" target="_blank" style="flex:1;margin-bottom:0;padding:12px 4px;font-size:13px;line-height:1.3;">💬<br>Messages</a>
-        <a class="btn btn-insta" href="https://www.instagram.com/direct/inbox/" target="_blank" onclick="shareInstagram()" style="flex:1;padding:12px 4px;font-size:13px;line-height:1.3;">📸<br>Instagram DM</a>
-        <a class="btn btn-messenger" href="fb-messenger://share?link=${encodeURIComponent(recipeLink(r))}" target="_blank" onclick="shareMessenger()" style="flex:1;padding:12px 4px;font-size:13px;line-height:1.3;">⚡<br>Messenger</a>
-      </div>
-      <div class="btn btn-chef" onclick="copyShare()">📋 Copy message</div>
-      <div id="shareNote" style="text-align:center;font-size:13px;margin-top:8px;min-height:18px;color:#4ade80;"></div>
-      <div class="btn btn-feedback" onclick="closeSharePanel()" style="padding:10px;">Close</div>
-    </div>`;
-  document.body.appendChild(el);
-}
-
-function closeSharePanel(){
-  const el = document.getElementById("sharePanel");
-  if(el) el.remove();
-}
-
-// Instagram can't pre-fill a message, so copy it first, then open Instagram DMs to paste it
-function shareInstagram(){
-  const ta = document.getElementById("shareMsg"), note = document.getElementById("shareNote");
-  let ok = false;
-  try{ ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length); ok = document.execCommand("copy"); }catch(e){}
-  if(!ok && navigator.clipboard){ navigator.clipboard.writeText(ta.value).catch(() => {}); }
-  note.textContent = "✅ Message copied. In Instagram, pick a chat and paste it.";
-}
-
-// Messenger shares the link itself; we also copy the full message in case they want to paste it
-function shareMessenger(){
-  const ta = document.getElementById("shareMsg"), note = document.getElementById("shareNote");
-  try{ ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length); document.execCommand("copy"); }catch(e){}
-  note.textContent = "Opening Messenger… pick who to send it to. (Needs the Messenger app.)";
-}
-
-async function copyShare(){
-  const ta = document.getElementById("shareMsg"), note = document.getElementById("shareNote");
-  try{
-    await navigator.clipboard.writeText(ta.value);
-    note.textContent = "✅ Copied! Paste it into a text.";
-  }catch(e){
-    ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
-    let ok = false; try{ ok = document.execCommand("copy"); }catch(_){}
-    note.textContent = ok ? "✅ Copied! Paste it into a text." : "Message is highlighted. Press and hold it, then tap Copy.";
-  }
-}
-
-/* ================= STEP TIMERS ================= */
-let stepTimers = {};
-
-function stepSeconds(text){
-  const m = text.match(/(\d+(?:\.\d+)?)(?:\s*(?:–|-|to)\s*(\d+(?:\.\d+)?))?\s*(hours?|hrs?|minutes?|mins?|seconds?|secs?)\b/i);
-  if(!m) return 0;
-  const n = parseFloat(m[2] || m[1]);
-  const u = m[3].toLowerCase();
-  const secs = u.startsWith("h") ? n * 3600 : u.startsWith("m") ? n * 60 : n;
-  return secs >= 10 && secs <= 4 * 3600 ? Math.round(secs) : 0;
-}
-
-function fmtTime(s){
-  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
-  return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0");
-}
-
-function clearTimers(){
-  Object.values(stepTimers).forEach(t => clearInterval(t.iv));
-  stepTimers = {};
-}
-
-function drawTimer(n){
-  const t = stepTimers[n], el = document.getElementById("timer" + n);
-  if(!t || !el) return;
-  el.querySelector(".tm-clock").textContent = fmtTime(t.left);
-  el.querySelector(".tm-go").textContent = t.left === 0 ? "Done!" : t.iv ? "Pause" : (t.left < t.total ? "Resume" : "Start");
-  el.classList.toggle("done", t.left === 0);
-}
-
-function beep(){
-  try{
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 0.4, 0.8].forEach(d => {
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
-      g.gain.setValueAtTime(0.3, ctx.currentTime + d);
-      o.start(ctx.currentTime + d); o.stop(ctx.currentTime + d + 0.25);
-    });
-  }catch(e){}
-  try{ navigator.vibrate && navigator.vibrate([300, 150, 300, 150, 300]); }catch(e){}
-}
-
-function toggleTimer(n){
-  const t = stepTimers[n];
-  if(!t || t.left === 0) return;
-  if(t.iv){ clearInterval(t.iv); t.iv = null; }
-  else{
-    t.iv = setInterval(() => {
-      t.left = Math.max(0, t.left - 1);
-      if(t.left === 0){ clearInterval(t.iv); t.iv = null; beep(); }
-      drawTimer(n);
-    }, 1000);
-  }
-  drawTimer(n);
-}
-
-function resetTimer(n){
-  const t = stepTimers[n];
-  if(!t) return;
-  clearInterval(t.iv); t.iv = null; t.left = t.total;
-  drawTimer(n);
-}
-
-/* ================= SINGLE RECIPE ================= */
-function openRecipe(i){
-  closeSharePanel();
-  currentRecipe = i;
-  if(recipes[i]) gtag("event", "view_recipe", { recipe_name: recipes[i].name });
-  renderRecipe();
-  document.getElementById("recipe").scrollTop = 0;
-  show("recipe");
-}
-
-function renderRecipe(){
-  const r = recipes[currentRecipe];
-  if(!r) return;
-  clearTimers();
-  const isFav = favorites.includes(r.name);
-  const missing = r.ingredients.filter(x => !selected.includes(x));
-
-  let html = `
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <div class="btn" onclick="showMatches()" style="margin-top:0;padding:8px 14px;">← Back</div>
-      <span class="fav-star${isFav ? " saved" : ""}" onclick="toggleFavorite(${currentRecipe})">★</span>
-    </div>
-    ${photoImg(r.name, "recipe-hero", 800)}
-    <div class="recipeTitle" style="margin-top:14px;">${r.name}</div>
-
-    <div class="btn btn-share" onclick="shareRecipe(event)">📲 Share this recipe</div>
-
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;">
-        <b>Ingredients</b>
-        ${r.serves ? `<small style="opacity:.7;">🍽️ Serves ${r.serves}</small>` : ""}
-      </div>
-      ${missing.length ? `<small style="opacity:.6;display:block;margin-top:4px;">Tap 🛒 to buy what you're missing at Walmart</small>` : ""}
-      ${r.ingredients.map(x => {
-        const amt = r.amounts && r.amounts[x] ? `<small style="display:block;opacity:.6;margin-left:24px;">${r.amounts[x]}</small>` : "";
-        return selected.includes(x)
-          ? `<div style="margin-top:8px;">✅ ${x}${amt}</div>`
-          : `<div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-               <span>❌ ${x}${amt}</span>
-               <a target="_blank" href="${shopUrl(x)}" style="flex-shrink:0;background:#0071ce;color:white;text-decoration:none;font-weight:700;font-size:13px;padding:6px 12px;border-radius:20px;">🛒 Buy</a>
-             </div>`;
-      }).join("")}
-      ${r.staples && r.staples.length ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);font-size:13px;">
-          <b style="opacity:.8;">🧂 Staples</b> <small style="opacity:.5;">(not counted in your match)</small>
-          <div style="opacity:.75;margin-top:4px;">${r.staples.join(" · ")}</div></div>` : ""}
-      ${r.optional && r.optional.length ? `<div style="margin-top:10px;font-size:13px;">
-          <b style="opacity:.8;">✨ Optional</b>
-          <div style="opacity:.75;margin-top:4px;">${r.optional.join(" · ")}</div></div>` : ""}
-    </div>
-
-    <div class="chef-banner">
-      <div class="chef-banner-title">🔥 CHEF MODE 🔥</div>
-      <div class="chef-banner-sub">Detailed technique + pro tips</div>
-    </div>`;
-
-  (r.chefSteps || []).forEach((s, n) => {
-    const secs = stepSeconds(s.a);
-    if(secs) stepTimers[n] = { total: secs, left: secs, iv: null };
-    html += `
-      <div class="chef-card">
-        <div class="step-header"><span class="step-number">${n + 1}</span><span class="step-title" style="margin-bottom:0;">${s.t}</span></div>
-        <div class="step-body">${s.a}</div>
-        ${s.tip ? `<div class="step-tip">💡 ${s.tip}</div>` : ""}
-        ${secs ? `<div class="step-timer" id="timer${n}">
-            <span class="tm-clock">${fmtTime(secs)}</span>
-            <span class="tm-label">⏱️ Step timer</span>
-            <span class="tm-btn tm-go" onclick="toggleTimer(${n})">Start</span>
-            <span class="tm-btn tm-reset" onclick="resetTimer(${n})">↺</span>
-          </div>` : ""}
-      </div>`;
-  });
-
-  document.getElementById("recipe").innerHTML = html;
-}
-
-
-/* ================= START ================= */
-openFromLink();
-window.addEventListener("pageshow", openFromLink); // also when the phone restores the page from its cache
-</script>
-
-
-</body>
-</html>
+        const n = lookup[String(a).t
