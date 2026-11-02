@@ -4462,40 +4462,41 @@ const GH_LIKES = [
 ];
 /* name, amount per person per day, units per pack, pack label, price per pack, likes it goes with ("base" = always), priority (1 must-have, 2 nice, 3 extra) */
 const GH_ITEMS = [
-  ["Rice",                 0.15, 2,   "2 lb bag",       2.50, ["base"],      1],
-  ["Bread",                0.2,  1,   "loaf",           2.50, ["base"],      1],
-  ["Eggs",                 1.2,  12,  "dozen",          3.50, ["base"],      1],
-  ["Potatoes",             0.3,  5,   "5 lb bag",       4.00, ["base"],      1],
-  ["Onions",               0.25, 8,   "3 lb bag",       3.00, ["base"],      1],
-  ["Canned beans",         0.25, 1,   "can",            1.00, ["base"],      1],
-  ["Frozen mixed vegetables",0.2,1,   "12 oz bag",      1.50, ["base"],      1],
-  ["Chicken thighs",       0.35, 1,   "lb",             2.50, ["chicken"],   1, "meat"],
-  ["Ground beef",          0.3,  1,   "lb",             5.00, ["beef"],      1, "meat"],
-  ["Pork chops",           0.3,  1,   "lb",             3.50, ["pork"],      1, "meat"],
-  ["Bacon",                0.05, 1,   "12 oz pack",     5.00, ["pork","breakfast"], 3, "meat"],
-  ["Frozen fish fillets",  0.25, 1,   "1 lb bag",       5.50, ["fish"],      1, "meat"],
-  ["Canned tuna",          0.15, 1,   "can",            1.25, ["fish"],      2, "meat"],
-  ["Tofu",                 0.25, 1,   "14 oz block",    2.00, ["veg"],       1],
-  ["Black beans",          0.2,  1,   "can",            1.00, ["veg","mexican"], 1],
-  ["Pasta",                0.15, 1,   "1 lb box",       1.50, ["pasta"],     1],
-  ["Pasta sauce",          0.1,  1,   "24 oz jar",      2.00, ["pasta"],     1],
-  ["Parmesan cheese",      0.02, 1,   "8 oz shaker",    3.50, ["pasta"],     3],
-  ["Tortillas",            0.15, 1,   "10-pack",        2.50, ["mexican"],   1],
-  ["Salsa",                0.04, 1,   "16 oz jar",      2.50, ["mexican"],   2],
-  ["Shredded cheese",      0.04, 1,   "8 oz bag",       2.75, ["mexican","pasta"], 2],
-  ["Soy sauce",            0.01, 1,   "bottle",         2.00, ["asian"],     2],
-  ["Ramen noodles",        0.3,  1,   "12-pack",        3.50, ["asian"],     1],
-  ["Pancake mix",          0.05, 1,   "32 oz box",      2.50, ["breakfast"], 2],
-  ["Oatmeal",              0.1,  2.6, "42 oz canister", 4.50, ["breakfast"], 1],
-  ["Milk",                 0.12, 1,   "gallon",         3.50, ["breakfast"], 2],
-  ["Bananas",              0.7,  1,   "each",           0.25, ["fruit","breakfast"], 1],
-  ["Apples",               0.4,  1,   "each",           0.60, ["fruit"],     2],
-  ["Oranges",              0.3,  1,   "each",           0.70, ["fruit"],     3],
-  ["Carrots",              0.15, 2,   "2 lb bag",       1.80, ["veggies"],   1],
-  ["Broccoli",             0.1,  1,   "crown",          1.80, ["veggies"],   2],
-  ["Salad greens",         0.08, 1,   "bag",            3.00, ["veggies"],   3],
-  ["Popcorn",              0.1,  1,   "3-pack",         3.00, ["snacks"],    2],
-  ["Crackers",             0.05, 1,   "box",            2.75, ["snacks"],    3]
+  // name, amount per person per day, units per pack, pack label, price per pack, likes it goes with ("base" = always), priority (1 must-have, 2 nice, 3 extra), "meat" or "", Walmart item number
+  ["Rice",                   0.15, 2,   "2 lb bag (Great Value)",        2.50, ["base"],      1, "", "801697534"],
+  ["Bread",                  0.2,  1,   "20 oz loaf (Great Value)",      1.50, ["base"],      1, "", "10315752"],
+  ["Eggs",                   1.2,  12,  "dozen (Great Value)",           3.50, ["base"],      1, "", "145051970"],
+  ["Potatoes",               0.3,  5,   "5 lb bag",                      4.00, ["base"],      1, "", "10447839"],
+  ["Onions",                 0.25, 8,   "3 lb bag",                      3.00, ["base"],      1, "", "10447842"],
+  ["Pinto beans",            0.25, 1,   "15.5 oz can (Great Value)",     1.00, ["base"],      1, "", "10534043"],
+  ["Frozen mixed vegetables",0.2,  1,   "12 oz bag (Great Value)",       1.50, ["base"],      1, "", "817042496"],
+  ["Chicken thighs",         0.35, 5,   "family pack (about 5 lb)",     12.50, ["chicken"],   1, "meat", "124782654"],
+  ["Ground beef",            0.3,  1,   "1 lb roll, 80/20",              5.00, ["beef"],      1, "meat", "15136791"],
+  ["Pork chops",             0.3,  3.5, "family pack (about 3.5 lb)",   11.00, ["pork"],      1, "meat", "51259100"],
+  ["Bacon",                  0.05, 1,   "12 oz pack (Great Value)",      5.00, ["pork","breakfast"], 3, "meat", "23816525"],
+  ["Tilapia fillets",        0.25, 2,   "2 lb frozen bag (Great Value)", 9.00, ["fish"],      1, "meat", "51259015"],
+  ["Canned tuna",            0.15, 1,   "5 oz can (Great Value)",        1.25, ["fish"],      2, "meat", "11965048"],
+  ["Tofu",                   0.25, 1,   "14 oz block (Nasoya)",          2.50, ["veg"],       1, "", "10898817"],
+  ["Black beans",            0.2,  1,   "15 oz can (Great Value)",       1.00, ["veg","mexican"], 1, "", "10534038"],
+  ["Spaghetti",              0.15, 1,   "1 lb box (Great Value)",        1.50, ["pasta"],     1, "", "10534115"],
+  ["Pasta sauce",            0.1,  1,   "24 oz jar (Great Value)",       2.00, ["pasta"],     1, "", "19758051"],
+  ["Parmesan cheese",        0.02, 1,   "8 oz shaker (Great Value)",     3.50, ["pasta"],     3, "", "10315402"],
+  ["Flour tortillas",        0.15, 1,   "10-count (Great Value)",        2.50, ["mexican"],   1, "", "632791432"],
+  ["Salsa",                  0.04, 1,   "16 oz jar (Great Value)",       2.50, ["mexican"],   2, "", "3562572626"],
+  ["Shredded cheese",        0.04, 1,   "8 oz bag (Great Value)",        2.75, ["mexican","pasta"], 2, "", "10452562"],
+  ["Soy sauce",              0.01, 1,   "15 oz bottle (Great Value)",    2.00, ["asian"],     2, "", "10315653"],
+  ["Ramen noodles",          0.3,  12,  "12-pack (Maruchan)",            3.50, ["asian"],     1, "", "5054941118"],
+  ["Pancake mix",            0.05, 1,   "32 oz box (Great Value)",       2.50, ["breakfast"], 2, "", "10314920"],
+  ["Oatmeal",                0.1,  2.6, "42 oz canister (Great Value)",  4.50, ["breakfast"], 1, "", "10314925"],
+  ["Milk",                   0.12, 1,   "gallon (Great Value)",          3.50, ["breakfast"], 2, "", "10450114"],
+  ["Bananas",                0.7,  1,   "each",                          0.25, ["fruit","breakfast"], 1, "", "44390948"],
+  ["Apples",                 0.4,  1,   "each (Gala)",                   0.60, ["fruit"],     2, "", "44390953"],
+  ["Oranges",                0.3,  9,   "4 lb bag",                      5.00, ["fruit"],     3, "", "44391012"],
+  ["Carrots",                0.15, 2,   "2 lb bag",                      1.80, ["veggies"],   1, "", "10535757"],
+  ["Broccoli",               0.1,  1,   "crown",                         1.80, ["veggies"],   2, "", "51259378"],
+  ["Salad",                  0.08, 1,   "12 oz bag (Marketside)",        2.00, ["veggies"],   3, "", "13893729"],
+  ["Popcorn",                0.1,  3,   "3-pack (Great Value)",          2.00, ["snacks"],    2, "", "296992585"],
+  ["Saltine crackers",       0.05, 1,   "16 oz box (Great Value)",       2.25, ["snacks"],    3, "", "10315375"]
 ];
 
 let ghLikes = [];
@@ -4554,10 +4555,10 @@ function runGrocery(){
   const picked = GH_ITEMS.filter(it => (it[5].includes("base") || it[5].some(t => likes.includes(t))) && !(vegOnly && it[7]==="meat"));
   // share protein between the meats picked, so 3 meats doesn't mean 3x the meat
   const mainMeats = picked.filter(it => it[7]==="meat" && it[6]===1).length || 1;
-  const build = maxPri => picked.filter(it => it[6] <= maxPri).map(([name, ppd, size, label, price, tags, pri, kind]) => {
+  const build = maxPri => picked.filter(it => it[6] <= maxPri).map(([name, ppd, size, label, price, tags, pri, kind, wid]) => {
     const amt = (kind==="meat" && pri===1) ? ppd / mainMeats * 1.2 : ppd;
     const units = Math.max(1, Math.ceil(amt * personDays / size));
-    return {name, units, label, cost: units * price};
+    return {name, units, label, cost: units * price, wid};
   });
   let pri = perDay >= 6 ? 3 : perDay >= 4 ? 2 : 1;
   let list = build(pri), total = list.reduce((a,b)=>a+b.cost,0);
@@ -4585,8 +4586,9 @@ function runGrocery(){
       </div>
       ${ghLikes.length ? "" : `<div style="font-size:12px;opacity:.6;">No likes picked, so this uses a mix of chicken, pasta, breakfast and veggies.</div>`}
     </div>
-    <div class="btn" id="ghNext" onclick="ghShopNext()" style="background:#0071ce;color:white;font-size:17px;padding:16px;"></div>
-    <div style="text-align:center;opacity:.55;font-size:12px;margin:6px 0 2px;">Opens each item in the Walmart app — add it to your cart, then come back for the next one.</div>
+    <a class="btn" href="${ghCartUrl()}" target="_blank" onclick="ghList.forEach(x=>x.got=true);setTimeout(ghRenderList,300);" style="display:block;text-decoration:none;background:#0071ce;color:white;font-size:19px;padding:18px;box-shadow:0 6px 24px rgba(0,113,206,.45);">🛒 Add everything to my Walmart cart</a>
+    <div style="text-align:center;opacity:.55;font-size:12px;margin:6px 0 10px;">One tap puts the whole list in your Walmart cart. If something is sold out at your store, use the one-at-a-time button below.</div>
+    <div class="btn btn-feedback" id="ghNext" onclick="ghShopNext()" style="font-size:14px;padding:12px;"></div>
     <div class="card" id="ghListBox"></div>
     ${over ? `<div class="card" style="color:#fbbf24;font-size:14px;line-height:1.5;">⚠️ This is the cheapest list and it's still about ${m2(-left)} over. Lean on rice, beans, eggs and potatoes, and check Great Value brands and Rollbacks.</div>`
            : left >= 5 ? `<div class="card" style="font-size:14px;line-height:1.5;">💡 You have about ${m2(left)} extra — grab spices, cooking oil, butter, or a treat.</div>` : ""}
@@ -4603,17 +4605,24 @@ function ghRenderList(){
   box.innerHTML = `<div style="display:flex;justify-content:space-between;font-weight:800;margin-bottom:4px;"><span>🛒 Shopping list</span><span style="opacity:.6;font-size:13px;">${done}/${ghList.length} added</span></div>` +
     ghList.map((it,i) => `<div class="gh-item" style="${it.got?"opacity:.45;":""}">
       <div style="flex:1;min-width:0;" onclick="ghList[${i}].got=!ghList[${i}].got;ghRenderList();">${it.got?"✅":"⬜"} ${it.name}<div class="q">${it.units} × ${it.label} · ~$${it.cost.toFixed(2)}</div></div>
-      <a target="_blank" href="${shopUrl(it.name)}" onclick="ghList[${i}].got=true;setTimeout(ghRenderList,300);" style="flex-shrink:0;align-self:center;background:#0071ce;color:white;text-decoration:none;font-weight:700;font-size:13px;padding:6px 12px;border-radius:20px;">🛒 Walmart</a>
+      <a target="_blank" href="${ghItemUrl(it)}" onclick="ghList[${i}].got=true;setTimeout(ghRenderList,300);" style="flex-shrink:0;align-self:center;background:#0071ce;color:white;text-decoration:none;font-weight:700;font-size:13px;padding:6px 12px;border-radius:20px;">🛒 Walmart</a>
     </div>`).join("");
   const next = ghList.find(x=>!x.got), btn = document.getElementById("ghNext");
-  if(btn) btn.innerHTML = next ? `🛒 Shop on Walmart: ${next.name} (${done+1}/${ghList.length})` : "✅ All done! Check out in the Walmart app";
+  if(btn) btn.innerHTML = next ? `Or add one at a time: ${next.name} (${done+1}/${ghList.length})` : "✅ All added! Open your Walmart cart";
+}
+
+function ghItemUrl(it){ return it.wid ? "https://www.walmart.com/ip/" + it.wid : shopUrl(it.name); }
+
+function ghCartUrl(){
+  const items = ghList.filter(x => x.wid).map(x => x.units > 1 ? x.wid + "|" + x.units : x.wid);
+  return "https://www.walmart.com/sc/cart/addToCart?items=" + items.join(",");
 }
 
 function ghShopNext(){
   const next = ghList.find(x=>!x.got);
   if(!next){ window.open("https://www.walmart.com/cart", "_blank"); return; }
   next.got = true;
-  window.open(shopUrl(next.name), "_blank");
+  window.open(ghItemUrl(next), "_blank");
   setTimeout(ghRenderList, 300);
 }
 
