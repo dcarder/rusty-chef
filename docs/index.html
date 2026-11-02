@@ -4436,17 +4436,13 @@ function openProducts(){
   if(back && back !== "products" && back !== "grocery") window._productsBack = back;
   document.getElementById("products").innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-      <div class="btn" onclick="show(window._productsBack||'home')" style="margin-top:0;padding:8px 14px;white-space:nowrap;">← Back</div>
-      <div class="header" style="margin:0;">🛒 Products</div>
-      <div style="width:70px"></div>
+      <div class="header" style="margin:0;flex:1;">🛒 Products</div>
     </div>
     <div class="card soon">
       <div style="font-size:48px;">🧑‍🍳</div>
       <div class="soon-big">COMING SOON</div>
       <div class="soon-sub">Rusty Chef products are cooking.<br>Check back soon!</div>
-    </div>
-    <div class="btn btn-chef" onclick="openGrocery()" style="font-size:18px;padding:18px;">🧾 Grocery Helper</div>
-    <div style="text-align:center;opacity:.55;font-size:12px;margin-top:8px;">Tell it your budget and what you like — get a Walmart shopping list.</div>`;
+    </div>`;
   show("products");
 }
 
@@ -4460,44 +4456,100 @@ const GH_LIKES = [
   ["veg","🌱 Vegetarian"],["pasta","🍝 Pasta"],["mexican","🌮 Mexican"],["asian","🥢 Asian"],
   ["breakfast","🥞 Breakfast"],["fruit","🍎 Fruit"],["veggies","🥦 Veggies"],["snacks","🍿 Snacks"]
 ];
-/* name, amount per person per day, units per pack, pack label, price per pack, likes it goes with ("base" = always), priority (1 must-have, 2 nice, 3 extra) */
-const GH_ITEMS = [
-  // name, amount per person per day, units per pack, pack label, price per pack, likes it goes with ("base" = always), priority (1 must-have, 2 nice, 3 extra), "meat" or "", Walmart item number
-  ["Rice",                   0.15, 2,   "2 lb bag (Great Value)",        2.50, ["base"],      1, "", "801697534"],
-  ["Bread",                  0.2,  1,   "20 oz loaf (Great Value)",      1.50, ["base"],      1, "", "10315752"],
-  ["Eggs",                   1.2,  12,  "dozen (Great Value)",           3.50, ["base"],      1, "", "145051970"],
-  ["Potatoes",               0.3,  5,   "5 lb bag",                      4.00, ["base"],      1, "", "10447839"],
-  ["Onions",                 0.25, 8,   "3 lb bag",                      3.00, ["base"],      1, "", "10447842"],
-  ["Pinto beans",            0.25, 1,   "15.5 oz can (Great Value)",     1.00, ["base"],      1, "", "10534043"],
-  ["Frozen mixed vegetables",0.2,  1,   "12 oz bag (Great Value)",       1.50, ["base"],      1, "", "817042496"],
-  ["Chicken thighs",         0.35, 5,   "family pack (about 5 lb)",     12.50, ["chicken"],   1, "meat", "124782654"],
-  ["Ground beef",            0.3,  1,   "1 lb roll, 80/20",              5.00, ["beef"],      1, "meat", "15136791"],
-  ["Pork chops",             0.3,  3.5, "family pack (about 3.5 lb)",   11.00, ["pork"],      1, "meat", "51259100"],
-  ["Bacon",                  0.05, 1,   "12 oz pack (Great Value)",      5.00, ["pork","breakfast"], 3, "meat", "23816525"],
-  ["Tilapia fillets",        0.25, 2,   "2 lb frozen bag (Great Value)", 9.00, ["fish"],      1, "meat", "51259015"],
-  ["Canned tuna",            0.15, 1,   "5 oz can (Great Value)",        1.25, ["fish"],      2, "meat", "11965048"],
-  ["Tofu",                   0.25, 1,   "14 oz block (Nasoya)",          2.50, ["veg"],       1, "", "10898817"],
-  ["Black beans",            0.2,  1,   "15 oz can (Great Value)",       1.00, ["veg","mexican"], 1, "", "10534038"],
-  ["Spaghetti",              0.15, 1,   "1 lb box (Great Value)",        1.50, ["pasta"],     1, "", "10534115"],
-  ["Pasta sauce",            0.1,  1,   "24 oz jar (Great Value)",       2.00, ["pasta"],     1, "", "19758051"],
-  ["Parmesan cheese",        0.02, 1,   "8 oz shaker (Great Value)",     3.50, ["pasta"],     3, "", "10315402"],
-  ["Flour tortillas",        0.15, 1,   "10-count (Great Value)",        2.50, ["mexican"],   1, "", "632791432"],
-  ["Salsa",                  0.04, 1,   "16 oz jar (Great Value)",       2.50, ["mexican"],   2, "", "3562572626"],
-  ["Shredded cheese",        0.04, 1,   "8 oz bag (Great Value)",        2.75, ["mexican","pasta"], 2, "", "10452562"],
-  ["Soy sauce",              0.01, 1,   "15 oz bottle (Great Value)",    2.00, ["asian"],     2, "", "10315653"],
-  ["Ramen noodles",          0.3,  12,  "12-pack (Maruchan)",            3.50, ["asian"],     1, "", "5054941118"],
-  ["Pancake mix",            0.05, 1,   "32 oz box (Great Value)",       2.50, ["breakfast"], 2, "", "10314920"],
-  ["Oatmeal",                0.1,  2.6, "42 oz canister (Great Value)",  4.50, ["breakfast"], 1, "", "10314925"],
-  ["Milk",                   0.12, 1,   "gallon (Great Value)",          3.50, ["breakfast"], 2, "", "10450114"],
-  ["Bananas",                0.7,  1,   "each",                          0.25, ["fruit","breakfast"], 1, "", "44390948"],
-  ["Apples",                 0.4,  1,   "each (Gala)",                   0.60, ["fruit"],     2, "", "44390953"],
-  ["Oranges",                0.3,  9,   "4 lb bag",                      5.00, ["fruit"],     3, "", "44391012"],
-  ["Carrots",                0.15, 2,   "2 lb bag",                      1.80, ["veggies"],   1, "", "10535757"],
-  ["Broccoli",               0.1,  1,   "crown",                         1.80, ["veggies"],   2, "", "51259378"],
-  ["Salad",                  0.08, 1,   "12 oz bag (Marketside)",        2.00, ["veggies"],   3, "", "13893729"],
-  ["Popcorn",                0.1,  3,   "3-pack (Great Value)",          2.00, ["snacks"],    2, "", "296992585"],
-  ["Saltine crackers",       0.05, 1,   "16 oz box (Great Value)",       2.25, ["snacks"],    3, "", "10315375"]
-];
+
+/* Every ingredient used in the site's recipes → the Walmart product we buy for it.
+   [pack label, price per pack, how many servings one pack covers, Walmart item number, basic staple?] */
+const GH_INGREDIENTS = {
+  "Onions":            ["3 lb bag", 3.00, 16, "10447842"],
+  "Eggs":              ["dozen (Great Value)", 3.50, 6, "145051970"],
+  "Garlic":            ["3-count sleeve", 1.50, 30, "55014398"],
+  "Butter":            ["1 lb, 4 sticks (Great Value)", 4.50, 24, "132893363"],
+  "Tomatoes":          ["Roma tomato, each", 0.35, 2, "44390944"],
+  "Chicken breast":    ["family pack (about 5 lb)", 15.00, 13, "27935840"],
+  "Bread":             ["20 oz loaf (Great Value)", 1.50, 8, "10315752"],
+  "Flour":             ["5 lb bag (Great Value)", 3.00, 60, "10403017", 1],
+  "Milk":              ["gallon (Great Value)", 3.50, 16, "10450114"],
+  "Rice":              ["2 lb bag (Great Value)", 2.50, 20, "801697534"],
+  "Cheddar":           ["8 oz shredded (Great Value)", 2.75, 8, "10452420"],
+  "Bell peppers":      ["green bell pepper, each", 0.85, 3, "44390945"],
+  "Paprika":           ["2.5 oz (Great Value)", 1.50, 60, "559839182", 1],
+  "Cheese":            ["8 oz shredded blend (Great Value)", 2.75, 8, "10452562"],
+  "Lemon":             ["each", 0.60, 4, "41752773"],
+  "Soy sauce":         ["15 oz bottle (Great Value)", 2.00, 30, "10315653"],
+  "Lettuce":           ["12 oz salad bag (Marketside)", 2.00, 5, "13893729"],
+  "Ground beef":       ["1 lb roll, 80/20", 5.00, 3, "15136791"],
+  "Tortilla":          ["10-count (Great Value)", 2.50, 5, "632791432"],
+  "Potatoes":          ["5 lb bag", 4.00, 12, "10447839"],
+  "Chicken broth":     ["32 oz carton (Great Value)", 1.75, 6, "10899013"],
+  "Carrots":           ["2 lb bag", 1.80, 10, "10535757"],
+  "Pasta":             ["1 lb spaghetti (Great Value)", 1.50, 5, "10534115"],
+  "Mayonnaise":        ["30 oz jar (Great Value)", 4.00, 40, "17056888"],
+  "Bacon":             ["12 oz pack (Great Value)", 5.00, 5, "23816525"],
+  "Sausage":           ["16 oz roll (Great Value)", 3.50, 5, "46575468"],
+  "Parmesan":          ["8 oz shaker (Great Value)", 3.50, 25, "10315402"],
+  "Sesame oil":        ["5 oz bottle (Kikkoman)", 4.00, 30, "110322105"],
+  "Olive oil":         ["17 oz bottle (Great Value)", 6.00, 40, "10315102"],
+  "Broccoli":          ["crown", 1.80, 3, "51259378"],
+  "Sugar":             ["4 lb bag (Great Value)", 3.50, 80, "10315162", 1],
+  "Bananas":           ["each", 0.25, 1, "44390948"],
+  "Honey":             ["12 oz bear (Great Value)", 3.50, 20, "20647992"],
+  "Ginger":            ["ground, 1.5 oz (Great Value)", 1.50, 50, "165382310", 1],
+  "Garlic powder":     ["3.4 oz (Great Value)", 1.50, 60, "676979470", 1],
+  "Baking soda":       ["1 lb box (Great Value)", 1.00, 100, "10315486", 1],
+  "Vinegar":           ["32 oz white (Great Value)", 1.50, 60, "10450997", 1],
+  "Cinnamon":          ["2.5 oz (Great Value)", 1.50, 60, "533272737", 1],
+  "Vanilla extract":   ["2 oz (Great Value)", 4.00, 25, "10314950", 1],
+  "Italian seasoning": ["0.6 oz (Great Value)", 2.00, 40, "50597539", 1],
+  "Lime":              ["each", 0.40, 3, "44391008"],
+  "Hot sauce":         ["12 oz (Great Value)", 1.25, 40, "10414959"],
+  "Avocado":           ["Hass avocado, each", 1.00, 2, "44390949"],
+  "Beans":             ["15.5 oz can pinto (Great Value)", 1.00, 3, "10534043"],
+  "Steak":             ["top sirloin (about 1 lb)", 10.00, 2, "44391338"],
+  "Brown sugar":       ["2 lb bag (Great Value)", 2.75, 40, "10315012", 1],
+  "Marinara sauce":    ["24 oz jar (Great Value)", 2.00, 6, "19758051"],
+  "Cumin":             ["2.5 oz (Great Value)", 1.50, 60, "985501095", 1],
+  "Shrimp":            ["12 oz frozen (Great Value)", 6.00, 3, "44391179"],
+  "Mushrooms":         ["8 oz sliced", 2.00, 4, "10449184"],
+  "Oats":              ["42 oz canister (Great Value)", 4.50, 30, "10314925"],
+  "Chocolate":         ["12 oz chips (Great Value)", 2.50, 10, "42306176"],
+  "Cream":             ["16 oz heavy cream (Great Value)", 3.50, 8, "10450339"],
+  "Cornstarch":        ["16 oz (Great Value)", 1.50, 60, "54802256", 1],
+  "Breadcrumbs":       ["15 oz (Great Value)", 2.00, 20, "10315089"],
+  "Beef broth":        ["32 oz carton (Great Value)", 1.75, 6, "10899014"],
+  "Maple syrup":       ["24 oz syrup (Great Value)", 2.50, 16, "10315480"],
+  "Tuna":              ["5 oz can (Great Value)", 1.25, 2, "11965048"],
+  "Parsley":           ["0.4 oz flakes (Great Value)", 1.25, 40, "861014617", 1],
+  "Chickpeas":         ["15.5 oz can (Great Value)", 1.00, 3, "10534041"],
+  "Basil":             ["0.62 oz (McCormick)", 2.50, 40, "10535037", 1],
+  "Tofu":              ["14 oz block (Nasoya)", 2.50, 3, "10898817"],
+  "Pork chops":        ["family pack (about 3.5 lb)", 11.00, 7, "51259100"],
+  "BBQ sauce":         ["18 oz (Great Value)", 1.50, 15, "5290151506"],
+  "Salt":              ["26 oz (Great Value)", 0.75, 200, "10448316", 1],
+  "Pepper":            ["3 oz black pepper (Great Value)", 2.00, 100, "44662573", 1],
+  "Oil":               ["48 oz vegetable oil (Great Value)", 3.50, 60, "10451002", 1],
+  "Egg noodles":       ["12 oz (Great Value)", 2.00, 4, "13399545"],
+  "Coconut milk":      ["13.5 oz can (Great Value)", 1.75, 4, "1522874513"],
+  "Curry powder":      ["1.75 oz (McCormick)", 3.00, 30, "164949951", 1],
+  "Ramen noodles":     ["12-pack (Maruchan)", 3.50, 12, "5054941118"],
+  "Turkey":            ["1 lb ground turkey (Jennie-O)", 5.50, 3, "167794433"],
+  "Teriyaki sauce":    ["12 oz (Great Value)", 2.50, 12, "16940527"],
+  "Salmon":            ["1 lb frozen portions", 7.50, 3, "1971171415"],
+  "Ravioli":           ["25 oz frozen (Great Value)", 4.50, 5, "10316630"],
+  "Red pepper flakes": ["1.75 oz (Great Value)", 1.50, 60, "217612954", 1]
+};
+/* Extras for snacking (not from recipes) — added when someone picks Fruit or Snacks */
+const GH_EXTRAS = {
+  fruit:  [["Apples", 0.4, 1, "Gala apple, each", 0.60, "44390953"], ["Bananas (snacks)", 0.5, 1, "each", 0.25, "44390948"]],
+  snacks: [["Popcorn", 0.1, 3, "3-pack (Great Value)", 2.00, "296992585"], ["Saltine crackers", 0.05, 1, "16 oz box (Great Value)", 2.25, "10315375"]]
+};
+const GH_MEAT_GROUP = {"Chicken breast":"chicken","Turkey":"chicken","Ground beef":"beef","Steak":"beef","Pork chops":"pork","Bacon":"pork","Sausage":"pork","Shrimp":"fish","Tuna":"fish","Salmon":"fish"};
+const GH_LIKE_INGS = {
+  chicken:["Chicken breast","Turkey"], beef:["Ground beef","Steak"], pork:["Pork chops","Bacon","Sausage"], fish:["Shrimp","Tuna","Salmon"],
+  pasta:["Pasta","Ravioli","Egg noodles","Marinara sauce"], mexican:["Tortilla","Avocado","Beans","Cumin","Lime"],
+  asian:["Soy sauce","Sesame oil","Ginger","Teriyaki sauce","Ramen noodles","Coconut milk","Curry powder"],
+  fruit:["Bananas","Lemon","Lime","Avocado"], veggies:["Broccoli","Carrots","Bell peppers","Lettuce","Mushrooms","Tomatoes"]
+};
+const GH_MEALS = [["breakfast","🥞 Breakfast"],["lunch","🥪 Lunch"],["dinner","🍽️ Dinner"]];
 
 let ghLikes = [];
 function ghVal(id, fallback){ const n = parseFloat(document.getElementById(id).value); return isFinite(n) && n > 0 ? n : fallback; }
@@ -4511,6 +4563,7 @@ function openGrocery(from){
   window._ghBack = from === 'home' ? 'home' : 'products';
   let saved = {}; try{ saved = JSON.parse(storeGet("groceryHelper")||"{}")||{}; }catch(e){}
   ghLikes = Array.isArray(saved.likes) ? saved.likes : [];
+  const skip = saved.skipStaples !== false;
   document.getElementById("grocery").innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
       <div class="btn" onclick="window._ghBack==='home'?show('home'):openProducts()" style="margin-top:0;padding:8px 14px;white-space:nowrap;">← Back</div>
@@ -4530,70 +4583,168 @@ function openGrocery(from){
         <button class="gh-step" onclick="ghStep('ghDays',1)">+</button></div></div>
       <div class="gh-field"><label>😋 What do you like? <small>(pick any)</small></label>
         <div class="gh-likes">${GH_LIKES.map(([k,l]) => `<div class="item${ghLikes.includes(k)?" selected":""}" onclick="ghToggleLike(this,'${k}')">${l}</div>`).join("")}</div></div>
-      <div class="btn btn-chef" onclick="runGrocery()" style="font-size:17px;">🛒 Make my list</div>
+      <label style="display:flex;gap:10px;align-items:flex-start;margin:12px 0 4px;font-size:14px;cursor:pointer;">
+        <input type="checkbox" id="ghSkip" ${skip?"checked":""} style="width:20px;height:20px;flex-shrink:0;margin-top:1px;">
+        <span>I already have basic spices &amp; baking stuff<br><small style="opacity:.6;">salt, pepper, oil, sugar, flour, spices…</small></span></label>
+      <div class="btn btn-chef" onclick="runGrocery()" style="font-size:17px;">🛒 Make my meal plan &amp; list</div>
+      <div style="text-align:center;opacity:.55;font-size:12px;margin-top:8px;">Picks Rusty Chef recipes you'll like, then builds the list from their ingredients. Anything in your 🧺 Pantry is left off.</div>
     </div>
     <div id="ghOut"></div>`;
   show("grocery");
 }
 
-let ghList = [];
+/* ---------- planner ---------- */
+function ghRecipeInfo(r){
+  const meats = [...new Set(r.ingredients.filter(i => GH_MEAT_GROUP[i]).map(i => GH_MEAT_GROUP[i]))];
+  return {meats};
+}
+function ghServingCost(r, skipSet){
+  return r.ingredients.reduce((sum, i) => { const d = GH_INGREDIENTS[i]; return (!d || skipSet.has(i)) ? sum : sum + d[1] / d[2]; }, 0);
+}
+function ghLikeScore(r, likes){
+  let s = 0;
+  likes.forEach(k => {
+    if(k === "breakfast" && r.category === "breakfast") s += 1;
+    if(k === "mexican" && /taco|burrito|quesadilla|enchilada|fajita|nacho|huevos|mexican/i.test(r.name)) s += 3;
+    if(k === "asian" && /fried rice|stir|teriyaki|ramen|curry|lo mein|asian|sesame/i.test(r.name)) s += 2;
+    (GH_LIKE_INGS[k] || []).forEach(i => { if(r.ingredients.includes(i)) s += (["chicken","beef","pork","fish"].includes(k) ? 3 : 1.5); });
+  });
+  return s;
+}
+function ghCost(plan, days, people, skipSet, extras){
+  const need = {}, usedIn = {};
+  GH_MEALS.forEach(([cat]) => {
+    const list = plan[cat]; if(!list.length) return;
+    for(let d = 0; d < days; d++){
+      const r = list[d % list.length];
+      r.ingredients.forEach(i => {
+        if(skipSet.has(i) || !GH_INGREDIENTS[i]) return;
+        need[i] = (need[i] || 0) + people;
+        (usedIn[i] = usedIn[i] || new Set()).add(r.name);
+      });
+    }
+  });
+  const items = Object.keys(need).map(i => {
+    const [label, price, spp, wid] = GH_INGREDIENTS[i];
+    const units = Math.max(1, Math.ceil(need[i] / spp));
+    return {name: i, units, label, cost: units * price, wid, usedIn: [...usedIn[i]]};
+  });
+  extras.forEach(([name, ppd, size, label, price, wid]) => {
+    const units = Math.max(1, Math.ceil(ppd * people * days / size));
+    items.push({name: name.replace(" (snacks)",""), units, label, cost: units * price, wid, usedIn: ["snacks"]});
+  });
+  return {items, total: items.reduce((a,b) => a + b.cost, 0)};
+}
+
+let ghList = [], ghPlan = null;
 function runGrocery(){
   const people = Math.round(ghVal("ghPeople", 1));
   const days = Math.round(ghVal("ghDays", 1));
   const money = parseFloat(document.getElementById("ghMoney").value);
+  const skipStaples = document.getElementById("ghSkip").checked;
   const out = document.getElementById("ghOut");
   if(!isFinite(money) || money <= 0){
     out.innerHTML = `<div class="card" style="text-align:center;color:#fbbf24;font-weight:700;">Enter how much money you have to spend.</div>`;
     return;
   }
-  storeSet("groceryHelper", JSON.stringify({people, money, days, likes: ghLikes}));
-  const likes = ghLikes.length ? ghLikes : ["chicken","pasta","breakfast","veggies"];
-  const vegOnly = likes.includes("veg") && !likes.some(k => ["chicken","beef","pork","fish"].includes(k));
-  const personDays = people * days;
-  const perDay = money / personDays;
+  storeSet("groceryHelper", JSON.stringify({people, money, days, likes: ghLikes, skipStaples}));
+  const likes = ghLikes;
+  const pantrySet = new Set(typeof selected !== "undefined" ? selected : []);
+  const skipSet = new Set([...pantrySet, ...(skipStaples ? Object.keys(GH_INGREDIENTS).filter(i => GH_INGREDIENTS[i][4]) : [])]);
+  const pickedMeats = likes.filter(k => ["chicken","beef","pork","fish"].includes(k));
+  const vegOnly = likes.includes("veg") && !pickedMeats.length;
 
-  const picked = GH_ITEMS.filter(it => (it[5].includes("base") || it[5].some(t => likes.includes(t))) && !(vegOnly && it[7]==="meat"));
-  // share protein between the meats picked, so 3 meats doesn't mean 3x the meat
-  const mainMeats = picked.filter(it => it[7]==="meat" && it[6]===1).length || 1;
-  const build = maxPri => picked.filter(it => it[6] <= maxPri).map(([name, ppd, size, label, price, tags, pri, kind, wid]) => {
-    const amt = (kind==="meat" && pri===1) ? ppd / mainMeats * 1.2 : ppd;
-    const units = Math.max(1, Math.ceil(amt * personDays / size));
-    return {name, units, label, cost: units * price, wid};
+  // which recipes are allowed, and how good a fit each one is
+  const allowedFor = cat => {
+    const inCat = recipes.filter(r => r.category === cat);
+    let ok = inCat.filter(r => {
+      const m = ghRecipeInfo(r).meats;
+      if(vegOnly) return m.length === 0;
+      if(pickedMeats.length) return m.every(g => pickedMeats.includes(g));
+      return true;
+    });
+    if(ok.length < 2) ok = vegOnly ? inCat.filter(r => !ghRecipeInfo(r).meats.length) : inCat;
+    if(!ok.length) ok = inCat;
+    return ok.map(r => ({r, score: ghLikeScore(r, likes), cost: ghServingCost(r, skipSet)}));
+  };
+  const pools = {}; GH_MEALS.forEach(([c]) => pools[c] = allowedFor(c));
+  const k = Math.min(days, 4);
+  const plan = {};
+  GH_MEALS.forEach(([c]) => {
+    plan[c] = pools[c].slice().sort((a,b) => (b.score - b.cost*0.6) - (a.score - a.cost*0.6)).slice(0, k).map(x => x.r);
   });
-  let pri = perDay >= 6 ? 3 : perDay >= 4 ? 2 : 1;
-  let list = build(pri), total = list.reduce((a,b)=>a+b.cost,0);
-  while(total > money && pri > 1){ pri--; list = build(pri); total = list.reduce((a,b)=>a+b.cost,0); }
-  if(total > money){ // still over: trim the extras, most expensive first, but keep the base staples
-    const base = new Set(GH_ITEMS.filter(it=>it[5].includes("base")).map(it=>it[0]));
-    list.sort((a,b)=>b.cost-a.cost);
-    for(let i=0;i<list.length && total>money;){
-      if(!base.has(list[i].name) && list.filter(x=>!base.has(x.name)).length > 1){ total -= list[i].cost; list.splice(i,1); } else i++;
-    }
-    list.sort((a,b)=>a.name.localeCompare(b.name));
-  }
-  ghList = list.map(it => ({...it, got:false}));
-  const over = total > money, left = money - total;
-  const m2 = n => "$" + n.toFixed(2);
+  let extras = [];
+  if(likes.includes("fruit")) extras = extras.concat(GH_EXTRAS.fruit);
+  if(likes.includes("snacks")) extras = extras.concat(GH_EXTRAS.snacks);
 
+  // fit the budget, keeping the foods they like as long as possible:
+  // 1) drop snack extras  2) cook fewer different dishes (fewer things to buy)  3) swap to cheaper dishes, losing as little "like" as possible  4) one dish per meal
+  const score = r => ghLikeScore(r, likes);
+  const recost = () => ghCost(plan, days, people, skipSet, extras);
+  let res = recost();
+  if(res.total > money && extras.length){ extras = []; res = recost(); }
+  const dropOne = minKeep => {
+    const c = GH_MEALS.map(([c]) => c).filter(c => plan[c].length > minKeep).sort((a,b) => plan[b].length - plan[a].length)[0];
+    if(!c) return false;
+    plan[c].sort((a,b) => (score(a) - ghServingCost(a, skipSet)) - (score(b) - ghServingCost(b, skipSet))).shift();
+    res = recost(); return true;
+  };
+  while(res.total > money && dropOne(2)){}
+  for(let guard = 0; guard < 60 && res.total > money; guard++){
+    let best = null;
+    GH_MEALS.forEach(([c]) => plan[c].forEach((cur, idx) => {
+      pools[c].forEach(({r}) => {
+        if(plan[c].includes(r)) return;
+        const trial = {...plan, [c]: plan[c].map((x,j) => j === idx ? r : x)};
+        const t = ghCost(trial, days, people, skipSet, extras).total;
+        const saved = res.total - t;
+        if(saved <= 0.01) return;
+        const value = saved / (1 + Math.max(0, score(cur) - score(r)) * 2);
+        if(!best || value > best.value) best = {value, c, idx, r};
+      });
+    }));
+    if(best){ plan[best.c][best.idx] = best.r; res = recost(); continue; }
+    if(!dropOne(1)) break;
+  }
+
+  ghPlan = plan;
+  ghList = res.items.sort((a,b) => a.name.localeCompare(b.name)).map(it => ({...it, got:false}));
+  const total = res.total, over = total > money, left = money - total;
+  const m2 = n => "$" + n.toFixed(2);
+  const personDays = people * days;
+  const inPantry = [...new Set(GH_MEALS.flatMap(([c]) => plan[c].flatMap(r => r.ingredients)))].filter(i => pantrySet.has(i));
+  const skippedStaples = skipStaples ? [...new Set(GH_MEALS.flatMap(([c]) => plan[c].flatMap(r => r.ingredients)))].filter(i => GH_INGREDIENTS[i] && GH_INGREDIENTS[i][4] && !pantrySet.has(i)) : [];
+
+  const timesCooked = (c, r) => { const L = plan[c]; let n = 0; for(let d = 0; d < days; d++) if(L[d % L.length] === r) n++; return n; };
   out.innerHTML = `
     <div class="card">
       <div style="font-weight:800;font-size:17px;margin-bottom:6px;">📋 ${people} ${people===1?"person":"people"} · ${days} ${days===1?"day":"days"} · ${m2(money)}</div>
       <div class="gh-stats">
-        <div class="gh-stat"><b>${m2(perDay)}</b><span>per person, per day</span></div>
+        <div class="gh-stat"><b>${m2(money/personDays)}</b><span>per person, per day</span></div>
         <div class="gh-stat"><b>${personDays*3}</b><span>meals to cover</span></div>
         <div class="gh-stat"><b>${m2(total)}</b><span>estimated total</span></div>
         <div class="gh-stat"><b class="${over?"gh-over":"gh-ok"}">${over?"−"+m2(-left):m2(left)}</b><span>${over?"over budget":"left over"}</span></div>
       </div>
-      ${ghLikes.length ? "" : `<div style="font-size:12px;opacity:.6;">No likes picked, so this uses a mix of chicken, pasta, breakfast and veggies.</div>`}
+    </div>
+    <div class="card">
+      <div style="font-weight:800;margin-bottom:2px;">🍽️ Your meal plan</div>
+      <div style="font-size:12px;opacity:.6;margin-bottom:6px;">Rusty Chef recipes — tap one to see how to make it.</div>
+      ${GH_MEALS.map(([c, label]) => `
+        <div style="font-weight:700;color:#ff914d;margin:10px 0 4px;">${label}</div>
+        ${plan[c].map(r => `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;" onclick="openRecipe(${recipes.indexOf(r)})">
+            ${photoImg(r.name, "thumb small", 150)}
+            <div style="flex:1;min-width:0;"><b>${r.name}</b><div style="font-size:12px;opacity:.6;">${timesCooked(c, r)}× in ${days} ${days===1?"day":"days"} · serves ${people}</div></div>
+            <span style="opacity:.5;">›</span></div>`).join("")}`).join("")}
     </div>
     <a class="btn" href="${ghCartUrl()}" target="_blank" onclick="ghList.forEach(x=>x.got=true);setTimeout(ghRenderList,300);" style="display:block;text-decoration:none;background:#0071ce;color:white;font-size:19px;padding:18px;box-shadow:0 6px 24px rgba(0,113,206,.45);">🛒 Add everything to my Walmart cart</a>
     <div style="text-align:center;opacity:.55;font-size:12px;margin:6px 0 10px;">One tap puts the whole list in your Walmart cart. If something is sold out at your store, use the one-at-a-time button below.</div>
     <div class="btn btn-feedback" id="ghNext" onclick="ghShopNext()" style="font-size:14px;padding:12px;"></div>
     <div class="card" id="ghListBox"></div>
-    ${over ? `<div class="card" style="color:#fbbf24;font-size:14px;line-height:1.5;">⚠️ This is the cheapest list and it's still about ${m2(-left)} over. Lean on rice, beans, eggs and potatoes, and check Great Value brands and Rollbacks.</div>`
-           : left >= 5 ? `<div class="card" style="font-size:14px;line-height:1.5;">💡 You have about ${m2(left)} extra — grab spices, cooking oil, butter, or a treat.</div>` : ""}
-    <div class="btn btn-feedback" id="ghCopy" onclick="ghCopyList()">📋 Copy whole list</div>
-    <div class="btn" onclick="showMatches()">🍳 See recipes I can make</div>
+    ${inPantry.length ? `<div class="card" style="font-size:13px;line-height:1.5;">🧺 <b>Already in your Pantry</b> (left off the list): ${inPantry.join(", ")}</div>` : ""}
+    ${skippedStaples.length ? `<div class="card" style="font-size:13px;line-height:1.5;opacity:.85;">🧂 <b>Basics you said you have</b> (left off the list): ${skippedStaples.join(", ")}</div>` : ""}
+    ${over ? `<div class="card" style="color:#fbbf24;font-size:14px;line-height:1.5;">⚠️ This is the cheapest plan the helper could find and it's still about ${m2(-left)} over. Try fewer days, add things you already have to your 🧺 Pantry, or pick fewer likes.</div>`
+           : left >= 5 ? `<div class="card" style="font-size:14px;line-height:1.5;">💡 You have about ${m2(left)} extra — grab drinks, snacks, or a treat.</div>` : ""}
+    <div class="btn btn-feedback" id="ghCopy" onclick="ghCopyList()">📋 Copy meal plan &amp; list</div>
     <div style="text-align:center;opacity:.45;font-size:11px;margin-top:10px;">Prices are rough estimates — Walmart prices vary by store.</div>`;
   ghRenderList();
   out.scrollIntoView({behavior:"smooth", block:"start"});
@@ -4604,7 +4755,7 @@ function ghRenderList(){
   const done = ghList.filter(x=>x.got).length;
   box.innerHTML = `<div style="display:flex;justify-content:space-between;font-weight:800;margin-bottom:4px;"><span>🛒 Shopping list</span><span style="opacity:.6;font-size:13px;">${done}/${ghList.length} added</span></div>` +
     ghList.map((it,i) => `<div class="gh-item" style="${it.got?"opacity:.45;":""}">
-      <div style="flex:1;min-width:0;" onclick="ghList[${i}].got=!ghList[${i}].got;ghRenderList();">${it.got?"✅":"⬜"} ${it.name}<div class="q">${it.units} × ${it.label} · ~$${it.cost.toFixed(2)}</div></div>
+      <div style="flex:1;min-width:0;" onclick="ghList[${i}].got=!ghList[${i}].got;ghRenderList();">${it.got?"✅":"⬜"} ${it.name}<div class="q">${it.units} × ${it.label} · ~$${it.cost.toFixed(2)}</div>${it.usedIn && it.usedIn[0] !== "snacks" ? `<div class="q" style="opacity:.5;">for ${it.usedIn.join(", ")}</div>` : ""}</div>
       <a target="_blank" href="${ghItemUrl(it)}" onclick="ghList[${i}].got=true;setTimeout(ghRenderList,300);" style="flex-shrink:0;align-self:center;background:#0071ce;color:white;text-decoration:none;font-weight:700;font-size:13px;padding:6px 12px;border-radius:20px;">🛒 Walmart</a>
     </div>`).join("");
   const next = ghList.find(x=>!x.got), btn = document.getElementById("ghNext");
@@ -4627,8 +4778,10 @@ function ghShopNext(){
 }
 
 function ghCopyList(){
-  const text = "🔥 The Rusty Chef grocery list\n" + ghList.map(it => `• ${it.name} — ${it.units} × ${it.label}`).join("\n");
-  const ok = () => { const b = document.getElementById("ghCopy"); if(b){ b.textContent = "✅ Copied!"; setTimeout(()=>b.textContent="📋 Copy whole list", 1800); } };
+  let text = "🔥 The Rusty Chef meal plan\n";
+  if(ghPlan) GH_MEALS.forEach(([c, label]) => { text += `\n${label}: ` + ghPlan[c].map(r => r.name).join(", "); });
+  text += "\n\n🛒 Shopping list\n" + ghList.map(it => `• ${it.name} — ${it.units} × ${it.label}`).join("\n");
+  const ok = () => { const b = document.getElementById("ghCopy"); if(b){ b.textContent = "✅ Copied!"; setTimeout(()=>b.innerHTML="📋 Copy meal plan &amp; list", 1800); } };
   try{ navigator.clipboard.writeText(text).then(ok, () => prompt("Copy your list:", text)); }catch(e){ prompt("Copy your list:", text); }
 }
 </script>
