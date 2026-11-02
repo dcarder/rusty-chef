@@ -487,6 +487,32 @@ margin-bottom:12px;
 #game .rg-oil{width:104px;height:104px;border-radius:50%!important;font-family:'Bungee','Arial Black',sans-serif!important;font-size:18px!important;background:var(--g-amber)!important;color:#1a0f0a!important;border-color:#a8641d!important}
 @media (pointer:coarse){#game .rg-pad{display:flex}#game .rg-keys{display:none}}
 @media (max-width:420px){#game .rg-dpad{grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,50px)}#game .rg-oil{width:92px;height:92px}}
+
+/* ================= PRODUCTS + GROCERY HELPER ================= */
+.soon{text-align:center;padding:34px 16px;}
+.soon .soon-big{font-size:34px;font-weight:900;color:#ff914d;letter-spacing:2px;text-shadow:0 0 12px rgba(255,102,0,.6);}
+.soon .soon-sub{opacity:.7;margin-top:8px;font-size:14px;line-height:1.5;}
+.gh-field{margin:12px 0;}
+.gh-field label{display:block;font-weight:700;margin-bottom:6px;}
+.gh-field small{opacity:.6;font-weight:400;}
+.gh-row{display:flex;align-items:center;gap:8px;}
+.gh-step{width:48px;height:48px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:white;font-size:24px;font-weight:800;cursor:pointer;flex-shrink:0;}
+.gh-row .searchInput{text-align:center;font-size:20px;font-weight:700;}
+.gh-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0;}
+.gh-stat{background:rgba(255,255,255,.06);border-radius:12px;padding:10px;text-align:center;}
+.gh-stat b{display:block;font-size:20px;color:#ff914d;}
+.gh-stat span{font-size:12px;opacity:.65;}
+.gh-item{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:14px;}
+.gh-item:last-child{border-bottom:0;}
+.gh-item .q{opacity:.65;font-size:12px;}
+.gh-ok{color:#4ade80;font-weight:800;}
+.gh-over{color:#fbbf24;font-weight:800;}
+.gh-likes{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.gh-likes .item{margin:0;text-align:center;}
+.page:not(#home){padding-top:70px;}
+#dropMenu{position:absolute;right:0;top:calc(100% + 8px);min-width:210px;background:rgba(20,20,20,.97);border:1px solid rgba(255,145,77,.45);border-radius:14px;padding:6px;box-shadow:0 12px 40px rgba(0,0,0,.6);}
+#dropMenu div{padding:13px 14px;border-radius:10px;font-weight:700;font-size:16px;cursor:pointer;}
+#dropMenu div:hover,#dropMenu div:active{background:rgba(255,145,77,.2);}
 </style>
 </head>
 
@@ -511,12 +537,16 @@ margin-bottom:12px;
 
 
 
+
+
 </div>
 
 <div id="pantry" class="page"></div>
 <div id="results" class="page"></div>
 <div id="recipe" class="page"></div>
 <div id="favorites" class="page"></div>
+<div id="products" class="page"></div>
+<div id="grocery" class="page"></div>
 
 <div id="game" class="page">
 <div class="rg-cab">
@@ -537,12 +567,18 @@ margin-bottom:12px;
 </div>
 
 
-<!-- Permanent tab bar - lives outside .page so fixed positioning works -->
-<div id="tabBar" style="position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(0,0,0,0.92);backdrop-filter:blur(10px);border-top:1px solid rgba(255,255,255,0.1);padding:8px 12px calc(12px + env(safe-area-inset-bottom, 0px));display:flex;gap:8px;">
-  <div class="btn" onclick="openPantry()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">🧺<br>Pantry</div>
-  <div class="btn" onclick="showMatches()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">🍳<br>Recipes</div>
-  <div class="btn btn-fav" onclick="showFavorites()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">⭐<br>Saved</div>
-  <div class="btn btn-chef" onclick="openGame()" style="flex:1;margin-top:0;padding:10px 4px;font-size:12px;line-height:1.4;">🎮<br>Game</div>
+<!-- Menu - on every page (replaces the bottom tab bar) -->
+<div id="menuWrap" style="position:fixed;top:calc(12px + env(safe-area-inset-top, 0px));right:12px;z-index:999;">
+  <div class="btn" onclick="toggleMenu(event)" style="margin-top:0;padding:10px 16px;font-size:16px;background:rgba(0,0,0,.6);color:white;border:1px solid rgba(255,255,255,.3);">☰ Menu</div>
+  <div id="dropMenu" hidden>
+    <div onclick="menuGo(show,'home')">🏠 Home</div>
+    <div onclick="menuGo(openPantry)">🧺 Pantry</div>
+    <div onclick="menuGo(showMatches)">🍳 Recipes</div>
+    <div onclick="menuGo(showFavorites)">⭐ Saved Recipes</div>
+    <div onclick="menuGo(openGrocery,'home')">🧾 Grocery Helper</div>
+    <div onclick="menuGo(openProducts)">🛒 Products</div>
+    <div onclick="menuGo(openGame)">🎮 Game</div>
+  </div>
 </div>
 
 <script>
@@ -4392,6 +4428,200 @@ window.show=function(id){if(id!=='game'&&G.state==='play')togglePause(true);retu
 window.openGame=function(){window.show('game');setTimeout(()=>{fit();buildBg();},60);};
 
 })();
+</script>
+<script>
+/* ================= PRODUCTS + GROCERY HELPER ================= */
+function openProducts(){
+  const back = (document.querySelector(".page.active")||{}).id;
+  if(back && back !== "products" && back !== "grocery") window._productsBack = back;
+  document.getElementById("products").innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <div class="btn" onclick="show(window._productsBack||'home')" style="margin-top:0;padding:8px 14px;white-space:nowrap;">← Back</div>
+      <div class="header" style="margin:0;">🛒 Products</div>
+      <div style="width:70px"></div>
+    </div>
+    <div class="card soon">
+      <div style="font-size:48px;">🧑‍🍳</div>
+      <div class="soon-big">COMING SOON</div>
+      <div class="soon-sub">Rusty Chef products are cooking.<br>Check back soon!</div>
+    </div>
+    <div class="btn btn-chef" onclick="openGrocery()" style="font-size:18px;padding:18px;">🧾 Grocery Helper</div>
+    <div style="text-align:center;opacity:.55;font-size:12px;margin-top:8px;">Tell it your budget and what you like — get a Walmart shopping list.</div>`;
+  show("products");
+}
+
+function toggleMenu(e){ e.stopPropagation(); const m=document.getElementById("dropMenu"); m.hidden=!m.hidden; }
+function menuGo(fn, arg){ document.getElementById("dropMenu").hidden=true; fn(arg); }
+document.addEventListener("click", e => { const m=document.getElementById("dropMenu"); if(m && !m.hidden && !e.target.closest("#menuWrap")) m.hidden=true; });
+
+/* What people can pick under "What do you like?" */
+const GH_LIKES = [
+  ["chicken","🍗 Chicken"],["beef","🍔 Beef"],["pork","🥓 Pork"],["fish","🐟 Fish"],
+  ["veg","🌱 Vegetarian"],["pasta","🍝 Pasta"],["mexican","🌮 Mexican"],["asian","🥢 Asian"],
+  ["breakfast","🥞 Breakfast"],["fruit","🍎 Fruit"],["veggies","🥦 Veggies"],["snacks","🍿 Snacks"]
+];
+/* name, amount per person per day, units per pack, pack label, price per pack, likes it goes with ("base" = always), priority (1 must-have, 2 nice, 3 extra) */
+const GH_ITEMS = [
+  ["Rice",                 0.15, 2,   "2 lb bag",       2.50, ["base"],      1],
+  ["Bread",                0.2,  1,   "loaf",           2.50, ["base"],      1],
+  ["Eggs",                 1.2,  12,  "dozen",          3.50, ["base"],      1],
+  ["Potatoes",             0.3,  5,   "5 lb bag",       4.00, ["base"],      1],
+  ["Onions",               0.25, 8,   "3 lb bag",       3.00, ["base"],      1],
+  ["Canned beans",         0.25, 1,   "can",            1.00, ["base"],      1],
+  ["Frozen mixed vegetables",0.2,1,   "12 oz bag",      1.50, ["base"],      1],
+  ["Chicken thighs",       0.35, 1,   "lb",             2.50, ["chicken"],   1, "meat"],
+  ["Ground beef",          0.3,  1,   "lb",             5.00, ["beef"],      1, "meat"],
+  ["Pork chops",           0.3,  1,   "lb",             3.50, ["pork"],      1, "meat"],
+  ["Bacon",                0.05, 1,   "12 oz pack",     5.00, ["pork","breakfast"], 3, "meat"],
+  ["Frozen fish fillets",  0.25, 1,   "1 lb bag",       5.50, ["fish"],      1, "meat"],
+  ["Canned tuna",          0.15, 1,   "can",            1.25, ["fish"],      2, "meat"],
+  ["Tofu",                 0.25, 1,   "14 oz block",    2.00, ["veg"],       1],
+  ["Black beans",          0.2,  1,   "can",            1.00, ["veg","mexican"], 1],
+  ["Pasta",                0.15, 1,   "1 lb box",       1.50, ["pasta"],     1],
+  ["Pasta sauce",          0.1,  1,   "24 oz jar",      2.00, ["pasta"],     1],
+  ["Parmesan cheese",      0.02, 1,   "8 oz shaker",    3.50, ["pasta"],     3],
+  ["Tortillas",            0.15, 1,   "10-pack",        2.50, ["mexican"],   1],
+  ["Salsa",                0.04, 1,   "16 oz jar",      2.50, ["mexican"],   2],
+  ["Shredded cheese",      0.04, 1,   "8 oz bag",       2.75, ["mexican","pasta"], 2],
+  ["Soy sauce",            0.01, 1,   "bottle",         2.00, ["asian"],     2],
+  ["Ramen noodles",        0.3,  1,   "12-pack",        3.50, ["asian"],     1],
+  ["Pancake mix",          0.05, 1,   "32 oz box",      2.50, ["breakfast"], 2],
+  ["Oatmeal",              0.1,  2.6, "42 oz canister", 4.50, ["breakfast"], 1],
+  ["Milk",                 0.12, 1,   "gallon",         3.50, ["breakfast"], 2],
+  ["Bananas",              0.7,  1,   "each",           0.25, ["fruit","breakfast"], 1],
+  ["Apples",               0.4,  1,   "each",           0.60, ["fruit"],     2],
+  ["Oranges",              0.3,  1,   "each",           0.70, ["fruit"],     3],
+  ["Carrots",              0.15, 2,   "2 lb bag",       1.80, ["veggies"],   1],
+  ["Broccoli",             0.1,  1,   "crown",          1.80, ["veggies"],   2],
+  ["Salad greens",         0.08, 1,   "bag",            3.00, ["veggies"],   3],
+  ["Popcorn",              0.1,  1,   "3-pack",         3.00, ["snacks"],    2],
+  ["Crackers",             0.05, 1,   "box",            2.75, ["snacks"],    3]
+];
+
+let ghLikes = [];
+function ghVal(id, fallback){ const n = parseFloat(document.getElementById(id).value); return isFinite(n) && n > 0 ? n : fallback; }
+function ghStep(id, d){ const el = document.getElementById(id); el.value = Math.max(1, (parseInt(el.value)||0) + d); }
+function ghToggleLike(el, key){
+  ghLikes = ghLikes.includes(key) ? ghLikes.filter(k=>k!==key) : [...ghLikes, key];
+  el.classList.toggle("selected", ghLikes.includes(key));
+}
+
+function openGrocery(from){
+  window._ghBack = from === 'home' ? 'home' : 'products';
+  let saved = {}; try{ saved = JSON.parse(storeGet("groceryHelper")||"{}")||{}; }catch(e){}
+  ghLikes = Array.isArray(saved.likes) ? saved.likes : [];
+  document.getElementById("grocery").innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <div class="btn" onclick="window._ghBack==='home'?show('home'):openProducts()" style="margin-top:0;padding:8px 14px;white-space:nowrap;">← Back</div>
+      <div class="header" style="margin:0;">🧾 Grocery Helper</div>
+      <div style="width:70px"></div>
+    </div>
+    <div class="card">
+      <div class="gh-field"><label>👥 How many people?</label>
+        <div class="gh-row"><button class="gh-step" onclick="ghStep('ghPeople',-1)">−</button>
+        <input id="ghPeople" class="searchInput" type="number" inputmode="numeric" min="1" value="${saved.people||2}">
+        <button class="gh-step" onclick="ghStep('ghPeople',1)">+</button></div></div>
+      <div class="gh-field"><label>💵 How much do you have? <small>(dollars)</small></label>
+        <input id="ghMoney" class="searchInput" type="number" inputmode="decimal" min="1" placeholder="e.g. 100" value="${saved.money||""}" style="text-align:center;font-size:20px;font-weight:700;"></div>
+      <div class="gh-field"><label>📅 How many days?</label>
+        <div class="gh-row"><button class="gh-step" onclick="ghStep('ghDays',-1)">−</button>
+        <input id="ghDays" class="searchInput" type="number" inputmode="numeric" min="1" value="${saved.days||7}">
+        <button class="gh-step" onclick="ghStep('ghDays',1)">+</button></div></div>
+      <div class="gh-field"><label>😋 What do you like? <small>(pick any)</small></label>
+        <div class="gh-likes">${GH_LIKES.map(([k,l]) => `<div class="item${ghLikes.includes(k)?" selected":""}" onclick="ghToggleLike(this,'${k}')">${l}</div>`).join("")}</div></div>
+      <div class="btn btn-chef" onclick="runGrocery()" style="font-size:17px;">🛒 Make my list</div>
+    </div>
+    <div id="ghOut"></div>`;
+  show("grocery");
+}
+
+let ghList = [];
+function runGrocery(){
+  const people = Math.round(ghVal("ghPeople", 1));
+  const days = Math.round(ghVal("ghDays", 1));
+  const money = parseFloat(document.getElementById("ghMoney").value);
+  const out = document.getElementById("ghOut");
+  if(!isFinite(money) || money <= 0){
+    out.innerHTML = `<div class="card" style="text-align:center;color:#fbbf24;font-weight:700;">Enter how much money you have to spend.</div>`;
+    return;
+  }
+  storeSet("groceryHelper", JSON.stringify({people, money, days, likes: ghLikes}));
+  const likes = ghLikes.length ? ghLikes : ["chicken","pasta","breakfast","veggies"];
+  const vegOnly = likes.includes("veg") && !likes.some(k => ["chicken","beef","pork","fish"].includes(k));
+  const personDays = people * days;
+  const perDay = money / personDays;
+
+  const picked = GH_ITEMS.filter(it => (it[5].includes("base") || it[5].some(t => likes.includes(t))) && !(vegOnly && it[7]==="meat"));
+  // share protein between the meats picked, so 3 meats doesn't mean 3x the meat
+  const mainMeats = picked.filter(it => it[7]==="meat" && it[6]===1).length || 1;
+  const build = maxPri => picked.filter(it => it[6] <= maxPri).map(([name, ppd, size, label, price, tags, pri, kind]) => {
+    const amt = (kind==="meat" && pri===1) ? ppd / mainMeats * 1.2 : ppd;
+    const units = Math.max(1, Math.ceil(amt * personDays / size));
+    return {name, units, label, cost: units * price};
+  });
+  let pri = perDay >= 6 ? 3 : perDay >= 4 ? 2 : 1;
+  let list = build(pri), total = list.reduce((a,b)=>a+b.cost,0);
+  while(total > money && pri > 1){ pri--; list = build(pri); total = list.reduce((a,b)=>a+b.cost,0); }
+  if(total > money){ // still over: trim the extras, most expensive first, but keep the base staples
+    const base = new Set(GH_ITEMS.filter(it=>it[5].includes("base")).map(it=>it[0]));
+    list.sort((a,b)=>b.cost-a.cost);
+    for(let i=0;i<list.length && total>money;){
+      if(!base.has(list[i].name) && list.filter(x=>!base.has(x.name)).length > 1){ total -= list[i].cost; list.splice(i,1); } else i++;
+    }
+    list.sort((a,b)=>a.name.localeCompare(b.name));
+  }
+  ghList = list.map(it => ({...it, got:false}));
+  const over = total > money, left = money - total;
+  const m2 = n => "$" + n.toFixed(2);
+
+  out.innerHTML = `
+    <div class="card">
+      <div style="font-weight:800;font-size:17px;margin-bottom:6px;">📋 ${people} ${people===1?"person":"people"} · ${days} ${days===1?"day":"days"} · ${m2(money)}</div>
+      <div class="gh-stats">
+        <div class="gh-stat"><b>${m2(perDay)}</b><span>per person, per day</span></div>
+        <div class="gh-stat"><b>${personDays*3}</b><span>meals to cover</span></div>
+        <div class="gh-stat"><b>${m2(total)}</b><span>estimated total</span></div>
+        <div class="gh-stat"><b class="${over?"gh-over":"gh-ok"}">${over?"−"+m2(-left):m2(left)}</b><span>${over?"over budget":"left over"}</span></div>
+      </div>
+      ${ghLikes.length ? "" : `<div style="font-size:12px;opacity:.6;">No likes picked, so this uses a mix of chicken, pasta, breakfast and veggies.</div>`}
+    </div>
+    <div class="btn" id="ghNext" onclick="ghShopNext()" style="background:#0071ce;color:white;font-size:17px;padding:16px;"></div>
+    <div style="text-align:center;opacity:.55;font-size:12px;margin:6px 0 2px;">Opens each item in the Walmart app — add it to your cart, then come back for the next one.</div>
+    <div class="card" id="ghListBox"></div>
+    ${over ? `<div class="card" style="color:#fbbf24;font-size:14px;line-height:1.5;">⚠️ This is the cheapest list and it's still about ${m2(-left)} over. Lean on rice, beans, eggs and potatoes, and check Great Value brands and Rollbacks.</div>`
+           : left >= 5 ? `<div class="card" style="font-size:14px;line-height:1.5;">💡 You have about ${m2(left)} extra — grab spices, cooking oil, butter, or a treat.</div>` : ""}
+    <div class="btn btn-feedback" id="ghCopy" onclick="ghCopyList()">📋 Copy whole list</div>
+    <div class="btn" onclick="showMatches()">🍳 See recipes I can make</div>
+    <div style="text-align:center;opacity:.45;font-size:11px;margin-top:10px;">Prices are rough estimates — Walmart prices vary by store.</div>`;
+  ghRenderList();
+  out.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function ghRenderList(){
+  const box = document.getElementById("ghListBox"); if(!box) return;
+  const done = ghList.filter(x=>x.got).length;
+  box.innerHTML = `<div style="display:flex;justify-content:space-between;font-weight:800;margin-bottom:4px;"><span>🛒 Shopping list</span><span style="opacity:.6;font-size:13px;">${done}/${ghList.length} added</span></div>` +
+    ghList.map((it,i) => `<div class="gh-item" style="${it.got?"opacity:.45;":""}">
+      <div style="flex:1;min-width:0;" onclick="ghList[${i}].got=!ghList[${i}].got;ghRenderList();">${it.got?"✅":"⬜"} ${it.name}<div class="q">${it.units} × ${it.label} · ~$${it.cost.toFixed(2)}</div></div>
+      <a target="_blank" href="${shopUrl(it.name)}" onclick="ghList[${i}].got=true;setTimeout(ghRenderList,300);" style="flex-shrink:0;align-self:center;background:#0071ce;color:white;text-decoration:none;font-weight:700;font-size:13px;padding:6px 12px;border-radius:20px;">🛒 Walmart</a>
+    </div>`).join("");
+  const next = ghList.find(x=>!x.got), btn = document.getElementById("ghNext");
+  if(btn) btn.innerHTML = next ? `🛒 Shop on Walmart: ${next.name} (${done+1}/${ghList.length})` : "✅ All done! Check out in the Walmart app";
+}
+
+function ghShopNext(){
+  const next = ghList.find(x=>!x.got);
+  if(!next){ window.open("https://www.walmart.com/cart", "_blank"); return; }
+  next.got = true;
+  window.open(shopUrl(next.name), "_blank");
+  setTimeout(ghRenderList, 300);
+}
+
+function ghCopyList(){
+  const text = "🔥 The Rusty Chef grocery list\n" + ghList.map(it => `• ${it.name} — ${it.units} × ${it.label}`).join("\n");
+  const ok = () => { const b = document.getElementById("ghCopy"); if(b){ b.textContent = "✅ Copied!"; setTimeout(()=>b.textContent="📋 Copy whole list", 1800); } };
+  try{ navigator.clipboard.writeText(text).then(ok, () => prompt("Copy your list:", text)); }catch(e){ prompt("Copy your list:", text); }
+}
 </script>
 <script>
 /* ================= START ================= */
