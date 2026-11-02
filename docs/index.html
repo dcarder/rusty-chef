@@ -4566,9 +4566,7 @@ function openGrocery(from){
   const skip = saved.skipStaples !== false;
   document.getElementById("grocery").innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-      <div class="btn" onclick="window._ghBack==='home'?show('home'):openProducts()" style="margin-top:0;padding:8px 14px;white-space:nowrap;">← Back</div>
-      <div class="header" style="margin:0;">🧾 Grocery Helper</div>
-      <div style="width:70px"></div>
+      <div class="header" style="margin:0;flex:1;">🧾 Grocery Helper</div>
     </div>
     <div class="card">
       <div class="gh-field"><label>👥 How many people?</label>
