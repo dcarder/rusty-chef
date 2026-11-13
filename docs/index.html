@@ -513,6 +513,24 @@ margin-bottom:12px;
 #dropMenu{position:absolute;right:0;top:calc(100% + 8px);min-width:210px;background:rgba(20,20,20,.97);border:1px solid rgba(255,145,77,.45);border-radius:14px;padding:6px;box-shadow:0 12px 40px rgba(0,0,0,.6);}
 #dropMenu div{padding:13px 14px;border-radius:10px;font-weight:700;font-size:16px;cursor:pointer;}
 #dropMenu div:hover,#dropMenu div:active{background:rgba(255,145,77,.2);}
+
+/* ================= HOME PAGE VIDEO POP-UP ================= */
+#videoPop{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
+  padding:calc(70px + env(safe-area-inset-top, 0px)) 16px 16px;background:rgba(0,0,0,.78);opacity:0;transition:opacity .25s ease;}
+#videoPop.on{opacity:1;}
+#videoPop .vp-box{position:relative;width:min(560px,100%);background:#141414;border:1px solid rgba(255,145,77,.5);
+  border-radius:16px;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
+#videoPop .vp-title{font-weight:900;color:#ff914d;font-size:16px;margin:2px 48px 10px 4px;}
+#videoPop .vp-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000;}
+#videoPop.tall .vp-box{width:min(380px,100%,calc((100vh - 190px) * 9 / 16 + 24px));}
+#videoPop.tall .vp-frame{aspect-ratio:9/16;}
+#menuWrap{z-index:2100 !important;}   /* menu button stays on top of the video pop-up */
+#videoPop iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+#videoPop .vp-x{position:absolute;top:8px;right:8px;width:40px;height:40px;border-radius:50%;border:0;
+  background:rgba(255,255,255,.12);color:#fff;font-size:20px;font-weight:900;cursor:pointer;line-height:40px;}
+#videoPop .vp-x:hover{background:rgba(255,145,77,.35);}
+#videoPop .vp-later{display:block;margin:10px auto 2px;background:none;border:0;color:rgba(255,255,255,.55);
+  font-size:13px;text-decoration:underline;cursor:pointer;}
 </style>
 </head>
 
@@ -567,6 +585,15 @@ margin-bottom:12px;
 </div>
 
 
+<!-- Home page video pop-up -->
+<div id="videoPop" hidden role="dialog" aria-modal="true" aria-label="Video" onclick="if(event.target===this)closeVideoPop()">
+  <div class="vp-box">
+    <div class="vp-title">🔥 Welcome to The Rusty Chef</div>
+    <button class="vp-x" onclick="closeVideoPop()" aria-label="Close video">✕</button>
+    <div class="vp-frame" id="vpFrame"></div>
+    <button class="vp-later" onclick="closeVideoPop(true)">Don't show this again</button>
+  </div>
+</div>
 <!-- Menu - on every page (replaces the bottom tab bar) -->
 <div id="menuWrap" style="position:fixed;top:calc(12px + env(safe-area-inset-top, 0px));right:12px;z-index:999;">
   <div class="btn" onclick="toggleMenu(event)" style="margin-top:0;padding:10px 16px;font-size:16px;background:rgba(0,0,0,.6);color:white;border:1px solid rgba(255,255,255,.3);">☰ Menu</div>
@@ -4782,6 +4809,42 @@ function ghCopyList(){
   const ok = () => { const b = document.getElementById("ghCopy"); if(b){ b.textContent = "✅ Copied!"; setTimeout(()=>b.innerHTML="📋 Copy meal plan &amp; list", 1800); } };
   try{ navigator.clipboard.writeText(text).then(ok, () => prompt("Copy your list:", text)); }catch(e){ prompt("Copy your list:", text); }
 }
+</script>
+<script>
+/* ================= HOME PAGE VIDEO POP-UP =================
+   To change the video, paste any YouTube link between the quotes.
+   Leave it empty ("") to turn the pop-up off. */
+const HOME_VIDEO = "https://youtube.com/shorts/QNKS3vLqATM?is=N4aprHiKzi_zIepJ";
+
+function ytId(v){
+  v = (v || "").trim();
+  const m = v.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : (/^[A-Za-z0-9_-]{11}$/.test(v) ? v : "");
+}
+function openVideoPop(){
+  const id = ytId(HOME_VIDEO); if(!id) return;
+  const pop = document.getElementById("videoPop");
+  document.getElementById("vpFrame").innerHTML =
+    '<iframe src="https://www.youtube-nocookie.com/embed/' + id + '?rel=0&playsinline=1" title="The Rusty Chef video" ' +
+    'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+  pop.classList.toggle("tall", /\/shorts\//.test(HOME_VIDEO));   // Shorts are vertical
+  pop.hidden = false; requestAnimationFrame(() => pop.classList.add("on"));
+}
+function closeVideoPop(forever){
+  const pop = document.getElementById("videoPop"); if(!pop || pop.hidden) return;
+  pop.classList.remove("on");
+  setTimeout(() => { pop.hidden = true; document.getElementById("vpFrame").innerHTML = ""; }, 250); // stops the video
+  storeSet("videoPopSeen", forever ? "never" : String(Date.now()));
+}
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeVideoPop(); });
+(function(){ const go = window.menuGo; if(typeof go === "function") window.menuGo = function(fn, arg){ closeVideoPop(); return go(fn, arg); }; })();
+window.addEventListener("load", () => {
+  const seen = storeGet("videoPopSeen");
+  if(seen === "never") return;
+  if(seen && Date.now() - Number(seen) < 24 * 60 * 60 * 1000) return;   // once a day at most
+  const active = (document.querySelector(".page.active") || {}).id;
+  if(active === "home") setTimeout(openVideoPop, 800);
+});
 </script>
 <script>
 /* ================= START ================= */
