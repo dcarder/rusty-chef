@@ -517,12 +517,16 @@ margin-bottom:12px;
 /* ================= HOME PAGE VIDEO POP-UP ================= */
 #videoPop{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
   padding:calc(70px + env(safe-area-inset-top, 0px)) 16px 16px;background:rgba(0,0,0,.78);opacity:0;transition:opacity .25s ease;}
+#videoPop[hidden]{display:none !important;}   /* closed = gone, never blocks the page */
+#videoPop:not(.on){pointer-events:none;}
 #videoPop.on{opacity:1;}
+#videoPop .vp-yt{display:block;margin:10px 0 0;padding:11px;border-radius:10px;background:#ff0000;color:#fff;
+  font-weight:800;font-size:15px;text-align:center;text-decoration:none;}
 #videoPop .vp-box{position:relative;width:min(560px,100%);background:#141414;border:1px solid rgba(255,145,77,.5);
   border-radius:16px;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
 #videoPop .vp-title{font-weight:900;color:#ff914d;font-size:16px;margin:2px 48px 10px 4px;}
 #videoPop .vp-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000;}
-#videoPop.tall .vp-box{width:min(380px,100%,calc((100vh - 190px) * 9 / 16 + 24px));}
+#videoPop.tall .vp-box{width:min(380px,100%,calc((100dvh - 270px) * 9 / 16 + 24px));}
 #videoPop.tall .vp-frame{aspect-ratio:9/16;}
 #menuWrap{z-index:2100 !important;}   /* menu button stays on top of the video pop-up */
 #videoPop iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
@@ -591,6 +595,7 @@ margin-bottom:12px;
     <div class="vp-title">🔥 Welcome to The Rusty Chef</div>
     <button class="vp-x" onclick="closeVideoPop()" aria-label="Close video">✕</button>
     <div class="vp-frame" id="vpFrame"></div>
+    <a class="vp-yt" id="vpYT" href="#" target="_blank" rel="noopener" onclick="closeVideoPop()">▶ Watch on YouTube</a>
     <button class="vp-later" onclick="closeVideoPop(true)">Don't show this again</button>
   </div>
 </div>
@@ -4827,6 +4832,7 @@ function openVideoPop(){
   document.getElementById("vpFrame").innerHTML =
     '<iframe src="https://www.youtube-nocookie.com/embed/' + id + '?rel=0&playsinline=1" title="The Rusty Chef video" ' +
     'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+  document.getElementById("vpYT").href = (/\/shorts\//.test(HOME_VIDEO) ? "https://www.youtube.com/shorts/" : "https://www.youtube.com/watch?v=") + id;
   pop.classList.toggle("tall", /\/shorts\//.test(HOME_VIDEO));   // Shorts are vertical
   pop.hidden = false; requestAnimationFrame(() => pop.classList.add("on"));
 }
