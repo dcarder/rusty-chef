@@ -509,6 +509,11 @@ margin-bottom:12px;
 .gh-over{color:#fbbf24;font-weight:800;}
 .gh-likes{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
 .gh-likes .item{margin:0;text-align:center;}
+.gh-meals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.gh-meals .item{margin:0;text-align:center;padding:10px 4px;}
+.gh-x{flex-shrink:0;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:15px;font-weight:800;cursor:pointer;}
+.gh-x:hover,.gh-x:active{background:rgba(239,68,68,.35);border-color:#ef4444;}
+.gh-removed{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:4px 10px;cursor:pointer;}
 .page:not(#home){padding-top:70px;}
 #dropMenu{position:absolute;right:0;top:calc(100% + 8px);min-width:210px;background:rgba(20,20,20,.97);border:1px solid rgba(255,145,77,.45);border-radius:14px;padding:6px;box-shadow:0 12px 40px rgba(0,0,0,.6);}
 #dropMenu div{padding:13px 14px;border-radius:10px;font-weight:700;font-size:16px;cursor:pointer;}
@@ -3235,13 +3240,11 @@ const recipes = [
 {"name": "Blueberry Baked Oatmeal", "category": "breakfast", "ingredients": ["Oats", "Milk", "Eggs", "Blueberries", "Maple syrup", "Baking soda", "Cinnamon", "Butter", "Vanilla extract"], "simpleSteps": [{"t": "Mix dry", "a": "oats, cinnamon"}, {"t": "Mix wet", "a": "milk, egg, syrup"}, {"t": "Combine + berries", "a": "in dish"}, {"t": "Bake", "a": "375°F"}], "chefSteps": [{"t": "Mix the oats", "a": "Heat the oven to 375°F. Stir 2 cups oats, 1 tsp cinnamon, ½ tsp baking soda and a pinch of salt in a bowl.", "tip": "Old-fashioned oats give a chewy, cake-like bake. Quick oats turn mushy."}, {"t": "Add the wet ingredients", "a": "Whisk 1¾ cups milk, 1 egg, ⅓ cup maple syrup, 2 tbsp melted butter and 1 tsp vanilla. Stir into the oats.", "tip": "Let it sit 10 minutes so the oats absorb some liquid before baking."}, {"t": "Bake with berries", "a": "Pour into a greased 8x8 dish and scatter 1 cup blueberries on top. Bake 35–40 minutes until set and golden at the edges.", "tip": "Make it Sunday and cut it into squares for grab-and-go breakfasts all week."}]},
 {"name": "Hash Brown Egg Nests", "category": "breakfast", "ingredients": ["Potatoes", "Eggs", "Cheese", "Butter", "Green onions"], "simpleSteps": [{"t": "Grate potatoes", "a": "squeeze dry"}, {"t": "Press into tin", "a": "nest shape"}, {"t": "Bake crisp", "a": "first"}, {"t": "Add eggs", "a": "bake again"}], "chefSteps": [{"t": "Grate and squeeze", "a": "Heat the oven to 425°F. Grate 2 large potatoes, then wrap in a clean towel and squeeze out as much water as you can. Mix with 2 tbsp melted butter, half the cheese, salt and pepper.", "tip": "Squeezing out the water is the key to crispy hash browns. Be aggressive."}, {"t": "Bake the nests", "a": "Press the potato mixture into a well-greased muffin tin, up the sides, to make cups. Bake 15–18 minutes until the edges are deep golden.", "tip": "Grease the tin heavily or they'll stick."}, {"t": "Add eggs and finish", "a": "Crack an egg into each nest, top with remaining cheese, and bake 10–12 minutes until the whites are set. Sprinkle with green onions.", "tip": "For runny yolks, check at 9 minutes."}]},
 {"name": "Breakfast Pizza", "category": "breakfast", "ingredients": ["Tortilla", "Eggs", "Bacon", "Mozzarella", "Tomatoes", "Green onions"], "simpleSteps": [{"t": "Crisp tortilla", "a": "in oven"}, {"t": "Add cheese", "a": "+ bacon"}, {"t": "Crack eggs", "a": "on top"}, {"t": "Bake", "a": "until set"}], "chefSteps": [{"t": "Pre-crisp the crust", "a": "Heat the oven to 425°F. Put a large tortilla on a sheet pan, brush with a little oil, and bake 4 minutes until it starts to crisp.", "tip": "Baking the tortilla first stops a soggy middle."}, {"t": "Top it", "a": "Sprinkle mozzarella over the tortilla, leaving a rim. Add chopped cooked bacon and diced tomato. Make two small wells in the cheese.", "tip": "The cheese wall keeps the eggs from sliding off."}, {"t": "Add eggs and bake", "a": "Crack an egg into each well. Bake 8–10 minutes until the whites are set and the cheese is bubbling. Top with green onions, salt and pepper.", "tip": "Add a few drops of hot sauce before serving."}]},
-{"name": "Migas", "category": "breakfast", "ingredients": ["Tortilla", "Eggs", "Tomatoes", "Onions", "Jalapeño", "Cheese", "Cilantro"], "simpleSteps": [{"t": "Fry tortilla strips", "a": "crispy"}, {"t": "Add onion + chile", "a": "soften"}, {"t": "Add eggs", "a": "scramble"}, {"t": "Cheese + cilantro", "a": "serve"}], "chefSteps": [{"t": "Fry the tortilla strips", "a": "Cut 3 tortillas into strips. Fry in 2 tbsp oil over medium-high for 3–4 minutes until golden and crisp. Salt them.", "tip": "Stale tortillas fry up crispier than fresh ones."}, {"t": "Cook the aromatics", "a": "Add diced onion and jalapeño to the pan and cook 3 minutes. Add diced tomato and cook 1 minute more.", "tip": "Remove jalapeño seeds for less heat."}, {"t": "Scramble it all", "a": "Lower the heat, pour in 5 beaten eggs, and stir gently for 2 minutes until softly set. Fold in shredded cheese and chopped cilantro.", "tip": "Keep some strips crunchy by adding a handful back on top at the end."}]},
 {"name": "Banana Oat Pancakes", "category": "breakfast", "ingredients": ["Oats", "Bananas", "Eggs", "Milk", "Baking soda", "Cinnamon", "Maple syrup"], "simpleSteps": [{"t": "Blend oats", "a": "into flour"}, {"t": "Blend batter", "a": "banana, egg, milk"}, {"t": "Rest", "a": "5 minutes"}, {"t": "Cook", "a": "medium-low"}], "chefSteps": [{"t": "Blend everything", "a": "Blend 1½ cups oats into a fine flour. Add 1 ripe banana, 2 eggs, ½ cup milk, ½ tsp baking soda, ½ tsp cinnamon and a pinch of salt. Blend until smooth.", "tip": "Spottier bananas are sweeter — no sugar needed."}, {"t": "Let it thicken", "a": "Rest the batter 5 minutes. The oats soak up liquid and the batter thickens so the pancakes hold their shape.", "tip": "If it gets too thick, add a splash of milk."}, {"t": "Cook lower than usual", "a": "Cook ¼-cup scoops in a buttered pan over medium-low for 2–3 minutes per side.", "tip": "Banana batter browns fast — lower heat cooks the middle before the outside burns."}]},
 {"name": "Spinach & Cheese Scramble", "category": "breakfast", "ingredients": ["Eggs", "Spinach", "Cheese", "Butter", "Garlic", "Bread"], "simpleSteps": [{"t": "Wilt spinach", "a": "with garlic"}, {"t": "Add eggs", "a": "low heat"}, {"t": "Fold in cheese", "a": "off heat"}, {"t": "Serve", "a": "with toast"}], "chefSteps": [{"t": "Wilt the spinach", "a": "Melt butter over medium. Cook 1 minced garlic clove for 30 seconds, then add 2 big handfuls of spinach and stir 1 minute until wilted. Season with salt.", "tip": "Spinach shrinks a lot — use more than you think."}, {"t": "Scramble low and slow", "a": "Lower the heat. Add 4 beaten eggs and stir slowly with a spatula for 2–3 minutes, making big soft curds.", "tip": "Constant gentle stirring makes creamy eggs, not dry ones."}, {"t": "Finish with cheese", "a": "Take the pan off the heat while the eggs still look a little wet. Fold in shredded cheese and let it melt. Serve with buttered toast.", "tip": "Eggs keep cooking on the plate — pull them early."}]},
 {"name": "Bacon Hash Brown Skillet", "category": "breakfast", "ingredients": ["Potatoes", "Bacon", "Onions", "Bell peppers", "Eggs", "Cheddar"], "simpleSteps": [{"t": "Cook bacon", "a": "save fat"}, {"t": "Crisp potatoes", "a": "in fat"}, {"t": "Add veggies", "a": "soften"}, {"t": "Eggs + cheese", "a": "cover"}], "chefSteps": [{"t": "Render the bacon", "a": "Cook 5 strips of chopped bacon in a large skillet over medium for 7–8 minutes until crisp. Remove the bacon and keep 2 tbsp fat in the pan.", "tip": "Bacon fat gives the potatoes huge flavor."}, {"t": "Crisp the potatoes", "a": "Add diced potatoes in one layer. Cook without stirring for 5 minutes, then flip and cook 8–10 minutes more until crisp and tender. Add onion and bell pepper for the last 4 minutes.", "tip": "Don't crowd the pan — crowded potatoes steam instead of crisp."}, {"t": "Add eggs and cheese", "a": "Make 4 wells, crack in the eggs, scatter cheddar and bacon over everything. Cover and cook 4–5 minutes until the whites set.", "tip": "Bring the whole skillet to the table."}]},
 {"name": "Egg & Avocado Breakfast Sandwich", "category": "breakfast", "ingredients": ["Bread", "Eggs", "Avocado", "Cheese", "Tomatoes", "Butter"], "simpleSteps": [{"t": "Toast bread", "a": "buttered"}, {"t": "Fry egg", "a": "jammy yolk"}, {"t": "Mash avocado", "a": "salt + lime"}, {"t": "Stack", "a": "cheese, tomato"}], "chefSteps": [{"t": "Toast in butter", "a": "Butter two slices of bread and toast in a skillet over medium for 2 minutes per side.", "tip": "Pan toasting gives a crunchier, richer outside than a toaster."}, {"t": "Fry the egg", "a": "Fry an egg in butter over medium for 2–3 minutes. Flip, lay a slice of cheese on top, and cook 30 seconds more.", "tip": "Break the yolk before flipping if you don't want drips."}, {"t": "Stack it", "a": "Mash half an avocado with salt and pepper and spread it on the toast. Add the cheesy egg and a thick tomato slice. Top and press lightly.", "tip": "Salt the tomato slice — it tastes twice as good."}]},
 {"name": "Microwave Mug Omelette", "category": "breakfast", "ingredients": ["Eggs", "Milk", "Cheese", "Bell peppers", "Spinach"], "simpleSteps": [{"t": "Whisk in mug", "a": "eggs + milk"}, {"t": "Add fillings", "a": "cheese, veggies"}, {"t": "Microwave", "a": "30 sec bursts"}, {"t": "Eat", "a": "from the mug"}], "chefSteps": [{"t": "Mix in the mug", "a": "Grease a big mug. Whisk 2 eggs and 1 tbsp milk in it with a fork. Stir in diced bell pepper, a few spinach leaves and cheese. Season.", "tip": "Use a big mug — the eggs puff up."}, {"t": "Microwave in bursts", "a": "Microwave 30 seconds, stir, then 30–45 seconds more until just set.", "tip": "Short bursts keep the eggs from going rubbery."}, {"t": "Finish", "a": "Top with more cheese and let it sit 30 seconds to melt.", "tip": "Breakfast in 2 minutes with only one mug to wash."}]},
-{"name": "Berry Yogurt Toast", "category": "breakfast", "ingredients": ["Bread", "Greek yogurt", "Blueberries", "Honey", "Cinnamon"], "simpleSteps": [{"t": "Toast bread", "a": "crisp"}, {"t": "Spread yogurt", "a": "thick"}, {"t": "Add berries", "a": "+ honey"}, {"t": "Cinnamon", "a": "sprinkle"}], "chefSteps": [{"t": "Toast", "a": "Toast thick bread until crisp and golden, about 3 minutes.", "tip": "Sturdy bread holds the yogurt best."}, {"t": "Spread", "a": "Spread a thick layer of Greek yogurt on the warm toast.", "tip": "Stir a little honey into the yogurt first if you like it sweeter."}, {"t": "Top", "a": "Add blueberries, a drizzle of honey and a pinch of cinnamon.", "tip": "High protein and ready in 5 minutes."}]},
 {"name": "Homemade Turkey Breakfast Sausage", "category": "breakfast", "ingredients": ["Turkey", "Maple syrup", "Garlic powder", "Paprika", "Red pepper flakes", "Eggs", "Bread"], "simpleSteps": [{"t": "Season turkey", "a": "maple + spice"}, {"t": "Form patties", "a": "thin"}, {"t": "Sear", "a": "3 min per side"}, {"t": "Serve", "a": "eggs + toast"}], "chefSteps": [{"t": "Season the meat", "a": "Mix 1 lb ground turkey with 1 tbsp maple syrup, 1 tsp salt, ½ tsp garlic powder, ½ tsp paprika, ½ tsp pepper and a pinch of red pepper flakes. Mix gently with your hands.", "tip": "Fry a tiny piece to taste and fix the seasoning before shaping all of them."}, {"t": "Shape thin patties", "a": "Form 8 patties about ½ inch thick. Press a dimple in the middle of each so they stay flat.", "tip": "Wet hands stop the turkey from sticking."}, {"t": "Sear", "a": "Cook in a little oil over medium-high for 3–4 minutes per side until browned and cooked through (165°F). Serve with eggs and toast.", "tip": "Freeze extra raw patties between parchment for quick mornings."}]},
 {"name": "Salmon Breakfast Rice Bowl", "category": "breakfast", "ingredients": ["Salmon", "Rice", "Eggs", "Avocado", "Soy sauce", "Green onions", "Sesame oil"], "simpleSteps": [{"t": "Warm rice", "a": "day-old ok"}, {"t": "Sear salmon", "a": "crispy skin"}, {"t": "Fry egg", "a": "runny"}, {"t": "Build bowl", "a": "soy + sesame"}], "chefSteps": [{"t": "Sear the salmon", "a": "Pat a salmon fillet dry and season with salt. Sear skin-side down in a hot oiled pan for 4–5 minutes, then flip and cook 1–2 minutes more. Flake into big pieces.", "tip": "Press the fillet flat for the first 10 seconds so the skin crisps evenly."}, {"t": "Fry the egg", "a": "Fry an egg in the same pan for 2 minutes until the white is crisp at the edges and the yolk is runny.", "tip": "A little leftover salmon fat makes the egg taste amazing."}, {"t": "Build the bowl", "a": "Put warm rice in a bowl. Add the salmon, egg and sliced avocado. Drizzle with soy sauce and a few drops of sesame oil. Top with green onions.", "tip": "Break the yolk and mix it into the rice like a sauce."}]},
 {"name": "PB Banana Smoothie Bowl", "category": "breakfast", "ingredients": ["Bananas", "Greek yogurt", "Peanut butter", "Milk", "Oats", "Honey"], "simpleSteps": [{"t": "Freeze bananas", "a": "sliced"}, {"t": "Blend thick", "a": "little milk"}, {"t": "Pour in bowl", "a": "spoonable"}, {"t": "Top", "a": "oats, banana"}], "chefSteps": [{"t": "Use frozen bananas", "a": "Slice ripe bananas and freeze for at least 2 hours. Frozen banana is what makes it thick like soft-serve.", "tip": "Keep a bag of sliced bananas in the freezer at all times."}, {"t": "Blend it thick", "a": "Blend 2 frozen bananas, ½ cup Greek yogurt, 2 tbsp peanut butter and just ¼ cup milk. Stop and scrape often.", "tip": "Add milk 1 tablespoon at a time — too much and it becomes a drink."}, {"t": "Top it", "a": "Spoon into a bowl. Top with oats, fresh banana slices, a drizzle of peanut butter and honey.", "tip": "Chill the bowl in the freezer for 5 minutes first so it stays thick longer."}]},
@@ -3293,12 +3296,10 @@ const recipes = [
 {"name": "Teriyaki Salmon", "category": "dinner", "ingredients": ["Salmon", "Teriyaki sauce", "Rice", "Broccoli", "Green onions"], "simpleSteps": [{"t": "Sear salmon", "a": "skin down"}, {"t": "Flip", "a": "1–2 min"}, {"t": "Glaze", "a": "teriyaki"}, {"t": "Serve", "a": "rice + broccoli"}], "chefSteps": [{"t": "Sear", "a": "Pat 2 salmon fillets dry and season. Sear skin-side down in a hot oiled pan for 4–5 minutes, then flip.", "tip": "Don't move it until the skin releases on its own."}, {"t": "Glaze", "a": "Lower the heat, pour in ⅓ cup teriyaki sauce and spoon it over the salmon for 1–2 minutes until sticky.", "tip": "Sauce burns fast — keep the heat medium-low."}, {"t": "Serve", "a": "Serve with rice and steamed broccoli. Top with green onions.", "tip": "15 minutes start to finish."}]},
 {"name": "Blackened Salmon with Corn Salsa", "category": "dinner", "ingredients": ["Salmon", "Paprika", "Garlic powder", "Cumin", "Corn", "Tomatoes", "Lime", "Cilantro"], "simpleSteps": [{"t": "Mix salsa", "a": "corn, tomato, lime"}, {"t": "Rub salmon", "a": "spices"}, {"t": "Sear", "a": "very hot"}, {"t": "Top", "a": "salsa"}], "chefSteps": [{"t": "Quick corn salsa", "a": "Mix 1 cup corn, a diced tomato, chopped cilantro, juice of 1 lime and salt.", "tip": "Make it first so the flavors mix."}, {"t": "Spice rub", "a": "Mix 2 tsp paprika, 1 tsp garlic powder, ½ tsp cumin, salt and pepper. Press onto the salmon.", "tip": "The dark crust is flavor, not burn."}, {"t": "Sear hot", "a": "Sear in a very hot oiled skillet for 3–4 minutes per side. Top with the corn salsa.", "tip": "Open a window — blackening gets smoky."}]},
 {"name": "Chicken & Veggie Stir Fry", "category": "dinner", "ingredients": ["Chicken breast", "Broccoli", "Carrots", "Bell peppers", "Soy sauce", "Garlic", "Cornstarch", "Rice"], "simpleSteps": [{"t": "Sear chicken", "a": "bites"}, {"t": "Stir fry veggies", "a": "crisp"}, {"t": "Add sauce", "a": "soy + cornstarch"}, {"t": "Serve", "a": "rice"}], "chefSteps": [{"t": "Cook the chicken", "a": "Toss bite-size chicken with 1 tsp cornstarch and salt. Sear in a hot oiled pan for 5 minutes. Remove.", "tip": "Cornstarch keeps it tender like restaurant chicken."}, {"t": "Stir fry the veggies", "a": "Add broccoli, sliced carrots and peppers with a splash of water. Cook 3–4 minutes until crisp-tender. Add 2 garlic cloves for 30 seconds.", "tip": "Hard veggies first, soft veggies last."}, {"t": "Sauce", "a": "Mix ¼ cup soy sauce, ¼ cup water, 1 tbsp honey or sugar and 1 tsp cornstarch. Add with the chicken and toss 1 minute until glossy. Serve over rice.", "tip": "Use any veggies in your fridge."}]},
-{"name": "Coconut Curry Shrimp", "category": "dinner", "ingredients": ["Shrimp", "Coconut milk", "Curry powder", "Garlic", "Spinach", "Lime", "Rice"], "simpleSteps": [{"t": "Toast curry", "a": "+ garlic"}, {"t": "Add coconut milk", "a": "simmer"}, {"t": "Add shrimp", "a": "3 min"}, {"t": "Spinach + lime", "a": "serve"}], "chefSteps": [{"t": "Make the sauce", "a": "Cook 2 garlic cloves and 1½ tbsp curry powder in oil for 1 minute. Pour in a can of coconut milk and simmer 5 minutes.", "tip": "Shake the can well first."}, {"t": "Cook the shrimp", "a": "Add 1 lb shrimp and simmer 3 minutes until pink.", "tip": "Frozen shrimp work — thaw them in cold water for 10 minutes."}, {"t": "Finish", "a": "Stir in a handful of spinach until wilted. Add lime juice and salt. Serve over rice.", "tip": "Done in under 20 minutes."}]},
 {"name": "Lemon Butter Chicken", "category": "dinner", "ingredients": ["Chicken breast", "Butter", "Lemon", "Garlic", "Flour", "Chicken broth", "Parsley"], "simpleSteps": [{"t": "Flour chicken", "a": "thin cutlets"}, {"t": "Sear", "a": "golden"}, {"t": "Pan sauce", "a": "broth, lemon"}, {"t": "Butter", "a": "swirl"}], "chefSteps": [{"t": "Make thin cutlets", "a": "Slice chicken breasts in half the long way. Season and dust with flour.", "tip": "Thin cutlets cook in minutes and stay juicy."}, {"t": "Sear", "a": "Cook in oil and a little butter over medium-high for 3–4 minutes per side until golden. Remove.", "tip": "Don't crowd the pan — cook in batches."}, {"t": "Lemon butter sauce", "a": "Add 2 garlic cloves for 30 seconds, then ½ cup broth and juice of 1 lemon. Simmer 2 minutes. Turn off the heat and swirl in 2 tbsp butter. Pour over the chicken with parsley.", "tip": "Serve with pasta or rice to soak up the sauce."}]},
 {"name": "Quick Beef Stroganoff", "category": "dinner", "ingredients": ["Ground beef", "Mushrooms", "Onions", "Beef broth", "Sour cream", "Egg noodles", "Flour"], "simpleSteps": [{"t": "Boil noodles", "a": "drain"}, {"t": "Brown beef", "a": "+ mushrooms"}, {"t": "Flour + broth", "a": "simmer"}, {"t": "Sour cream", "a": "off heat"}], "chefSteps": [{"t": "Brown", "a": "Brown 1 lb ground beef with a diced onion and sliced mushrooms for 8 minutes. Drain the fat.", "tip": "Let the mushrooms brown for big flavor."}, {"t": "Make the gravy", "a": "Stir in 2 tbsp flour for 1 minute, then 1½ cups beef broth. Simmer 5 minutes until thick. Meanwhile, boil egg noodles.", "tip": "A splash of Worcestershire or soy sauce adds depth."}, {"t": "Finish creamy", "a": "Turn off the heat and stir in ½ cup sour cream. Season and serve over the noodles.", "tip": "Don't boil after adding sour cream — it can split."}]},
 {"name": "Tuscan Chicken", "category": "dinner", "ingredients": ["Chicken breast", "Spinach", "Tomatoes", "Cream", "Garlic", "Parmesan", "Italian seasoning"], "simpleSteps": [{"t": "Sear chicken", "a": "seasoned"}, {"t": "Garlic + tomato", "a": "soften"}, {"t": "Cream + parm", "a": "simmer"}, {"t": "Spinach", "a": "wilt"}], "chefSteps": [{"t": "Sear", "a": "Season thin chicken cutlets with Italian seasoning, salt and pepper. Sear 4–5 minutes per side until golden and cooked. Remove.", "tip": "Pound thick breasts thinner so they cook evenly."}, {"t": "Make the sauce", "a": "Cook 3 garlic cloves and a diced tomato for 2 minutes. Add 1 cup cream and ½ cup parmesan. Simmer 3 minutes until thick.", "tip": "Sun-dried tomatoes are classic if you have them."}, {"t": "Finish", "a": "Stir in 2 handfuls of spinach until wilted. Return the chicken and spoon the sauce over.", "tip": "Serve with pasta or crusty bread."}]},
 {"name": "Pepper Steak", "category": "dinner", "ingredients": ["Steak", "Bell peppers", "Onions", "Soy sauce", "Cornstarch", "Garlic", "Ginger", "Rice"], "simpleSteps": [{"t": "Slice steak", "a": "thin"}, {"t": "Sear fast", "a": "hot pan"}, {"t": "Peppers + onions", "a": "crisp"}, {"t": "Sauce", "a": "soy, cornstarch"}], "chefSteps": [{"t": "Slice and coat", "a": "Slice steak thin against the grain. Toss with 1 tbsp soy sauce and 1 tsp cornstarch.", "tip": "Freeze 15 minutes first for easy thin slices."}, {"t": "Sear in batches", "a": "Sear the steak in a very hot oiled pan for 1–2 minutes. Remove. Cook sliced peppers and onion 3 minutes.", "tip": "Batches keep the pan hot so the beef browns."}, {"t": "Sauce", "a": "Mix 3 tbsp soy sauce, ½ cup water, 1 tsp cornstarch, garlic and ½ tsp ginger. Add with the beef and toss 1 minute until glossy. Serve over rice.", "tip": "A pinch of sugar balances the soy."}]},
-{"name": "Sausage Zucchini Boats", "category": "dinner", "ingredients": ["Zucchini", "Sausage", "Marinara sauce", "Mozzarella", "Parmesan"], "simpleSteps": [{"t": "Halve zucchini", "a": "scoop"}, {"t": "Brown sausage", "a": "+ sauce"}, {"t": "Fill", "a": "+ cheese"}, {"t": "Bake", "a": "400°F"}], "chefSteps": [{"t": "Prep", "a": "Heat the oven to 400°F. Halve 3 zucchini the long way and scoop out the middles with a spoon. Chop the scooped part.", "tip": "Leave ¼ inch of wall so the boats hold up."}, {"t": "Make the filling", "a": "Brown ½ lb sausage for 6 minutes. Add the chopped zucchini and 1 cup marinara. Simmer 2 minutes.", "tip": "Ground beef or turkey works too."}, {"t": "Fill and bake", "a": "Spoon into the boats, top with mozzarella and parmesan. Bake 15–18 minutes until bubbly.", "tip": "A low-carb dinner the whole family likes."}]},
 {"name": "30-Minute Turkey Chili", "category": "dinner", "ingredients": ["Turkey", "Beans", "Tomatoes", "Onions", "Bell peppers", "Cumin", "Corn", "Chicken broth"], "simpleSteps": [{"t": "Brown turkey", "a": "+ onion"}, {"t": "Add spices", "a": "cumin"}, {"t": "Add beans", "a": "tomato, corn"}, {"t": "Simmer", "a": "20 min"}], "chefSteps": [{"t": "Brown", "a": "Brown 1 lb ground turkey with a diced onion and bell pepper for 7 minutes. Add 1 tbsp cumin and stir 1 minute.", "tip": "Add chili powder too if you have it."}, {"t": "Simmer", "a": "Add 2 cans beans, 3 chopped tomatoes (or a can), 1 cup corn and 1 cup broth. Simmer 20 minutes.", "tip": "Mash some beans to thicken it."}, {"t": "Serve", "a": "Season with salt and top with cheese, sour cream or green onions.", "tip": "Even better the next day."}]},
 {"name": "Garlic Parmesan Chicken Tenders", "category": "dinner", "ingredients": ["Chicken breast", "Breadcrumbs", "Parmesan", "Eggs", "Garlic powder", "Butter"], "simpleSteps": [{"t": "Cut tenders", "a": "strips"}, {"t": "Dip", "a": "egg, crumbs + parm"}, {"t": "Bake", "a": "425°F"}, {"t": "Garlic butter", "a": "brush"}], "chefSteps": [{"t": "Bread them", "a": "Heat the oven to 425°F. Cut chicken into strips. Dip in beaten egg, then in ¾ cup breadcrumbs mixed with ½ cup parmesan, 1 tsp garlic powder and salt.", "tip": "Use one hand for wet, one for dry — no clumpy fingers."}, {"t": "Bake", "a": "Lay on a greased sheet pan and spray or drizzle with oil. Bake 15–18 minutes, flipping once, until golden and cooked through.", "tip": "A rack on the pan makes them crispy on both sides."}, {"t": "Garlic butter finish", "a": "Brush with melted butter mixed with a pinch of garlic powder. Serve with any dipping sauce.", "tip": "Kid favorite — and no frying."}]},
 {"name": "Creamy Spinach Mushroom Pasta", "category": "dinner", "ingredients": ["Pasta", "Mushrooms", "Spinach", "Garlic", "Cream", "Parmesan", "Butter"], "simpleSteps": [{"t": "Boil pasta", "a": "save water"}, {"t": "Brown mushrooms", "a": "butter"}, {"t": "Cream + parm", "a": "simmer"}, {"t": "Spinach + pasta", "a": "toss"}], "chefSteps": [{"t": "Mushrooms", "a": "Brown sliced mushrooms in butter over medium-high for 6–7 minutes. Add 2 garlic cloves for 30 seconds.", "tip": "Don't stir too often — let them brown."}, {"t": "Sauce", "a": "Add ¾ cup cream and ½ cup parmesan. Simmer 2 minutes. Stir in 2 handfuls spinach until wilted.", "tip": "Use milk + a spoon of flour for a lighter version."}, {"t": "Toss", "a": "Toss with cooked pasta and a splash of pasta water until silky. Season with salt and pepper.", "tip": "Add leftover chicken for more protein."}]},
@@ -3778,9 +3779,6 @@ const recipeDetails = {
     amounts:{"Tortilla": "1 large", "Eggs": "2", "Bacon": "3 strips, cooked", "Mozzarella": "¾ cup", "Tomatoes": "1 small, diced", "Green onions": "1"},
     staples:["Salt", "Pepper", "Cooking oil (1 tsp)"],
     optional:["Hot sauce"] },
-  "Migas": { serves:3,
-    amounts:{"Tortilla": "3", "Eggs": "5", "Tomatoes": "1", "Onions": "½", "Jalapeño": "1", "Cheese": "½ cup shredded", "Cilantro": "a handful"},
-    staples:["Salt", "Cooking oil (2 tbsp)"] },
   "Banana Oat Pancakes": { serves:2,
     amounts:{"Oats": "1½ cups", "Bananas": "1 ripe", "Eggs": "2", "Milk": "½ cup", "Baking soda": "½ tsp", "Cinnamon": "½ tsp", "Maple syrup": "for serving"},
     staples:["Salt (a pinch)", "Butter for the pan"] },
@@ -3796,9 +3794,6 @@ const recipeDetails = {
   "Microwave Mug Omelette": { serves:1,
     amounts:{"Eggs": "2", "Milk": "1 tbsp", "Cheese": "2 tbsp shredded", "Bell peppers": "2 tbsp, diced", "Spinach": "a few leaves"},
     staples:["Salt", "Pepper", "Cooking spray or butter"] },
-  "Berry Yogurt Toast": { serves:1,
-    amounts:{"Bread": "1 thick slice", "Greek yogurt": "⅓ cup", "Blueberries": "¼ cup", "Honey": "1 tsp", "Cinnamon": "a pinch"},
-    staples:[] },
   "Homemade Turkey Breakfast Sausage": { serves:4,
     amounts:{"Turkey": "1 lb ground", "Maple syrup": "1 tbsp", "Garlic powder": "½ tsp", "Paprika": "½ tsp", "Red pepper flakes": "a pinch", "Eggs": "to serve", "Bread": "to serve"},
     staples:["Salt (1 tsp)", "Pepper (½ tsp)", "Cooking oil (1 tbsp)"] },
@@ -3974,9 +3969,6 @@ const recipeDetails = {
     amounts:{"Chicken breast": "1 lb", "Broccoli": "2 cups", "Carrots": "2", "Bell peppers": "1", "Soy sauce": "¼ cup", "Garlic": "2 cloves", "Cornstarch": "2 tsp", "Rice": "1 cup uncooked"},
     add:{"Honey": "1 tbsp"},
     staples:["Salt", "Cooking oil (2 tbsp)"] },
-  "Coconut Curry Shrimp": { serves:4,
-    amounts:{"Shrimp": "1 lb", "Coconut milk": "1 can (13.5 oz)", "Curry powder": "1½ tbsp", "Garlic": "2 cloves", "Spinach": "2 handfuls", "Lime": "1", "Rice": "1 cup uncooked"},
-    staples:["Salt", "Cooking oil (1 tbsp)"] },
   "Lemon Butter Chicken": { serves:4,
     amounts:{"Chicken breast": "2 large", "Butter": "3 tbsp", "Lemon": "1", "Garlic": "2 cloves", "Flour": "¼ cup", "Chicken broth": "½ cup", "Parsley": "2 tbsp"},
     staples:["Salt", "Pepper", "Cooking oil (1 tbsp)"] },
@@ -3991,9 +3983,6 @@ const recipeDetails = {
   "Pepper Steak": { serves:4,
     amounts:{"Steak": "1 lb", "Bell peppers": "2", "Onions": "1", "Soy sauce": "4 tbsp", "Cornstarch": "2 tsp", "Garlic": "2 cloves", "Ginger": "½ tsp", "Rice": "1 cup uncooked"},
     staples:["Cooking oil (2 tbsp)", "Sugar (a pinch)"] },
-  "Sausage Zucchini Boats": { serves:3,
-    amounts:{"Zucchini": "3", "Sausage": "½ lb", "Marinara sauce": "1 cup", "Mozzarella": "1 cup", "Parmesan": "2 tbsp"},
-    staples:[] },
   "30-Minute Turkey Chili": { serves:6,
     amounts:{"Turkey": "1 lb ground", "Beans": "2 cans", "Tomatoes": "3 (or one 14 oz can)", "Onions": "1", "Bell peppers": "1", "Cumin": "1 tbsp", "Corn": "1 cup", "Chicken broth": "1 cup"},
     staples:["Salt", "Cooking oil (1 tbsp)"],
@@ -5131,7 +5120,7 @@ const GH_LIKE_INGS = {
 };
 const GH_MEALS = [["breakfast","🥞 Breakfast"],["lunch","🥪 Lunch"],["dinner","🍽️ Dinner"]];
 
-let ghLikes = [];
+let ghLikes = [], ghMeals = ["breakfast","lunch","dinner"], ghRemoved = [];
 function ghVal(id, fallback){ const n = parseFloat(document.getElementById(id).value); return isFinite(n) && n > 0 ? n : fallback; }
 function ghStep(id, d){ const el = document.getElementById(id); el.value = Math.max(1, (parseInt(el.value)||0) + d); }
 function ghToggleLike(el, key){
@@ -5139,10 +5128,28 @@ function ghToggleLike(el, key){
   el.classList.toggle("selected", ghLikes.includes(key));
 }
 
+function ghToggleMeal(el, key){
+  ghMeals = ghMeals.includes(key) ? ghMeals.filter(k=>k!==key) : [...ghMeals, key];
+  el.classList.toggle("selected", ghMeals.includes(key));
+}
+// remove a dish from the plan (it won't be suggested again until brought back)
+function ghRemoveDish(i){
+  const n = recipes[i] && recipes[i].name; if(!n || ghRemoved.includes(n)) return;
+  ghRemoved.push(n); ghReplan();
+}
+function ghRestoreDish(i){ const n = recipes[i] && recipes[i].name; ghRemoved = ghRemoved.filter(x => x !== n); ghReplan(); }
+function ghRestoreAll(){ ghRemoved = []; ghReplan(); }
+function ghReplan(){   // re-run the plan but keep the screen where it is
+  const page = document.getElementById("grocery"), y = page.scrollTop;
+  runGrocery(true); page.scrollTop = y;
+}
+
 function openGrocery(from){
   window._ghBack = from === 'home' ? 'home' : 'products';
   let saved = {}; try{ saved = JSON.parse(storeGet("groceryHelper")||"{}")||{}; }catch(e){}
   ghLikes = Array.isArray(saved.likes) ? saved.likes : [];
+  ghMeals = Array.isArray(saved.meals) && saved.meals.length ? saved.meals : ["breakfast","lunch","dinner"];
+  ghRemoved = Array.isArray(saved.removed) ? saved.removed : [];
   const skip = saved.skipStaples !== false;
   document.getElementById("grocery").innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
@@ -5159,6 +5166,8 @@ function openGrocery(from){
         <div class="gh-row"><button class="gh-step" onclick="ghStep('ghDays',-1)">−</button>
         <input id="ghDays" class="searchInput" type="number" inputmode="numeric" min="1" value="${saved.days||7}">
         <button class="gh-step" onclick="ghStep('ghDays',1)">+</button></div></div>
+      <div class="gh-field"><label>🍽️ Which meals? <small>(tap to turn off)</small></label>
+        <div class="gh-meals">${GH_MEALS.map(([k,l]) => `<div class="item${ghMeals.includes(k)?" selected":""}" onclick="ghToggleMeal(this,'${k}')">${l}</div>`).join("")}</div></div>
       <div class="gh-field"><label>😋 What do you like? <small>(pick any)</small></label>
         <div class="gh-likes">${GH_LIKES.map(([k,l]) => `<div class="item${ghLikes.includes(k)?" selected":""}" onclick="ghToggleLike(this,'${k}')">${l}</div>`).join("")}</div></div>
       <label style="display:flex;gap:10px;align-items:flex-start;margin:12px 0 4px;font-size:14px;cursor:pointer;">
@@ -5215,7 +5224,7 @@ function ghCost(plan, days, people, skipSet, extras){
 }
 
 let ghList = [], ghPlan = null;
-function runGrocery(){
+function runGrocery(keepScroll){
   const people = Math.round(ghVal("ghPeople", 1));
   const days = Math.round(ghVal("ghDays", 1));
   const money = parseFloat(document.getElementById("ghMoney").value);
@@ -5225,7 +5234,11 @@ function runGrocery(){
     out.innerHTML = `<div class="card" style="text-align:center;color:#fbbf24;font-weight:700;">Enter how much money you have to spend.</div>`;
     return;
   }
-  storeSet("groceryHelper", JSON.stringify({people, money, days, likes: ghLikes, skipStaples}));
+  if(!ghMeals.length){
+    out.innerHTML = `<div class="card" style="text-align:center;color:#fbbf24;font-weight:700;">Turn on at least one meal (breakfast, lunch or dinner).</div>`;
+    return;
+  }
+  storeSet("groceryHelper", JSON.stringify({people, money, days, likes: ghLikes, skipStaples, meals: ghMeals, removed: ghRemoved}));
   const likes = ghLikes;
   const pantrySet = new Set(typeof selected !== "undefined" ? selected : []);
   const skipSet = new Set([...pantrySet, ...(skipStaples ? Object.keys(GH_INGREDIENTS).filter(i => GH_INGREDIENTS[i][4]) : [])]);
@@ -5238,7 +5251,8 @@ function runGrocery(){
 
   // which recipes are allowed, and how good a fit each one is
   const allowedFor = cat => {
-    const inCat = recipes.filter(r => r.category === cat);
+    if(!ghMeals.includes(cat)) return [];
+    const inCat = recipes.filter(r => r.category === cat && !ghRemoved.includes(r.name));
     let ok = inCat.filter(r => {
       const m = ghRecipeInfo(r).meats;
       if(vegOnly) return m.length === 0;
@@ -5308,7 +5322,7 @@ function runGrocery(){
       <div style="font-weight:800;font-size:17px;margin-bottom:6px;">📋 ${people} ${people===1?"person":"people"} · ${days} ${days===1?"day":"days"} · ${m2(money)}</div>
       <div class="gh-stats">
         <div class="gh-stat"><b>${m2(money/personDays)}</b><span>per person, per day</span></div>
-        <div class="gh-stat"><b>${personDays*3}</b><span>meals to cover</span></div>
+        <div class="gh-stat"><b>${personDays*ghMeals.length}</b><span>meals to cover</span></div>
         <div class="gh-stat"><b>${m2(total)}</b><span>estimated total</span></div>
         <div class="gh-stat"><b class="${over?"gh-over":"gh-ok"}">${over?"−"+m2(-left):m2(left)}</b><span>${over?"over budget":"left over"}</span></div>
       </div>
@@ -5316,12 +5330,18 @@ function runGrocery(){
     <div class="card">
       <div style="font-weight:800;margin-bottom:2px;">🍽️ Your meal plan</div>
       <div style="font-size:12px;opacity:.6;margin-bottom:6px;">Rusty Chef recipes — tap one to see how to make it.</div>
-      ${GH_MEALS.map(([c, label]) => `
+      ${GH_MEALS.filter(([c]) => plan[c].length).map(([c, label]) => `
         <div style="font-weight:700;color:#ff914d;margin:10px 0 4px;">${label}</div>
         ${plan[c].map(r => `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;" onclick="openRecipe(${recipes.indexOf(r)})">
             ${photoImg(r.name, "thumb small", 150)}
             <div style="flex:1;min-width:0;"><b>${r.name}</b><div style="font-size:12px;opacity:.6;">${timesCooked(c, r)}× in ${days} ${days===1?"day":"days"} · serves ${people}</div></div>
-            <span style="opacity:.5;">›</span></div>`).join("")}`).join("")}
+            <button class="gh-x" title="Remove this dish" aria-label="Remove ${r.name}" onclick="event.stopPropagation();ghRemoveDish(${recipes.indexOf(r)})">✕</button></div>`).join("")}`).join("")}
+      ${ghRemoved.length ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);font-size:13px;">
+        <b style="opacity:.8;">🚫 Removed</b> <small style="opacity:.55;">(won't be suggested)</small>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">${ghRemoved.map(n => { const i = recipes.findIndex(r => r.name === n);
+          return `<span class="gh-removed" onclick="ghRestoreDish(${i})">${n} ↩</span>`; }).join("")}</div>
+        <div onclick="ghRestoreAll()" style="margin-top:8px;text-decoration:underline;opacity:.6;cursor:pointer;">Bring them all back</div></div>` : ""}
+      <div style="font-size:12px;opacity:.5;margin-top:10px;">Tap ✕ to swap out a dish you don't want.</div>
     </div>
     <a class="btn" href="${ghCartUrl()}" target="_blank" onclick="ghList.forEach(x=>x.got=true);setTimeout(ghRenderList,300);" style="display:block;text-decoration:none;background:#0071ce;color:white;font-size:19px;padding:18px;box-shadow:0 6px 24px rgba(0,113,206,.45);">🛒 Add everything to my Walmart cart</a>
     <div style="text-align:center;opacity:.55;font-size:12px;margin:6px 0 10px;">One tap puts the whole list in your Walmart cart. If something is sold out at your store, use the one-at-a-time button below.</div>
@@ -5334,7 +5354,7 @@ function runGrocery(){
     <div class="btn btn-feedback" id="ghCopy" onclick="ghCopyList()">📋 Copy meal plan &amp; list</div>
     <div style="text-align:center;opacity:.45;font-size:11px;margin-top:10px;">Prices are rough estimates — Walmart prices vary by store.</div>`;
   ghRenderList();
-  out.scrollIntoView({behavior:"smooth", block:"start"});
+  if(!keepScroll) out.scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 function ghRenderList(){
@@ -5366,7 +5386,7 @@ function ghShopNext(){
 
 function ghCopyList(){
   let text = "🔥 The Rusty Chef meal plan\n";
-  if(ghPlan) GH_MEALS.forEach(([c, label]) => { text += `\n${label}: ` + ghPlan[c].map(r => r.name).join(", "); });
+  if(ghPlan) GH_MEALS.filter(([c]) => ghPlan[c].length).forEach(([c, label]) => { text += `\n${label}: ` + ghPlan[c].map(r => r.name).join(", "); });
   text += "\n\n🛒 Shopping list\n" + ghList.map(it => `• ${it.name} — ${it.units} × ${it.label}`).join("\n");
   const ok = () => { const b = document.getElementById("ghCopy"); if(b){ b.textContent = "✅ Copied!"; setTimeout(()=>b.innerHTML="📋 Copy meal plan &amp; list", 1800); } };
   try{ navigator.clipboard.writeText(text).then(ok, () => prompt("Copy your list:", text)); }catch(e){ prompt("Copy your list:", text); }
