@@ -5232,6 +5232,10 @@ function runGrocery(){
   const pickedMeats = likes.filter(k => ["chicken","beef","pork","fish"].includes(k));
   const vegOnly = likes.includes("veg") && !pickedMeats.length;
 
+  // no dish more than twice in any 7 days: each meal needs at least this many different dishes
+  // (the plan cycles through them, so with 4+ dishes a week never has the same one 3 times)
+  const minDistinct = Math.max(1, Math.ceil(Math.min(days, 7) / 2));
+
   // which recipes are allowed, and how good a fit each one is
   const allowedFor = cat => {
     const inCat = recipes.filter(r => r.category === cat);
@@ -5243,10 +5247,15 @@ function runGrocery(){
     });
     if(ok.length < 2) ok = vegOnly ? inCat.filter(r => !ghRecipeInfo(r).meats.length) : inCat;
     if(!ok.length) ok = inCat;
+    if(ok.length < minDistinct){   // not enough matching dishes: add the closest other ones
+      const more = (vegOnly ? inCat.filter(r => !ghRecipeInfo(r).meats.length) : inCat).filter(r => !ok.includes(r))
+        .sort((a, b) => ghLikeScore(b, likes) - ghLikeScore(a, likes));
+      ok = ok.concat(more.slice(0, minDistinct - ok.length));
+    }
     return ok.map(r => ({r, score: ghLikeScore(r, likes), cost: ghServingCost(r, skipSet)}));
   };
   const pools = {}; GH_MEALS.forEach(([c]) => pools[c] = allowedFor(c));
-  const k = Math.min(days, 4);
+  const k = Math.min(days, Math.max(4, minDistinct));
   const plan = {};
   GH_MEALS.forEach(([c]) => {
     plan[c] = pools[c].slice().sort((a,b) => (b.score - b.cost*0.6) - (a.score - a.cost*0.6)).slice(0, k).map(x => x.r);
@@ -5256,7 +5265,7 @@ function runGrocery(){
   if(likes.includes("snacks")) extras = extras.concat(GH_EXTRAS.snacks);
 
   // fit the budget, keeping the foods they like as long as possible:
-  // 1) drop snack extras  2) cook fewer different dishes (fewer things to buy)  3) swap to cheaper dishes, losing as little "like" as possible  4) one dish per meal
+  // 1) drop snack extras  2) cook fewer different dishes, but never below minDistinct  3) swap to cheaper dishes, losing as little "like" as possible
   const score = r => ghLikeScore(r, likes);
   const recost = () => ghCost(plan, days, people, skipSet, extras);
   let res = recost();
@@ -5267,7 +5276,7 @@ function runGrocery(){
     plan[c].sort((a,b) => (score(a) - ghServingCost(a, skipSet)) - (score(b) - ghServingCost(b, skipSet))).shift();
     res = recost(); return true;
   };
-  while(res.total > money && dropOne(2)){}
+  while(res.total > money && dropOne(minDistinct)){}
   for(let guard = 0; guard < 60 && res.total > money; guard++){
     let best = null;
     GH_MEALS.forEach(([c]) => plan[c].forEach((cur, idx) => {
@@ -5282,7 +5291,7 @@ function runGrocery(){
       });
     }));
     if(best){ plan[best.c][best.idx] = best.r; res = recost(); continue; }
-    if(!dropOne(1)) break;
+    break;
   }
 
   ghPlan = plan;
@@ -5320,7 +5329,7 @@ function runGrocery(){
     <div class="card" id="ghListBox"></div>
     ${inPantry.length ? `<div class="card" style="font-size:13px;line-height:1.5;">🧺 <b>Already in your Pantry</b> (left off the list): ${inPantry.join(", ")}</div>` : ""}
     ${skippedStaples.length ? `<div class="card" style="font-size:13px;line-height:1.5;opacity:.85;">🧂 <b>Basics you said you have</b> (left off the list): ${skippedStaples.join(", ")}</div>` : ""}
-    ${over ? `<div class="card" style="color:#fbbf24;font-size:14px;line-height:1.5;">⚠️ This is the cheapest plan the helper could find and it's still about ${m2(-left)} over. Try fewer days, add things you already have to your 🧺 Pantry, or pick fewer likes.</div>`
+    ${over ? `<div class="card" style="color:#fbbf24;font-size:14px;line-height:1.5;">⚠️ This is the cheapest plan the helper could find and it's still about ${m2(-left)} over. To keep things interesting, no meal repeats more than twice a week. Try fewer days, add things you already have to your 🧺 Pantry, or pick fewer likes.</div>`
            : left >= 5 ? `<div class="card" style="font-size:14px;line-height:1.5;">💡 You have about ${m2(left)} extra — grab drinks, snacks, or a treat.</div>` : ""}
     <div class="btn btn-feedback" id="ghCopy" onclick="ghCopyList()">📋 Copy meal plan &amp; list</div>
     <div style="text-align:center;opacity:.45;font-size:11px;margin-top:10px;">Prices are rough estimates — Walmart prices vary by store.</div>`;
