@@ -520,13 +520,16 @@ margin-bottom:12px;
 #videoPop[hidden]{display:none !important;}   /* closed = gone, never blocks the page */
 #videoPop:not(.on){pointer-events:none;}
 #videoPop.on{opacity:1;}
-#videoPop .vp-yt{display:block;margin:10px 0 0;padding:11px;border-radius:10px;background:#ff0000;color:#fff;
-  font-weight:800;font-size:15px;text-align:center;text-decoration:none;}
+#videoPop .vp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+#videoPop .vp-yt,#videoPop .vp-snd{display:block;padding:11px 6px;border-radius:10px;border:0;cursor:pointer;
+  font-weight:800;font-size:15px;text-align:center;text-decoration:none;font-family:inherit;}
+#videoPop .vp-yt{background:#ff0000;color:#fff;}
+
 #videoPop .vp-box{position:relative;width:min(560px,100%);background:#141414;border:1px solid rgba(255,145,77,.5);
   border-radius:16px;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
 #videoPop .vp-title{font-weight:900;color:#ff914d;font-size:16px;margin:2px 48px 10px 4px;}
 #videoPop .vp-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000;}
-#videoPop.tall .vp-box{width:min(380px,100%,calc((100dvh - 270px) * 9 / 16 + 24px));}
+#videoPop.tall .vp-box{width:min(380px,100%,calc((100dvh - 245px) * 9 / 16 + 24px));}
 #videoPop.tall .vp-frame{aspect-ratio:9/16;}
 #menuWrap{z-index:2100 !important;}   /* menu button stays on top of the video pop-up */
 #videoPop iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
@@ -595,8 +598,7 @@ margin-bottom:12px;
     <div class="vp-title">🔥 Welcome to The Rusty Chef</div>
     <button class="vp-x" onclick="closeVideoPop()" aria-label="Close video">✕</button>
     <div class="vp-frame" id="vpFrame"></div>
-    <a class="vp-yt" id="vpYT" href="#" target="_blank" rel="noopener" onclick="closeVideoPop()">▶ Watch on YouTube</a>
-    <button class="vp-later" onclick="closeVideoPop(true)">Don't show this again</button>
+    <a class="vp-yt" id="vpYT" href="#" target="_blank" rel="noopener" onclick="closeVideoPop()" style="margin-top:10px;">▶ Watch on YouTube</a>
   </div>
 </div>
 <!-- Menu - on every page (replaces the bottom tab bar) -->
@@ -4830,7 +4832,8 @@ function openVideoPop(){
   const id = ytId(HOME_VIDEO); if(!id) return;
   const pop = document.getElementById("videoPop");
   document.getElementById("vpFrame").innerHTML =
-    '<iframe src="https://www.youtube-nocookie.com/embed/' + id + '?rel=0&playsinline=1" title="The Rusty Chef video" ' +
+    '<iframe id="vpIframe" onload="ytUnmuteSoon()" src="https://www.youtube.com/embed/' + id +
+    '?rel=0&playsinline=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin) + '" title="The Rusty Chef video" ' +
     'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
   document.getElementById("vpYT").href = (/\/shorts\//.test(HOME_VIDEO) ? "https://www.youtube.com/shorts/" : "https://www.youtube.com/watch?v=") + id;
   pop.classList.toggle("tall", /\/shorts\//.test(HOME_VIDEO));   // Shorts are vertical
@@ -4840,17 +4843,37 @@ function closeVideoPop(forever){
   const pop = document.getElementById("videoPop"); if(!pop || pop.hidden) return;
   pop.classList.remove("on");
   setTimeout(() => { pop.hidden = true; document.getElementById("vpFrame").innerHTML = ""; }, 250); // stops the video
-  storeSet("videoPopSeen", forever ? "never" : String(Date.now()));
 }
+// talk to the YouTube player: Shorts can start muted, so turn the sound on
+function ytSend(func, args){
+  const f = document.getElementById("vpIframe"); if(!f || !f.contentWindow) return;
+  f.contentWindow.postMessage(JSON.stringify({event: "command", func: func, args: args || []}), "*");
+}
+function ytSoundOn(){ ytSend("unMute"); ytSend("setVolume", [100]); }
+function ytUnmuteSoon(){
+  const f = document.getElementById("vpIframe"); if(!f) return;
+  // ask the player to tell us when it starts playing, so we can turn the sound on right then
+  f.contentWindow.postMessage(JSON.stringify({event: "listening", id: "vpIframe"}), "*");
+  ytSend("addEventListener", ["onStateChange"]);
+  [300, 1000, 2500].forEach(t => setTimeout(ytSoundOn, t));
+}
+window.addEventListener("message", e => {
+  if(!/youtube\.com$/.test(new URL(e.origin || "http://x").hostname)) return;
+  let d; try{ d = typeof e.data === "string" ? JSON.parse(e.data) : e.data; }catch(err){ return; }
+  if(!d) return;
+  const playing = (d.event === "onStateChange" && d.info === 1) || (d.info && d.info.playerState === 1);
+  const muted = d.info && d.info.muted === true;
+  if(playing || muted) ytSoundOn();      // the moment it plays (or if YouTube muted it), sound on
+});
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeVideoPop(); });
 (function(){ const go = window.menuGo; if(typeof go === "function") window.menuGo = function(fn, arg){ closeVideoPop(); return go(fn, arg); }; })();
-window.addEventListener("load", () => {
-  const seen = storeGet("videoPopSeen");
-  if(seen === "never") return;
-  if(seen && Date.now() - Number(seen) < 24 * 60 * 60 * 1000) return;   // once a day at most
+// shows every time someone opens the site (on the front page)
+function startVideoPop(){
   const active = (document.querySelector(".page.active") || {}).id;
-  if(active === "home") setTimeout(openVideoPop, 800);
-});
+  if(active === "home") setTimeout(openVideoPop, 600);
+}
+if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", startVideoPop);
+else startVideoPop();
 </script>
 <script>
 /* ================= START ================= */
