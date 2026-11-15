@@ -78,4 +78,8 @@ window.RC_WALMART = {
   "ramen": { id: "", qty: 1, search: "Instant ramen" },
   "breadcrumbs": { id: "", qty: 1, search: "Breadcrumbs" },
   "sour-cream": { id: "", qty: 1, search: "Sour cream" },
+  "ham": { id: "", qty: 1, search: "Sliced ham" },
+  "celery": { id: "", qty: 1, search: "Celery" },
+  "bell-pepper": { id: "", qty: 1, search: "Bell peppers" },
+  "sausage": { id: "", qty: 1, search: "Pepperoni" },
 };
