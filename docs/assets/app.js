@@ -170,16 +170,16 @@
   // Finds times in the steps ("8 to 10 minutes", "30 seconds") and adds a tap-to-start timer.
   var steps = document.querySelectorAll(".steps li");
   if (steps.length) {
-    var TIME_RE = /(\d+)(?:\s*(?:to|-|–)\s*(\d+))?\s*(seconds?|secs?|minutes?|mins?|hours?|hrs?)\b/gi;
+    var TIME_RE = /(\d+)(\s*(?:½|1\/2))?(?:\s*(?:to|-|–)\s*(\d+))?\s*(seconds?|secs?|minutes?|mins?|hours?|hrs?)\b/gi;
     var unitSecs = function (u) { u = u.toLowerCase(); return u[0] === "s" ? 1 : u[0] === "h" ? 3600 : 60; };
     var short = function (u) { u = u.toLowerCase(); return u[0] === "s" ? "sec" : u[0] === "h" ? "hr" : "min"; };
     var found = 0;
     steps.forEach(function (li, i) {
-      li.innerHTML = li.innerHTML.replace(TIME_RE, function (m, a, b, u) {
-        var secs = parseInt(a, 10) * unitSecs(u);
+      li.innerHTML = li.innerHTML.replace(TIME_RE, function (m, a, half, b, u) {
+        var secs = Math.round((parseInt(a, 10) + (half ? 0.5 : 0)) * unitSecs(u));
         if (!secs || secs > 12 * 3600) return m;
         found++;
-        var label = a + (b ? "–" + b : "") + " " + short(u);
+        var label = a + (half ? "½" : "") + (b ? "–" + b : "") + " " + short(u);
         return m + ' <button type="button" class="timer-chip" data-secs="' + secs + '" data-step="' + (i + 1) +
           '" data-label="' + label + '" aria-label="Start ' + label + ' timer for step ' + (i + 1) + '">&#9201; ' + label + "</button>";
       });

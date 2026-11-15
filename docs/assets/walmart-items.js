@@ -74,4 +74,8 @@ window.RC_WALMART = {
   "ravioli": { id: "", qty: 1, search: "Frozen ravioli" },
   "tahini": { id: "", qty: 1, search: "Tahini" },
   "raisins": { id: "", qty: 1, search: "Raisins" },
+  "chicken": { id: "", qty: 1, search: "Chicken thighs" },
+  "ramen": { id: "", qty: 1, search: "Instant ramen" },
+  "breadcrumbs": { id: "", qty: 1, search: "Breadcrumbs" },
+  "sour-cream": { id: "", qty: 1, search: "Sour cream" },
 };
