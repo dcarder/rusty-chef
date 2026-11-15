@@ -223,3 +223,13 @@ body:has(.timer-dock:not([hidden])) .toast{bottom:84px}
 .shop-page{max-width:600px;margin:0 auto}
 .product{grid-template-columns:1fr !important;gap:18px}
 .product-photo img{max-height:70vh;width:100%;object-fit:contain;background:#2b2522}
+
+/* Homepage shop promo */
+.shop-promo{display:flex;align-items:center;gap:16px;background:#2b2522;color:#fff;text-decoration:none;border-radius:14px;padding:14px 18px;margin:24px 0 8px;
+  box-shadow:0 6px 18px rgba(0,0,0,.15);font-family:var(--sans)}
+.shop-promo:hover{color:#fff;background:#3a302b}
+.shop-promo img{width:70px;height:92px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.shop-promo-text{flex:1;font-size:.98rem;line-height:1.45;color:#f3e9e0}
+.shop-promo-text strong{display:block;font-size:1.2rem;color:#fff;margin-bottom:2px}
+.shop-promo-btn{background:var(--rust);color:#fff;font-weight:700;padding:10px 16px;border-radius:8px;white-space:nowrap}
+@media (max-width:520px){.shop-promo{flex-wrap:wrap}.shop-promo-btn{width:100%;text-align:center}}
