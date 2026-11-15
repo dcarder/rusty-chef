@@ -82,4 +82,8 @@ window.RC_WALMART = {
   "celery": { id: "", qty: 1, search: "Celery" },
   "bell-pepper": { id: "", qty: 1, search: "Bell peppers" },
   "sausage": { id: "", qty: 1, search: "Pepperoni" },
+  "orange-juice": { id: "", qty: 1, search: "Orange juice" },
+  "tortilla-chips": { id: "", qty: 1, search: "Tortilla chips" },
+  "ginger": { id: "", qty: 1, search: "Ground ginger" },
+  "ground-beef": { id: "", qty: 1, search: "Ground beef" },
 };
