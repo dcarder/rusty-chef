@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /saved.html
+
+Sitemap: https://therustychef.com/sitemap.xml

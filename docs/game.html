@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Burger Stack: The Rusty Chef Game</title>
+  <meta name="description" content="Play Burger Stack, a free burger-building platform game starring The Rusty Chef.">
+  <link rel="canonical" href="https://therustychef.com/game.html">
+  <meta name="google-adsense-account" content="ca-pub-5541633299003878">
+  <meta property="og:title" content="Burger Stack: The Rusty Chef Game">
+  <meta property="og:description" content="Play Burger Stack, a free burger-building platform game starring The Rusty Chef.">
+  <meta property="og:url" content="https://therustychef.com/game.html">
+  <meta property="og:site_name" content="The Rusty Chef">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://therustychef.com/copilot_image_1777179019874-1.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css">
+  <!-- Google Analytics (only counts visits on therustychef.com, not test copies) -->
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}(function(){if(!/(^|\.)therustychef\.com$/i.test(location.hostname))return;var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id=G-HQW1J6XPPS";document.head.appendChild(s);gtag("js",new Date());gtag("config","G-HQW1J6XPPS");})();</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="/">The <span>Rusty</span> Chef</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">&#9776; Menu</button>
+      <nav class="site-nav" id="site-nav" aria-label="Main"><ul><li><a href="/">Home</a></li><li><a href="/recipes/">Recipes</a></li><li><a href="/pantry.html">Pantry Tool</a></li><li><a href="/saved.html">Saved</a></li><li><a href="/products.html">Kitchen Essentials</a></li><li><a href="/game.html" aria-current="page">Game</a></li><li><a href="/about.html">About</a></li></ul></nav>
+    </div>
+  </header>
+
+  <main class="wide game-page">
+    <h1>Burger Stack: The Rusty Chef Game</h1>
+    <p class="lede">Help our rusty robot chef build burgers while dodging kitchen pests.</p>
+    <div class="game-wrap">
+      <canvas id="game" aria-label="Burger Stack game" role="img"></canvas>
+      <div class="game-controls">
+        <div class="dpad">
+          <button class="pad up" data-pad="up" aria-label="Up">&#9650;</button>
+          <button class="pad left" data-pad="left" aria-label="Left">&#9664;</button>
+          <button class="pad right" data-pad="right" aria-label="Right">&#9654;</button>
+          <button class="pad down" data-pad="down" aria-label="Down">&#9660;</button>
+        </div>
+        <div class="game-side">
+          <button class="spray-btn" id="g-spray" aria-label="Spray oil">OIL<br>SPRAY</button>
+          <button class="btn" id="g-start">Start</button>
+          <button class="btn btn-ghost" id="g-mute">Sound: on</button>
+        </div>
+      </div>
+    </div>
+    <section class="how">
+      <h2>How to play</h2>
+      <ul>
+        <li><strong>Build the burgers:</strong> walk across every part of a bun, patty, cheese, lettuce or tomato slice to knock it down a level. Get every piece onto the plates at the bottom to finish the level.</li>
+        <li><strong>Chain drops:</strong> a falling piece knocks down the piece below it.</li>
+        <li><strong>Squash pests:</strong> drop a piece on the grease blob, rogue fork or angry onion for 500 points.</li>
+        <li><strong>Oil spray:</strong> stuns pests in front of you for a few seconds. You get one extra can each level.</li>
+        <li><strong>Controls:</strong> use the arrow buttons and OIL SPRAY on your phone, or the arrow keys (or WASD) and the space bar on a keyboard. Press Enter or P to pause.</li>
+      </ul>
+    </section>
+    <p>Hungry after all that? <a href="/recipes/">Find something real to cook</a>.</p>
+  </main>
+  <footer class="site-footer">
+    <ul>
+      <li><a href="/recipes/">All Recipes</a></li>
+      <li><a href="/pantry.html">Pantry Tool</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/contact.html">Contact</a></li>
+      <li><a href="/privacy.html">Privacy Policy</a></li>
+    </ul>
+    <p>&copy; 2026 The Rusty Chef &middot; No taste buds required.</p>
+  </footer>
+  <script src="/assets/app.js"></script>
+  <script src="/assets/game.js"></script>
+</body>
+</html>

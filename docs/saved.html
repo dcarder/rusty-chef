@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saved Recipes | The Rusty Chef</title>
+  <meta name="description" content="Your saved recipes.">
+  <link rel="canonical" href="https://therustychef.com/saved.html">
+  <meta name="robots" content="noindex, follow">
+  <meta name="google-adsense-account" content="ca-pub-5541633299003878">
+  <meta property="og:title" content="Saved Recipes | The Rusty Chef">
+  <meta property="og:description" content="Your saved recipes.">
+  <meta property="og:url" content="https://therustychef.com/saved.html">
+  <meta property="og:site_name" content="The Rusty Chef">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://therustychef.com/copilot_image_1777179019874-1.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css">
+  <!-- Google Analytics (only counts visits on therustychef.com, not test copies) -->
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}(function(){if(!/(^|\.)therustychef\.com$/i.test(location.hostname))return;var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id=G-HQW1J6XPPS";document.head.appendChild(s);gtag("js",new Date());gtag("config","G-HQW1J6XPPS");})();</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="/">The <span>Rusty</span> Chef</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">&#9776; Menu</button>
+      <nav class="site-nav" id="site-nav" aria-label="Main"><ul><li><a href="/">Home</a></li><li><a href="/recipes/">Recipes</a></li><li><a href="/pantry.html">Pantry Tool</a></li><li><a href="/saved.html" aria-current="page">Saved</a></li><li><a href="/products.html">Kitchen Essentials</a></li><li><a href="/game.html">Game</a></li><li><a href="/about.html">About</a></li></ul></nav>
+    </div>
+  </header>
+
+  <main class="wide">
+    <h1>Saved Recipes</h1>
+    <p class="lede">Recipes you've saved on this device.</p>
+    <div id="saved-list"></div>
+  </main>
+  <footer class="site-footer">
+    <ul>
+      <li><a href="/recipes/">All Recipes</a></li>
+      <li><a href="/pantry.html">Pantry Tool</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/contact.html">Contact</a></li>
+      <li><a href="/privacy.html">Privacy Policy</a></li>
+    </ul>
+    <p>&copy; 2026 The Rusty Chef &middot; No taste buds required.</p>
+  </footer>
+  <script src="/assets/app.js"></script>
+  <script src="/assets/recipes-data.js"></script>
+  <script>RC.initSaved();</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+/* ================================================================
+   WALMART ITEM IDS  -  powers the 'Order at Walmart' buttons
+   ================================================================
+   For each ingredient, find the product you'd buy on walmart.com.
+   Its URL looks like:  https://www.walmart.com/ip/Product-Name/123456789
+   The number at the end is the item ID. Paste it between the quotes.
+   qty = how many to add to the cart.
+   Ingredients left blank still work: the button shows a Walmart search link for them.
+
+   OPTIONAL - earn commission: join the Walmart Creator/Affiliate program and paste
+   your tracking link prefix into affiliatePrefix, e.g.
+   'https://goto.walmart.com/c/1234567/565706/9383?u='
+   ================================================================ */
+window.RC_WALMART_CONFIG = { affiliatePrefix: "" };
+window.RC_WALMART = {
+  "rice": { id: "", qty: 1, search: "Rice" },
+  "pasta": { id: "", qty: 1, search: "Pasta / noodles" },
+  "flour": { id: "", qty: 1, search: "Flour" },
+  "bread": { id: "", qty: 1, search: "Bread / buns" },
+  "tortillas": { id: "", qty: 1, search: "Tortillas" },
+  "lentils": { id: "", qty: 1, search: "Dried lentils" },
+  "chickpeas": { id: "", qty: 1, search: "Canned chickpeas" },
+  "black-beans": { id: "", qty: 1, search: "Canned black beans" },
+  "canned-tomatoes": { id: "", qty: 1, search: "Canned tomatoes" },
+  "coconut-milk": { id: "", qty: 1, search: "Coconut milk" },
+  "stock": { id: "", qty: 1, search: "Stock / broth" },
+  "peanut-butter": { id: "", qty: 1, search: "Peanut butter" },
+  "salsa": { id: "", qty: 1, search: "Salsa" },
+  "eggs": { id: "", qty: 1, search: "Eggs" },
+  "butter": { id: "", qty: 1, search: "Butter" },
+  "milk": { id: "", qty: 1, search: "Milk / cream" },
+  "yogurt": { id: "", qty: 1, search: "Plain yogurt" },
+  "cheese": { id: "", qty: 1, search: "Cheese" },
+  "parmesan": { id: "", qty: 1, search: "Parmesan" },
+  "frozen-veg": { id: "", qty: 1, search: "Frozen vegetables" },
+  "spinach": { id: "", qty: 1, search: "Spinach" },
+  "green-onion": { id: "", qty: 1, search: "Green onions" },
+  "parsley": { id: "", qty: 1, search: "Parsley" },
+  "onion": { id: "", qty: 1, search: "Onion" },
+  "garlic": { id: "", qty: 1, search: "Garlic" },
+  "oil": { id: "", qty: 1, search: "Cooking oil" },
+  "olive-oil": { id: "", qty: 1, search: "Olive oil" },
+  "sesame-oil": { id: "", qty: 1, search: "Sesame oil" },
+  "soy-sauce": { id: "", qty: 1, search: "Soy sauce" },
+  "vinegar": { id: "", qty: 1, search: "Vinegar / lime" },
+  "ketchup": { id: "", qty: 1, search: "Ketchup" },
+  "mustard": { id: "", qty: 1, search: "Mustard" },
+  "honey": { id: "", qty: 1, search: "Honey" },
+  "salt": { id: "", qty: 1, search: "Salt" },
+  "sugar": { id: "", qty: 1, search: "Sugar" },
+  "curry-powder": { id: "", qty: 1, search: "Curry powder" },
+  "cumin": { id: "", qty: 1, search: "Cumin" },
+  "chili-powder": { id: "", qty: 1, search: "Chili powder" },
+  "chili-flakes": { id: "", qty: 1, search: "Chili flakes" },
+  "baking-powder": { id: "", qty: 1, search: "Baking powder" },
+  "cornstarch": { id: "", qty: 1, search: "Cornstarch" },
+  "carrot": { id: "", qty: 1, search: "Carrots" },
+  "dried-herbs": { id: "", qty: 1, search: "Dried Italian herbs" },
+  "canned-tuna": { id: "", qty: 1, search: "Canned tuna" },
+  "mayo": { id: "", qty: 1, search: "Mayonnaise" },
+  "oats": { id: "", qty: 1, search: "Rolled oats" },
+  "banana": { id: "", qty: 1, search: "Bananas" },
+  "cinnamon": { id: "", qty: 1, search: "Cinnamon" },
+  "potatoes": { id: "", qty: 1, search: "Potatoes" },
+  "sweet-potato": { id: "", qty: 1, search: "Sweet potatoes" },
+  "cocoa": { id: "", qty: 1, search: "Cocoa powder" },
+  "cornmeal": { id: "", qty: 1, search: "Cornmeal" },
+  "olives": { id: "", qty: 1, search: "Olives" },
+  "capers": { id: "", qty: 1, search: "Capers" },
+  "white-beans": { id: "", qty: 1, search: "Canned white beans" },
+  "kidney-beans": { id: "", qty: 1, search: "Canned kidney beans" },
+  "paprika": { id: "", qty: 1, search: "Paprika" },
+  "cabbage": { id: "", qty: 1, search: "Cabbage" },
+  "ravioli": { id: "", qty: 1, search: "Frozen ravioli" },
+  "tahini": { id: "", qty: 1, search: "Tahini" },
+  "raisins": { id: "", qty: 1, search: "Raisins" },
+};
