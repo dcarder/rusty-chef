@@ -23,6 +23,18 @@
     clearTimeout(toastEl._t); toastEl._t = setTimeout(function () { toastEl.classList.remove("show"); }, 1800);
   }
 
+  // ---------- cookie settings link (opens Google's consent message again) ----------
+  document.querySelectorAll("[data-consent-settings]").forEach(function (link) {
+    link.addEventListener("click", function (ev) {
+      var fc = window.googlefc;
+      if (fc && typeof fc.showRevocationMessage === "function") {
+        ev.preventDefault();
+        fc.callbackQueue = fc.callbackQueue || [];
+        fc.callbackQueue.push(fc.showRevocationMessage);
+      }
+    });
+  });
+
   // ---------- mobile menu ----------
   var toggle = document.querySelector(".menu-toggle"), nav = document.getElementById("site-nav");
   if (toggle && nav) toggle.addEventListener("click", function () {
