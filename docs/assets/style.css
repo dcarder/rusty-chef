@@ -232,4 +232,6 @@ body:has(.timer-dock:not([hidden])) .toast{bottom:84px}
 .shop-promo-text{flex:1;font-size:.98rem;line-height:1.45;color:#f3e9e0}
 .shop-promo-text strong{display:block;font-size:1.2rem;color:#fff;margin-bottom:2px}
 .shop-promo-btn{background:var(--rust);color:#fff;font-weight:700;padding:10px 16px;border-radius:8px;white-space:nowrap}
-@media (max-width:520px){.shop-promo{flex-wrap:wrap}.shop-promo-btn{width:100%;text-align:center}}
+/* same portrait layout on phones and computers */
+.shop-promo{flex-wrap:wrap;max-width:560px;margin-left:auto;margin-right:auto}
+.shop-promo-btn{width:100%;text-align:center;box-sizing:border-box}
