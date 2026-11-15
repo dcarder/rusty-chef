@@ -218,3 +218,8 @@ body:has(.timer-dock:not([hidden])) .toast{bottom:84px}
 .honey{position:absolute!important;left:-9999px!important;width:1px;height:1px}
 .order-done{background:#eaf6ea;border-radius:12px;padding:14px 16px;margin:12px 0;font-family:var(--sans)}
 .order-done-title{margin:0 0 6px;font-size:1.3rem;font-weight:800;color:#2f7d32}
+
+/* Shop: portrait layout (one column, photo on top) on phones and computers */
+.shop-page{max-width:600px;margin:0 auto}
+.product{grid-template-columns:1fr !important;gap:18px}
+.product-photo img{max-height:70vh;width:100%;object-fit:contain;background:#2b2522}
