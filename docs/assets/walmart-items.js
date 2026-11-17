@@ -86,4 +86,6 @@ window.RC_WALMART = {
   "tortilla-chips": { id: "", qty: 1, search: "Tortilla chips" },
   "ginger": { id: "", qty: 1, search: "Ground ginger" },
   "ground-beef": { id: "", qty: 1, search: "Ground beef" },
+  "cream-cheese": { id: "", qty: 1, search: "Cream cheese" },
+  "corn": { id: "", qty: 1, search: "Canned or frozen corn" }
 };
