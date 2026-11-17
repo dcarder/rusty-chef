@@ -87,5 +87,6 @@ window.RC_WALMART = {
   "ginger": { id: "", qty: 1, search: "Ground ginger" },
   "ground-beef": { id: "", qty: 1, search: "Ground beef" },
   "cream-cheese": { id: "", qty: 1, search: "Cream cheese" },
-  "corn": { id: "", qty: 1, search: "Canned or frozen corn" }
+  "corn": { id: "", qty: 1, search: "Canned or frozen corn" },
+  "bacon": { id: "", qty: 1, search: "Bacon" }
 };
