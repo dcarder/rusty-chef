@@ -23,6 +23,7 @@
   // Order matters: more specific phrases come first and "use up" the text,
   // so "peanut butter" isn't also counted as "butter", etc.
   var WORDS = [
+    [null, ["zero sugar", "sugar free", "no sugar", "no added sugar", "low sodium", "no salt", "salt free", "fat free", "oil free"]], // labels, not ingredients
     ["peanut-butter", ["peanut butter", "jif", "skippy"]],
     ["tortilla-chips", ["tortilla chips", "tostitos", "corn chips"]],
     ["coconut-milk", ["coconut milk", "coconut cream"]],
@@ -104,6 +105,37 @@
     "french loaf": "bread", "bagel": "bread", "broccoli": "frozen-veg"
   };
 
+  // Common things that aren't recipe ingredients - Rusty still names them.
+  var EXTRAS = [
+    ["Pepsi (soda)", ["pepsi"]], ["Coca-Cola (soda)", ["coca cola", "coke"]], ["Sprite (soda)", ["sprite"]],
+    ["Mountain Dew (soda)", ["mountain dew", "mtn dew"]], ["Dr Pepper (soda)", ["dr pepper"]], ["Fanta (soda)", ["fanta"]],
+    ["Gatorade", ["gatorade"]], ["Red Bull", ["red bull"]], ["Monster Energy", ["monster"]],
+    ["Soda", ["soda", "cola", "diet", "zero sugar", "caffeine free"]], ["Water", ["spring water", "water"]],
+    ["Coffee", ["coffee", "folgers", "maxwell house", "starbucks", "k cup"]], ["Tea", ["tea", "lipton"]],
+    ["Juice", ["juice"]], ["Beer", ["beer", "lager"]], ["Wine", ["wine"]],
+    ["Cereal", ["cereal", "cheerios", "frosted flakes", "corn flakes", "froot loops", "lucky charms", "cinnamon toast crunch", "raisin bran", "kelloggs", "general mills"]],
+    ["Chips", ["chips", "doritos", "lays", "pringles", "cheetos", "fritos", "ruffles"]],
+    ["Cookies", ["cookies", "oreo", "chips ahoy", "nutter butter"]], ["Crackers", ["crackers", "ritz", "goldfish", "cheez it", "triscuit", "saltines"]],
+    ["Popcorn", ["popcorn"]], ["Granola bars", ["granola", "nature valley", "clif"]], ["Candy", ["candy", "skittles", "m ms", "snickers", "reeses", "hershey"]],
+    ["Soup", ["soup", "campbells", "progresso"]], ["Mac and cheese box", ["kraft", "easy mac"]], ["Baked beans", ["baked beans", "bushs"]],
+    ["Corn (canned)", ["whole kernel", "golden corn", "cream style"]], ["Applesauce", ["applesauce", "apple sauce"]], ["Jelly / jam", ["jelly", "jam", "preserves", "smuckers"]],
+    ["Syrup", ["syrup", "maple"]], ["Vanilla extract", ["vanilla"]], ["Pickles", ["pickles", "pickle"]], ["Hot sauce", ["hot sauce", "tabasco", "sriracha", "franks"]],
+    ["BBQ sauce", ["bbq", "barbecue"]], ["Ranch dressing", ["ranch"]], ["Salad dressing", ["dressing", "vinaigrette"]], ["Nutella", ["nutella"]]
+  ];
+  function matchExtras(text) {
+    var t = norm(text), out = [];
+    EXTRAS.forEach(function (e) {
+      e[1].forEach(function (w) {
+        var needle = " " + w + " ", idx;
+        while ((idx = t.indexOf(needle)) !== -1) {
+          if (out.indexOf(e[0]) === -1) out.push(e[0]);
+          t = t.slice(0, idx) + " " + t.slice(idx + needle.length);
+        }
+      });
+    });
+    return out;
+  }
+
   // ---------- helpers ----------
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
@@ -146,8 +178,9 @@
           t = toks.join(" ");
         }
       });
-      if (hit) found.push(key);
+      if (hit && key) found.push(key);
     });
+    matchText.rest = t; // text left over after ingredient words are used up
     return found;
   }
 
@@ -243,10 +276,17 @@
           .map(function (l) { return l.text; }).join(" \n ");
         var all = lines.map(function (l) { return l.text; }).join(" \n ");
         var sure = matchText(big), maybe = matchText(all).filter(function (k) { return sure.indexOf(k) === -1; });
+        matchText(big); var extras = matchExtras(matchText.rest);
+        // Biggest readable words on the photo, shown so you always see what Rusty read.
+        var labelText = lines.filter(function (l) { return (l.bbox.y1 - l.bbox.y0) >= ref * 0.6; })
+          .map(function (l) { return l.text.replace(/[^A-Za-z0-9&' -]+/g, " ").replace(/\s+/g, " ").trim(); })
+          .filter(function (x) { return /[a-z]{3}/i.test(x); }).slice(0, 3).join(" / ");
+        var guess = "";
 
         status("&#128064; Looking at shapes&hellip;");
         return getVision().then(function (m) { return m.classify(canvas, 5); }).catch(function () { return []; })
           .then(function (preds) {
+            if (preds[0] && preds[0].probability >= 0.25) guess = String(preds[0].className).split(",")[0];
             preds.forEach(function (p) {
               var name = String(p.className).toLowerCase(), key = null;
               Object.keys(VISION).forEach(function (v) { if (name.split(", ").indexOf(v) !== -1) key = VISION[v]; });
@@ -254,7 +294,7 @@
               if (p.probability >= 0.3 && sure.indexOf(key) === -1) { sure.push(key); maybe = maybe.filter(function (k) { return k !== key; }); }
               else if (p.probability >= 0.1 && sure.indexOf(key) === -1 && maybe.indexOf(key) === -1) maybe.push(key);
             });
-            show(preview, sure, maybe);
+            show(preview, sure, maybe, extras, labelText, guess);
           });
       }).catch(function (err) {
         status("&#9888;&#65039; " + esc(err && err.message ? err.message : "Something went wrong.") +
@@ -267,17 +307,25 @@
         esc(labels[k] || k) + "</label>";
     }
 
-    function show(preview, sure, maybe) {
+    function show(preview, sure, maybe, extras, labelText, guess) {
       status("");
       var html = '<div class="scan-card"><img class="scan-thumb" src="' + preview + '" alt="Your photo">' + '<div class="scan-found">';
+      var other = "";
+      if (extras.length) other += "<h3>" + (sure.length ? "Rusty also sees:" : "Rusty sees:") + '</h3><div class="scan-chips">' +
+        extras.map(function (x) { return '<span class="scan-chip scan-chip-info">' + esc(x) + "</span>"; }).join("") + "</div>" +
+        '<p class="scan-maybe-h">' + (extras.length > 1 ? "These aren't" : "That isn't") + " used in any of our recipes, so there's nothing to tick.</p>";
+      else if (!sure.length && !maybe.length && (labelText || guess)) other += "<h3>Rusty isn't sure what this is.</h3>" +
+        (labelText ? '<p class="scan-maybe-h">The label seems to say: <strong>&ldquo;' + esc(labelText) + "&rdquo;</strong></p>" : "") +
+        (guess ? '<p class="scan-maybe-h">It looks a bit like: <strong>' + esc(guess) + "</strong></p>" : "");
       if (!sure.length && !maybe.length) {
-        html += "<h3>Hmm, Rusty couldn't make anything out.</h3>" +
+        html += other || ("<h3>Hmm, Rusty couldn't make anything out.</h3>" +
           '<p class="muted">Try again closer up, with the label facing the camera and good light. ' +
-          "One or two items per photo works best. You can also tick items by hand below.</p>";
+          "One or two items per photo works best. You can also tick items by hand below.</p>");
       } else {
         if (sure.length) html += "<h3>Rusty spotted:</h3><div class=\"scan-chips\">" + sure.map(function (k) { return chip(k, true); }).join("") + "</div>";
         if (maybe.length) html += '<p class="scan-maybe-h">Not sure about these (tick any that are right):</p><div class="scan-chips">' +
           maybe.map(function (k) { return chip(k, false); }).join("") + "</div>";
+        html += other;
         html += '<p><button class="btn" id="scan-add">Add to my pantry</button> ' +
           '<span class="muted scan-tip">Snap another photo to add more.</span></p>';
       }
