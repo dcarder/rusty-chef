@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pantry Tool: What Can I Make? | The Rusty Chef</title>
-  <meta name="description" content="Snap a photo of your pantry or select the ingredients you have, and find recipes you can make tonight.">
+  <meta name="description" content="Select the ingredients you have and find recipes you can make tonight.">
   <link rel="canonical" href="https://therustychef.com/pantry.html">
   <meta name="google-adsense-account" content="ca-pub-5541633299003878">
   <meta property="og:title" content="Pantry Tool: What Can I Make? | The Rusty Chef">
-  <meta property="og:description" content="Snap a photo of your pantry or select the ingredients you have, and find recipes you can make tonight.">
+  <meta property="og:description" content="Select the ingredients you have and find recipes you can make tonight.">
   <meta property="og:url" content="https://therustychef.com/pantry.html">
   <meta property="og:site_name" content="The Rusty Chef">
   <meta property="og:type" content="website">
@@ -34,18 +34,8 @@
 
   <main class="wide">
     <h1>Pantry Tool</h1>
-    <p class="lede">Snap a photo or tick the ingredients you have, and we'll show which recipes you can make tonight.</p>
+    <p class="lede">Tick the ingredients you have and we'll show which recipes you can make tonight.</p>
     <p>Recipes are sorted by how many of their ingredients you already have. Optional ingredients don't count against you, and we assume you have water. Your selections are saved in this browser only.</p>
-    <section class="scan-box" id="scan-box">
-      <h2>&#128247; Scan your pantry</h2>
-      <p>Snap a photo of a shelf or a single item and Rusty will try to work out what it is, then tick it for you. Labels facing the camera work best. Your photo stays on your device and is never uploaded.</p>
-      <div class="scan-actions">
-        <label class="btn scan-btn">&#128247; Take a photo<input class="vh" type="file" accept="image/*" capture="environment" id="scan-camera"></label>
-        <label class="btn btn-ghost scan-btn">&#128444;&#65039; Choose a photo<input class="vh" type="file" accept="image/*" id="scan-file"></label>
-      </div>
-      <div id="scan-status" aria-live="polite"></div>
-      <div id="scan-result"></div>
-    </section>
     <div class="pantry-controls">
       <input type="search" id="pantry-filter" placeholder="Filter ingredients...">
       <button class="btn btn-ghost" id="pantry-clear">Clear all</button>
@@ -69,6 +59,5 @@
   <script src="/assets/walmart-items.js"></script>
   <script src="/assets/recipes-data.js"></script>
   <script>RC.initPantry();</script>
-  <script src="/assets/scan.js"></script>
 </body>
 </html>
