@@ -357,6 +357,14 @@
         l.style.display = !q || l.getAttribute("data-label").indexOf(q) !== -1 ? "" : "none";
       });
     });
+    // Used by the photo scanner (scan.js) to tick ingredients it found.
+    RC.pantryAdd = function (keys) {
+      keys.forEach(function (k) {
+        if (have.indexOf(k) === -1) have.push(k);
+        var cb = groupsEl.querySelector('input[value="' + k + '"]'); if (cb) cb.checked = true;
+      });
+      save("rc_pantry", have); render();
+    };
     document.getElementById("pantry-clear").addEventListener("click", function () {
       have = []; save("rc_pantry", have);
       groupsEl.querySelectorAll("input").forEach(function (c) { c.checked = false; }); render();
