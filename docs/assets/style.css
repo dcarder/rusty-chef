@@ -230,3 +230,13 @@ body:has(.timer-dock:not([hidden])) .toast{bottom:84px}
 .shop-promo:hover{background:#3a302b}
 .shop-promo img{display:block;width:100%;height:auto;max-height:240px;object-fit:contain;border-radius:10px;background:#1e1b19}
 .shop-promo-btn{display:block;background:var(--rust);color:#fff;font-weight:700;font-size:1rem;text-align:center;padding:10px 14px;border-radius:10px}
+
+/* Pantry Tool: use it up + filters */
+.pantry-tools{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 16px;font-family:var(--sans)}
+.useup{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:.95rem;margin-bottom:10px}
+.useup select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;max-width:100%}
+.filter-chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:.9rem;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:inherit;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--rust);border-color:var(--rust);color:#fff}
+.useup-note{font-family:var(--sans);font-size:.95rem;margin:0 0 12px}
+.small{font-size:.85rem}
