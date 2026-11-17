@@ -16,6 +16,11 @@
 (function () {
   "use strict";
 
+  // Smart AI scanning (Google Gemini) goes through a small Cloudflare Worker that keeps
+  // the API key secret - see cloudflare-worker/pantry-ai.js. Paste the Worker's URL here.
+  // Leave it empty to use only the on-device scanner below.
+  var AI_ENDPOINT = "";
+
   var TESSERACT_URL = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
   var TFJS_URL = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0";
   var MOBILENET_URL = "https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1";
@@ -257,12 +262,27 @@
       status("&#129302; Rusty is warming up his robot eyes&hellip;");
       fileToCanvas(file).then(function (c) {
         canvas = c; preview = c.toDataURL("image/jpeg", 0.6);
+        if (!AI_ENDPOINT) return localScan();
+        status("&#129302; Rusty is taking a good look&hellip;");
+        return aiScan(canvas).then(function (items) {
+          var sure = [], extras = [];
+          items.forEach(function (it) {
+            if (it.key && labels[it.key]) { if (sure.indexOf(it.key) === -1) sure.push(it.key); }
+            else if (it.name && extras.indexOf(it.name) === -1) extras.push(it.name);
+          });
+          show(preview, sure, [], extras, "", "");
+        }, function () { return localScan(); }); // AI unavailable: fall back to on-device
+      }).catch(function (err) {
+        status("&#9888;&#65039; " + esc(err && err.message ? err.message : "Something went wrong.") +
+          " Check your connection and try again.", "error");
+      }).then(function () { busy = false; box.classList.remove("is-busy"); });
+
+      function localScan() {
         var firstTime = !ocrWorker;
-        return getOcr(function (st, p) {
+        return Promise.resolve().then(function () { return getOcr(function (st, p) {
           if (/loading|initializ/i.test(st) && firstTime) status("&#129302; Loading Rusty's robot eyes (first time only, about 15&nbsp;MB)&hellip; " + Math.round(p * 100) + "%");
           else if (/recogniz/i.test(st)) status("&#128269; Reading the labels&hellip; " + Math.round(p * 100) + "%");
-        });
-      }).then(function (worker) {
+        }); }).then(function (worker) {
         status("&#128269; Reading the labels&hellip;");
         return worker.recognize(canvas);
       }).then(function (out) {
@@ -296,10 +316,31 @@
             });
             show(preview, sure, maybe, extras, labelText, guess);
           });
-      }).catch(function (err) {
-        status("&#9888;&#65039; " + esc(err && err.message ? err.message : "Something went wrong.") +
-          " Check your connection and try again.", "error");
-      }).then(function () { busy = false; box.classList.remove("is-busy"); });
+      });
+      }
+    }
+
+    // Sends a smaller copy of the photo to the AI Worker. Resolves to [{name, key}].
+    function aiScan(canvas) {
+      var max = 1024, s = Math.min(1, max / Math.max(canvas.width, canvas.height));
+      var c = document.createElement("canvas");
+      c.width = Math.round(canvas.width * s); c.height = Math.round(canvas.height * s);
+      c.getContext("2d").drawImage(canvas, 0, 0, c.width, c.height);
+      var image = c.toDataURL("image/jpeg", 0.8).split(",")[1];
+      var ctrl = window.AbortController ? new AbortController() : null;
+      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 25000);
+      return fetch(AI_ENDPOINT, {
+        method: "POST", headers: { "Content-Type": "application/json" }, signal: ctrl ? ctrl.signal : undefined,
+        body: JSON.stringify({ image: image, pantry: (window.RC_PANTRY || []).map(function (p) { return { k: p.k, l: p.l }; }) })
+      }).then(function (r) {
+        clearTimeout(timer);
+        if (!r.ok) throw new Error("AI error " + r.status);
+        return r.json();
+      }).then(function (d) {
+        if (!d || !Array.isArray(d.items)) throw new Error("Bad AI answer");
+        return d.items.filter(function (it) { return it && (it.name || it.key); }).slice(0, 30)
+          .map(function (it) { return { name: String(it.name || "").slice(0, 60), key: it.key ? String(it.key) : null }; });
+      }, function (e) { clearTimeout(timer); throw e; });
     }
 
     function chip(k, checked) {
