@@ -418,7 +418,9 @@
       return;
     }
     el.innerHTML = '<ul class="cards">' + list.map(function (r) {
-      return '<li class="card"><a href="/recipes/' + esc(r.s) + '.html"><span class="tag">' + esc(r.c) + "</span><h3>" + esc(r.t) +
+      return '<li class="card"><a href="/recipes/' + esc(r.s) + '.html">' +
+        (r.ph ? '<img class="card-photo" src="https://images.unsplash.com/' + esc(r.ph) + '?auto=format&amp;fit=crop&amp;w=400&amp;h=300&amp;q=70" alt="" width="400" height="300" loading="lazy">' : "") +
+        '<span class="tag">' + esc(r.c) + "</span><h3>" + esc(r.t) +
         "</h3><p>" + esc(r.d) + '</p><span class="meta">' + r.m + " min</span></a></li>";
     }).join("") + "</ul>";
   };

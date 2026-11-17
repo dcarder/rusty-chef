@@ -240,3 +240,8 @@ body:has(.timer-dock:not([hidden])) .toast{bottom:84px}
 .chip[aria-pressed="true"]{background:var(--rust);border-color:var(--rust);color:#fff}
 .useup-note{font-family:var(--sans);font-size:.95rem;margin:0 0 12px}
 .small{font-size:.85rem}
+
+/* Recipe photos (free Unsplash photos) */
+.card-photo{display:block;width:calc(100% + 40px);height:auto;aspect-ratio:4/3;object-fit:cover;margin:-18px -20px 12px;border-radius:11px 11px 0 0;background:#efe6da}
+.recipe-photo{margin:12px 0 16px}
+.recipe-photo img{display:block;width:100%;max-width:640px;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:14px;background:#efe6da}
