@@ -312,18 +312,9 @@
       }).join("") + "</div>";
     }).join("");
 
-    // "Use it up" picker and quick filters
-    var useEl = document.getElementById("pantry-useup"), chipsEl = document.getElementById("pantry-filters");
-    var useup = load("rc_pantry_useup", ""), filters = load("rc_pantry_filters", []);
-    if (!labels[useup]) useup = "";
-    if (useEl) {
-      useEl.innerHTML = '<option value="">Pick an ingredient&hellip;</option>' + order.map(function (g) {
-        return '<optgroup label="' + esc(g) + '">' + groups[g].map(function (p) {
-          return '<option value="' + esc(p.k) + '"' + (p.k === useup ? " selected" : "") + ">" + esc(p.l) + "</option>";
-        }).join("") + "</optgroup>";
-      }).join("");
-      useEl.addEventListener("change", function () { useup = useEl.value; save("rc_pantry_useup", useup); render(); });
-    }
+    // quick filters
+    var chipsEl = document.getElementById("pantry-filters"), filters = load("rc_pantry_filters", []);
+    try { localStorage.removeItem("rc_pantry_useup"); } catch (e) {}
     var FILTERS = {
       quick: function (r) { return r.m <= 20; },
       veg: function (r) { return r.v; },
@@ -344,30 +335,27 @@
     }
 
     function render() {
-      if (!have.length && !useup) { resultsEl.innerHTML = '<p class="muted">Select a few ingredients, or pick one to use up, to see matches.</p>'; return; }
+      if (!have.length) { resultsEl.innerHTML = '<p class="muted">Select a few ingredients to see matches.</p>'; return; }
       var pool = window.RC_RECIPES.filter(function (r) {
         for (var i = 0; i < filters.length; i++) if (FILTERS[filters[i]] && !FILTERS[filters[i]](r)) return false;
-        return !useup || r.i.some(function (x) { return x.k === useup; });
+        return true;
       });
-      // The ingredient you're using up counts as one you have.
-      var mine = useup && have.indexOf(useup) === -1 ? have.concat([useup]) : have;
+      var mine = have;
       var scored = pool.map(function (r) {
         var req = r.i.filter(function (x) { return !x.o; });
         var keys = []; req.forEach(function (x) { if (keys.indexOf(x.k) === -1) keys.push(x.k); });
         var got = keys.filter(function (k) { return mine.indexOf(k) !== -1; });
         var miss = req.filter(function (x) { return mine.indexOf(x.k) === -1; });
         return { r: r, pct: keys.length ? got.length / keys.length : 0, miss: miss };
-      }).filter(function (s) { return useup || s.pct > 0; })
-        .sort(function (a, b) { return b.pct - a.pct || a.miss.length - b.miss.length; }).slice(0, useup ? 40 : 20);
+      }).filter(function (s) { return s.pct > 0; })
+        .sort(function (a, b) { return b.pct - a.pct || a.miss.length - b.miss.length; }).slice(0, 20);
 
       if (!scored.length) {
         resultsEl.innerHTML = '<p class="muted">' + (filters.length ? "No recipes match those filters. Try turning one off." :
-          useup ? "We don't have a recipe that uses " + esc(labels[useup]) + " yet." : "No matches yet. Try adding a few more staples.") + "</p>";
+          "No matches yet. Try adding a few more staples.") + "</p>";
         return;
       }
-      var intro = useup ? '<p class="useup-note">&#9851;&#65039; ' + scored.length + " recipe" + (scored.length === 1 ? "" : "s") + " that" +
-        (scored.length === 1 ? " uses" : " use") + " up your <strong>" + esc(labels[useup].toLowerCase()) + "</strong>" + (have.length ? ", best matches first." : ". Tick what else you have to sort them by match.") + "</p>" : "";
-      resultsEl.innerHTML = intro + scored.map(function (s, idx) {
+      resultsEl.innerHTML = scored.map(function (s, idx) {
         var pct = Math.round(s.pct * 100);
         var missTxt = s.miss.length
           ? '<p class="missing">Missing: ' + s.miss.map(function (x) { return esc(labels[x.k] || x.k); })
