@@ -105,14 +105,34 @@
 
     document.getElementById("k-add").addEventListener("click", function () {
       if (!selEl.value) { hintEl.textContent = "Pick an ingredient first."; return; }
-      addItem(selEl.value, dateEl.value);
+      var nk = selEl.value, nd = dateEl.value;
+      addItem(nk, nd); showAdded(nk, nd);
       selEl.value = ""; dateEl.value = ""; hintEl.textContent = "";
     });
     quickEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-quick]"); if (!b) return;
       var k = b.getAttribute("data-quick"), n = SHELF[k];
-      addItem(k, n ? plusDays(n) : null);
+      addItem(k, n ? plusDays(n) : null); showAdded(k, n ? plusDays(n) : null);
     });
+    var addedEl = document.getElementById("k-added");
+    function reminderHTML(k, d) {
+      var when = remindDay(d).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+      var file = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsFile(labels[k], d));
+      return '<a class="btn ksmall" href="' + file + '" download="use-your-' + esc(k) + '.ics">Apple / Outlook calendar</a> ' +
+        '<a class="btn ksmall" href="' + esc(googleLink(labels[k], d)) + '" target="_blank" rel="noopener">Google Calendar</a>' +
+        '<p class="muted small">Reminder on ' + esc(when) + ' at 9am. Your calendar sends the alert. We never see your phone number or calendar.</p>';
+    }
+    function showAdded(k, d) {
+      if (!addedEl) return;
+      var n = daysLeft(d);
+      if (n === null || n < 1) {
+        addedEl.innerHTML = "<p>&#9989; Added <strong>" + esc(labels[k]) + "</strong> to your kitchen.</p>";
+      } else {
+        addedEl.innerHTML = "<p>&#9989; Added <strong>" + esc(labels[k]) + "</strong>. &#128276; <strong>Add a reminder to your calendar</strong> so you don't forget it:</p>" + reminderHTML(k, d);
+      }
+      addedEl.hidden = false;
+    }
+
     listEl.addEventListener("click", function (e) {
       var rb = e.target.closest("[data-remind]");
       if (rb) {
@@ -120,12 +140,7 @@
         var panel = document.getElementById("kr-" + rk);
         if (!it || !it.d || !panel) return;
         if (!panel.hidden) { panel.hidden = true; rb.setAttribute("aria-expanded", "false"); return; }
-        var when = remindDay(it.d).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
-        var file = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsFile(labels[rk], it.d));
-        panel.innerHTML = '<p>Get a reminder on <strong>' + esc(when) + ' at 9am</strong> in your phone\'s calendar:</p>' +
-          '<a class="btn ksmall" href="' + file + '" download="use-your-' + esc(rk) + '.ics">Apple / Outlook calendar</a> ' +
-          '<a class="btn ksmall" href="' + esc(googleLink(labels[rk], it.d)) + '" target="_blank" rel="noopener">Google Calendar</a>' +
-          '<p class="muted small">Your calendar sends the alert. We never see your phone number or calendar.</p>';
+        panel.innerHTML = '<p>&#128276; Add a reminder to your phone\'s calendar:</p>' + reminderHTML(rk, it.d);
         panel.hidden = false; rb.setAttribute("aria-expanded", "true");
         return;
       }
