@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Kitchen: What to Cook Before It Goes Bad | The Rusty Chef</title>
+  <meta name="description" content="Keep track of what's in your kitchen and when it goes bad, and see which recipes use it up first.">
+  <link rel="canonical" href="https://therustychef.com/kitchen.html">
+  <meta name="google-adsense-account" content="ca-pub-5541633299003878">
+  <meta property="og:title" content="My Kitchen: What to Cook Before It Goes Bad | The Rusty Chef">
+  <meta property="og:description" content="Keep track of what's in your kitchen and when it goes bad, and see which recipes use it up first.">
+  <meta property="og:url" content="https://therustychef.com/kitchen.html">
+  <meta property="og:site_name" content="The Rusty Chef">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://therustychef.com/copilot_image_1777179019874-1.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap">
+  <link rel="stylesheet" href="/assets/style.css">
+  <!-- Google Consent Mode: ads and analytics cookies stay off in the EEA, UK and Switzerland until the visitor agrees (Google's consent message, set up in AdSense > Privacy & messaging, records their choice) -->
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("consent","default",{ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",analytics_storage:"denied",region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IS","IE","IT","LV","LI","LT","LU","MT","NL","NO","PL","PT","RO","SK","SI","ES","SE","GB","CH"],wait_for_update:500});gtag("consent","default",{ad_storage:"granted",ad_user_data:"granted",ad_personalization:"granted",analytics_storage:"granted"});</script>
+  <!-- Google Analytics (only counts visits on therustychef.com, not test copies) -->
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}(function(){if(!/(^|\.)therustychef\.com$/i.test(location.hostname))return;var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id=G-HQW1J6XPPS";document.head.appendChild(s);gtag("js",new Date());gtag("config","G-HQW1J6XPPS");})();</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="/">The <span>Rusty</span> Chef</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">&#9776; Menu</button>
+      <nav class="site-nav" id="site-nav" aria-label="Main"><ul><li><a href="/">Home</a></li><li><a href="/recipes/">Recipes</a></li><li><a href="/pantry.html">Pantry Tool</a></li><li><a href="/kitchen.html" aria-current="page">My Kitchen</a></li><li><a href="/saved.html">Saved</a></li><li><a href="/skip-the-restaurant.html">Skip the Restaurant</a></li><li><a href="/shop.html">Shop</a></li><li><a href="/game.html">Game</a></li><li><a href="/about.html">About</a></li></ul></nav>
+    </div>
+  </header>
+
+  <main class="wide" id="kitchen">
+    <h1>My Kitchen</h1>
+    <p class="lede">Add what you buy and when it goes bad, and Rusty will tell you what to cook first so nothing gets wasted.</p>
+    <p class="muted small">Your kitchen is saved in this browser only. Anything you add here is also ticked in the <a href="/pantry.html">Pantry Tool</a>.</p>
+
+    <section class="kpanel">
+      <h2>Add to your kitchen</h2>
+      <div class="kadd">
+        <select id="k-item" aria-label="Ingredient"></select>
+        <label class="kdate">Use by <input type="date" id="k-date"></label>
+        <button type="button" class="btn" id="k-add">Add</button>
+      </div>
+      <p class="muted small" id="k-hint" aria-live="polite"></p>
+      <p class="small kquick-label">Quick add (with a typical use-by date):</p>
+      <div class="filter-chips" id="k-quick"></div>
+    </section>
+
+    <h2>&#127859; Cook these first</h2>
+    <div id="k-first"></div>
+
+    <h2>What's in your kitchen</h2>
+    <ul class="klist" id="k-list"></ul>
+    <p><button type="button" class="btn btn-ghost ksmall" id="k-clear">Clear my kitchen</button></p>
+  </main>
+  <footer class="site-footer">
+    <ul>
+      <li><a href="/recipes/">All Recipes</a></li>
+      <li><a href="/pantry.html">Pantry Tool</a></li>
+      <li><a href="/kitchen.html">My Kitchen</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/contact.html">Contact</a></li>
+      <li><a href="/privacy.html">Privacy Policy</a></li>
+      <li><a href="/privacy.html#cookie-choices" data-consent-settings>Cookie settings</a></li>
+    </ul>
+    <p>&copy; 2026 The Rusty Chef &middot; No taste buds required.</p>
+  </footer>
+  <script src="/assets/app.js"></script>
+  <script src="/assets/recipes-data.js"></script>
+  <script src="/assets/kitchen.js"></script>
+  <script>RC_KITCHEN_init();</script>
+</body>
+</html>

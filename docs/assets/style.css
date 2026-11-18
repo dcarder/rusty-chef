@@ -245,3 +245,23 @@ body:has(.timer-dock:not([hidden])) .toast{bottom:84px}
 .card-photo{display:block;width:calc(100% + 40px);height:auto;aspect-ratio:4/3;object-fit:cover;margin:-18px -20px 12px;border-radius:11px 11px 0 0;background:#efe6da}
 .recipe-photo{margin:12px 0 16px}
 .recipe-photo img{display:block;width:100%;max-width:640px;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:14px;background:#efe6da}
+
+/* My Kitchen */
+.kpanel{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0 20px;font-family:var(--sans)}
+.kpanel h2{margin-top:0}
+.kadd{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.kadd select,.kadd input,.krow input{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;max-width:100%}
+.kdate{display:flex;align-items:center;gap:6px;font-size:.95rem}
+.kquick-label{margin:10px 0 6px}
+.klist{list-style:none;padding:0;margin:0 0 12px;font-family:var(--sans)}
+.krow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.kname{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.kactions{display:flex;gap:8px;align-items:center}
+.ksmall{font-size:.85rem;padding:6px 10px}
+.kbadge{font-size:.8rem;padding:2px 9px;border-radius:999px;font-weight:600}
+.k-bad{background:#fbe0d9;color:#8a2412}.k-warn{background:#fdf0cf;color:#7a5306}.k-ok{background:#e3f1df;color:#2d5f27}
+.kintro{font-family:var(--sans);margin:0 0 12px}
+.kuses{font-family:var(--sans);font-size:.88rem;color:#8a2412;margin:4px 0}.kuses span{color:var(--muted)}
+.kmiss{font-family:var(--sans);font-size:.85rem;color:var(--muted);margin:4px 0 6px}.k-have{color:#2d6a2d;font-weight:600}
+.kitchen-link{font-family:var(--sans);background:#fff7e0;border:1px solid #f0d58a;border-radius:10px;padding:8px 12px}
+.kremind{flex-basis:100%;background:#fff7e0;border:1px solid #f0d58a;border-radius:10px;padding:8px 12px;font-family:var(--sans);font-size:.92rem}.kremind p{margin:0 0 8px}.kremind .btn{margin:0 6px 6px 0}
