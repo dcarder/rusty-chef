@@ -296,6 +296,256 @@
     }
   }
 
+  // ---------- Cost per serving (same estimates as recipes-data.js; recipe pages use their own "Est. cost") ----------
+  var RC_COST = {
+    "baked-oatmeal": 0.39, "baked-ravioli": 2.12, "banana-oat-pancakes": 0.55, "bean-quesadillas": 1.51,
+    "beef-enchilada-skillet": 3.02, "black-bean-burgers": 0.95, "black-bean-rice-bowls": 1.18, "black-bean-soup": 1.10,
+    "black-bean-tacos": 0.82, "breakfast-burritos": 1.40, "breakfast-egg-sandwich": 1.46, "breakfast-fried-rice": 1.50,
+    "cabbage-stir-fry": 0.41, "canned-tomato-soup": 1.05, "cheese-omelette": 1.30, "cheesy-baked-pasta": 1.53,
+    "chicken-salad-sandwich": 1.23, "chicken-stir-fry-noodles": 1.73, "chicken-tacos": 1.69, "chickpea-curry": 1.34,
+    "chickpea-salad-sandwich": 0.94, "chocolate-mug-cake": 0.51, "coconut-rice": 0.56,
+    "coffee-shop-banana-bread": 0.24, "congee": 1.12, "creamy-mashed-potatoes": 0.60, "crispy-chicken-sandwich": 2.65,
+    "crispy-fried-eggs": 0.75, "crispy-smashed-potatoes": 0.60, "diner-smash-burgers": 2.27, "drop-biscuits": 0.24,
+    "easy-ramen-noodles": 0.85, "easy-weeknight-lasagna": 1.69, "egg-drop-soup": 1.55, "egg-muffin-cups": 1.28,
+    "egg-salad-sandwich": 1.04, "fast-food-chicken-nuggets": 1.88, "french-onion-soup": 1.70, "french-toast": 0.77,
+    "fried-ravioli": 1.96, "garlic-bread": 0.68, "garlic-butter-noodles": 1.12, "ground-beef-tacos": 2.05,
+    "ham-and-cheese-quiche": 1.03, "ham-and-cheese-strata": 1.74, "ham-cheese-pinwheels": 1.64,
+    "ham-cheese-sliders": 1.60, "homemade-hummus": 0.33, "honey-bbq-wings": 4.00, "honey-garlic-chicken": 1.79,
+    "huevos-rancheros": 2.17, "italian-pasta-salad": 0.36, "lentil-sloppy-joes": 1.06, "lentil-soup": 1.14,
+    "loaded-baked-potatoes": 1.20, "mediterranean-chickpea-salad": 1.00, "one-pot-mac-and-cheese": 0.97,
+    "overnight-oats": 0.35, "pantry-chili": 1.03, "pantry-fried-rice": 0.95, "pantry-frittata": 1.10,
+    "pantry-minestrone": 1.42, "pantry-pancakes": 0.36, "pasta-aglio-e-olio": 1.18, "pasta-e-fagioli": 1.55,
+    "pasta-puttanesca": 1.74, "peanut-butter-banana-oatmeal": 0.57, "peanut-butter-cookies": 0.16,
+    "peanut-butter-noodles": 0.71, "perfect-grilled-cheese": 0.95, "pizza-toast": 1.15, "pizzeria-garlic-knots": 0.37,
+    "pizzeria-pepperoni-pizza": 1.94, "potato-hash": 1.12, "potato-soup": 1.39, "red-lentil-coconut-dal": 1.21,
+    "restaurant-style-salsa": 0.37, "restaurant-white-queso": 1.51, "rice-and-beans": 0.56, "rice-pudding": 0.26,
+    "roasted-chickpeas": 0.31, "sausage-egg-breakfast-plate": 2.40, "shakshuka": 1.53,
+    "sheet-pan-chicken-fajitas": 2.10, "shepherds-pie": 1.90, "skillet-cornbread": 0.23, "skillet-flatbread": 0.33,
+    "smokestack-flatbread": 2.92, "spaghetti-marinara": 1.12, "spanish-rice": 0.61, "spinach-pesto-pasta": 1.10,
+    "sweet-potato-black-bean-hash": 1.43, "takeout-lo-mein": 0.78, "takeout-orange-chicken": 1.70,
+    "teriyaki-chicken-rice-bowls": 1.65, "tuna-melt": 1.43, "tuna-pasta": 1.68, "veggie-fried-noodles": 1.02,
+    "white-bean-garlic-soup": 1.52, "white-bean-tuna-salad": 1.57, "zuppa-toscana": 2.12
+  };
+  window.RC_COST = RC_COST;
+  function money(n) { return n < 1 ? Math.round(n * 100) + "¢" : "$" + n.toFixed(2); }
+  function slugFromHref(h) { var m = /([a-z0-9-]+)\.html(?:[#?].*)?$/.exec(h || ""); return m ? m[1] : ""; }
+
+  // Recipe cards anywhere on the site: add "~$x a serving" to the meta line
+  document.querySelectorAll(".card a").forEach(function (a) {
+    var c = RC_COST[slugFromHref(a.getAttribute("href"))], meta = a.querySelector(".meta");
+    if (c && meta && !meta.querySelector(".cost-chip")) meta.insertAdjacentHTML("beforeend", ' &middot; <span class="cost-chip">~' + money(c) + "/serving</span>");
+  });
+
+  // ---------- Servings scaler + cost (recipe pages) ----------
+  var card = document.querySelector(".recipe-card");
+  var ingList = card && card.querySelector(".ingredients");
+  var pageSlug = slugFromHref((document.querySelector('link[rel="canonical"]') || {}).href || location.pathname);
+  var baseServes = 0, curServes = 0;
+  if (card) card.querySelectorAll(".recipe-facts li").forEach(function (li) {
+    var st = li.querySelector("strong");
+    if (st && /serves/i.test(st.textContent)) { baseServes = parseInt(li.textContent.replace(st.textContent, ""), 10) || 0; li.classList.add("fact-serves"); }
+  });
+  curServes = baseServes;
+
+  var FRACS = [[0, ""], [0.125, "⅛"], [0.25, "¼"], [1 / 3, "⅓"], [0.5, "½"], [2 / 3, "⅔"], [0.75, "¾"], [1, ""]];
+  function parseQty(s) {
+    s = s.trim().replace(/½/g, " 1/2").replace(/¼/g, " 1/4").replace(/¾/g, " 3/4").replace(/⅓/g, " 1/3").replace(/⅔/g, " 2/3").trim();
+    return s.split(/\s+/).reduce(function (t, p) { var f = p.split("/"); return t + (f.length === 2 ? (+f[0] / +f[1]) : +p); }, 0);
+  }
+  function fmtQty(n) {
+    if (n >= 10) return String(Math.round(n));
+    var whole = Math.floor(n), rest = n - whole, best = FRACS[0];
+    FRACS.forEach(function (f) { if (Math.abs(rest - f[0]) < Math.abs(rest - best[0])) best = f; });
+    if (best[0] === 1) { whole += 1; best = FRACS[0]; }
+    if (!whole && !best[1]) return "⅛";
+    return (whole ? String(whole) : "") + best[1];
+  }
+  var NOUNS = { cup: "cups", can: "cans", clove: "cloves", egg: "eggs", onion: "onions", slice: "slices", potato: "potatoes",
+    tortilla: "tortillas", banana: "bananas", lime: "limes", lemon: "lemons", carrot: "carrots", bun: "buns", stalk: "stalks",
+    packet: "packets", head: "heads", bag: "bags", loaf: "loaves", handful: "handfuls", jalapeño: "jalapeños", pepper: "peppers",
+    muffin: "muffins", roll: "rolls", breast: "breasts", knot: "knots",
+    tablespoon: "tablespoons", teaspoon: "teaspoons", lb: "lbs" };
+  var SING = {}; Object.keys(NOUNS).forEach(function (k) { SING[NOUNS[k]] = k; });
+  function fixNoun(after, n) {
+    // find the first countable noun in the next few words and match it to the new amount
+    var re = /(\s+)(\([^)]*\)|[A-Za-zñé-]+)/g, m, pos = 0, seen = 0;
+    while (seen < 4) {
+      re.lastIndex = pos; m = re.exec(after);
+      if (!m || m.index !== pos) break;
+      pos = re.lastIndex; seen++;
+      var w = m[2], lw = w.toLowerCase(), rep = n > 1 ? NOUNS[lw] : SING[lw];
+      if (NOUNS[lw] || SING[lw]) {
+        if (!rep) return after;
+        var at = m.index + m[1].length;
+        return after.slice(0, at) + rep + after.slice(at + w.length);
+      }
+    }
+    return after;
+  }
+  var QTY_RE = /(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?|[½¼¾⅓⅔])(\s*(?:to|-|–)\s*(\d+\/\d+|\d+(?:\.\d+)?))?/g;
+  function scaleText(text, f, depth) {
+    // scales every amount outside parentheses; returns [newText, newDepth]
+    var out = "", i = 0;
+    while (i < text.length) {
+      var ch = text[i];
+      if (ch === "(") { depth++; out += ch; i++; continue; }
+      if (ch === ")") { depth = Math.max(0, depth - 1); out += ch; i++; continue; }
+      if (depth > 0) { out += ch; i++; continue; }
+      QTY_RE.lastIndex = i;
+      var m = QTY_RE.exec(text);
+      if (m && m.index === i && !/[\w/]/.test(text[i - 1] || "")) {
+        var a = parseQty(m[1]) * f, b = m[3] ? parseQty(m[3]) * f : 0;
+        out += fmtQty(a) + (m[3] ? " to " + fmtQty(b) : "");
+        i += m[0].length;
+        var rest = fixNoun(text.slice(i), b || a);
+        text = text.slice(0, i) + rest;
+        continue;
+      }
+      out += ch; i++;
+    }
+    return [out, depth];
+  }
+  function scaleHTML(html, f) {
+    if (f === 1) return html;
+    var depth = 0;
+    return html.split(/(<[^>]+>)/).map(function (part) {
+      if (!part || part[0] === "<") return part;
+      var r = scaleText(part, f, depth); depth = r[1]; return r[0];
+    }).join("");
+  }
+  var ingItems = ingList ? Array.prototype.slice.call(ingList.children) : [];
+  ingItems.forEach(function (li) { li.setAttribute("data-orig", li.innerHTML); });
+  function scaledIngredients() {
+    var f = baseServes ? curServes / baseServes : 1;
+    return ingItems.map(function (li) { return scaleHTML(li.getAttribute("data-orig"), f); });
+  }
+
+  var costPer = RC_COST[pageSlug], costFact = null;
+  if (card) card.querySelectorAll(".recipe-facts li").forEach(function (li) {
+    var st = li.querySelector("strong");
+    if (st && /cost/i.test(st.textContent)) { costFact = li; var m = /\$\s*(\d+(?:\.\d+)?)/.exec(li.textContent); if (m) costPer = +m[1]; }
+  });
+  if (card && ingList && baseServes) {
+    var facts = card.querySelector(".recipe-facts");
+    if (costPer && facts && !costFact) facts.insertAdjacentHTML("beforeend", '<li class="fact-cost"><strong>Est. cost</strong>$' + costPer.toFixed(2) + "/serving</li>");
+    var box = document.createElement("div");
+    box.className = "scaler";
+    box.innerHTML =
+      '<div class="scaler-row"><span class="scaler-label">Servings</span>' +
+      '<button type="button" class="scaler-btn" data-step="-1" aria-label="Fewer servings">&minus;</button>' +
+      '<output class="scaler-num" aria-live="polite">' + baseServes + "</output>" +
+      '<button type="button" class="scaler-btn" data-step="1" aria-label="More servings">+</button>' +
+      '<span class="scaler-quick">' + [0.5, 1, 2, 3].map(function (x) {
+        return '<button type="button" data-mult="' + x + '"' + (x === 1 ? ' class="on"' : "") + ">" + (x === 0.5 ? "½" : x) + "×</button>";
+      }).join("") + "</span></div>" +
+      (costPer ? '<p class="scaler-cost"></p>' : "") +
+      '<p class="scaler-note" hidden>Amounts are adjusted above. Cook times and the amounts written in the steps are for the original ' + baseServes + " servings, and pan size may need to change.</p>";
+    ingList.parentNode.insertBefore(box, ingList);
+    var updateScale = function () {
+      var lines = scaledIngredients();
+      ingItems.forEach(function (li, i) { li.innerHTML = lines[i]; });
+      box.querySelector(".scaler-num").textContent = curServes;
+      var serveFact = card.querySelector(".fact-serves");
+      if (serveFact) serveFact.innerHTML = "<strong>Serves</strong>" + curServes;
+      box.querySelectorAll("[data-mult]").forEach(function (b) { b.classList.toggle("on", +b.getAttribute("data-mult") * baseServes === curServes); });
+      box.querySelector(".scaler-note").hidden = curServes === baseServes;
+      var costEl = box.querySelector(".scaler-cost");
+      if (costEl) costEl.innerHTML = "&#128176; About <strong>" + money(costPer * curServes) + "</strong> for " + curServes +
+        " serving" + (curServes > 1 ? "s" : "") + " (~" + money(costPer) + ' each). <span class="muted small">Rough estimate at typical US grocery prices; leaves out salt, spices and optional extras.</span>';
+      document.dispatchEvent(new CustomEvent("rc:scaled"));
+    };
+    box.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button"); if (!b) return;
+      if (b.hasAttribute("data-step")) curServes = Math.max(1, Math.min(99, curServes + +b.getAttribute("data-step")));
+      else curServes = Math.max(1, Math.round(baseServes * +b.getAttribute("data-mult")));
+      updateScale();
+    });
+    updateScale();
+  }
+
+  // ---------- Cook mode (recipe pages) ----------
+  var stepEls = card ? card.querySelectorAll(".steps li") : [];
+  if (card && stepEls.length) {
+    var title = (card.querySelector("h2") || document.querySelector("h1") || {}).textContent || "Recipe";
+    var openBtnHTML = '<button type="button" class="btn btn-cook" data-cook>&#128104;&#8205;&#127859; Cook mode</button>';
+    var actions = document.querySelector(".actions");
+    if (actions) actions.insertAdjacentHTML("afterbegin", openBtnHTML);
+    var stepsHead = Array.prototype.filter.call(card.querySelectorAll("h3"), function (h) { return /instructions/i.test(h.textContent); })[0];
+    if (stepsHead) stepsHead.insertAdjacentHTML("afterend", '<p>' + openBtnHTML.replace("btn btn-cook", "btn btn-cook btn-sm") + ' <span class="muted small">Big text, one step at a time, screen stays on.</span></p>');
+
+    var cm = document.createElement("div");
+    cm.className = "cook-mode"; cm.hidden = true;
+    cm.setAttribute("role", "dialog"); cm.setAttribute("aria-modal", "true"); cm.setAttribute("aria-label", "Cook mode: " + title);
+    document.body.appendChild(cm);
+    var cmPage = 0, cmLock = null, cmChecked = {};
+    var total = stepEls.length + 1; // page 0 = ingredients
+
+    var lockScreen = function (on) {
+      try {
+        if (on && !cmLock && navigator.wakeLock) navigator.wakeLock.request("screen").then(function (l) { cmLock = l; l.addEventListener("release", function () { if (cmLock === l) cmLock = null; }); }, function () {});
+        if (!on && cmLock) { cmLock.release(); cmLock = null; }
+      } catch (e) {}
+    };
+    var renderCook = function () {
+      var body;
+      if (cmPage === 0) {
+        body = '<p class="cm-kicker">Gather your ingredients' + (baseServes ? " &middot; " + curServes + " serving" + (curServes > 1 ? "s" : "") : "") + "</p>" +
+          '<ul class="cm-ings">' + scaledIngredients().map(function (h, i) {
+            return '<li><label><input type="checkbox" data-ing="' + i + '"' + (cmChecked[i] ? " checked" : "") + "> <span>" + h + "</span></label></li>";
+          }).join("") + "</ul>";
+      } else {
+        body = '<p class="cm-kicker">Step ' + cmPage + " of " + stepEls.length + "</p>" +
+          '<div class="cm-step">' + stepEls[cmPage - 1].innerHTML + "</div>";
+      }
+      cm.innerHTML =
+        '<div class="cm-top"><span class="cm-title">' + esc(title.trim()) + '</span><button type="button" class="cm-close" data-cm="close" aria-label="Exit cook mode">&times; Exit</button></div>' +
+        '<div class="cm-progress"><span style="width:' + Math.round(cmPage / (total - 1) * 100) + '%"></span></div>' +
+        '<div class="cm-body">' + body + "</div>" +
+        '<div class="cm-nav"><button type="button" class="btn btn-ghost" data-cm="prev"' + (cmPage === 0 ? " disabled" : "") + '>&larr; Back</button>' +
+        (cmPage < total - 1
+          ? '<button type="button" class="btn" data-cm="next">' + (cmPage === 0 ? "Start cooking" : "Next step") + " &rarr;</button>"
+          : '<button type="button" class="btn" data-cm="close">Done! &#127881;</button>') + "</div>";
+      cm.querySelector(".cm-body").scrollTop = 0;
+    };
+    var go = function (d) { var p = Math.max(0, Math.min(total - 1, cmPage + d)); if (p !== cmPage) { cmPage = p; renderCook(); } };
+    var openCook = function () {
+      cmPage = 0; renderCook(); cm.hidden = false;
+      document.documentElement.classList.add("cook-open");
+      lockScreen(true);
+      try { history.pushState({ rcCook: 1 }, ""); } catch (e) {}
+      var c = cm.querySelector("[data-cm=next]"); if (c) c.focus();
+    };
+    var closeCook = function (fromHistory) {
+      if (cm.hidden) return;
+      cm.hidden = true; document.documentElement.classList.remove("cook-open"); lockScreen(false);
+      if (!fromHistory) { try { if (history.state && history.state.rcCook) history.back(); } catch (e) {} }
+    };
+    document.addEventListener("click", function (ev) {
+      if (ev.target.closest && ev.target.closest("[data-cook]")) { openCook(); return; }
+      var b = ev.target.closest && ev.target.closest("[data-cm]");
+      if (!b || !cm.contains(b)) return;
+      var a = b.getAttribute("data-cm");
+      if (a === "next") go(1); else if (a === "prev") go(-1); else if (a === "close") closeCook();
+    });
+    cm.addEventListener("change", function (ev) {
+      var i = ev.target.getAttribute("data-ing"); if (i !== null) cmChecked[i] = ev.target.checked;
+    });
+    window.addEventListener("popstate", function () { closeCook(true); });
+    document.addEventListener("keydown", function (ev) {
+      if (cm.hidden) return;
+      if (ev.key === "ArrowRight") go(1); else if (ev.key === "ArrowLeft") go(-1); else if (ev.key === "Escape") closeCook();
+    });
+    var sx = null, sy = null;
+    cm.addEventListener("touchstart", function (ev) { if (ev.touches.length === 1) { sx = ev.touches[0].clientX; sy = ev.touches[0].clientY; } }, { passive: true });
+    cm.addEventListener("touchend", function (ev) {
+      if (sx === null) return;
+      var dx = ev.changedTouches[0].clientX - sx, dy = ev.changedTouches[0].clientY - sy; sx = null;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5 && !(ev.target.closest && ev.target.closest(".timer-chip"))) go(dx < 0 ? 1 : -1);
+    });
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && !cm.hidden) lockScreen(true); });
+    document.addEventListener("rc:scaled", function () { if (!cm.hidden && cmPage === 0) renderCook(); });
+  }
+
   var RC = window.RC = {};
 
   // ---------- Pantry Tool ----------
