@@ -37,6 +37,19 @@
     <p class="lede">Add what you buy and when it goes bad, and Rusty will tell you what to cook first so nothing gets wasted.</p>
     <p class="muted small">Your kitchen is saved in this browser only. Anything you add here is also ticked in the <a href="/pantry.html">Pantry Tool</a>.</p>
 
+    <section class="kpanel kscan">
+      <h2>&#129534; Just got back from the store?</h2>
+      <p>Snap a photo of your receipt and Rusty adds your groceries with their use-by dates.</p>
+      <div class="kscan-btns">
+        <label class="btn" for="k-receipt-cam">&#128247; Scan a receipt</label>
+        <label class="btn btn-ghost" for="k-receipt-file">Choose a photo</label>
+        <input type="file" id="k-receipt-cam" accept="image/*" capture="environment" hidden>
+        <input type="file" id="k-receipt-file" accept="image/*" hidden>
+      </div>
+      <p class="muted small">Tip: lay it flat in good light and fit just the item lines in the photo. Your photo is read on your phone and never uploaded.</p>
+      <div id="k-scan" aria-live="polite" hidden></div>
+    </section>
+
     <section class="kpanel">
       <h2>Add to your kitchen</h2>
       <div class="kadd">
@@ -71,6 +84,7 @@
   </footer>
   <script src="/assets/app.js"></script>
   <script src="/assets/recipes-data.js"></script>
+  <script src="/assets/receipt.js"></script>
   <script src="/assets/kitchen.js"></script>
   <script>RC_KITCHEN_init();</script>
 </body>

@@ -153,6 +153,104 @@
       addedEl.hidden = false;
     }
 
+    // ---- receipt scanning (OCR runs in the browser with Tesseract.js; nothing is uploaded) ----
+    var scanEl = document.getElementById("k-scan");
+    var TESS = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
+    function loadTess() {
+      if (window.Tesseract) return Promise.resolve(window.Tesseract);
+      return new Promise(function (ok, bad) {
+        var s = document.createElement("script"); s.src = TESS;
+        s.onload = function () { ok(window.Tesseract); }; s.onerror = bad; document.head.appendChild(s);
+      });
+    }
+    function prepImage(file) { // grayscale, boost contrast, scale to ~1600px wide
+      return new Promise(function (ok, bad) {
+        var url = URL.createObjectURL(file), img = new Image();
+        img.onload = function () {
+          var w = img.naturalWidth, h = img.naturalHeight, sc = Math.min(2.5, Math.max(1, 1600 / w));
+          if (w * sc * h * sc > 16e6) sc = Math.sqrt(16e6 / (w * h));
+          var c = document.createElement("canvas"); c.width = Math.round(w * sc); c.height = Math.round(h * sc);
+          var x = c.getContext("2d"); x.drawImage(img, 0, 0, c.width, c.height);
+          var d = x.getImageData(0, 0, c.width, c.height), a = d.data, i, g;
+          for (i = 0; i < a.length; i += 4) {
+            g = 0.299 * a[i] + 0.587 * a[i + 1] + 0.114 * a[i + 2];
+            g = Math.max(0, Math.min(255, (g - 128) * 1.5 + 140));
+            a[i] = a[i + 1] = a[i + 2] = g;
+          }
+          x.putImageData(d, 0, 0); URL.revokeObjectURL(url); ok(c);
+        };
+        img.onerror = function () { URL.revokeObjectURL(url); bad(new Error("img")); };
+        img.src = url;
+      });
+    }
+    function scanMsg(html) { scanEl.innerHTML = html; scanEl.hidden = false; }
+    function onReceipt(e) {
+      var f = e.target.files && e.target.files[0]; e.target.value = "";
+      if (!f) return;
+      scanMsg('<p class="kscan-status">&#128269; Reading your receipt&hellip; <span id="k-pct">0%</span></p><div class="kbar"><span id="k-bar"></span></div>');
+      var setPct = function (p) {
+        var t = document.getElementById("k-pct"), b = document.getElementById("k-bar");
+        if (t) t.textContent = Math.round(p * 100) + "%"; if (b) b.style.width = Math.round(p * 100) + "%";
+      };
+      var worker;
+      Promise.all([loadTess(), prepImage(f)]).then(function (r) {
+        return r[0].createWorker("eng", 1, {
+          logger: function (m) { if (m.status === "recognizing text") setPct(m.progress); }
+        }).then(function (w) {
+          worker = w;
+          return w.setParameters({ tessedit_pageseg_mode: "4" }).then(function () { return w.recognize(r[1]); });
+        });
+      }).then(function (res) {
+        if (worker) worker.terminate();
+        showScan(window.RC_RECEIPT.parse(res.data.text || ""));
+      }).catch(function () {
+        if (worker) worker.terminate();
+        scanMsg('<p>&#128533; Sorry, the receipt reader didn\'t load. Check your connection and try again, or add items below.</p>');
+      });
+    }
+    function showScan(res) {
+      var found = res.found.filter(function (k) { return labels[k]; });
+      if (!found.length) {
+        scanMsg('<p>&#129300; We couldn\'t find any groceries on that one. Try again with the receipt flat, in good light, and filling the photo. Or add items below.</p>');
+        return;
+      }
+      var rows = found.map(function (k) {
+        var n = SHELF[k], d = n ? plusDays(n) : "";
+        return '<li><label><input type="checkbox" checked data-scan="' + esc(k) + '"> <strong>' + esc(labels[k]) + "</strong></label>" +
+          '<input type="date" aria-label="Use-by date for ' + esc(labels[k]) + '" data-scan-date="' + esc(k) + '" value="' + d + '"></li>';
+      }).join("");
+      var un = res.unmatched.length ? '<details class="kunmatched"><summary>' + res.unmatched.length + " line" + (res.unmatched.length === 1 ? "" : "s") +
+        " we skipped</summary><p class=\"muted small\">" + res.unmatched.map(esc).join(" &middot; ") + '</p><p class="muted small">Add any of these yourself below if they\'re groceries.</p></details>' : "";
+      scanMsg('<p>&#9989; Found <strong>' + found.length + "</strong> item" + (found.length === 1 ? "" : "s") + ". Untick anything that's wrong and check the dates:</p>" +
+        '<ul class="kscan-list">' + rows + "</ul>" + un +
+        '<p><button type="button" class="btn" id="k-scan-add">Add ' + found.length + ' to my kitchen</button> <button type="button" class="btn btn-ghost ksmall" id="k-scan-cancel">Cancel</button></p>');
+    }
+    document.getElementById("k-receipt-cam").addEventListener("change", onReceipt);
+    document.getElementById("k-receipt-file").addEventListener("change", onReceipt);
+    scanEl.addEventListener("change", function (e) {
+      if (!e.target.matches("[data-scan]")) return;
+      var n = scanEl.querySelectorAll("[data-scan]:checked").length, b = document.getElementById("k-scan-add");
+      if (b) { b.textContent = "Add " + n + " to my kitchen"; b.disabled = !n; }
+    });
+    scanEl.addEventListener("click", function (e) {
+      if (e.target.id === "k-scan-cancel") { scanEl.hidden = true; scanEl.innerHTML = ""; return; }
+      if (e.target.id !== "k-scan-add") return;
+      var added = [];
+      scanEl.querySelectorAll("[data-scan]:checked").forEach(function (cb) {
+        var k = cb.getAttribute("data-scan"), di = scanEl.querySelector('[data-scan-date="' + k + '"]');
+        var d = di && di.value ? di.value : null;
+        items = items.filter(function (it) { return it.k !== k; }); items.push({ k: k, d: d }); syncPantry(k, true);
+        added.push({ k: k, d: d });
+      });
+      save("rc_kitchen", items); render();
+      var soon = added.filter(function (a) { var n = daysLeft(a.d); return n !== null && n >= 1 && n <= 7; })
+        .sort(function (a, b) { return daysLeft(a.d) - daysLeft(b.d); });
+      scanMsg("<p>&#127881; Added <strong>" + added.length + "</strong> item" + (added.length === 1 ? "" : "s") + " to your kitchen." +
+        (soon.length ? " These go bad first. Tap <strong>&#128276; Remind me</strong> next to any of them in your list to add a calendar reminder: <strong>" +
+          soon.map(function (a) { return esc(labels[a.k].toLowerCase()); }).join(", ") + "</strong>." : "") + "</p>" +
+        '<p><a href="#k-first">See what to cook first &darr;</a></p>');
+    });
+
     listEl.addEventListener("click", function (e) {
       var rb = e.target.closest("[data-remind]");
       if (rb) {
