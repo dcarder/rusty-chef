@@ -115,13 +115,33 @@
       addItem(k, n ? plusDays(n) : null); showAdded(k, n ? plusDays(n) : null);
     });
     var addedEl = document.getElementById("k-added");
+    var UA = navigator.userAgent || "";
+    var isIOS = /iPhone|iPad|iPod/.test(UA) || (/Macintosh/.test(UA) && "ontouchend" in document);
+    var isAndroid = /Android/.test(UA);
+    var inApp = /FBAN|FBAV|Instagram|Line\/|Snapchat|TikTok|Twitter/i.test(UA);
+    var STEPS_IOS = '<div class="ksteps" hidden><p><strong>Almost done! On iPhone, Safari saves the reminder first:</strong></p>' +
+      '<svg viewBox="0 0 300 54" width="300" height="54" role="img" aria-label="Safari address bar with the downloads arrow on the left">' +
+      '<rect x="1" y="7" width="298" height="40" rx="12" fill="#f1f1f3" stroke="#d0d0d5"/>' +
+      '<circle cx="26" cy="27" r="14" fill="#c4532b"/><path d="M26 18v13m-6-6 6 6 6-6M19 35h14" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<text x="52" y="32" font-family="system-ui,sans-serif" font-size="14" fill="#555">therustychef.com</text>' +
+      '</svg>' +
+      '<ol><li>Tap the <strong>&#11015; downloads arrow</strong> on the left of Safari\'s address bar (it may be inside the <strong>&#7424;A</strong> menu).</li>' +
+      '<li>Tap the file that starts with <strong>use-your-</strong>.</li><li>Tap <strong>Add to Calendar</strong>. Done!</li></ol>' +
+      (inApp ? '<p class="muted small">Opened this page from Facebook, Instagram or another app? Open it in Safari first. Calendar files don\'t work inside those apps.</p>' : "") +
+      "</div>";
+    var STEPS_OTHER = '<div class="ksteps" hidden><p>The reminder file is in your downloads. Open it and choose <strong>Add to Calendar</strong> (or <strong>Save</strong>).</p></div>';
     function reminderHTML(k, d) {
       var when = remindDay(d).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
       var file = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsFile(labels[k], d));
-      return '<a class="btn ksmall" href="' + file + '" download="use-your-' + esc(k) + '.ics">Apple / Outlook calendar</a> ' +
-        '<a class="btn ksmall" href="' + esc(googleLink(labels[k], d)) + '" target="_blank" rel="noopener">Google Calendar</a>' +
+      var apple = '<a class="btn ksmall' + (isAndroid ? " btn-ghost" : "") + '" data-cal="apple" href="' + file + '" download="use-your-' + esc(k) + '.ics">' + (isIOS ? "Add to iPhone Calendar" : "Apple / Outlook calendar") + "</a> ";
+      var google = '<a class="btn ksmall' + (isAndroid ? "" : " btn-ghost") + '" href="' + esc(googleLink(labels[k], d)) + '" target="_blank" rel="noopener">Google Calendar</a> ';
+      return (isAndroid ? google + apple : apple + google) + (isIOS ? STEPS_IOS : STEPS_OTHER) +
         '<p class="muted small">Reminder on ' + esc(when) + ' at 9am. Your calendar sends the alert. We never see your phone number or calendar.</p>';
     }
+    root.addEventListener("click", function (e) {
+      var a = e.target.closest('[data-cal="apple"]'); if (!a) return;
+      var box = a.parentNode.querySelector(".ksteps"); if (box) box.hidden = false;
+    });
     function showAdded(k, d) {
       if (!addedEl) return;
       var n = daysLeft(d);
