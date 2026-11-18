@@ -39,19 +39,6 @@
 
     <section class="kpanel">
       <h2>Add to your kitchen</h2>
-      <label class="klabel" for="k-text">&#127908; Say or type what you bought</label>
-      <div class="kadd">
-        <input type="text" id="k-text" placeholder="e.g. eggs, milk, chicken, spinach" autocomplete="off">
-        <button type="button" class="btn btn-ghost" id="k-mic" hidden>&#127908; Speak</button>
-        <button type="button" class="btn" id="k-text-add">Add</button>
-      </div>
-      <p class="muted small" id="k-mic-status" aria-live="polite"></p>
-      <details class="kmulti" id="k-multi-box">
-        <summary>&#9989; Or tick several at once</summary>
-        <div id="k-multi"></div>
-        <p><button type="button" class="btn" id="k-multi-add">Add selected</button></p>
-      </details>
-      <p class="small kquick-label">Or pick one and set its date:</p>
       <div class="kadd">
         <select id="k-item" aria-label="Ingredient"></select>
         <label class="kdate">Use by <input type="date" id="k-date"></label>

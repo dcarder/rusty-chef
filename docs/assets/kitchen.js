@@ -32,67 +32,6 @@
     return Math.round((d - today()) / 86400000);
   }
 
-  // ---- understanding typed or spoken lists ----
-  var EXTRA_WORDS = {
-    "chicken": ["chicken breast", "chicken breasts", "chicken thighs", "rotisserie chicken"],
-    "ground-beef": ["hamburger", "hamburger meat", "ground meat", "beef", "mince"],
-    "sausage": ["sausages", "pepperoni", "kielbasa"],
-    "milk": ["cream", "half and half", "heavy cream"],
-    "green-onion": ["scallion", "scallions", "spring onion", "spring onions"],
-    "parsley": ["cilantro"],
-    "bell-pepper": ["peppers", "red pepper", "red peppers", "green pepper", "green peppers"],
-    "canned-tomatoes": ["tomato", "tomatoes", "tomato sauce", "diced tomatoes", "crushed tomatoes"],
-    "stock": ["broth", "chicken broth", "beef broth", "chicken stock", "beef stock", "vegetable broth"],
-    "pasta": ["noodles", "spaghetti", "penne", "macaroni", "lasagna noodles"],
-    "bread": ["buns", "loaf", "rolls", "bagels", "naan", "pita"],
-    "tortillas": ["wraps"],
-    "cheese": ["cheddar", "mozzarella", "shredded cheese", "cheese slices"],
-    "yogurt": ["yoghurt", "greek yogurt"],
-    "canned-tuna": ["tuna"],
-    "frozen-veg": ["frozen veggies", "mixed vegetables", "peas", "broccoli", "green beans"],
-    "potatoes": ["potato"], "sweet-potato": ["yams"], "onion": ["onions"], "carrot": ["carrot"],
-    "oil": ["vegetable oil", "canola oil"], "orange-juice": ["oj"], "vinegar": ["lime", "limes", "lemon", "lemons"],
-    "parmesan": ["parm"], "ravioli": ["tortellini"], "oats": ["oatmeal"], "ginger": ["ginger"],
-    "black-beans": ["black bean"], "chickpeas": ["garbanzo beans", "chickpea"], "mayo": ["mayo"],
-    "banana": ["banana"], "eggs": ["egg", "dozen eggs"], "ketchup": ["catsup"], "salsa": ["salsa"]
-  };
-  var IGNORE = ["black pepper", "pepper", "water", "ice"];
-  function normText(t) { return " " + String(t).toLowerCase().replace(/&/g, " and ").replace(/[^a-z]+/g, " ").replace(/\s+/g, " ").trim() + " "; }
-  function buildAliases(P) {
-    var list = [];
-    P.forEach(function (p) {
-      var names = p.l.toLowerCase().split(/\s*\/\s*|\s+or\s+/);
-      if (p.l.toLowerCase().indexOf("canned or frozen ") === 0) names.push(p.l.toLowerCase().replace("canned or frozen ", ""));
-      names.forEach(function (n) {
-        n = n.replace(/^(canned|dried|plain|frozen|instant|ground|rolled|cooking) /, function (m) { list.push([n, p.k]); return ""; });
-        list.push([n, p.k]);
-        if (/s$/.test(n)) list.push([n.replace(/(es|s)$/, ""), p.k]); else list.push([n + "s", p.k]);
-      });
-      (EXTRA_WORDS[p.k] || []).forEach(function (w) { list.push([w, p.k]); });
-    });
-    IGNORE.forEach(function (w) { list.push([w, null]); });
-    list.sort(function (a, b) { return b[0].length - a[0].length; });
-    return list;
-  }
-  function parseList(text, aliases) {
-    var found = [], unknown = [];
-    String(text).split(/,|;|&|\n|\band\b|\bplus\b/i).forEach(function (phrase) {
-      var t = normText(phrase), hit = false;
-      if (t.trim() === "") return;
-      aliases.forEach(function (a) {
-        var needle = " " + a[0] + " ", i;
-        while ((i = t.indexOf(needle)) !== -1) {
-          hit = true;
-          if (a[1] && found.indexOf(a[1]) === -1) found.push(a[1]);
-          t = t.slice(0, i) + " " + t.slice(i + needle.length);
-        }
-      });
-      var left = t.replace(/\b(a|an|the|some|of|bag|bags|pack|packs|box|boxes|can|cans|jar|jars|bottle|carton|gallon|lb|lbs|pound|pounds|fresh|organic|large|small|big|few|couple|got|bought|i|we|also|more|new)\b/g, " ").trim();
-      if (!hit || left.length > 2) { if (left.length > 1) unknown.push(left); }
-    });
-    return { found: found, unknown: unknown };
-  }
-
   // ---- calendar reminders (no server: the visitor's own calendar sends the alert) ----
   function pad(n) { return ("0" + n).slice(-2); }
   function remindDay(dstr) { // morning before the use-by date, or that morning if it's tomorrow
@@ -118,10 +57,6 @@
       "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + escI(t.title), "TRIGGER:PT0M", "END:VALARM",
       "END:VEVENT", "END:VCALENDAR"];
     return lines.join("\r\n");
-  }
-  function icsMulti(list) { // list of [label, date]
-    var one = list.map(function (x) { var f = icsFile(x[0], x[1]); return f.slice(f.indexOf("BEGIN:VEVENT"), f.indexOf("END:VCALENDAR")); }).join("");
-    return "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//The Rusty Chef//My Kitchen//EN\r\n" + one + "END:VCALENDAR";
   }
   function googleLink(label, dstr) {
     var d = remindDay(dstr), t = reminderText(label, dstr);
@@ -203,79 +138,6 @@
       return (isAndroid ? google + apple : apple + google) + (isIOS ? STEPS_IOS : STEPS_OTHER) +
         '<p class="muted small">Reminder on ' + esc(when) + ' at 9am. Your calendar sends the alert. We never see your phone number or calendar.</p>';
     }
-    // --- add many at once (typed/spoken list or ticked boxes) ---
-    var aliases = buildAliases(P);
-    function addMany(keys, note) {
-      var added = [];
-      keys.forEach(function (k) {
-        if (!labels[k] || items.some(function (it) { return it.k === k; })) return;
-        var n = SHELF[k];
-        items.push({ k: k, d: n ? plusDays(n) : null }); syncPantry(k, true); added.push(k);
-      });
-      save("rc_kitchen", items); render();
-      var html = "";
-      if (added.length) {
-        html += "<p>&#9989; Added " + added.length + " item" + (added.length === 1 ? "" : "s") + ": <strong>" + added.map(function (k) { return esc(labels[k].toLowerCase()); }).join(", ") +
-          "</strong>, with typical use-by dates. You can change any date in your list below.</p>";
-        var dated = items.filter(function (it) { return added.indexOf(it.k) !== -1 && it.d && daysLeft(it.d) >= 1; });
-        if (dated.length) {
-          var file = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsMulti(dated.map(function (it) { return [labels[it.k], it.d]; })));
-          html += '<p>&#128276; <strong>Add reminders for all of them</strong> to your calendar:</p><a class="btn ksmall" data-cal="apple" href="' + file +
-            '" download="rusty-chef-reminders.ics">' + (isIOS ? "Add to iPhone Calendar" : "Apple / Outlook calendar") + "</a>" + (isIOS ? STEPS_IOS.replace("Tap <strong>Add to Calendar</strong>", "Tap <strong>Add All</strong>").replace("use-your-", "rusty-chef-reminders") : STEPS_OTHER) +
-            '<p class="muted small">Using Google Calendar? Tap &#128276; Remind me next to each item in your list below.</p>';
-        }
-      } else {
-        html += "<p>Those are already in your kitchen.</p>";
-      }
-      if (note) html += note;
-      addedEl.innerHTML = html; addedEl.hidden = false;
-    }
-
-    var textEl = document.getElementById("k-text"), micEl = document.getElementById("k-mic"), micStatus = document.getElementById("k-mic-status");
-    function addFromText() {
-      var r = parseList(textEl.value, aliases);
-      if (!r.found.length) {
-        addedEl.innerHTML = "<p>Rusty didn't recognize any ingredients there. Try simple names like <em>eggs, milk, chicken</em>.</p>"; addedEl.hidden = false; return;
-      }
-      addMany(r.found, r.unknown.length ? '<p class="muted small">Didn\'t recognize: ' + r.unknown.map(esc).join(", ") + ". Those aren't in our ingredient list yet.</p>" : "");
-      textEl.value = "";
-    }
-    document.getElementById("k-text-add").addEventListener("click", addFromText);
-    textEl.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addFromText(); } });
-
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SR && micEl) {
-      micEl.hidden = false;
-      var rec = null, listening = false;
-      micEl.addEventListener("click", function () {
-        if (listening && rec) { rec.stop(); return; }
-        try { rec = new SR(); } catch (err) { micStatus.textContent = "Speech isn't available in this browser. Type your list instead."; return; }
-        rec.lang = "en-US"; rec.interimResults = false; rec.maxAlternatives = 1;
-        rec.onstart = function () { listening = true; micEl.textContent = "\u23F9 Stop"; micStatus.textContent = "Listening... say your groceries, like \"eggs, milk and chicken\"."; };
-        rec.onresult = function (ev) { var said = ev.results[0][0].transcript; textEl.value = said; micStatus.textContent = "Heard: \"" + said + "\""; addFromText(); };
-        rec.onerror = function (ev) { micStatus.textContent = ev.error === "not-allowed" ? "Microphone access was blocked. Allow it in your browser settings, or type your list." : "Didn't catch that. Try again or type your list."; };
-        rec.onend = function () { listening = false; micEl.innerHTML = "&#127908; Speak"; };
-        rec.start();
-      });
-    }
-
-    var multiEl = document.getElementById("k-multi");
-    var MULTI_ORDER = ["Fridge", "Produce", "Grains & pasta", "Cans & jars", "Oils & sauces", "Spices & baking"];
-    var mgroups = MULTI_ORDER.filter(function (g) { return groups[g]; }).concat(order.filter(function (g) { return MULTI_ORDER.indexOf(g) === -1; }));
-    multiEl.innerHTML = mgroups.map(function (g) {
-      return '<fieldset class="kgroup"><legend>' + esc(g) + "</legend>" + groups[g].map(function (p) {
-        return '<label class="kcheck"><input type="checkbox" value="' + esc(p.k) + '"> ' + esc(p.l) + "</label>";
-      }).join("") + "</fieldset>";
-    }).join("");
-    document.getElementById("k-multi-add").addEventListener("click", function () {
-      var keys = [].map.call(multiEl.querySelectorAll("input:checked"), function (c) { return c.value; });
-      if (!keys.length) { addedEl.innerHTML = "<p>Tick at least one item first.</p>"; addedEl.hidden = false; return; }
-      addMany(keys, "");
-      multiEl.querySelectorAll("input:checked").forEach(function (c) { c.checked = false; });
-      document.getElementById("k-multi-box").open = false;
-      addedEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
-
     root.addEventListener("click", function (e) {
       var a = e.target.closest('[data-cal="apple"]'); if (!a) return;
       var box = a.parentNode.querySelector(".ksteps"); if (box) box.hidden = false;
