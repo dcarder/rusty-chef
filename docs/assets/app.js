@@ -546,6 +546,12 @@
     document.addEventListener("rc:scaled", function () { if (!cm.hidden && cmPage === 0) renderCook(); });
   }
 
+
+  // ---------- App install support (service worker shows an offline page when there's no connection) ----------
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("/service-worker.js").catch(function () {}); });
+  }
+
   var RC = window.RC = {};
 
   // ---------- Pantry Tool ----------
