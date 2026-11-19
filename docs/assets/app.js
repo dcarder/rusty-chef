@@ -463,15 +463,26 @@
     updateScale();
   }
 
+  // ---------- Cooking music (opens YouTube Music in its app or a new tab, so it keeps
+  // playing while the visitor cooks, changes pages or locks the phone) ----------
+  // To use your own playlist instead, paste its link here, e.g. "https://music.youtube.com/playlist?list=..."
+  var MUSIC_URL = "https://music.youtube.com/search?q=cooking+music+playlist";
+  function musicLink(cls, text) {
+    return '<a class="' + cls + '" href="' + MUSIC_URL + '" target="_blank" rel="noopener" data-music>' + text + "</a>";
+  }
+  var kitchenFirst = document.getElementById("k-first");
+  if (kitchenFirst) kitchenFirst.insertAdjacentHTML("beforebegin",
+    '<p class="music-row">' + musicLink("btn btn-ghost btn-sm btn-music", "&#127925; Cooking music") + ' <span class="muted small">Opens YouTube Music so it keeps playing while you cook.</span></p>');
+
   // ---------- Cook mode (recipe pages) ----------
   var stepEls = card ? card.querySelectorAll(".steps li") : [];
   if (card && stepEls.length) {
     var title = (card.querySelector("h2") || document.querySelector("h1") || {}).textContent || "Recipe";
     var openBtnHTML = '<button type="button" class="btn btn-cook" data-cook>&#128104;&#8205;&#127859; Cook mode</button>';
     var actions = document.querySelector(".actions");
-    if (actions) actions.insertAdjacentHTML("afterbegin", openBtnHTML);
+    if (actions) actions.insertAdjacentHTML("afterbegin", openBtnHTML + musicLink("btn btn-ghost btn-music", "&#127925; Cooking music"));
     var stepsHead = Array.prototype.filter.call(card.querySelectorAll("h3"), function (h) { return /instructions/i.test(h.textContent); })[0];
-    if (stepsHead) stepsHead.insertAdjacentHTML("afterend", '<p>' + openBtnHTML.replace("btn btn-cook", "btn btn-cook btn-sm") + ' <span class="muted small">Big text, one step at a time, screen stays on.</span></p>');
+    if (stepsHead) stepsHead.insertAdjacentHTML("afterend", '<p>' + openBtnHTML.replace("btn btn-cook", "btn btn-cook btn-sm") + " " + musicLink("btn btn-ghost btn-sm btn-music", "&#127925; Music") + ' <span class="muted small">Big text, one step at a time, screen stays on.</span></p>');
 
     var cm = document.createElement("div");
     cm.className = "cook-mode"; cm.hidden = true;
@@ -498,7 +509,7 @@
           '<div class="cm-step">' + stepEls[cmPage - 1].innerHTML + "</div>";
       }
       cm.innerHTML =
-        '<div class="cm-top"><span class="cm-title">' + esc(title.trim()) + '</span><button type="button" class="cm-close" data-cm="close" aria-label="Exit cook mode">&times; Exit</button></div>' +
+        '<div class="cm-top"><span class="cm-title">' + esc(title.trim()) + '</span>' + musicLink("cm-music", "&#127925; Music") + '<button type="button" class="cm-close" data-cm="close" aria-label="Exit cook mode">&times; Exit</button></div>' +
         '<div class="cm-progress"><span style="width:' + Math.round(cmPage / (total - 1) * 100) + '%"></span></div>' +
         '<div class="cm-body">' + body + "</div>" +
         '<div class="cm-nav"><button type="button" class="btn btn-ghost" data-cm="prev"' + (cmPage === 0 ? " disabled" : "") + '>&larr; Back</button>' +
