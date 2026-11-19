@@ -85,6 +85,7 @@ window.RC_WALMART = {
   "orange-juice": { id: "", qty: 1, search: "Orange juice" },
   "tortilla-chips": { id: "", qty: 1, search: "Tortilla chips" },
   "ginger": { id: "", qty: 1, search: "Ground ginger" },
+  "pork-chops": { id: "", qty: 1, search: "Bone-in pork chops" },
   "ground-beef": { id: "", qty: 1, search: "Ground beef" },
   "cream-cheese": { id: "", qty: 1, search: "Cream cheese" },
   "corn": { id: "", qty: 1, search: "Canned or frozen corn" },
