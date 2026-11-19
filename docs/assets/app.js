@@ -466,7 +466,7 @@
   // ---------- Cooking music (opens YouTube Music in its app or a new tab, so it keeps
   // playing while the visitor cooks, changes pages or locks the phone) ----------
   // To use your own playlist instead, paste its link here, e.g. "https://music.youtube.com/playlist?list=..."
-  var MUSIC_URL = "https://music.youtube.com/search?q=cooking+music+playlist";
+  var MUSIC_URL = "https://music.youtube.com/search?q=90s+pop+hits+playlist";
   function musicLink(cls, text) {
     return '<a class="' + cls + '" href="' + MUSIC_URL + '" target="_blank" rel="noopener" data-music>' + text + "</a>";
   }
