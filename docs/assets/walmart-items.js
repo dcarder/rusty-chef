@@ -48,6 +48,7 @@ window.RC_WALMART = {
   "honey": { id: "", qty: 1, search: "Honey" },
   "salt": { id: "", qty: 1, search: "Salt" },
   "sugar": { id: "", qty: 1, search: "Sugar" },
+  "brown-sugar": { id: "", qty: 1, search: "Brown sugar" },
   "curry-powder": { id: "", qty: 1, search: "Curry powder" },
   "cumin": { id: "", qty: 1, search: "Cumin" },
   "chili-powder": { id: "", qty: 1, search: "Chili powder" },

@@ -90,7 +90,8 @@
     "cumin": ["cumin"],
     "paprika": ["paprika"],
     "chili-flakes": ["red pepper flakes", "crushed red pepper", "chili flakes"],
-    "sugar": ["brown sugar", "powdered sugar", "granulated", "gran sugar", "sugar", "sugr"],
+    "brown-sugar": ["brown sugar", "brwn sugar", "lt brown sugar", "dk brown sugar"],
+    "sugar": ["powdered sugar", "granulated", "gran sugar", "sugar", "sugr"],
     "salt": ["sea salt", "kosher salt", "iodized", "salt"]
   };
   WORDS[""] = ["salted caramel", "salt and vinegar", "sugar free", "cheese its", "cheez it", "mac and cheese", "pepper jack chips",
