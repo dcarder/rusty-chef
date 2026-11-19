@@ -463,16 +463,41 @@
     updateScale();
   }
 
-  // ---------- Cooking music (opens YouTube Music in its app or a new tab, so it keeps
-  // playing while the visitor cooks, changes pages or locks the phone) ----------
-  // To use your own playlist instead, paste its link here, e.g. "https://music.youtube.com/playlist?list=..."
-  var MUSIC_URL = "https://music.youtube.com/search?q=90s+pop+hits+playlist";
+  // ---------- Cooking music: a small 90s pop player that plays right on the page ----------
+  // To change the music, paste a different YouTube playlist ID here (the part after "list=").
+  var MUSIC_LIST = "PLjF50Dlp9ien46jbgGbUfHcbtHQmrPSbr"; // 90s Pop Hits Playlist - Classic 1990s Pop Hits
+  var MUSIC_APP_URL = "https://music.youtube.com/playlist?list=" + MUSIC_LIST;
   function musicLink(cls, text) {
-    return '<a class="' + cls + '" href="' + MUSIC_URL + '" target="_blank" rel="noopener" data-music>' + text + "</a>";
+    return '<button type="button" class="' + cls + '" data-music>' + text + "</button>";
   }
+  var musicEl = null;
+  function openMusic() {
+    if (musicEl) { musicEl.hidden = false; return; }
+    musicEl = document.createElement("div");
+    musicEl.className = "music-player"; musicEl.setAttribute("role", "region"); musicEl.setAttribute("aria-label", "Cooking music");
+    musicEl.innerHTML =
+      '<div class="mp-top"><span class="mp-title">&#127925; 90s Pop</span>' +
+      '<button type="button" class="mp-btn" data-mp="min" aria-label="Make the player smaller" aria-pressed="false">&#8212;</button>' +
+      '<button type="button" class="mp-btn" data-mp="close" aria-label="Stop music and close">&times;</button></div>' +
+      '<div class="mp-video"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=' + MUSIC_LIST +
+        '&amp;autoplay=1&amp;playsinline=1&amp;rel=0" title="90s pop music player" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>' +
+      '<p class="mp-note">Plays while you\'re on this page. To keep it going in the background, <a href="' + MUSIC_APP_URL + '" target="_blank" rel="noopener">open in YouTube Music</a>.</p>';
+    document.body.appendChild(musicEl);
+    musicEl.addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-mp]"); if (!b) return;
+      if (b.getAttribute("data-mp") === "close") { musicEl.remove(); musicEl = null; return; }
+      var small = musicEl.classList.toggle("mp-small");
+      b.setAttribute("aria-pressed", small ? "true" : "false");
+      b.innerHTML = small ? "&#9633;" : "&#8212;";
+      b.setAttribute("aria-label", small ? "Make the player bigger" : "Make the player smaller");
+    });
+  }
+  document.addEventListener("click", function (ev) {
+    if (ev.target.closest && ev.target.closest("[data-music]")) { ev.preventDefault(); openMusic(); }
+  });
   var kitchenFirst = document.getElementById("k-first");
   if (kitchenFirst) kitchenFirst.insertAdjacentHTML("beforebegin",
-    '<p class="music-row">' + musicLink("btn btn-ghost btn-sm btn-music", "&#127925; Cooking music") + ' <span class="muted small">Opens YouTube Music so it keeps playing while you cook.</span></p>');
+    '<p class="music-row">' + musicLink("btn btn-ghost btn-sm btn-music", "&#127925; Cooking music") + ' <span class="muted small">90s pop while you cook.</span></p>');
 
   // ---------- Cook mode (recipe pages) ----------
   var stepEls = card ? card.querySelectorAll(".steps li") : [];
