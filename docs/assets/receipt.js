@@ -122,9 +122,9 @@
     return d + (la - i) + (lb - j) <= 1;
   }
 
-  // Returns { found: [keys], unmatched: [item names that looked like groceries] }
+  // Returns { found: [keys], counts: {key: how many lines}, unmatched: [item names that looked like groceries] }
   function parseReceipt(text) {
-    var found = [], unmatched = [];
+    var found = [], counts = {}, unmatched = [];
     String(text).split(/\r?\n/).forEach(function (line) {
       if (!/[a-z]{2}/i.test(line) || SKIP.test(line)) return;
       var t = norm(line), hit;
@@ -139,7 +139,7 @@
           for (var q = 0; q < toks.length; q++) if (toks[q].length >= 5 && lev1(toks[q], w)) { hit = LIST[m][1]; break; }
         }
       }
-      if (hit) { if (found.indexOf(hit) === -1) found.push(hit); return; }
+      if (hit) { if (found.indexOf(hit) === -1) found.push(hit); counts[hit] = (counts[hit] || 0) + 1; return; }
       if (hit === null) return;
       // Looks like an item line (has a price) but we don't know it.
       if (/\d+[.,]\d{2}/.test(line)) {
@@ -147,7 +147,7 @@
         if (name.length >= 3 && unmatched.length < 12) unmatched.push(name);
       }
     });
-    return { found: found, unmatched: unmatched };
+    return { found: found, counts: counts, unmatched: unmatched };
   }
 
   if (typeof window !== "undefined") window.RC_RECEIPT = { parse: parseReceipt };

@@ -561,12 +561,43 @@
     window.RC_PANTRY.forEach(function (p) { if (!groups[p.g]) { groups[p.g] = []; order.push(p.g); } groups[p.g].push(p); });
     var labels = {}; window.RC_PANTRY.forEach(function (p) { labels[p.k] = p.l; });
 
+    // How many of each ticked item. Items in My Kitchen keep their count there
+    // (rc_kitchen) so both pages always show the same number; others use rc_pantry_qty.
+    function getQty(k) {
+      var kit = load("rc_kitchen", []), it = kit.filter(function (x) { return x && x.k === k; })[0];
+      if (it) return Math.max(1, parseInt(it.q, 10) || 1);
+      return Math.max(1, parseInt(load("rc_pantry_qty", {})[k], 10) || 1);
+    }
+    function setQty(k, n) {
+      n = Math.max(1, Math.min(99, n));
+      var kit = load("rc_kitchen", []), inKit = false;
+      kit.forEach(function (x) { if (x && x.k === k) { x.q = n; inKit = true; } });
+      if (inKit) save("rc_kitchen", kit);
+      var m = load("rc_pantry_qty", {});
+      if (n > 1) m[k] = n; else delete m[k];
+      save("rc_pantry_qty", m);
+    }
+    function stepHTML(k, l) {
+      var n = getQty(k);
+      return '<button type="button" class="kstep-btn" data-pq="' + esc(k) + '" data-step="-1" aria-label="One less ' + esc(l) + '"' + (n <= 1 ? " disabled" : "") + '>&minus;</button>' +
+        '<span class="kstep-n" aria-live="polite">' + n + "</span>" +
+        '<button type="button" class="kstep-btn" data-pq="' + esc(k) + '" data-step="1" aria-label="One more ' + esc(l) + '"' + (n >= 99 ? " disabled" : "") + ">+</button>";
+    }
     groupsEl.innerHTML = order.map(function (g) {
       return '<div class="pantry-group"><h3>' + esc(g) + "</h3>" + groups[g].map(function (p) {
-        return '<label data-label="' + esc(p.l.toLowerCase()) + '"><input type="checkbox" value="' + esc(p.k) + '"' +
-          (have.indexOf(p.k) !== -1 ? " checked" : "") + "> " + esc(p.l) + "</label>";
+        var on = have.indexOf(p.k) !== -1;
+        return '<div class="pantry-item" data-label="' + esc(p.l.toLowerCase()) + '"><label><input type="checkbox" value="' + esc(p.k) + '"' +
+          (on ? " checked" : "") + "> " + esc(p.l) + "</label>" +
+          '<span class="kstep pstep" role="group" aria-label="How many ' + esc(p.l) + '" data-pstep="' + esc(p.k) + '"' + (on ? "" : " hidden") + ">" +
+          (on ? stepHTML(p.k, p.l) : "") + "</span></div>";
       }).join("") + "</div>";
     }).join("");
+    groupsEl.addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-pq]"); if (!b) return;
+      var k = b.getAttribute("data-pq");
+      setQty(k, getQty(k) + (+b.getAttribute("data-step")));
+      b.parentNode.innerHTML = stepHTML(k, labels[k]);
+    });
 
     // quick filters
     var chipsEl = document.getElementById("pantry-filters"), filters = load("rc_pantry_filters", []);
@@ -637,17 +668,20 @@
       var k = ev.target.value, i = have.indexOf(k);
       if (ev.target.checked && i === -1) have.push(k);
       if (!ev.target.checked && i !== -1) have.splice(i, 1);
+      var st = groupsEl.querySelector('[data-pstep="' + k + '"]');
+      if (st) { st.hidden = !ev.target.checked; st.innerHTML = ev.target.checked ? stepHTML(k, labels[k]) : ""; }
       save("rc_pantry", have); render();
     });
     document.getElementById("pantry-filter").addEventListener("input", function (ev) {
       var q = ev.target.value.trim().toLowerCase();
-      groupsEl.querySelectorAll("label").forEach(function (l) {
+      groupsEl.querySelectorAll(".pantry-item").forEach(function (l) {
         l.style.display = !q || l.getAttribute("data-label").indexOf(q) !== -1 ? "" : "none";
       });
     });
     document.getElementById("pantry-clear").addEventListener("click", function () {
-      have = []; save("rc_pantry", have);
-      groupsEl.querySelectorAll("input").forEach(function (c) { c.checked = false; }); render();
+      have = []; save("rc_pantry", have); save("rc_pantry_qty", {});
+      groupsEl.querySelectorAll("input").forEach(function (c) { c.checked = false; });
+      groupsEl.querySelectorAll("[data-pstep]").forEach(function (st) { st.hidden = true; st.innerHTML = ""; }); render();
     });
     render();
   };

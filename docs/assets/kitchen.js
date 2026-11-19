@@ -3,6 +3,7 @@
    then see what to cook first.
    Saved in this browser only (localStorage "rc_kitchen").
    Items added here are also ticked in the Pantry Tool.
+   Each item is { k: key, d: use-by date, q: how many }.
    ================================================================ */
 (function () {
   "use strict";
@@ -72,7 +73,11 @@
     P.forEach(function (p) { labels[p.k] = p.l; if (!groups[p.g]) { groups[p.g] = []; order.push(p.g); } groups[p.g].push(p); });
 
     var items = load("rc_kitchen", []).filter(function (it) { return it && labels[it.k]; });
+    items.forEach(function (it) { it.q = Math.max(1, Math.min(99, parseInt(it.q, 10) || 1)); });
+    function qtyOf(v) { return Math.max(1, Math.min(99, parseInt(v, 10) || 1)); }
+    function earlier(a, b) { if (!a) return b || null; if (!b) return a; return a < b ? a : b; }
     var selEl = document.getElementById("k-item"), dateEl = document.getElementById("k-date"), hintEl = document.getElementById("k-hint");
+    var qtyEl = document.getElementById("k-qty");
     var listEl = document.getElementById("k-list"), firstEl = document.getElementById("k-first"), quickEl = document.getElementById("k-quick");
 
     selEl.innerHTML = '<option value="">Pick an ingredient&hellip;</option>' + order.map(function (g) {
@@ -96,23 +101,30 @@
       if (!add && i !== -1) have.splice(i, 1);
       save("rc_pantry", have);
     }
-    function addItem(k, d) {
+    // Adding something you already have adds to how many you have,
+    // and keeps the sooner use-by date so it still gets cooked first.
+    function putItem(k, d, q) {
+      var old = items.filter(function (it) { return it.k === k; })[0];
+      if (old) { old.q = Math.min(99, old.q + q); old.d = earlier(old.d, d || null); }
+      else items.push({ k: k, d: d || null, q: q });
+      syncPantry(k, true);
+    }
+    function addItem(k, d, q) {
       if (!labels[k]) return;
-      items = items.filter(function (it) { return it.k !== k; });
-      items.push({ k: k, d: d || null });
-      save("rc_kitchen", items); syncPantry(k, true); render();
+      putItem(k, d, qtyOf(q));
+      save("rc_kitchen", items); render();
     }
 
     document.getElementById("k-add").addEventListener("click", function () {
       if (!selEl.value) { hintEl.textContent = "Pick an ingredient first."; return; }
-      var nk = selEl.value, nd = dateEl.value;
-      addItem(nk, nd); showAdded(nk, nd);
-      selEl.value = ""; dateEl.value = ""; hintEl.textContent = "";
+      var nk = selEl.value, nd = dateEl.value, nq = qtyOf(qtyEl && qtyEl.value);
+      addItem(nk, nd, nq); showAdded(nk, nd, nq);
+      selEl.value = ""; dateEl.value = ""; hintEl.textContent = ""; if (qtyEl) qtyEl.value = 1;
     });
     quickEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-quick]"); if (!b) return;
       var k = b.getAttribute("data-quick"), n = SHELF[k];
-      addItem(k, n ? plusDays(n) : null); showAdded(k, n ? plusDays(n) : null);
+      addItem(k, n ? plusDays(n) : null, 1); showAdded(k, n ? plusDays(n) : null, 1);
     });
     var addedEl = document.getElementById("k-added");
     var UA = navigator.userAgent || "";
@@ -142,13 +154,14 @@
       var a = e.target.closest('[data-cal="apple"]'); if (!a) return;
       var box = a.parentNode.querySelector(".ksteps"); if (box) box.hidden = false;
     });
-    function showAdded(k, d) {
+    function showAdded(k, d, q) {
       if (!addedEl) return;
-      var n = daysLeft(d);
+      var n = daysLeft(d), cur = items.filter(function (it) { return it.k === k; })[0];
+      var have = cur && cur.q > q ? " You now have <strong>" + cur.q + "</strong>." : "";
       if (n === null || n < 1) {
-        addedEl.innerHTML = "<p>&#9989; Added <strong>" + esc(labels[k]) + "</strong> to your kitchen.</p>";
+        addedEl.innerHTML = "<p>&#9989; Added " + (q > 1 ? q + " " : "") + "<strong>" + esc(labels[k]) + "</strong> to your kitchen." + have + "</p>";
       } else {
-        addedEl.innerHTML = "<p>&#9989; Added <strong>" + esc(labels[k]) + "</strong>. &#128276; <strong>Add a reminder to your calendar</strong> so you don't forget it:</p>" + reminderHTML(k, d);
+        addedEl.innerHTML = "<p>&#9989; Added " + (q > 1 ? q + " " : "") + "<strong>" + esc(labels[k]) + "</strong>." + have + " &#128276; <strong>Add a reminder to your calendar</strong> so you don't forget it:</p>" + reminderHTML(k, d);
       }
       addedEl.hidden = false;
     }
@@ -215,8 +228,9 @@
         return;
       }
       var rows = found.map(function (k) {
-        var n = SHELF[k], d = n ? plusDays(n) : "";
+        var n = SHELF[k], d = n ? plusDays(n) : "", c = (res.counts && res.counts[k]) || 1;
         return '<li><label><input type="checkbox" checked data-scan="' + esc(k) + '"> <strong>' + esc(labels[k]) + "</strong></label>" +
+          ' <label class="kqtylbl">&times; <input type="number" class="kqty-in" min="1" max="99" inputmode="numeric" aria-label="How many ' + esc(labels[k]) + '" data-scan-qty="' + esc(k) + '" value="' + c + '"></label>' +
           '<input type="date" aria-label="Use-by date for ' + esc(labels[k]) + '" data-scan-date="' + esc(k) + '" value="' + d + '"></li>';
       }).join("");
       var un = res.unmatched.length ? '<details class="kunmatched"><summary>' + res.unmatched.length + " line" + (res.unmatched.length === 1 ? "" : "s") +
@@ -238,14 +252,16 @@
       var added = [];
       scanEl.querySelectorAll("[data-scan]:checked").forEach(function (cb) {
         var k = cb.getAttribute("data-scan"), di = scanEl.querySelector('[data-scan-date="' + k + '"]');
-        var d = di && di.value ? di.value : null;
-        items = items.filter(function (it) { return it.k !== k; }); items.push({ k: k, d: d }); syncPantry(k, true);
-        added.push({ k: k, d: d });
+        var d = di && di.value ? di.value : null, qi = scanEl.querySelector('[data-scan-qty="' + k + '"]');
+        var q = qtyOf(qi && qi.value);
+        putItem(k, d, q);
+        added.push({ k: k, d: d, q: q });
       });
       save("rc_kitchen", items); render();
       var soon = added.filter(function (a) { var n = daysLeft(a.d); return n !== null && n >= 1 && n <= 7; })
         .sort(function (a, b) { return daysLeft(a.d) - daysLeft(b.d); });
-      scanMsg("<p>&#127881; Added <strong>" + added.length + "</strong> item" + (added.length === 1 ? "" : "s") + " to your kitchen." +
+      var total = added.reduce(function (t, a) { return t + a.q; }, 0);
+      scanMsg("<p>&#127881; Added <strong>" + total + "</strong> item" + (total === 1 ? "" : "s") + " to your kitchen." +
         (soon.length ? " These go bad first. Tap <strong>&#128276; Remind me</strong> next to any of them in your list to add a calendar reminder: <strong>" +
           soon.map(function (a) { return esc(labels[a.k].toLowerCase()); }).join(", ") + "</strong>." : "") + "</p>" +
         '<p><a href="#k-first">See what to cook first &darr;</a></p>');
@@ -260,6 +276,13 @@
         if (!panel.hidden) { panel.hidden = true; rb.setAttribute("aria-expanded", "false"); return; }
         panel.innerHTML = '<p>&#128276; Add a reminder to your phone\'s calendar:</p>' + reminderHTML(rk, it.d);
         panel.hidden = false; rb.setAttribute("aria-expanded", "true");
+        return;
+      }
+      var qb = e.target.closest("[data-qty]");
+      if (qb) {
+        var qk = qb.getAttribute("data-qty"), step = +qb.getAttribute("data-step");
+        items.forEach(function (it) { if (it.k === qk) it.q = Math.max(1, Math.min(99, it.q + step)); });
+        save("rc_kitchen", items); render();
         return;
       }
       var b = e.target.closest("[data-used]"); if (!b) return;
@@ -289,14 +312,19 @@
     }
 
     function render() {
-      var sorted = items.map(function (it) { return { k: it.k, d: it.d, n: daysLeft(it.d) }; })
+      var sorted = items.map(function (it) { return { k: it.k, d: it.d, q: it.q, n: daysLeft(it.d) }; })
         .sort(function (a, b) { var x = a.n === null ? 9999 : a.n, y = b.n === null ? 9999 : b.n; return x - y || labels[a.k].localeCompare(labels[b.k]); });
 
       listEl.innerHTML = sorted.length ? sorted.map(function (it) {
-        return '<li class="krow"><div class="kname"><strong>' + esc(labels[it.k]) + "</strong>" + badge(it.n) + "</div>" +
-          '<div class="kactions"><input type="date" aria-label="Use-by date for ' + esc(labels[it.k]) + '" data-date="' + esc(it.k) + '" value="' + esc(it.d || "") + '">' +
+        var lbl = esc(labels[it.k]);
+        return '<li class="krow"><div class="kname"><strong>' + lbl + "</strong>" + (it.q > 1 ? '<span class="kcount">&times;' + it.q + "</span>" : "") + badge(it.n) + "</div>" +
+          '<div class="kactions"><span class="kstep" role="group" aria-label="How many ' + lbl + '">' +
+          '<button type="button" class="kstep-btn" data-qty="' + esc(it.k) + '" data-step="-1" aria-label="One less ' + lbl + '"' + (it.q <= 1 ? " disabled" : "") + '>&minus;</button>' +
+          '<span class="kstep-n" aria-live="polite">' + it.q + "</span>" +
+          '<button type="button" class="kstep-btn" data-qty="' + esc(it.k) + '" data-step="1" aria-label="One more ' + lbl + '"' + (it.q >= 99 ? " disabled" : "") + ">+</button></span>" +
+          '<input type="date" aria-label="Use-by date for ' + esc(labels[it.k]) + '" data-date="' + esc(it.k) + '" value="' + esc(it.d || "") + '">' +
           (it.n !== null && it.n >= 1 ? '<button type="button" class="btn btn-ghost ksmall" data-remind="' + esc(it.k) + '" aria-expanded="false">&#128276; Remind me</button>' : "") +
-          '<button type="button" class="btn btn-ghost ksmall" data-used="' + esc(it.k) + '">&#10003; Used it</button></div>' +
+          '<button type="button" class="btn btn-ghost ksmall" data-used="' + esc(it.k) + '">&#10003; ' + (it.q > 1 ? "Used them all" : "Used it") + '</button></div>' +
           '<div class="kremind" id="kr-' + esc(it.k) + '" hidden></div></li>';
       }).join("") : '<li class="muted">Nothing here yet. Add what you just bought, or tap a quick-add button.</li>';
 

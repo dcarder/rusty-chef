@@ -68,6 +68,10 @@ main.wide{max-width:1100px}
 .pantry-group h3{margin:0 0 6px;font-size:1rem}
 .pantry-group label{display:flex;gap:8px;align-items:center;font-family:var(--sans);font-size:.95rem;padding:3px 0;cursor:pointer}
 .pantry-group input{width:18px;height:18px;accent-color:var(--rust)}
+.pantry-item{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pantry-item label{flex:1}
+.pstep .kstep-btn{width:28px;height:28px}.pstep .kstep-n{font-family:var(--sans);font-size:.9rem}
+.kstep[hidden]{display:none}
 .result{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:12px}
 .result h3{margin:0 0 4px;font-size:1.1rem}
 .bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin:6px 0} .bar span{display:block;height:100%;background:var(--rust)}
@@ -253,7 +257,7 @@ body:has(.timer-dock:not([hidden])) .toast{bottom:84px}
 .klist{list-style:none;padding:0;margin:0 0 12px;font-family:var(--sans)}
 .krow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
 .kname{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.kactions{display:flex;gap:8px;align-items:center}
+.kactions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .ksmall{font-size:.85rem;padding:6px 10px}
 .kbadge{font-size:.8rem;padding:2px 9px;border-radius:999px;font-weight:600}
 .k-bad{background:#fbe0d9;color:#8a2412}.k-warn{background:#fdf0cf;color:#7a5306}.k-ok{background:#e3f1df;color:#2d5f27}
@@ -264,6 +268,14 @@ body:has(.timer-dock:not([hidden])) .toast{bottom:84px}
 .kremind{flex-basis:100%;background:#fff7e0;border:1px solid #f0d58a;border-radius:10px;padding:8px 12px;font-family:var(--sans);font-size:.92rem}.kremind p{margin:0 0 8px}.kremind .btn{margin:0 6px 6px 0}
 .ktop{margin-top:10px}
 .ksteps{background:#fff;border:1px dashed #c4532b;border-radius:10px;padding:8px 12px;margin:4px 0 8px}.ksteps ol{margin:6px 0 4px;padding-left:20px}.ksteps li{margin:3px 0}.ksteps svg{max-width:100%;height:auto;display:block;margin:4px 0}
+
+.kqty-in{width:4.2em}
+.kcount{font-weight:700;color:#c4532b}
+.kstep{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}
+.kstep-btn{font:inherit;font-size:1.1rem;line-height:1;width:34px;height:34px;border:0;background:transparent;color:#c4532b;cursor:pointer}
+.kstep-btn:disabled{color:#ccc;cursor:default}
+.kstep-n{min-width:1.6em;text-align:center;font-weight:700}
+.kqtylbl{white-space:nowrap}
 
 /* receipt scanning */
 .kscan { border-color: #c4532b; }
