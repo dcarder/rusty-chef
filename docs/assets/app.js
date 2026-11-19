@@ -463,33 +463,86 @@
     updateScale();
   }
 
-  // ---------- Cooking music: a small 90s pop player that plays right on the page ----------
-  // To change the music, paste a different YouTube playlist ID here (the part after "list=").
-  var MUSIC_LIST = "PLjF50Dlp9ien46jbgGbUfHcbtHQmrPSbr"; // 90s Pop Hits Playlist - Classic 1990s Pop Hits
-  var MUSIC_APP_URL = "https://music.youtube.com/playlist?list=" + MUSIC_LIST;
+  // ---------- Cooking music: a small player that plays right on the page ----------
+  // Default is 90s pop. Visitors can paste their own YouTube / YouTube Music playlist
+  // (or a single song) and it's remembered in their browser (localStorage "rc_music").
+  var MUSIC_DEFAULT = { t: "list", id: "PLjF50Dlp9ien46jbgGbUfHcbtHQmrPSbr", name: "90s Pop" }; // 90s Pop Hits Playlist
+  function myMusic() {
+    var m = load("rc_music", null);
+    return m && /^[A-Za-z0-9_-]{10,64}$/.test(m.id) && (m.t === "list" || m.t === "video") ? m : MUSIC_DEFAULT;
+  }
+  // Understands links like music.youtube.com/playlist?list=..., youtube.com/watch?v=...&list=...,
+  // youtu.be/ID, youtube.com/shorts/ID, or just a pasted playlist ID.
+  function parseMusic(txt) {
+    txt = String(txt || "").trim();
+    var m = txt.match(/[?&]list=([A-Za-z0-9_-]{10,64})/);
+    if (m && !/^RD/.test(m[1])) return { t: "list", id: m[1] };
+    m = txt.match(/[?&]v=([A-Za-z0-9_-]{11})/) || txt.match(/youtu\.be\/([A-Za-z0-9_-]{11})/) || txt.match(/\/(?:shorts|embed|live)\/([A-Za-z0-9_-]{11})/);
+    if (m) return { t: "video", id: m[1] };
+    if (/^(PL|OLAK5uy_|UU|LL|FL)[A-Za-z0-9_-]{8,62}$/.test(txt)) return { t: "list", id: txt };
+    return null;
+  }
+  function musicSrc(m) {
+    var base = "https://www.youtube-nocookie.com/embed/";
+    var q = "autoplay=1&amp;playsinline=1&amp;rel=0";
+    return m.t === "list" ? base + "videoseries?list=" + m.id + "&amp;" + q : base + m.id + "?" + q + "&amp;loop=1&amp;playlist=" + m.id;
+  }
+  function musicAppUrl(m) {
+    return m.t === "list" ? "https://music.youtube.com/playlist?list=" + m.id : "https://music.youtube.com/watch?v=" + m.id;
+  }
   function musicLink(cls, text) {
     return '<button type="button" class="' + cls + '" data-music>' + text + "</button>";
   }
   var musicEl = null;
+  function playerBody(m) {
+    return '<div class="mp-video"><iframe src="' + musicSrc(m) + '" title="Music player: ' + esc(m.name || "My music") +
+        '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>' +
+      '<p class="mp-note">Plays while you\'re on this page. To keep it going in the background, <a href="' + musicAppUrl(m) + '" target="_blank" rel="noopener">open in YouTube Music</a>.' +
+      ' <button type="button" class="mp-link" data-mp="change">&#127926; Use my own music</button></p>' +
+      '<form class="mp-change" hidden><label for="mp-url">Paste a YouTube or YouTube Music link to a playlist or song:</label>' +
+      '<input type="text" inputmode="url" id="mp-url" placeholder="https://music.youtube.com/playlist?list=..." autocomplete="off">' +
+      '<p class="mp-err" aria-live="polite"></p>' +
+      '<div class="mp-row"><button type="submit" class="mp-go">Play it</button>' +
+      (m !== MUSIC_DEFAULT ? '<button type="button" class="mp-link" data-mp="reset">Back to 90s pop</button>' : "") +
+      '</div><p class="mp-help">In YouTube Music: open the playlist or song, tap <strong>Share</strong> &rarr; <strong>Copy link</strong>, then paste it here. We\'ll remember it on this device.</p></form>';
+  }
+  function renderPlayer() {
+    var m = myMusic();
+    musicEl.querySelector(".mp-title").innerHTML = "&#127925; " + esc(m.name || "My music");
+    musicEl.querySelector(".mp-body").innerHTML = playerBody(m);
+  }
   function openMusic() {
     if (musicEl) { musicEl.hidden = false; return; }
     musicEl = document.createElement("div");
     musicEl.className = "music-player"; musicEl.setAttribute("role", "region"); musicEl.setAttribute("aria-label", "Cooking music");
     musicEl.innerHTML =
-      '<div class="mp-top"><span class="mp-title">&#127925; 90s Pop</span>' +
+      '<div class="mp-top"><span class="mp-title"></span>' +
       '<button type="button" class="mp-btn" data-mp="min" aria-label="Make the player smaller" aria-pressed="false">&#8212;</button>' +
       '<button type="button" class="mp-btn" data-mp="close" aria-label="Stop music and close">&times;</button></div>' +
-      '<div class="mp-video"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=' + MUSIC_LIST +
-        '&amp;autoplay=1&amp;playsinline=1&amp;rel=0" title="90s pop music player" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>' +
-      '<p class="mp-note">Plays while you\'re on this page. To keep it going in the background, <a href="' + MUSIC_APP_URL + '" target="_blank" rel="noopener">open in YouTube Music</a>.</p>';
+      '<div class="mp-body"></div>';
     document.body.appendChild(musicEl);
+    renderPlayer();
     musicEl.addEventListener("click", function (ev) {
       var b = ev.target.closest("[data-mp]"); if (!b) return;
-      if (b.getAttribute("data-mp") === "close") { musicEl.remove(); musicEl = null; return; }
+      var act = b.getAttribute("data-mp");
+      if (act === "close") { musicEl.remove(); musicEl = null; return; }
+      if (act === "change") {
+        var f = musicEl.querySelector(".mp-change"); f.hidden = !f.hidden;
+        if (!f.hidden) { musicEl.classList.remove("mp-small"); f.querySelector("input").focus(); }
+        return;
+      }
+      if (act === "reset") { try { localStorage.removeItem("rc_music"); } catch (e) {} renderPlayer(); return; }
       var small = musicEl.classList.toggle("mp-small");
       b.setAttribute("aria-pressed", small ? "true" : "false");
       b.innerHTML = small ? "&#9633;" : "&#8212;";
       b.setAttribute("aria-label", small ? "Make the player bigger" : "Make the player smaller");
+    });
+    musicEl.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var inp = musicEl.querySelector("#mp-url"), m = parseMusic(inp.value);
+      if (!m) { musicEl.querySelector(".mp-err").textContent = "That doesn't look like a YouTube playlist or song link. Try copying it again with Share \u2192 Copy link."; return; }
+      m.name = m.t === "list" ? "My playlist" : "My song";
+      save("rc_music", m); renderPlayer();
     });
   }
   document.addEventListener("click", function (ev) {
@@ -497,7 +550,7 @@
   });
   var kitchenFirst = document.getElementById("k-first");
   if (kitchenFirst) kitchenFirst.insertAdjacentHTML("beforebegin",
-    '<p class="music-row">' + musicLink("btn btn-ghost btn-sm btn-music", "&#127925; Cooking music") + ' <span class="muted small">90s pop while you cook.</span></p>');
+    '<p class="music-row">' + musicLink("btn btn-ghost btn-sm btn-music", "&#127925; Cooking music") + ' <span class="muted small">90s pop, or play your own playlist.</span></p>');
 
   // ---------- Cook mode (recipe pages) ----------
   var stepEls = card ? card.querySelectorAll(".steps li") : [];
