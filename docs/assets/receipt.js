@@ -101,6 +101,7 @@
     "condensed-milk": ["sweetened condensed", "condensed milk", "sw cond milk", "eagle brand"],
     "lime-juice": ["key lime juice", "lime juice", "key limes", "limes", "lime"],
     "vanilla": ["vanilla extract", "vanilla ext", "pure vanilla", "vanilla"],
+    "enchilada-sauce": ["enchilada sauce", "enchilada sce", "ench sauce", "old el paso ench"],
     "salt": ["sea salt", "kosher salt", "iodized", "salt"]
   };
   WORDS[""] = ["salted caramel", "salt and vinegar", "sugar free", "cheese its", "cheez it", "mac and cheese", "pepper jack chips",
