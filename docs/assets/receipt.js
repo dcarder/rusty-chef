@@ -40,7 +40,7 @@
     "chili-powder": ["chili powder", "chili pwd", "chili pwdr"],
     "curry-powder": ["curry powder", "curry"],
     "dried-herbs": ["italian seasoning", "ital season", "oregano", "basil leaves", "thyme"],
-    "frozen-veg": ["mixed vegetables", "mixed veg", "mxd veg", "frz veg", "frozen veg", "stir fry veg", "steamers", "peas", "broccoli", "green beans", "grn beans"],
+    "frozen-veg": ["mixed vegetables", "mixed veg", "mxd veg", "frz veg", "frozen veg", "stir fry veg", "steamers", "peas", "green beans", "grn beans"],
     "parmesan": ["parmesan", "parm", "parmigiano", "romano"],
     "cheese": ["shredded cheese", "shrd chs", "shred chs", "cheddar", "chdr", "ched", "mozzarella", "mozz", "colby", "monterey", "pepper jack",
                "american slices", "amer slices", "amer chs", "provolone", "swiss", "string chs", "cheese", "chs"],
@@ -92,6 +92,11 @@
     "chili-flakes": ["red pepper flakes", "crushed red pepper", "chili flakes"],
     "brown-sugar": ["brown sugar", "brwn sugar", "lt brown sugar", "dk brown sugar"],
     "sugar": ["powdered sugar", "granulated", "gran sugar", "sugar", "sugr"],
+    "broccoli": ["broccoli", "brocc", "broc"],
+    "steak": ["flank steak", "sirloin", "steak", "stk"],
+    "tofu": ["tofu"],
+    "peanuts": ["roasted peanuts", "dry roasted", "peanuts", "pnuts"],
+    "pineapple": ["pineapple", "pineapl", "pinapl"],
     "salt": ["sea salt", "kosher salt", "iodized", "salt"]
   };
   WORDS[""] = ["salted caramel", "salt and vinegar", "sugar free", "cheese its", "cheez it", "mac and cheese", "pepper jack chips",

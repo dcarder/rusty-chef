@@ -90,5 +90,10 @@ window.RC_WALMART = {
   "ground-beef": { id: "", qty: 1, search: "Ground beef" },
   "cream-cheese": { id: "", qty: 1, search: "Cream cheese" },
   "corn": { id: "", qty: 1, search: "Canned or frozen corn" },
-  "bacon": { id: "", qty: 1, search: "Bacon" }
+  "bacon": { id: "", qty: 1, search: "Bacon" },
+  "broccoli": { id: "", qty: 1, search: "Broccoli crowns" },
+  "steak": { id: "", qty: 1, search: "Flank steak" },
+  "tofu": { id: "", qty: 1, search: "Firm tofu" },
+  "peanuts": { id: "", qty: 1, search: "Roasted peanuts" },
+  "pineapple": { id: "", qty: 1, search: "Canned pineapple chunks" }
 };
