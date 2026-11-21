@@ -27,6 +27,25 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#2b2522">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <style>
+    /* 3D Rusty hero picture */
+    .hero-3d{perspective:1100px;-webkit-tap-highlight-color:transparent;touch-action:pan-y;padding:14px 6px 26px}
+    .hero-3d-sway{transform-style:preserve-3d;animation:rc-sway 7s ease-in-out infinite}
+    .hero-3d.active .hero-3d-sway{animation-play-state:paused}
+    .hero-3d-card{position:relative;transform-style:preserve-3d;border-radius:18px;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+    .hero-3d.active .hero-3d-card{transition:transform .12s linear}
+    .hero-3d-layer{position:absolute;inset:0;border-radius:18px}
+    .hero-3d-layer.l1{transform:translateZ(24px);background:#6e3424}
+    .hero-3d-layer.l2{transform:translateZ(16px);background:#5a2a1c}
+    .hero-3d-layer.l3{transform:translateZ(8px);background:#47210f}
+    .hero-3d-layer.l4{transform:translateZ(0);background:#2b1a12;box-shadow:0 30px 45px -10px rgba(0,0,0,.45),0 10px 18px rgba(0,0,0,.25)}
+    .hero-3d .hero-img{display:block;position:relative;transform:translateZ(32px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);backface-visibility:hidden}
+    .hero-3d-glare{position:absolute;inset:0;border-radius:18px;pointer-events:none;transform:translateZ(33px);
+      background:radial-gradient(circle at var(--gx,30%) var(--gy,20%),rgba(255,236,210,.32),rgba(255,236,210,0) 55%),linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,0) 40%)}
+    @keyframes rc-sway{0%,100%{transform:rotateX(5deg) rotateY(-9deg) translateY(0)}50%{transform:rotateX(-3deg) rotateY(9deg) translateY(-8px)}}
+    @media (max-width:760px){.hero-3d{order:-1;width:100%;max-width:440px;margin:0 auto}.hero-3d .hero-img{aspect-ratio:4/3;max-height:none;object-fit:cover}}
+    @media (prefers-reduced-motion:reduce){.hero-3d-sway{animation:none}.hero-3d-card{transform:rotateX(4deg) rotateY(-8deg)!important}}
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -44,7 +63,15 @@
         <p class="lede">The Rusty Chef turns the ingredients you already have into recipes you can make tonight, with no extra trip to the store. No taste buds required.</p>
         <p><a class="btn" href="/pantry.html">Try the Pantry Tool</a> <a class="btn btn-ghost" href="/recipes/">Browse 128 recipes</a></p>
       </div>
-      <img class="hero-img" src="/copilot_image_1777179019874-1.jpeg" alt="The Rusty Chef, our robot chef mascot" width="560" height="560" fetchpriority="high" onerror="this.style.display='none'">
+      <div class="hero-3d">
+        <div class="hero-3d-sway">
+          <div class="hero-3d-card">
+            <span class="hero-3d-layer l4" aria-hidden="true"></span><span class="hero-3d-layer l3" aria-hidden="true"></span><span class="hero-3d-layer l2" aria-hidden="true"></span><span class="hero-3d-layer l1" aria-hidden="true"></span>
+            <img class="hero-img" src="/copilot_image_1777179019874-1.jpeg" alt="The Rusty Chef, our robot chef mascot" width="560" height="560" fetchpriority="high" onerror="this.closest('.hero-3d').style.display='none'">
+            <span class="hero-3d-glare" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
     </section>
 
     <a class="shop-promo" href="/shop.html" aria-label="Shop now: the Rusty Chef Phone Holder">
@@ -99,5 +126,26 @@
     <p>&copy; 2026 The Rusty Chef &middot; No taste buds required.</p>
   </footer>
   <script src="/assets/app.js?v=202611191240"></script>
+  <script>
+  (function(){
+    var s=document.querySelector('.hero-3d');
+    if(!s||!window.matchMedia||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    var c=s.querySelector('.hero-3d-card'),M=15;
+    function cl(v){return Math.max(-1,Math.min(1,v));}
+    function set(x,y){x=cl(x);y=cl(y);
+      c.style.setProperty('--ry',(x*M).toFixed(2)+'deg');c.style.setProperty('--rx',(-y*M).toFixed(2)+'deg');
+      c.style.setProperty('--gx',(50+x*45).toFixed(1)+'%');c.style.setProperty('--gy',(50+y*45).toFixed(1)+'%');}
+    function reset(){s.classList.remove('active');set(0,0);}
+    s.addEventListener('pointermove',function(e){var r=s.getBoundingClientRect();s.classList.add('active');set((e.clientX-r.left)/r.width*2-1,(e.clientY-r.top)/r.height*2-1);});
+    s.addEventListener('pointerleave',reset);
+    s.addEventListener('pointercancel',reset);
+    s.addEventListener('pointerup',function(e){if(e.pointerType!=='mouse')reset();});
+    function orient(e){if(e.gamma==null||e.beta==null)return;s.classList.add('active');set(e.gamma/25,(e.beta-45)/25);}
+    function listen(){window.addEventListener('deviceorientation',orient);}
+    if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
+      s.addEventListener('click',function(){DeviceOrientationEvent.requestPermission().then(function(p){if(p==='granted')listen();}).catch(function(){});},{once:true});
+    }else if(matchMedia('(pointer: coarse)').matches){listen();}
+  })();
+  </script>
 </body>
 </html>
