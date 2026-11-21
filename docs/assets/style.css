@@ -354,3 +354,10 @@ html.cook-open,html.cook-open body{overflow:hidden}
 body:has(.timer-dock:not([hidden])) .cm-nav{padding-bottom:84px}
 .toast{z-index:40}
 @media print{.scaler-row,.scaler-note,.btn-cook,.cook-mode{display:none!important}}
+
+/* Cuisine chips */
+a.chip{display:inline-block;text-decoration:none}
+a.chip:hover{border-color:var(--rust)}
+a.chip[aria-current="page"]{background:var(--rust);border-color:var(--rust);color:#fff}
+.cuisine-chips{margin:8px 0 18px}
+.cuisine-label{margin:16px 0 0}
