@@ -95,5 +95,9 @@ window.RC_WALMART = {
   "steak": { id: "", qty: 1, search: "Flank steak" },
   "tofu": { id: "", qty: 1, search: "Firm tofu" },
   "peanuts": { id: "", qty: 1, search: "Roasted peanuts" },
-  "pineapple": { id: "", qty: 1, search: "Canned pineapple chunks" }
+  "pineapple": { id: "", qty: 1, search: "Canned pineapple chunks" },
+  "graham-crackers": { id: "", qty: 1, search: "Graham crackers" },
+  "condensed-milk": { id: "", qty: 1, search: "Sweetened condensed milk" },
+  "lime-juice": { id: "", qty: 1, search: "Key lime juice" },
+  "vanilla": { id: "", qty: 1, search: "Vanilla extract" }
 };

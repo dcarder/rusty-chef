@@ -80,7 +80,7 @@
     "mustard": ["mustard", "mstrd", "dijon"],
     "mayo": ["mayonnaise", "mayo", "hellmanns", "dukes"],
     "honey": ["honey"],
-    "vinegar": ["vinegar", "limes", "lime", "lemons", "lemon"],
+    "vinegar": ["vinegar", "lemons", "lemon"],
     "olives": ["olives", "olive"],
     "capers": ["capers"],
     "tahini": ["tahini"],
@@ -97,6 +97,10 @@
     "tofu": ["tofu"],
     "peanuts": ["roasted peanuts", "dry roasted", "peanuts", "pnuts"],
     "pineapple": ["pineapple", "pineapl", "pinapl"],
+    "graham-crackers": ["graham crackers", "graham crkr", "graham"],
+    "condensed-milk": ["sweetened condensed", "condensed milk", "sw cond milk", "eagle brand"],
+    "lime-juice": ["key lime juice", "lime juice", "key limes", "limes", "lime"],
+    "vanilla": ["vanilla extract", "vanilla ext", "pure vanilla", "vanilla"],
     "salt": ["sea salt", "kosher salt", "iodized", "salt"]
   };
   WORDS[""] = ["salted caramel", "salt and vinegar", "sugar free", "cheese its", "cheez it", "mac and cheese", "pepper jack chips",
