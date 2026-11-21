@@ -100,5 +100,7 @@ window.RC_WALMART = {
   "condensed-milk": { id: "", qty: 1, search: "Sweetened condensed milk" },
   "lime-juice": { id: "", qty: 1, search: "Key lime juice" },
   "vanilla": { id: "", qty: 1, search: "Vanilla extract" },
-  "enchilada-sauce": { id: "", qty: 1, search: "Red enchilada sauce" }
+  "enchilada-sauce": { id: "", qty: 1, search: "Red enchilada sauce" },
+  "chocolate-chips": { id: "", qty: 1, search: "Semi-sweet chocolate chips" },
+  "baking-soda": { id: "", qty: 1, search: "Baking soda" }
 };

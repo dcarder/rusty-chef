@@ -102,6 +102,8 @@
     "lime-juice": ["key lime juice", "lime juice", "key limes", "limes", "lime"],
     "vanilla": ["vanilla extract", "vanilla ext", "pure vanilla", "vanilla"],
     "enchilada-sauce": ["enchilada sauce", "enchilada sce", "ench sauce", "old el paso ench"],
+    "chocolate-chips": ["chocolate chips", "choc chips", "choc chip", "semi sweet morsels", "morsels", "nestle toll house"],
+    "baking-soda": ["baking soda", "bkg soda", "arm hammer", "arm & hammer"],
     "salt": ["sea salt", "kosher salt", "iodized", "salt"]
   };
   WORDS[""] = ["salted caramel", "salt and vinegar", "sugar free", "cheese its", "cheez it", "mac and cheese", "pepper jack chips",
