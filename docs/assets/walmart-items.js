@@ -102,5 +102,7 @@ window.RC_WALMART = {
   "vanilla": { id: "", qty: 1, search: "Vanilla extract" },
   "enchilada-sauce": { id: "", qty: 1, search: "Red enchilada sauce" },
   "chocolate-chips": { id: "", qty: 1, search: "Semi-sweet chocolate chips" },
-  "baking-soda": { id: "", qty: 1, search: "Baking soda" }
+  "baking-soda": { id: "", qty: 1, search: "Baking soda" },
+  "stew-beef": { id: "", qty: 1, search: "Beef stew meat" },
+  "split-peas": { id: "", qty: 1, search: "Dried split peas" }
 };

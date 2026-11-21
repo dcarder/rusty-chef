@@ -104,6 +104,8 @@
     "enchilada-sauce": ["enchilada sauce", "enchilada sce", "ench sauce", "old el paso ench"],
     "chocolate-chips": ["chocolate chips", "choc chips", "choc chip", "semi sweet morsels", "morsels", "nestle toll house"],
     "baking-soda": ["baking soda", "bkg soda", "arm hammer", "arm & hammer"],
+    "stew-beef": ["beef stew meat", "stew meat", "stew beef", "beef for stew", "chuck roast"],
+    "split-peas": ["dried split peas", "split peas", "split pea", "yellow peas"],
     "salt": ["sea salt", "kosher salt", "iodized", "salt"]
   };
   WORDS[""] = ["salted caramel", "salt and vinegar", "sugar free", "cheese its", "cheez it", "mac and cheese", "pepper jack chips",

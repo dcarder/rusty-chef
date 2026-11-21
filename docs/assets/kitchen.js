@@ -17,7 +17,7 @@
     "spinach": 5, "parsley": 7, "green-onion": 7, "bell-pepper": 7, "banana": 5,
     "carrot": 21, "celery": 14, "cabbage": 21, "potatoes": 30, "sweet-potato": 21,
     "onion": 30, "garlic": 60, "ginger": 21, "bread": 5, "tortillas": 14,
-    "broccoli": 5, "steak": 3, "tofu": 5, "lime-juice": 14
+    "broccoli": 5, "steak": 3, "tofu": 5, "lime-juice": 14, "stew-beef": 2
   };
   var QUICK = ["eggs", "milk", "chicken", "ground-beef", "bacon", "spinach", "bread", "cheese", "banana", "bell-pepper", "tortillas", "sour-cream"];
   var URGENT_DAYS = 4;
